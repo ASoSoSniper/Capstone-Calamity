@@ -36,7 +36,7 @@ void AMovementAI::HexSearch(AActor* hex)
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
 
-	TArray<bool, float> angles;
+	//TArray<bool, float> angles;
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -45,7 +45,7 @@ void AMovementAI::HexSearch(AActor* hex)
 		FHitResult hit;
 
 		bool foundHex = GetWorld()->LineTraceSingleByChannel(hit, traceStart, traceEnd, ECC_Visibility, queryParams, FCollisionResponseParams::DefaultResponseParam);
-		angles[i] = foundHex, AngleBetweenVectors(FVector::UpVector, FVector::RightVector);
+		//angles[i] = foundHex, AngleBetweenVectors(FVector::UpVector, FVector::RightVector);
 
 		//Debug things
 		DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, true);
