@@ -23,4 +23,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	AActor* currentHex;
+	TArray<AActor*> hexTrail;
+	AActor* targetHex;
+	UPROPERTY(EditAnywhere)
+		float traceStartOffset = 10.f;
+	UPROPERTY(EditAnywhere)
+		float traceLength = 10.f;
+	void SnapToHex(AActor* hex);
+	void HexSearch(AActor* hex);
+	float AngleBetweenVectors(const FVector& a, const FVector& b);
+	FVector GetVectorToTarget(FVector& origin);
+
+	UPROPERTY(EditAnywhere)
+		AActor* TestActor;
+
 };
