@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interactable.h"
+#include "Components/SphereComponent.h"
 #include "MovementAI.generated.h"
 
 UCLASS()
@@ -23,19 +25,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UInteractable* interact;
+
 	AActor* currentHex;
-	TArray<AActor*> hexTrail;
+	TArray<AActor*> hexPath;
 	AActor* targetHex;
 	UPROPERTY(EditAnywhere)
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)
 		float traceLength = 10.f;
+	UPROPERTY(EditAnywhere)
+		int maxHexes;
+
+	void CreatePath();
 	void SnapToHex(AActor* hex);
-	void HexSearch(AActor* hex);
-	float AngleBetweenVectors(const FVector& a, const FVector& b);
-	FVector GetVectorToTarget(FVector& origin);
+	AActor* HexSearch(AActor* hex);
+	float AngleBetweenVectors(FVector a, FVector b);
+	FVector GetVectorToTarget(FVector origin);
 
 	UPROPERTY(EditAnywhere)
 		AActor* TestActor;
+
+	UPROPERTY(EditAnywhere)
+		USphereComponent* sphere;
 
 };
