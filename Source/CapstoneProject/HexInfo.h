@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include "TerrainEnum.h"
+#include "StratResources.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "HexInfo.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UHexInfo : public UActorComponent
@@ -18,8 +19,8 @@ public:
 	UPROPERTY(EditAnywhere) int hexID;
 	UPROPERTY(EditAnywhere) int foodVal;
 	UPROPERTY(EditAnywhere) int prodVal;
-	enum terrainType { plains, hills, mountains, bog, water, abyss };
-	enum strategicResources { iron, none };
+	UPROPERTY(EditAnywhere) TerrainType hexTerrain;
+	UPROPERTY(EditAnywhere) StratResources hexStratResources;
 	UPROPERTY(EditAnywhere) AActor* troopAnchor;
 	TArray<AActor*> troopsInHex;
 	TArray<AActor*> battlesInHex;
