@@ -27,13 +27,13 @@ private:
 	virtual void Tick(float DeltaTime) override;
 	
 	//Interactable object the cursor hovers over
-	AActor* hoveredWorldObject;
+	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
 
 	//Interactable object the player has clicked to select
-	AActor* selectedWorldObject;
+	UPROPERTY(VisibleAnywhere) AActor* selectedWorldObject;
 	
 	//Additional info on selectedWorldObject if it is identified as a movable unit
-	AMovementAI* selectedTroop;
+	UPROPERTY(VisibleAnywhere) AMovementAI* selectedTroop;
 public:	
 
 	enum ActionStates

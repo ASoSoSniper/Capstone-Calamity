@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-
+#include "Components/ShapeComponent.h"
 #include "Interactable.generated.h"
 
 class ABasePlayerController;
@@ -27,6 +27,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	ABasePlayerController* controller;
+	UFUNCTION() //This makes the function actually trigger in AddDynamic, DO NOT FORGET
 	void MouseHover(UPrimitiveComponent* item);
+	UFUNCTION()
 	void Selected(UPrimitiveComponent* item, FKey ButtonPressed);
+
+	UPROPERTY(EditAnywhere)
+	UShapeComponent* collider;
 };

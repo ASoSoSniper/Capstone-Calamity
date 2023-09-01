@@ -13,16 +13,15 @@ AMovementAI::AMovementAI()
 	
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Body"));
-	RootComponent = sphere;
-	sphere->OnBeginCursorOver.AddDynamic(interact, &UInteractable::MouseHover);
-	sphere->OnClicked.AddDynamic(interact, &UInteractable::Selected);
+	sphere->SetupAttachment(RootComponent);
+	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 // Called when the game starts or when spawned
 void AMovementAI::BeginPlay()
 {
 	Super::BeginPlay();	
-
+	currentHex = TestActor;
 }
 
 // Called every frame
@@ -34,15 +33,17 @@ void AMovementAI::Tick(float DeltaTime)
 
 void AMovementAI::CreatePath()
 {
+	if (hexPath.Num() > 0) hexPath.Empty();
 	AActor* hexToSearch = currentHex;
 	for (int i = 0; i < maxHexes; i++)
 	{
-		hexPath[i] = HexSearch(hexToSearch);
+		hexPath.Add(HexSearch(hexToSearch));
 		
-		if (hexPath[i] = targetHex) break;
+		if (hexPath[i] == targetHex) break;
 
 		hexToSearch = hexPath[i];
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Path Created"));
 }
 
 void AMovementAI::SnapToHex(AActor* hex)
@@ -51,49 +52,38 @@ void AMovementAI::SnapToHex(AActor* hex)
 }
 
 AActor* AMovementAI::HexSearch(AActor* hex)
-{
+{	
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
 
 	TArray<AActor*> hexesFound;
-	TArray<float> anglesToTarget;	
+	TArray<float> anglesToTarget;
 
 	//For each of the 6 directions:
 	for (int i = 0; i < 6; i++)
 	{
 		//Establish trace direction
-		FVector traceStart = hex->GetActorLocation() + FRotationMatrix(FRotator(0, i * 60, 0)).GetUnitAxis(EAxis::X) * traceStartOffset;
-		FVector traceEnd = traceStart + FRotationMatrix(FRotator(0, i * 60, 0)).GetUnitAxis(EAxis::X) * traceLength;
+		FVector traceStart = hex->GetActorLocation() + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * traceStartOffset;
+		FVector traceEnd = traceStart + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * traceLength;
 		FHitResult hit;
 
 		//Trace
 		bool foundHex = GetWorld()->LineTraceSingleByChannel(hit, traceStart, traceEnd, ECC_Visibility, queryParams, FCollisionResponseParams::DefaultResponseParam);
 
 		//Identify found hex
-		if (foundHex)
-		{
-			hexesFound[i] = hit.GetActor();
-		}
+		hexesFound.Add(foundHex ? hit.GetActor() : nullptr);
 
 		//Get hex's angle to target
 		if (targetHex)
 		{
-			anglesToTarget[i] = foundHex ? AngleBetweenVectors(traceEnd - traceEnd, GetVectorToTarget(hex->GetActorLocation())) : INFINITY;
+			anglesToTarget.Add(foundHex ? AngleBetweenVectors(traceEnd - traceStart, GetVectorToTarget(hex->GetActorLocation())) : INFINITY);
 		}	
 
 		// **Debug things**
-		if (i == 0)
-			DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Green, false, 1.f);
-		else
-			DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 1.f);
-		if (foundHex)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Object found!"));
-		}
-		// **Debug things**
+		DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 1.f);
 	}
 
-	AActor* closestHexToTarget = NULL;
+	AActor* closestHexToTarget = nullptr;
 	float smallestAngle = INFINITY;
 	for (int i = 0; i < 6; i++)
 	{
@@ -124,4 +114,5 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 	FVector targetDirection = targetHex->GetActorLocation() - origin;
 	return targetDirection;
 }
+
 

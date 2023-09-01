@@ -25,6 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere)
 	UInteractable* interact;
 
 	AActor* currentHex;
@@ -42,6 +43,7 @@ public:
 	AActor* HexSearch(AActor* hex);
 	float AngleBetweenVectors(FVector a, FVector b);
 	FVector GetVectorToTarget(FVector origin);
+
 
 	UPROPERTY(EditAnywhere)
 		AActor* TestActor;

@@ -9,6 +9,9 @@ APlayerMovement::APlayerMovement()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	camera->SetupAttachment(RootComponent);
+	camera->SetWorldRotation(FRotator(-45.f, 0.f, 0.f));
 }
 
 // Called when the game starts or when spawned

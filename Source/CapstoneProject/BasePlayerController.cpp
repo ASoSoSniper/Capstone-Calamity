@@ -7,6 +7,7 @@ ABasePlayerController::ABasePlayerController()
 {
 	bEnableMouseOverEvents = true;
 	bShowMouseCursor = true;
+	bEnableClickEvents = true;
 }
 
 void ABasePlayerController::BeginPlay()
@@ -39,14 +40,18 @@ void ABasePlayerController::SetActionState()
 		testForAI = Cast<AMovementAI>(selectedWorldObject);
 		if (testForAI)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
 			actionState = TroopManage;
 			selectedTroop = testForAI;
 			break;
 		}
+		else
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("MovementAI not found."));
 		break;
 	case BaseManage:
 		break;
 	case TroopManage:
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Troop Commanded!"));
 		selectedTroop->targetHex = selectedWorldObject;
 		selectedTroop->CreatePath();
 		break;
