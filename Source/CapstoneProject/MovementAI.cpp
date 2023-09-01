@@ -2,7 +2,7 @@
 
 
 #include "MovementAI.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -15,13 +15,15 @@ AMovementAI::AMovementAI()
 	sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Body"));
 	sphere->SetupAttachment(RootComponent);
 	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	sphere->InitSphereRadius(20.f);
 }
 
 // Called when the game starts or when spawned
 void AMovementAI::BeginPlay()
 {
 	Super::BeginPlay();	
-	currentHex = TestActor;
+
+	SphereCheck();
 }
 
 // Called every frame
@@ -29,12 +31,40 @@ void AMovementAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	switch (moveState)
+	{
+	case Idle:
+		break;
+	case Move:
+		SphereCheck();
+		MoveToTarget(DeltaTime);
+		break;
+	}
 }
 
 void AMovementAI::CreatePath()
 {
+	if (targetHex == currentHex) return;
+
+	//Save last hex destination, if interrupted
+	AActor* temp = nullptr;
+	if (moveState == Move)
+	{
+		temp = hexPath[hexPathIndex];
+	}
+
+	//Reset path data
+	hexPathIndex = 0;
 	if (hexPath.Num() > 0) hexPath.Empty();
-	AActor* hexToSearch = currentHex;
+
+	//Add last hex destination to new path
+	if (temp != nullptr)
+		hexPath.Add(temp);
+
+	//Choose initial hex
+	AActor* hexToSearch = (temp == nullptr) ? currentHex : temp;
+
+	//Scan for hexes leading to the target hex	
 	for (int i = 0; i < maxHexes; i++)
 	{
 		hexPath.Add(HexSearch(hexToSearch));
@@ -43,12 +73,16 @@ void AMovementAI::CreatePath()
 
 		hexToSearch = hexPath[i];
 	}
+
+	//Begin moving along path
+	moveState = Move;
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Path Created"));
 }
 
 void AMovementAI::SnapToHex(AActor* hex)
 {
-	SetActorLocation(hex->GetActorLocation());
+	SetActorLocation(hex->GetActorLocation() + FVector::UpVector * 25);
+	currentHex = hex;
 }
 
 AActor* AMovementAI::HexSearch(AActor* hex)
@@ -97,6 +131,31 @@ AActor* AMovementAI::HexSearch(AActor* hex)
 	return closestHexToTarget;
 }
 
+void AMovementAI::SphereCheck()
+{
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(this);
+	TArray<FHitResult> results;
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+
+	if (bHit)
+	{
+		
+		for (int i = 0; i < results.Num(); i++)
+		{
+			if (results[i].GetActor()->FindComponentByClass<UHexInfo>() && results[i].GetActor() != currentHex)
+			{
+				if (FMath::Abs(GetActorLocation().X - results[i].GetActor()->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - results[i].GetActor()->GetActorLocation().Y) < hexSnapDistance)
+				{
+					SnapToHex(results[i].GetActor());
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
+					break;
+				}
+			}
+		}
+	}
+}
+
 float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
 {
 	//Find Dot product of a and b
@@ -113,6 +172,24 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 {
 	FVector targetDirection = targetHex->GetActorLocation() - origin;
 	return targetDirection;
+}
+
+void AMovementAI::MoveToTarget(float& DeltaTime)
+{
+	if (hexPath.Num() > 0)
+	{
+		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - currentHex->GetActorLocation();
+		FVector newLocation = GetActorLocation() + direction * moveSpeed * DeltaTime;
+		SetActorLocation(newLocation);
+		if (currentHex == hexPath[hexPathIndex])
+		{
+			hexPathIndex++;
+			if (hexPathIndex > hexPath.Num() - 1)
+			{
+				moveState = Idle;
+			}
+		}
+	}
 }
 
 
