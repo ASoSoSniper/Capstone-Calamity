@@ -26,6 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+//Components created upon initialization
+#pragma region Components
+
 	UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
 	UPROPERTY(VisibleAnywhere) UInteractable* interactable;
 	UPROPERTY(EditAnywhere) USceneComponent* troopAnchor;
@@ -34,9 +37,22 @@ public:
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* hexMesh;
 	UPROPERTY(EditAnywhere) USphereComponent* collider;
 
+#pragma endregion
+
+//Variables that change depending on the hex's interaction with the world
+#pragma region Variables
+
 	UPROPERTY(EditAnywhere) bool isSelected = false;
 	UPROPERTY(EditAnywhere) bool hasFOW = true;
 
+	UPROPERTY(VisibleAnywhere) AActor* building;
+
 	UPROPERTY(VisibleAnywhere) TArray<AActor*> troopsInHex;
 	UPROPERTY(VisibleAnywhere) TArray<AActor*> battlesInHex;
+
+#pragma endregion
+
+	TArray<AActor*> GetObjectsInHex();
+
+	
 };

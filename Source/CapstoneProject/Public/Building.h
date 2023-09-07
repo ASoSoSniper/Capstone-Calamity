@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interactable.h"
+#include "HexNav.h"
+#include "Components/BoxComponent.h"
 #include "Building.generated.h"
 
 UCLASS()
@@ -23,4 +26,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(VisibleAnywhere)UInteractable* interactable;
+	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
+	UPROPERTY(EditAnywhere)UBoxComponent* collider;
+	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
+
+	enum BuildStates
+	{
+		None,
+		Building,
+		Complete,
+		Uprading,
+		Upgraded
+	};
+	BuildStates buildState = None;
+
+	UPROPERTY(EditAnywhere) float buildTime = 5.f;
+	UPROPERTY(EditAnywhere) float upgradeTime = 10.f;
+	float currBuildTime;
+
+	void Constructing(float& DeltaTime);
+	void SetBuildState();
 };

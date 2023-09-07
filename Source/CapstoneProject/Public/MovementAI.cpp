@@ -13,6 +13,7 @@ AMovementAI::AMovementAI()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
+	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Body"));
 	sphere->SetupAttachment(RootComponent);
 	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
@@ -45,7 +46,7 @@ void AMovementAI::Tick(float DeltaTime)
 
 void AMovementAI::CreatePath()
 {
-	if (targetHex == currentHex) return;
+	if (targetHex == hexNav->currentHex) return;
 
 	//Save last hex destination, if interrupted
 	AActor* temp = nullptr;
@@ -63,7 +64,7 @@ void AMovementAI::CreatePath()
 		hexPath.Add(temp);
 
 	//Choose initial hex
-	AActor* hexToSearch = (temp == nullptr) ? currentHex : temp;
+	AActor* hexToSearch = (temp == nullptr) ? hexNav->currentHex : temp;
 
 	//Scan for hexes leading to the target hex	
 	for (int i = 0; i < maxHexes; i++)
@@ -86,7 +87,7 @@ void AMovementAI::SnapToHex(ABaseHex* hex)
 	SetActorLocation(hex->GetActorLocation() + FVector::UpVector * 25);
 
 	//Remove this unit from previous hex troop pool
-	ABaseHex* previousHex = Cast<ABaseHex>(currentHex);
+	ABaseHex* previousHex = Cast<ABaseHex>(hexNav->currentHex);
 	if (previousHex)
 	{
 		if (previousHex->troopsInHex.Contains(this))
@@ -96,7 +97,7 @@ void AMovementAI::SnapToHex(ABaseHex* hex)
 	}
 
 	//Set current hex to snapped hex
-	currentHex = hex;
+	hexNav->currentHex = hex;
 
 	//Add this unit to current hex troop pool
 	hex->troopsInHex.Add(this);
@@ -106,6 +107,8 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 {	
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
+	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hex)->GetObjectsInHex();
+	queryParams.AddIgnoredActors(objectsInHex);
 
 	TArray<ABaseHex*> hexesFound;
 	TArray<float> anglesToTarget;
@@ -164,7 +167,7 @@ void AMovementAI::SphereCheck()
 		for (int i = 0; i < results.Num(); i++)
 		{
 			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
-			if (hexActor && results[i].GetActor() != currentHex)
+			if (hexActor && results[i].GetActor() != hexNav->currentHex)
 			{
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
@@ -199,10 +202,10 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 {
 	if (hexPath.Num() > 0)
 	{
-		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - currentHex->GetActorLocation();
+		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation();
 		FVector newLocation = GetActorLocation() + direction * moveSpeed * DeltaTime;
 		SetActorLocation(newLocation);
-		if (currentHex == hexPath[hexPathIndex])
+		if (hexNav->currentHex == hexPath[hexPathIndex])
 		{
 			hexPathIndex++;
 			if (hexPathIndex > hexPath.Num() - 1)

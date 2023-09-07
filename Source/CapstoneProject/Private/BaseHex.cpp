@@ -21,7 +21,7 @@ ABaseHex::ABaseHex()
 	hexInfo = CreateDefaultSubobject<UHexInfo>(TEXT("Hex Info"));
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 
-	collider = CreateAbstractDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
+	collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
 	collider->SetupAttachment(RootComponent);
 	collider->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
@@ -44,5 +44,16 @@ void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+TArray<AActor*> ABaseHex::GetObjectsInHex()
+{
+	TArray<AActor*> actors;
+	actors.Add(building);
+	for (int i = 0; i < troopsInHex.Num() - 1; i++)
+	{
+		actors.Add(troopsInHex[i]);
+	}
+	return actors;
 }
 

@@ -7,6 +7,7 @@
 #include "Interactable.h"
 #include "BaseHex.h"
 #include "HexInfo.h"
+#include "HexNav.h"
 #include "Components/SphereComponent.h"
 #include "MovementAI.generated.h"
 
@@ -28,9 +29,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	UInteractable* interact;
+		UInteractable* interact;
 	UPROPERTY(VisibleAnywhere)
-	AActor* currentHex;
+		UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)
 		TArray<AActor*> hexPath;
 	int hexPathIndex;

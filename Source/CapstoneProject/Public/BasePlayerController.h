@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MovementAI.h"
 #include "BaseHex.h"
+#include "Building.h"
 #include "BasePlayerController.generated.h"
 
 /**
@@ -51,4 +52,6 @@ public:
 	void SetActionState();
 	void Build();
 	void Deselect();
+
+	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> buildingPrefab;
 };

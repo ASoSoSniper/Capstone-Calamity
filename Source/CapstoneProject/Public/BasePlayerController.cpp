@@ -2,6 +2,7 @@
 
 
 #include "BasePlayerController.h"
+#include "HexNav.h"
 
 ABasePlayerController::ABasePlayerController()
 {
@@ -57,8 +58,16 @@ void ABasePlayerController::SetActionState()
 	case BaseManage:
 		break;
 	case TroopManage:
-		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Troop Commanded!"));
-		selectedTroop->targetHex = selectedWorldObject;
+		if (Cast<ABaseHex>(selectedWorldObject))
+		{
+			selectedTroop->targetHex = selectedWorldObject;
+		}
+		else
+		{
+			UHexNav* hexNav = selectedWorldObject->GetComponentByClass<UHexNav>();
+			if (hexNav)
+				selectedTroop->targetHex = hexNav->currentHex;
+		}
 		selectedTroop->CreatePath();
 		break;
 	}
@@ -66,7 +75,19 @@ void ABasePlayerController::SetActionState()
 
 void ABasePlayerController::Build()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Building building!"));
+	if (actionState == None && selectedHex)
+	{
+		if (selectedHex->building == nullptr && buildingPrefab)
+		{
+			FActorSpawnParameters params;
+			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(buildingPrefab, selectedHex->buildingAnchor->GetComponentLocation(), FRotator(0,0,0), params);
+			selectedHex->building = newBuilding;
+			UHexNav* hexNav = newBuilding->GetComponentByClass<UHexNav>();
+			if (hexNav) hexNav->currentHex = selectedHex;
+		}
+		else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
+	}
+	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Could not build"));
 }
 
 void ABasePlayerController::Deselect()
@@ -75,4 +96,5 @@ void ABasePlayerController::Deselect()
 	selectedTroop = nullptr;
 	selectedWorldObject = nullptr;
 	actionState = None;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
