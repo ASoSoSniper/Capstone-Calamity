@@ -18,6 +18,7 @@ AMovementAI::AMovementAI()
 	sphere->SetupAttachment(RootComponent);
 	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	sphere->InitSphereRadius(20.f);
+	sphere->bHiddenInGame = false;
 }
 
 // Called when the game starts or when spawned
@@ -108,7 +109,7 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
 	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hex)->GetObjectsInHex();
-	queryParams.AddIgnoredActors(objectsInHex);
+	if (objectsInHex.Num() > 0) queryParams.AddIgnoredActors(objectsInHex);
 
 	TArray<ABaseHex*> hexesFound;
 	TArray<float> anglesToTarget;

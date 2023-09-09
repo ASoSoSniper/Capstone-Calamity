@@ -49,11 +49,20 @@ void ABaseHex::Tick(float DeltaTime)
 TArray<AActor*> ABaseHex::GetObjectsInHex()
 {
 	TArray<AActor*> actors;
-	actors.Add(building);
-	for (int i = 0; i < troopsInHex.Num() - 1; i++)
+
+	if (building) 
 	{
-		actors.Add(troopsInHex[i]);
+		actors.Add(building);
 	}
+
+	if (troopsInHex.Num() > 0)
+	{
+		for (int i = 0; i < troopsInHex.Num() - 1; i++)
+		{
+			actors.Add(troopsInHex[i]);
+		}
+	}
+	
 	return actors;
 }
 

@@ -35,20 +35,22 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<AActor*> hexPath;
 	int hexPathIndex;
-	AActor* targetHex;
+	UPROPERTY(VisibleAnywhere)
+		AActor* targetHex;
 	UPROPERTY(EditAnywhere)
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)
-		float traceLength = 10.f;
+		float traceLength = 50.f;
 	UPROPERTY(EditAnywhere)
-		float hexSnapDistance = 30.f;
+		float hexSnapDistance = 5.f;
 	UPROPERTY(EditAnywhere)
-		int maxHexes;
+		int maxHexes = 16;
 	UPROPERTY(EditAnywhere)
-		float moveSpeed = 10.f;
+		float moveSpeed = 2.f;
 	void CreatePath();
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
+	
 	void SphereCheck();
 
 	float AngleBetweenVectors(FVector a, FVector b);
@@ -65,5 +67,5 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 		USphereComponent* sphere;
-
+	
 };
