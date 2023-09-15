@@ -8,6 +8,7 @@
 #include "BaseHex.h"
 #include "HexInfo.h"
 #include "HexNav.h"
+#include "UnitStats.h"
 #include "Components/SphereComponent.h"
 #include "MovementAI.generated.h"
 
@@ -35,8 +36,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<AActor*> hexPath;
 	int hexPathIndex;
-	UPROPERTY(VisibleAnywhere)
-		AActor* targetHex;
+	
 	UPROPERTY(EditAnywhere)
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)
@@ -47,7 +47,7 @@ public:
 		int maxHexes = 16;
 	UPROPERTY(EditAnywhere)
 		float moveSpeed = 2.f;
-	void CreatePath();
+	virtual void CreatePath();
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
 	
@@ -67,5 +67,6 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 		USphereComponent* sphere;
-	
+	UPROPERTY(EditAnywhere)
+		UUnitStats* unitStats;
 };

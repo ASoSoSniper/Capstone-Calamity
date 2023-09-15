@@ -16,4 +16,7 @@ class CAPSTONEPROJECT_API ATroop : public AMovementAI
 	
 public:
 	
+	UPROPERTY(VisibleAnywhere) bool attacking;
+
+	virtual void CreatePath() override;
 };

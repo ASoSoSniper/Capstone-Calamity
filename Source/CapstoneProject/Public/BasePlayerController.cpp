@@ -3,6 +3,7 @@
 
 #include "BasePlayerController.h"
 #include "HexNav.h"
+#include "UnitActions.h"
 
 ABasePlayerController::ABasePlayerController()
 {
@@ -34,42 +35,99 @@ void ABasePlayerController::SetSelectedWorldObject(AActor* object)
 
 void ABasePlayerController::SetActionState()
 {
-	AMovementAI* testForAI;
-	ABaseHex* testForHex;
+	SelectionIdentity objectType = DetermineObjectType(selectedWorldObject);
+	bool hostileTarget;
+
 	switch (actionState)
 	{
+	// ***When the prior selected object was null or a hex***
 	case None:
-		testForAI = Cast<AMovementAI>(selectedWorldObject);
-		testForHex = Cast<ABaseHex>(selectedWorldObject);
-		if (testForAI)
+
+		//Current selected object type:
+		switch (objectType.type)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
+			//If hex, save in hex pointer
+		case Hex:
+			selectedHex = objectType.hex;
+			break;
+			//If troop, save in troop pointer and switch to TroopManage state
+		case MoveAI:
+			selectedTroop = objectType.moveAI;
 			actionState = TroopManage;
-			selectedTroop = testForAI;
 			break;
-		}
-		if (testForHex)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("BaseHex found!"));
-			selectedHex = testForHex;
+			//If building, switch to BaseManage state
+		case Building:
+			actionState = BaseManage;
 			break;
 		}
 		break;
-	case BaseManage:
-		break;
+	// ***When the prior selected object was a commandable/movable unit***
 	case TroopManage:
-		if (Cast<ABaseHex>(selectedWorldObject))
+		hostileTarget = UnitActions::IsHostileTarget(selectedTroop, selectedWorldObject);
+		//Current selected object type:
+		switch (objectType.type)
 		{
-			selectedTroop->targetHex = selectedWorldObject;
+			//If hex, set troop's destination to the hex
+		case Hex:
+			selectedTroop->hexNav->targetHex = selectedWorldObject;
+			break;
+
+			//If troop (and hostile), set troop's destination to that troop's current hex
+		case MoveAI:
+			if (hostileTarget)
+			{
+				UHexNav* hexNav = selectedWorldObject->GetComponentByClass<UHexNav>();
+				if (hexNav)
+					selectedTroop->hexNav->targetHex = hexNav->currentHex;
+			}
+			else
+			{
+				//else set selected troop to that (friendly) troop
+				selectedTroop = objectType.moveAI;
+				return;
+			}
+			break;
+			//If building (and hostile), set troop's destination to that building's current hex
+		case Building:
+			if (hostileTarget)
+			{
+				UHexNav* hexNav = selectedWorldObject->GetComponentByClass<UHexNav>();
+				if (hexNav)
+					selectedTroop->hexNav->targetHex = hexNav->currentHex;
+			}
+			else
+			{
+				//else switch to BaseManage state
+				actionState = BaseManage;
+				return;
+			}
+			break;
 		}
-		else
-		{
-			UHexNav* hexNav = selectedWorldObject->GetComponentByClass<UHexNav>();
-			if (hexNav)
-				selectedTroop->targetHex = hexNav->currentHex;
-		}
+		
 		selectedTroop->CreatePath();
 		break;
+	// ***When the prior selected object was a commandable building***
+	case BaseManage:
+
+		//Current selected object type:
+		switch (objectType.type)
+		{
+			//If hex, switch to None state
+		case Hex:
+			selectedHex = objectType.hex;
+			actionState = None;
+			break;
+			//If troop, set to TroopManage state
+		case MoveAI:
+			selectedTroop = objectType.moveAI;
+			actionState = TroopManage;
+			break;
+
+		case Building:
+			break;
+		}
+		break;
+
 	}
 }
 
@@ -82,8 +140,11 @@ void ABasePlayerController::Build()
 			FActorSpawnParameters params;
 			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(buildingPrefab, selectedHex->buildingAnchor->GetComponentLocation(), FRotator(0,0,0), params);
 			selectedHex->building = newBuilding;
+
 			UHexNav* hexNav = newBuilding->GetComponentByClass<UHexNav>();
 			if (hexNav) hexNav->currentHex = selectedHex;
+
+			UnitActions::AssignFaction(playerFaction, newBuilding);
 		}
 		else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 	}
@@ -97,4 +158,40 @@ void ABasePlayerController::Deselect()
 	selectedWorldObject = nullptr;
 	actionState = None;
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
+}
+
+ABasePlayerController::SelectionIdentity ABasePlayerController::DetermineObjectType(AActor* object)
+{
+	SelectionIdentity Results{nullptr, nullptr, nullptr, NoType};
+	
+	ABaseHex* testForHex = Cast<ABaseHex>(selectedWorldObject);
+	if (testForHex)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("BaseHex found!"));
+
+		Results.type = Hex;
+		Results.hex = testForHex;
+		return Results;
+	}
+
+	AMovementAI* testForAI = Cast<AMovementAI>(selectedWorldObject);
+	if (testForAI)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
+		
+		Results.type = MoveAI;
+		Results.moveAI = testForAI;
+		return Results;
+	}
+
+	ABuilding* testForBuilding = Cast<ABuilding>(selectedWorldObject);
+	if (testForBuilding)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Building found!"));
+
+		Results.building = testForBuilding;
+		Results.type = Building;
+		return Results;
+	}
+	return Results;
 }

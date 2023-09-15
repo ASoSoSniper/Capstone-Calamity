@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "BaseHex.h"
-#include "HexNav.generated.h"
+#include "FactionEnum.h"
+#include "UnitStats.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CAPSTONEPROJECT_API UHexNav : public UActorComponent
+class CAPSTONEPROJECT_API UUnitStats : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UHexNav();
+	UUnitStats();
 
 protected:
 	// Called when the game starts
@@ -24,7 +24,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	UPROPERTY(VisibleAnywhere)AActor* targetHex;
 
-	UPROPERTY(VisibleAnywhere) AActor* currentHex;
+	bool IsAlive();
+
+	UPROPERTY(EditAnywhere) Factions faction;
+
+	UPROPERTY(EditAnywhere) int HP_current = 10;
+	UPROPERTY(EditAnywhere) int HP_max = 10;
+	UPROPERTY(EditAnywhere) int minDamage = 1;
+	UPROPERTY(EditAnywhere) int maxDamage = 3;
+	UPROPERTY(EditAnywhere) float attackRate = 1.f;
+
+	enum HostilityStates
+	{
+		None,
+		Passive,
+		Attack,
+		Defend
+	};
+	HostilityStates hostility = Passive;
 };

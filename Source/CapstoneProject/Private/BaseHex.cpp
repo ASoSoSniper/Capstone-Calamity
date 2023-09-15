@@ -57,12 +57,30 @@ TArray<AActor*> ABaseHex::GetObjectsInHex()
 
 	if (troopsInHex.Num() > 0)
 	{
-		for (int i = 0; i < troopsInHex.Num() - 1; i++)
+		for (int i = 0; i < troopsInHex.Num(); ++i)
 		{
 			actors.Add(troopsInHex[i]);
 		}
 	}
 	
 	return actors;
+}
+
+bool ABaseHex::CheckForHostility()
+{
+	bool hostileUnit = false;
+	Factions currentFaction = Factions::None;
+	for (int i = 0; i < troopsInHex.Num(); ++i)
+	{
+		UUnitStats* unitStats = Cast<UUnitStats>(troopsInHex[i]);
+		if (unitStats)
+		{
+			if (currentFaction != Factions::None && unitStats->faction != currentFaction)
+			{
+
+			}
+		}
+	}
+	return false;
 }
 

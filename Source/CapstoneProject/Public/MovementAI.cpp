@@ -14,6 +14,7 @@ AMovementAI::AMovementAI()
 	
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
+	unitStats = CreateDefaultSubobject<UUnitStats>("Faction Stats");
 	sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Body"));
 	sphere->SetupAttachment(RootComponent);
 	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
@@ -47,7 +48,7 @@ void AMovementAI::Tick(float DeltaTime)
 
 void AMovementAI::CreatePath()
 {
-	if (targetHex == hexNav->currentHex) return;
+	if (hexNav->targetHex == hexNav->currentHex) return;
 
 	//Save last hex destination, if interrupted
 	AActor* temp = nullptr;
@@ -72,7 +73,7 @@ void AMovementAI::CreatePath()
 	{
 		hexPath.Add(HexSearch(hexToSearch));
 		
-		if (hexPath[i] == targetHex) break;
+		if (hexPath[i] == hexNav->targetHex) break;
 
 		hexToSearch = hexPath[i];
 	}
@@ -132,7 +133,7 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 		hexesFound.Add(foundHex ? foundHex : nullptr);
 
 		//Get hex's angle to target
-		if (targetHex)
+		if (hexNav->targetHex)
 		{
 			anglesToTarget.Add(foundHex ? AngleBetweenVectors(traceEnd - traceStart, GetVectorToTarget(hex->GetActorLocation())) : INFINITY);
 		}	
@@ -195,7 +196,7 @@ float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
 
 FVector AMovementAI::GetVectorToTarget(FVector origin)
 {
-	FVector targetDirection = targetHex->GetActorLocation() - origin;
+	FVector targetDirection = hexNav->targetHex->GetActorLocation() - origin;
 	return targetDirection;
 }
 

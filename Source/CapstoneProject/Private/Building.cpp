@@ -25,6 +25,7 @@ ABuilding::ABuilding()
 
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
+	unitStats = CreateDefaultSubobject<UUnitStats>(TEXT("Unit Stats"));
 }
 
 // Called when the game starts or when spawned

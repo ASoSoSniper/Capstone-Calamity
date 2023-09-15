@@ -7,6 +7,7 @@
 #include "HexInfo.h"
 #include "Interactable.h"
 #include "Components/SphereComponent.h"
+#include "Battle.h"
 #include "BaseHex.generated.h"
 
 UCLASS()
@@ -48,11 +49,11 @@ public:
 	UPROPERTY(VisibleAnywhere) AActor* building;
 
 	UPROPERTY(VisibleAnywhere) TArray<AActor*> troopsInHex;
-	UPROPERTY(VisibleAnywhere) TArray<AActor*> battlesInHex;
+	TArray<Battle*> battlesInHex;
 
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();
 
-	
+	bool CheckForHostility();
 };
