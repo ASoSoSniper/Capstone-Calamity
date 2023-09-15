@@ -17,6 +17,7 @@ public:
 	UPROPERTY(EditAnywhere) int hexID;
 	UPROPERTY(EditAnywhere) int foodVal;
 	UPROPERTY(EditAnywhere) int prodVal;
+	UPROPERTY(EditAnywhere) int energyVal;
 	UPROPERTY(EditAnywhere) TerrainType hexTerrain;
 	UPROPERTY(EditAnywhere) StratResources hexStratResources;
 
