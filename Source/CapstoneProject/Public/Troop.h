@@ -19,4 +19,11 @@ public:
 	UPROPERTY(VisibleAnywhere) bool attacking;
 
 	virtual void CreatePath() override;
+
+	virtual void MergeOnTile();
+
+	virtual void Action1();
+	virtual void Action2();
+	virtual void Action3();
+	virtual void Action4();
 };

@@ -8,6 +8,9 @@
 #include "BaseHex.h"
 #include "Building.h"
 #include "Faction.h"
+#include "ManageMode.h"
+#include "ManageTroop.h"
+#include "ManageBuilding.h"
 #include "BasePlayerController.generated.h"
 
 /**
@@ -29,39 +32,22 @@ private:
 
 	virtual void Tick(float DeltaTime) override;
 	
+	
+public:	
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
 
 	//Interactable object the player has clicked to select
 	UPROPERTY(VisibleAnywhere) AActor* selectedWorldObject;
 
-	enum ObjectTypes
-	{
-		NoType,
-		Hex,
-		MoveAI,
-		Building
-	};
-	struct SelectionIdentity
-	{
-		ABaseHex* hex;
-		AMovementAI* moveAI;
-		ABuilding* building;
-		ObjectTypes type;
-	};
 
 	//Additional info on selectedWorldObject if it is identified as a movable unit
 	UPROPERTY(VisibleAnywhere) ABaseHex* selectedHex;
-	UPROPERTY(VisibleAnywhere) AMovementAI* selectedTroop;
-public:	
+	AMovementAI* selectedTroop;
 
-	enum ActionStates
-	{
-		None,
-		BaseManage,
-		TroopManage
-	};
-	ActionStates actionState;
+	ActionStates currentActionState = ActionStates::None;
+
+	TMap<ActionStates, UManageMode*> actionStates;
 
 	Factions playerFaction = Factions::Human;
 
@@ -71,7 +57,7 @@ public:
 	void Build();
 	void Deselect();
 	
-	SelectionIdentity DetermineObjectType(AActor* object);
+	
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> buildingPrefab;
 };

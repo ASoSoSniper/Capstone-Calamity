@@ -11,6 +11,23 @@
 /**
  * 
  */
+
+UENUM()
+enum class ObjectTypes
+{
+	NoType,
+	Hex,
+	MoveAI,
+	Building
+};
+UENUM()
+enum class ActionStates
+{
+	None,
+	BaseManage,
+	TroopManage
+};
+
 class CAPSTONEPROJECT_API UnitActions
 {
 public:
@@ -22,4 +39,18 @@ public:
 	static bool IsHostileTarget(AMovementAI* unit, AActor* target);
 
 	static void AssignFaction(Factions faction, AActor* target);
+
+	
+	struct SelectionIdentity
+	{
+		AActor* actor;
+		ABaseHex* hex;
+		AMovementAI* moveAI;
+		ABuilding* building;
+		ObjectTypes type;
+	};
+
+	static SelectionIdentity DetermineObjectType(AActor* object);
 };
+
+

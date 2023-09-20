@@ -74,3 +74,41 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
         }
     }
 }
+
+UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
+{
+    SelectionIdentity Results{nullptr, nullptr, nullptr, nullptr, ObjectTypes::NoType };
+
+    Results.actor = object;
+
+    ABaseHex* testForHex = Cast<ABaseHex>(object);
+    if (testForHex)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("BaseHex found!"));
+
+        Results.type = ObjectTypes::Hex;
+        Results.hex = testForHex;
+        return Results;
+    }
+
+    AMovementAI* testForAI = Cast<AMovementAI>(object);
+    if (testForAI)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
+
+        Results.type = ObjectTypes::MoveAI;
+        Results.moveAI = testForAI;
+        return Results;
+    }
+
+    ABuilding* testForBuilding = Cast<ABuilding>(object);
+    if (testForBuilding)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Building found!"));
+
+        Results.building = testForBuilding;
+        Results.type = ObjectTypes::Building;
+        return Results;
+    }
+    return Results;
+}

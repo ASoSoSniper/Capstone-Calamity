@@ -9,19 +9,21 @@ ABuilding::ABuilding()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collider"));
-	RootComponent = collider;
-	collider->bHiddenInGame = false;
-	collider->SetCollisionProfileName(TEXT("BlockAllDynamic"));
-	collider->InitBoxExtent(FVector(20.f, 20.f, 20.f));
-
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));	
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/Meshes/Box/Box.Box'"));
+	RootComponent = mesh;
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CysAwfulBuilding.CysAwfulBuilding'"));
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
-	mesh->SetupAttachment(RootComponent);
+	mesh->SetCollisionProfileName("NoCollision");
+
+	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collider"));
+	collider->SetupAttachment(RootComponent);
+	collider->bHiddenInGame = false;
+	collider->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	collider->InitBoxExtent(FVector(20.f, 20.f, 20.f));
+	collider->SetRelativeLocation(FVector(0.f, 0.f, 20.f));
 
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));

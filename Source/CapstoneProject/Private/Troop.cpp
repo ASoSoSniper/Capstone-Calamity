@@ -8,10 +8,10 @@ void ATroop::CreatePath()
 {
 	bool hostilityTriggered = false;
 
-	TArray<AActor*> hexesToCheck = Cast<ABaseHex>(hexNav->targetHex)->GetObjectsInHex();
-	for (int i = 0; i < hexesToCheck.Num(); ++i)
+	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hexNav->targetHex)->GetObjectsInHex();
+	for (int i = 0; i < objectsInHex.Num(); ++i)
 	{
-		if (UnitActions::IsHostileTarget(this, hexesToCheck[i]))
+		if (UnitActions::IsHostileTarget(this, objectsInHex[i]))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Targeting Enemy"));
 			hostilityTriggered = true;
@@ -22,4 +22,24 @@ void ATroop::CreatePath()
 	attacking = hostilityTriggered;
 
 	Super::CreatePath();
+}
+
+void ATroop::MergeOnTile()
+{
+}
+
+void ATroop::Action1()
+{
+}
+
+void ATroop::Action2()
+{
+}
+
+void ATroop::Action3()
+{
+}
+
+void ATroop::Action4()
+{
 }
