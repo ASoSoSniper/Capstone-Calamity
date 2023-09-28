@@ -6,34 +6,52 @@
 
 void UManageTroop::Select(AActor* selectedObject)
 {
-	selectedTroop = Cast<AMovementAI>(selectedObject);
+	selectedTroop = Cast<ATroop>(selectedObject);
 }
 
-void UManageTroop::SwitchState(UnitActions::SelectionIdentity& info)
+void UManageTroop::SwitchState()
 {
-	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, info.actor);
+	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->selectedWorldObject);
+
+	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, objectType.actor);
+	UHexNav* hexNav = objectType.actor->GetComponentByClass<UHexNav>();
 
 	//Current selected object type:
-	switch (info.type)
+	switch (objectType.type)
 	{
 		//If hex, set troop's destination to the hex
 	case ObjectTypes::Hex:
-		selectedTroop->hexNav->targetHex = info.actor;
+		selectedTroop->hexNav->targetHex = objectType.actor;
 		break;
 
 		//If troop (and hostile), set troop's destination to that troop's current hex
 	case ObjectTypes::MoveAI:
 		if (hostileTarget)
-		{
-			UHexNav* hexNav = controller->selectedWorldObject->GetComponentByClass<UHexNav>();
+		{			
 			if (hexNav)
 				selectedTroop->hexNav->targetHex = hexNav->currentHex;
 		}
 		else
 		{
-			//else set selected troop to that (friendly) troop
-			selectedTroop = info.moveAI;
-			return;
+			//Check subselection mode
+			switch (subSelect)
+			{
+			case None:
+				//Set selected troop to that (friendly) troop
+				selectedTroop = objectType.moveAI;
+				return;
+			case Merge:
+				//Move toward friendly troop with the intent to merge
+				if (hexNav)
+				{
+					selectedTroop->hexNav->targetHex = hexNav->currentHex;
+
+					ATroop* testForTroop = Cast<ATroop>(selectedTroop);
+					if (testForTroop) CommandToMerge(testForTroop, objectType.moveAI);
+				}	
+				break;
+			}
+			
 		}
 		break;
 
@@ -41,7 +59,6 @@ void UManageTroop::SwitchState(UnitActions::SelectionIdentity& info)
 	case ObjectTypes::Building:
 		if (hostileTarget)
 		{
-			UHexNav* hexNav = info.actor->GetComponentByClass<UHexNav>();
 			if (hexNav)
 				selectedTroop->hexNav->targetHex = hexNav->currentHex;
 		}
@@ -49,11 +66,60 @@ void UManageTroop::SwitchState(UnitActions::SelectionIdentity& info)
 		{
 			//else switch to BaseManage state
 			controller->currentActionState = ActionStates::BaseManage;
-			controller->actionStates[ActionStates::BaseManage]->Select(info.actor);
+			controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
 			return;
 		}
 		break;
 	}
 
+	subSelect = None;
 	selectedTroop->CreatePath();
+}
+
+void UManageTroop::Reset()
+{
+	Super::Reset();
+	subSelect = None;
+}
+
+void UManageTroop::CheckSelection()
+{
+	if (selectedTroop == nullptr)
+	{
+		controller->currentActionState = ActionStates::None;
+	}
+}
+
+void UManageTroop::CommandToMerge(ATroop* troop, ATroop* targetTroop)
+{
+	troop->merging = true;
+	troop->targetToMerge = targetTroop;
+	controller->currentActionState = ActionStates::None;
+}
+
+void UManageTroop::Action1()
+{
+}
+
+//Army Merging Toggle
+void UManageTroop::Action2()
+{
+	switch (subSelect)
+	{
+	case Merge:
+		subSelect = None;
+		break;
+	default:
+		subSelect = Merge;
+		break;
+	}
+}
+
+void UManageTroop::Action3()
+{
+	selectedTroop->Action3();
+}
+
+void UManageTroop::Action4()
+{
 }

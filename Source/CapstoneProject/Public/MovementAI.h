@@ -63,7 +63,7 @@ public:
 		Attack
 	};
 	MoveStates moveState = Idle;
-	void MoveToTarget(float& DeltaTime);
+	virtual void MoveToTarget(float& DeltaTime);
 	
 	UPROPERTY(EditAnywhere)
 		USphereComponent* sphere;

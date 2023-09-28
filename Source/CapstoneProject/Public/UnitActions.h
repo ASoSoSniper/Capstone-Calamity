@@ -2,10 +2,7 @@
 
 #pragma once
 #include "FactionEnum.h"
-#include "BaseHex.h"
-#include "MovementAI.h"
-#include "Building.h"
-#include "UnitStats.h"
+#include "StratResources.h"
 #include "CoreMinimal.h"
 
 /**
@@ -24,9 +21,27 @@ UENUM()
 enum class ActionStates
 {
 	None,
+	HexManage,
 	BaseManage,
 	TroopManage
 };
+UENUM()
+enum class UnitTypes
+{
+	None,
+	Cavalry,
+	Infantry,
+	Ranged,
+	Shield,
+	Scout,
+	Settler
+};
+
+class ABaseHex;
+class ATroop;
+class AMovementAI;
+class ABuilding;
+class UUnitStats;
 
 class CAPSTONEPROJECT_API UnitActions
 {
@@ -45,12 +60,29 @@ public:
 	{
 		AActor* actor;
 		ABaseHex* hex;
-		AMovementAI* moveAI;
+		ATroop* moveAI;
 		ABuilding* building;
 		ObjectTypes type;
 	};
 
 	static SelectionIdentity DetermineObjectType(AActor* object);
+
+	struct UnitData
+	{
+		Factions faction;
+		UnitTypes unitType;
+		bool upgraded;
+
+		int currentHP;
+		int maxHP;
+		int defense;
+
+		int speed;
+		int minDamage;
+		int maxDamage;
+	};
+
+	static UnitData CollectUnitData(UUnitStats* unit);
 };
 
 

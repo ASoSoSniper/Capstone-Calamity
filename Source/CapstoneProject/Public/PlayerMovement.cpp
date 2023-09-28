@@ -36,13 +36,44 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("DebugBuild", IE_Pressed, this, &APlayerMovement::BuildInput);
+	PlayerInputComponent->BindAction("Action1", IE_Pressed, this, &APlayerMovement::Action1Input);
+	PlayerInputComponent->BindAction("Action2", IE_Pressed, this, &APlayerMovement::Action2Input);
+	PlayerInputComponent->BindAction("Action3", IE_Pressed, this, &APlayerMovement::Action3Input);
+	PlayerInputComponent->BindAction("Action4", IE_Pressed, this, &APlayerMovement::Action4Input);
+
 	PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
 }
 
-void APlayerMovement::BuildInput()
+void APlayerMovement::Action1Input()
 {
-	if (controller) controller->Build();
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action1();
+	}
+}
+
+void APlayerMovement::Action2Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action2();
+	}
+}
+
+void APlayerMovement::Action3Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action3();
+	}
+}
+
+void APlayerMovement::Action4Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action4();
+	}
 }
 
 void APlayerMovement::DeselectInput()

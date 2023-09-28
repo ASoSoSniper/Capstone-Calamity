@@ -31,6 +31,10 @@ public:
 	UCameraComponent* camera;
 	ABasePlayerController* controller;
 
-	void BuildInput();
+	void Action1Input();
+	void Action2Input();
+	void Action3Input();
+	void Action4Input();
+
 	void DeselectInput();
 };

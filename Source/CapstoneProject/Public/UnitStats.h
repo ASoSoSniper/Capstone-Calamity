@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "FactionEnum.h"
+#include "UnitActions.h"
 #include "UnitStats.generated.h"
 
 
@@ -28,12 +29,17 @@ public:
 	bool IsAlive();
 
 	UPROPERTY(EditAnywhere) Factions faction;
+	UPROPERTY(VisibleAnywhere) UnitTypes type;
+	UPROPERTY(VisibleAnywhere) bool upgraded;
 
 	UPROPERTY(EditAnywhere) int HP_current = 10;
 	UPROPERTY(EditAnywhere) int HP_max = 10;
+	UPROPERTY(EditAnywhere) int defense = 1;
+
+	UPROPERTY(EditAnywhere) float speed = 2.f;
 	UPROPERTY(EditAnywhere) int minDamage = 1;
 	UPROPERTY(EditAnywhere) int maxDamage = 3;
-	UPROPERTY(EditAnywhere) float attackRate = 1.f;
+	
 
 	enum HostilityStates
 	{

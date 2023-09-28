@@ -12,10 +12,12 @@ ABasePlayerController::ABasePlayerController()
 	bEnableClickEvents = true;
 
 	UManageMode* none = NewObject<UManageMode>();
+	UManageHex* hex = NewObject<UManageHex>();
 	UManageTroop* troop = NewObject<UManageTroop>();
 	UManageBuilding* building = NewObject<UManageBuilding>();
 
 	actionStates.Add(ActionStates::None, none);
+	actionStates.Add(ActionStates::HexManage, hex);
 	actionStates.Add(ActionStates::TroopManage, troop);
 	actionStates.Add(ActionStates::BaseManage, building);
 
@@ -33,7 +35,10 @@ void ABasePlayerController::BeginPlay()
 void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//actionStates[currentActionState]->CheckSelection();
 }
+
 
 void ABasePlayerController::SetHoveredWorldObject(AActor* object)
 {
@@ -48,22 +53,31 @@ void ABasePlayerController::SetSelectedWorldObject(AActor* object)
 
 void ABasePlayerController::SetActionState()
 {	
-	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(selectedWorldObject);
-
 	if (actionStates.Num() > 0 && actionStates[currentActionState]->controller)
-	{
-		actionStates[currentActionState]->SwitchState(objectType);
+	{		
+		if (actionStates.Find(currentActionState)) actionStates[currentActionState]->SwitchState();
+		else (GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("State not found")));
 	}
 }
 
-void ABasePlayerController::Build()
+
+void ABasePlayerController::Deselect()
 {
-	if (currentActionState == ActionStates::None && selectedHex)
+	selectedHex = nullptr;
+	selectedWorldObject = nullptr;
+	actionStates[currentActionState]->Reset();
+	currentActionState = ActionStates::None;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
+}
+
+void ABasePlayerController::Build(UClass* prefab)
+{
+	if (selectedHex)
 	{
-		if (selectedHex->building == nullptr && buildingPrefab)
+		if (selectedHex->building == nullptr)
 		{
 			FActorSpawnParameters params;
-			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(buildingPrefab, selectedHex->buildingAnchor->GetComponentLocation(), FRotator(0,0,0), params);
+			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, selectedHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 			selectedHex->building = newBuilding;
 
 			UHexNav* hexNav = newBuilding->GetComponentByClass<UHexNav>();
@@ -73,14 +87,4 @@ void ABasePlayerController::Build()
 		}
 		else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 	}
-	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Could not build"));
-}
-
-void ABasePlayerController::Deselect()
-{
-	selectedHex = nullptr;
-	selectedTroop = nullptr;
-	selectedWorldObject = nullptr;
-	currentActionState = ActionStates::None;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }

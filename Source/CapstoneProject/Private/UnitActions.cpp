@@ -3,6 +3,11 @@
 
 #include "UnitActions.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BaseHex.h"
+#include "Troop.h"
+#include "MovementAI.h"
+#include "Building.h"
+#include "UnitStats.h"
 #include "Faction.h"
 
 
@@ -51,6 +56,22 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AActor* target)
     return false;
 }
 
+UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
+{
+    UnitData data{
+        unit->faction,
+        unit->type, 
+        unit->upgraded, 
+        unit->HP_current, 
+        unit->HP_max, 
+        unit->defense, 
+        unit->speed, 
+        unit->minDamage, 
+        unit->maxDamage };
+
+    return data;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))
@@ -91,7 +112,7 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
         return Results;
     }
 
-    AMovementAI* testForAI = Cast<AMovementAI>(object);
+    ATroop* testForAI = Cast<ATroop>(object);
     if (testForAI)
     {
         GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));

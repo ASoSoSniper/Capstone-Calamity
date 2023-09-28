@@ -10,6 +10,7 @@
 #include "Battle.h"
 #include "BaseHex.generated.h"
 
+class AMergedArmy;
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
 {

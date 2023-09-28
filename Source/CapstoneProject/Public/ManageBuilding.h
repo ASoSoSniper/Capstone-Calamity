@@ -18,5 +18,6 @@ public:
 	ABuilding* selectedBuilding;
 
 	virtual void Select(AActor* selectedObject) override;
-	virtual void SwitchState(UnitActions::SelectionIdentity& info) override;
+	virtual void SwitchState() override;
+	virtual void CheckSelection() override;
 };

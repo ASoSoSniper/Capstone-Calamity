@@ -9,6 +9,7 @@
 #include "Building.h"
 #include "Faction.h"
 #include "ManageMode.h"
+#include "ManageHex.h"
 #include "ManageTroop.h"
 #include "ManageBuilding.h"
 #include "BasePlayerController.generated.h"
@@ -32,7 +33,6 @@ private:
 
 	virtual void Tick(float DeltaTime) override;
 	
-	
 public:	
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
@@ -43,10 +43,9 @@ public:
 
 	//Additional info on selectedWorldObject if it is identified as a movable unit
 	UPROPERTY(VisibleAnywhere) ABaseHex* selectedHex;
-	AMovementAI* selectedTroop;
 
-	ActionStates currentActionState = ActionStates::None;
-
+	UPROPERTY(VisibleAnywhere) ActionStates currentActionState = ActionStates::None;
+	bool actionSwitchTrigger;
 	TMap<ActionStates, UManageMode*> actionStates;
 
 	Factions playerFaction = Factions::Human;
@@ -54,10 +53,9 @@ public:
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
 	void SetActionState();
-	void Build();
 	void Deselect();
-	
-	
+
+	void Build(UClass* prefab);
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> buildingPrefab;
 };

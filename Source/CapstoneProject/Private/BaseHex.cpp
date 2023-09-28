@@ -2,7 +2,7 @@
 
 
 #include "BaseHex.h"
-
+#include "MergedArmy.h"
 
 // Sets default values
 ABaseHex::ABaseHex()
@@ -30,6 +30,7 @@ ABaseHex::ABaseHex()
 
 	buildingAnchor = CreateDefaultSubobject<USceneComponent>("Building Anchor");
 	buildingAnchor->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned

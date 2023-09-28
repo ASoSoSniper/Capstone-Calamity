@@ -3,7 +3,6 @@
 
 #include "MovementAI.h"
 #include "Kismet/GameplayStatics.h"
-#include "BaseHex.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values

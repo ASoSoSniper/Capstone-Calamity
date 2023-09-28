@@ -1,42 +1,56 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ManageBuilding.h"
+#include "ManageHex.h"
+
 #include "BasePlayerController.h"
 
-void UManageBuilding::Select(AActor* selectedObject)
+void UManageHex::Select(AActor* selectedObject)
 {
-	selectedBuilding = Cast<ABuilding>(selectedObject);
 }
 
-void UManageBuilding::SwitchState()
+void UManageHex::SwitchState()
 {
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->selectedWorldObject);
 
 	//Current selected object type:
 	switch (objectType.type)
 	{
-		//If hex, switch to None state
-	case ObjectTypes::Hex:		
-		controller->currentActionState = ActionStates::None;
+		//If hex, save in hex pointer
+	case ObjectTypes::Hex:
 		controller->selectedHex = objectType.hex;
 		break;
-		//If troop, set to TroopManage state
+		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
 		controller->currentActionState = ActionStates::TroopManage;
 		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
 		break;
-
+		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
-		selectedBuilding = objectType.building;
+		controller->currentActionState = ActionStates::BaseManage;
 		break;
 	}
 }
 
-void UManageBuilding::CheckSelection()
+void UManageHex::Reset()
 {
-	if (selectedBuilding == nullptr)
-	{
-		controller->currentActionState = ActionStates::None;
-	}
+}
+
+
+
+void UManageHex::Action1()
+{
+	controller->Build(controller->buildingPrefab);
+}
+
+void UManageHex::Action2()
+{
+}
+
+void UManageHex::Action3()
+{
+}
+
+void UManageHex::Action4()
+{
 }

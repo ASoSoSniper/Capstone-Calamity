@@ -4,34 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "ManageMode.h"
-#include "Troop.h"
-#include "ManageTroop.generated.h"
+#include "ManageHex.generated.h"
 
 /**
  * 
  */
-
 UCLASS()
-class CAPSTONEPROJECT_API UManageTroop : public UManageMode
+class CAPSTONEPROJECT_API UManageHex : public UManageMode
 {
 	GENERATED_BODY()
 	
 public:
-	ATroop* selectedTroop;
 	virtual void Select(AActor* selectedObject) override;
 	virtual void SwitchState() override;
 	virtual void Reset() override;
-	virtual void CheckSelection() override;
-	
-	enum SubSelections
-	{
-		None,
-		Merge
-	};
-	SubSelections subSelect;
 
 	//Commands
-	void CommandToMerge(ATroop* selectedTroop, ATroop* targetTroop);
 	virtual void Action1() override;
 	virtual void Action2() override;
 	virtual void Action3() override;
