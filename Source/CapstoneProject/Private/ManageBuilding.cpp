@@ -18,12 +18,12 @@ void UManageBuilding::SwitchState()
 	{
 		//If hex, switch to None state
 	case ObjectTypes::Hex:		
-		controller->currentActionState = ActionStates::None;
+		CueActionState(ActionStates::None);
 		controller->selectedHex = objectType.hex;
 		break;
 		//If troop, set to TroopManage state
 	case ObjectTypes::MoveAI:
-		controller->currentActionState = ActionStates::TroopManage;
+		CueActionState(ActionStates::TroopManage);
 		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
 		break;
 
@@ -37,6 +37,6 @@ void UManageBuilding::CheckSelection()
 {
 	if (selectedBuilding == nullptr)
 	{
-		controller->currentActionState = ActionStates::None;
+		CueActionState(ActionStates::None);
 	}
 }

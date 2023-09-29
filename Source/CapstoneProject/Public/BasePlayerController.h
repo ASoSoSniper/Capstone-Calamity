@@ -31,8 +31,8 @@ protected:
 	virtual void BeginPlay() override;
 private:
 
-	virtual void Tick(float DeltaTime) override;
-	
+	virtual void Tick(float DeltaTime) override;	
+
 public:	
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
@@ -45,7 +45,6 @@ public:
 	UPROPERTY(VisibleAnywhere) ABaseHex* selectedHex;
 
 	UPROPERTY(VisibleAnywhere) ActionStates currentActionState = ActionStates::None;
-	bool actionSwitchTrigger;
 	TMap<ActionStates, UManageMode*> actionStates;
 
 	Factions playerFaction = Factions::Human;

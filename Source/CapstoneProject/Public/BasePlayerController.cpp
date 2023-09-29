@@ -16,6 +16,11 @@ ABasePlayerController::ABasePlayerController()
 	UManageTroop* troop = NewObject<UManageTroop>();
 	UManageBuilding* building = NewObject<UManageBuilding>();
 
+	none->AddToRoot();
+	hex->AddToRoot();
+	troop->AddToRoot();
+	building->AddToRoot();
+
 	actionStates.Add(ActionStates::None, none);
 	actionStates.Add(ActionStates::HexManage, hex);
 	actionStates.Add(ActionStates::TroopManage, troop);
@@ -35,7 +40,7 @@ void ABasePlayerController::BeginPlay()
 void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	//actionStates[currentActionState]->CheckSelection();
 }
 
@@ -53,9 +58,12 @@ void ABasePlayerController::SetSelectedWorldObject(AActor* object)
 
 void ABasePlayerController::SetActionState()
 {	
-	if (actionStates.Num() > 0 && actionStates[currentActionState]->controller)
+	if (actionStates.Num() > 0 && actionStates[currentActionState])
 	{		
-		if (actionStates.Find(currentActionState)) actionStates[currentActionState]->SwitchState();
+		if (actionStates[currentActionState]->controller)
+		{
+			actionStates[currentActionState]->SwitchState();
+		}
 		else (GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("State not found")));
 	}
 }

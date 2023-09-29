@@ -18,19 +18,18 @@ void UManageMode::SwitchState()
 		//If hex, save in hex pointer
 	case ObjectTypes::Hex:
 		controller->selectedHex = objectType.hex;
-		controller->currentActionState = ActionStates::HexManage;
+		CueActionState(ActionStates::HexManage);
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
-		controller->currentActionState = ActionStates::TroopManage;
+		CueActionState(ActionStates::TroopManage);
 		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
 		break;
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
-		controller->currentActionState = ActionStates::BaseManage;
+		CueActionState(ActionStates::BaseManage);
 		break;
 	}
-
 }
 
 void UManageMode::DestroyObject(AActor* selectedObject)
@@ -48,6 +47,11 @@ void UManageMode::Reset()
 
 void UManageMode::CheckSelection()
 {
+}
+
+void UManageMode::CueActionState(ActionStates nextState)
+{
+	controller->currentActionState = nextState;
 }
 
 void UManageMode::Action1()

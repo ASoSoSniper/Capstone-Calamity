@@ -42,13 +42,16 @@ void UManageTroop::SwitchState()
 				return;
 			case Merge:
 				//Move toward friendly troop with the intent to merge
-				if (hexNav)
+				if (hexNav && selectedTroop != objectType.actor)
 				{
 					selectedTroop->hexNav->targetHex = hexNav->currentHex;
 
-					ATroop* testForTroop = Cast<ATroop>(selectedTroop);
-					if (testForTroop) CommandToMerge(testForTroop, objectType.moveAI);
-				}	
+					if (selectedTroop) CommandToMerge(selectedTroop, objectType.moveAI);
+				}
+				else
+				{
+					return;
+				}
 				break;
 			}
 			
@@ -65,8 +68,9 @@ void UManageTroop::SwitchState()
 		else
 		{
 			//else switch to BaseManage state
-			controller->currentActionState = ActionStates::BaseManage;
+			CueActionState(ActionStates::BaseManage);
 			controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
+
 			return;
 		}
 		break;
@@ -86,7 +90,7 @@ void UManageTroop::CheckSelection()
 {
 	if (selectedTroop == nullptr)
 	{
-		controller->currentActionState = ActionStates::None;
+		CueActionState(ActionStates::None);
 	}
 }
 
@@ -94,7 +98,7 @@ void UManageTroop::CommandToMerge(ATroop* troop, ATroop* targetTroop)
 {
 	troop->merging = true;
 	troop->targetToMerge = targetTroop;
-	controller->currentActionState = ActionStates::None;
+	CueActionState(ActionStates::None);
 }
 
 void UManageTroop::Action1()

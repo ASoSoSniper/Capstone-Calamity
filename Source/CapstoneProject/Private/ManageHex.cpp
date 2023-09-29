@@ -22,12 +22,12 @@ void UManageHex::SwitchState()
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
-		controller->currentActionState = ActionStates::TroopManage;
+		CueActionState(ActionStates::TroopManage);
 		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
 		break;
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
-		controller->currentActionState = ActionStates::BaseManage;
+		CueActionState(ActionStates::BaseManage);
 		break;
 	}
 }

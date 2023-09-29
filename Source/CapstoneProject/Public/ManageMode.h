@@ -24,6 +24,7 @@ public:
 	virtual void DestroyObject(AActor* selectedObject);	
 	virtual void Reset();
 	virtual void CheckSelection();
+	virtual void CueActionState(ActionStates nextState);
 
 	//Commands
 	virtual void Upgrade(AActor* selectedObject);
