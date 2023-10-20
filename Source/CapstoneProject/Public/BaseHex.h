@@ -7,10 +7,12 @@
 #include "HexInfo.h"
 #include "Interactable.h"
 #include "Components/SphereComponent.h"
-#include "Battle.h"
 #include "BaseHex.generated.h"
 
 class AMergedArmy;
+class AMovementAI;
+class ABuilding;
+class AGlobalSpawner;
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
 {
@@ -47,14 +49,21 @@ public:
 	UPROPERTY(EditAnywhere) bool isSelected = false;
 	UPROPERTY(EditAnywhere) bool hasFOW = true;
 
-	UPROPERTY(VisibleAnywhere) AActor* building;
+	UPROPERTY(VisibleAnywhere) ABuilding* building;
 
-	UPROPERTY(VisibleAnywhere) TArray<AActor*> troopsInHex;
-	TArray<Battle*> battlesInHex;
+	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;	
 
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();
 
-	bool CheckForHostility();
+	void CheckForHostility(AMovementAI* refTroop);
+	void AddTroopToHex(AMovementAI* troop);
+	void RemoveTroopFromHex(AMovementAI* troop);
+
+	void BeginBattle();
+
+	AGlobalSpawner* spawner;
+
+	bool battleInProgress;
 };

@@ -85,23 +85,17 @@ void AMovementAI::CreatePath()
 void AMovementAI::SnapToHex(ABaseHex* hex)
 {
 	//Snap position to hex
-	SetActorLocation(hex->GetActorLocation() + FVector::UpVector * 25);
+	SetActorLocation(hex->troopAnchor->GetComponentLocation());
 
 	//Remove this unit from previous hex troop pool
 	ABaseHex* previousHex = Cast<ABaseHex>(hexNav->currentHex);
 	if (previousHex)
 	{
-		if (previousHex->troopsInHex.Contains(this))
-		{
-			previousHex->troopsInHex.Remove(this);
-		}
+		previousHex->RemoveTroopFromHex(this);
 	}
 
-	//Set current hex to snapped hex
-	hexNav->currentHex = hex;
-
-	//Add this unit to current hex troop pool
-	hex->troopsInHex.Add(this);
+	//Add this unit to the current hex troop pool
+	hex->AddTroopToHex(this);
 }
 
 ABaseHex* AMovementAI::HexSearch(AActor* hex)
@@ -155,12 +149,12 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 	return closestHexToTarget;
 }
 
-void AMovementAI::SphereCheck()
+void AMovementAI::SphereCheck(float rangeMulti)
 {
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
 	TArray<FHitResult> results;
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f * rangeMulti, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
 
 	if (bHit)
 	{

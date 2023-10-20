@@ -12,6 +12,7 @@
 #include "ManageHex.h"
 #include "ManageTroop.h"
 #include "ManageBuilding.h"
+#include "GlobalSpawner.h"
 #include "BasePlayerController.generated.h"
 
 /**
@@ -57,4 +58,6 @@ public:
 	void Build(UClass* prefab);
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> buildingPrefab;
+
+	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 };

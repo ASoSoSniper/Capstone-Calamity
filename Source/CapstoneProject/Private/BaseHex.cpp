@@ -3,6 +3,11 @@
 
 #include "BaseHex.h"
 #include "MergedArmy.h"
+#include "MovementAI.h"
+#include "Building.h"
+#include "BattleObject.h"
+#include "GlobalSpawner.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseHex::ABaseHex()
@@ -30,7 +35,6 @@ ABaseHex::ABaseHex()
 
 	buildingAnchor = CreateDefaultSubobject<USceneComponent>("Building Anchor");
 	buildingAnchor->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +42,11 @@ void ABaseHex::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
 }
 
 // Called every frame
@@ -67,21 +76,39 @@ TArray<AActor*> ABaseHex::GetObjectsInHex()
 	return actors;
 }
 
-bool ABaseHex::CheckForHostility()
-{
-	bool hostileUnit = false;
-	Factions currentFaction = Factions::None;
+void ABaseHex::CheckForHostility(AMovementAI* refTroop)
+{	
 	for (int i = 0; i < troopsInHex.Num(); ++i)
 	{
-		UUnitStats* unitStats = Cast<UUnitStats>(troopsInHex[i]);
-		if (unitStats)
+		if (troopsInHex[i] != refTroop)
 		{
-			if (currentFaction != Factions::None && unitStats->faction != currentFaction)
+			if (UnitActions::IsHostileTarget(refTroop, troopsInHex[i]))
 			{
-
+				BeginBattle();
+				return;
 			}
 		}
 	}
-	return false;
+}
+
+void ABaseHex::AddTroopToHex(AMovementAI* troop)
+{
+	troop->hexNav->currentHex = this;
+	troopsInHex.Add(troop);
+
+	CheckForHostility(troop);
+}
+
+void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
+{
+	if (troopsInHex.Contains(troop))
+	{
+		troopsInHex.Remove(troop);
+	}
+}
+
+void ABaseHex::BeginBattle()
+{
+	spawner->SpawnBattle(this);
 }
 

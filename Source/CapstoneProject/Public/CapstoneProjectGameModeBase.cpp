@@ -20,7 +20,22 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	{
 		CreateNewFaction();
 	}
+
+	for (auto currentFaction : activeFactions)
+	{
+		currentFaction.Value->FindActiveFactions();
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("%d factions created!"), activeFactions.Num()));
+
+	//For debug purposes, Human and Alien1 hate each other, Human and Alien2 are chill, and Alien3+ literally couldn't give less of a fuck
+	activeFactions[Factions::Human]->factionRelationships[Factions::Alien1] = FactionRelationship::Enemy;
+	activeFactions[Factions::Alien1]->factionRelationships[Factions::Human] = FactionRelationship::Enemy;
+
+	activeFactions[Factions::Human]->factionRelationships[Factions::Alien2] = FactionRelationship::Ally;
+	activeFactions[Factions::Alien2]->factionRelationships[Factions::Human] = FactionRelationship::Ally;
+
+	FActorSpawnParameters params;
+	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()

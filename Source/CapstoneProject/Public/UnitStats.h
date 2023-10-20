@@ -37,16 +37,12 @@ public:
 	UPROPERTY(EditAnywhere) int defense = 1;
 
 	UPROPERTY(EditAnywhere) float speed = 2.f;
+	UPROPERTY(EditAnywhere) int currentMorale = 5;
+	UPROPERTY(EditAnywhere) int maxMorale = 5;
 	UPROPERTY(EditAnywhere) int minDamage = 1;
 	UPROPERTY(EditAnywhere) int maxDamage = 3;
+	UPROPERTY(EditAnywhere) int reinforceRate = 2;
 	
-
-	enum HostilityStates
-	{
-		None,
-		Passive,
-		Attack,
-		Defend
-	};
-	HostilityStates hostility = Passive;
+	float maxHealTime = 1.f;
+	float currhealTime = 1.f;
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MovementAI.h"
+#include "GlobalSpawner.h"
 #include "Troop.generated.h"
 
 /**
@@ -20,11 +21,11 @@ public:
 	UPROPERTY(VisibleAnywhere) bool attacking;
 	UPROPERTY(VisibleAnywhere) bool merging;
 	ATroop* targetToMerge;
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void CreatePath() override;
 	virtual void MergeOnTile();
 	
-	void MergeArmies(ATroop* seeker, ATroop* target);
 	void InputUnitStats(UnitActions::UnitData data);
 
 	virtual void Action1();
@@ -32,6 +33,5 @@ public:
 	virtual void Action3();
 	virtual void Action4();
 
-	TSubclassOf<class AMergedArmy> mergedArmyPrefab;
-	TSubclassOf<class ATroop> troopPrefab;
+	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 };

@@ -51,7 +51,7 @@ public:
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
 	
-	void SphereCheck();
+	void SphereCheck(float rangeMulti = 1.f);
 
 	float AngleBetweenVectors(FVector a, FVector b);
 	FVector GetVectorToTarget(FVector origin);

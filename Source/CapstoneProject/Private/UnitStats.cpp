@@ -29,7 +29,17 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	if (HP_current < HP_max)
+	{
+		currhealTime -= DeltaTime;
+		if (currhealTime <= 0)
+		{
+			HP_current += reinforceRate;
+			HP_current = FMath::Clamp(HP_current, 0, HP_max);
+
+			currhealTime = maxHealTime;
+		}
+	}
 }
 
 bool UUnitStats::IsAlive()

@@ -28,3 +28,11 @@ enum class Race
 	Alien,
 	Robot
 };
+
+UENUM(BlueprintType)
+enum class FactionRelationship
+{
+	Neutral,
+	Ally,
+	Enemy
+};

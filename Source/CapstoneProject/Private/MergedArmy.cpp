@@ -5,12 +5,16 @@
 
 AMergedArmy::AMergedArmy()
 {
+	unitStats->type = UnitTypes::Army;
 	unitStats->HP_current = 0;
 	unitStats->HP_max = 0;
 	unitStats->defense = 0;
 	unitStats->speed = 0;
+	unitStats->currentMorale = 0;
+	unitStats->maxMorale = 0;
 	unitStats->minDamage = 0;
 	unitStats->maxDamage = 0;
+	unitStats->reinforceRate = 0;
 }
 
 void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
@@ -19,14 +23,7 @@ void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 	
 	mergedUnits.Add(newData);
 
-	unitStats->HP_current += newData.currentHP;
-	unitStats->HP_max += newData.maxHP;
-	unitStats->defense += newData.defense;
-	//Something with speed
-	unitStats->minDamage += newData.minDamage;
-	unitStats->maxDamage += newData.maxDamage;
-	//Still need morale
-	//Still need regen rate
+	AddUnitData(newData);
 
 	mergedUnit->Destroy();
 }
@@ -37,12 +34,7 @@ void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
 	{
 		mergedUnits.Add(mergedArmy->mergedUnits[i]);
 
-		unitStats->HP_current += mergedArmy->mergedUnits[i].currentHP;
-		unitStats->HP_max += mergedArmy->mergedUnits[i].maxHP;
-		unitStats->defense += mergedArmy->mergedUnits[i].defense;
-		//Something with speed
-		unitStats->minDamage += mergedArmy->mergedUnits[i].minDamage;
-		unitStats->maxDamage += mergedArmy->mergedUnits[i].maxDamage;
+		AddUnitData(mergedArmy->mergedUnits[i]);
 	}
 
 	mergedArmy->Destroy();
@@ -56,12 +48,7 @@ void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
 	{
 		mergedUnits.Add(groupData[i]);
 
-		unitStats->HP_current += groupData[i].currentHP;
-		unitStats->HP_max += groupData[i].maxHP;
-		unitStats->defense += groupData[i].defense;
-		//Something with speed
-		unitStats->minDamage += groupData[i].minDamage;
-		unitStats->maxDamage += groupData[i].maxDamage;
+		AddUnitData(groupData[i]);
 	}
 }
 
@@ -72,7 +59,6 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-	FActorSpawnParameters params;
 
 	hex->troopsInHex.Remove(this);
 
@@ -80,23 +66,30 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = GetWorld()->SpawnActor<AMergedArmy>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		hex->troopsInHex.Add(spawnArmy);
-
-		spawnArmy->ConsumeData(groupData);
+		spawnArmy = spawner->SpawnArmy(Cast<ABaseHex>(hexNav->currentHex), groupData);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		hex->troopsInHex.Add(spawnTroop);	
-
-		spawnTroop->InputUnitStats(groupData[0]);
+		spawnTroop = spawner->SpawnTroop(Cast<ABaseHex>(hexNav->currentHex), groupData[0]);
 
 		return spawnTroop;
 	}
 
 	return nullptr;
+}
+
+void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
+{
+	unitStats->HP_current += unitData.currentHP;
+	unitStats->HP_max += unitData.maxHP;
+	unitStats->defense += unitData.defense;
+	//Something with speed
+	unitStats->currentMorale += unitData.currentMorale;
+	unitStats->maxMorale += unitData.maxMorale;
+	unitStats->minDamage += unitData.minDamage;
+	unitStats->maxDamage += unitData.maxDamage;
+	unitStats->reinforceRate += unitData.reinforceRate;
 }
 
 

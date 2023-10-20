@@ -26,6 +26,7 @@ public:
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
+	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 
 private:
 	Factions CreateNewFaction();

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MovementAI.h"
+#include "Troop.h"
 #include "Building.h"
 
 /**
@@ -18,6 +18,10 @@ public:
 	Factions faction;
 
 	TMap<StratResources, int> resourceInventory;
-	TArray<AMovementAI*> allUnits;
+	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;
+
+	TMap<Factions, FactionRelationship> factionRelationships;
+
+	void FindActiveFactions();
 };

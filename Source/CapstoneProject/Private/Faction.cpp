@@ -2,6 +2,7 @@
 
 
 #include "Faction.h"
+#include "CapstoneProjectGameModeBase.h"
 
 
 Faction::Faction()
@@ -14,4 +15,18 @@ Faction::Faction()
 
 Faction::~Faction()
 {
+}
+
+void Faction::FindActiveFactions()
+{
+	for (auto currentFaction : ACapstoneProjectGameModeBase::activeFactions)
+	{
+		if (currentFaction.Key != faction)
+		{
+			FactionRelationship relationShip = FactionRelationship::Neutral;
+
+			factionRelationships.Add(currentFaction.Key, relationShip);
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Faction found %d other factions!"), factionRelationships.Num()));
 }

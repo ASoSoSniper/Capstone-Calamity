@@ -34,7 +34,16 @@ enum class UnitTypes
 	Ranged,
 	Shield,
 	Scout,
-	Settler
+	Settler,
+	Army
+};
+
+UENUM()
+enum class EngagementSelect
+{
+	DoNotJoin,
+	JoinGroup1,
+	JoinGroup2
 };
 
 class ABaseHex;
@@ -51,7 +60,14 @@ public:
 
 	static void Attack(TArray<AActor*> attacker, TArray<AActor*> target);
 
+	static bool IsHostileTarget(AMovementAI* unit, AMovementAI* target);
 	static bool IsHostileTarget(AMovementAI* unit, AActor* target);
+
+	static bool IsAllyToFaction(FactionRelationship relationship);
+
+	static EngagementSelect DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2);
+
+	static FactionRelationship GetFactionRelationship(Factions unitFaction, Factions targetFaction);
 
 	static void AssignFaction(Factions faction, AActor* target);
 
@@ -78,8 +94,13 @@ public:
 		int defense;
 
 		int speed;
+		int currentMorale;
+		int maxMorale;
 		int minDamage;
 		int maxDamage;
+		int reinforceRate;
+
+		TArray<UnitData> savedUnits;
 	};
 
 	static UnitData CollectUnitData(UUnitStats* unit);

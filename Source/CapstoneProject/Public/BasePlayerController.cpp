@@ -4,6 +4,7 @@
 #include "BasePlayerController.h"
 #include "HexNav.h"
 #include "UnitActions.h"
+#include "Kismet/GameplayStatics.h"
 
 ABasePlayerController::ABasePlayerController()
 {
@@ -35,13 +36,19 @@ ABasePlayerController::ABasePlayerController()
 void ABasePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
 }
 
 void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//actionStates[currentActionState]->CheckSelection();
+	//actionStates[currentActionState]->CheckSelection();	
 }
 
 
@@ -82,6 +89,8 @@ void ABasePlayerController::Build(UClass* prefab)
 {
 	if (selectedHex)
 	{
+		spawner->SpawnBuilding(playerFaction, SpawnableBuildings::MiningStation, selectedHex);
+		return;
 		if (selectedHex->building == nullptr)
 		{
 			FActorSpawnParameters params;
