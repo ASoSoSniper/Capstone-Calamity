@@ -2,6 +2,7 @@
 
 
 #include "PlayerMovement.h"
+#include "CapstoneProjectGameModeBase.h"
 
 
 // Sets default values
@@ -42,6 +43,9 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Action4", IE_Pressed, this, &APlayerMovement::Action4Input);
 
 	PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
+
+	PlayerInputComponent->BindAction("TimeScaleIncrease", IE_Pressed, this, &APlayerMovement::SpeedUpTime);
+	PlayerInputComponent->BindAction("TimeScaleDecrease", IE_Pressed, this, &APlayerMovement::SlowDownTime);
 }
 
 void APlayerMovement::Action1Input()
@@ -79,5 +83,23 @@ void APlayerMovement::Action4Input()
 void APlayerMovement::DeselectInput()
 {
 	if (controller) controller->Deselect();
+}
+
+void APlayerMovement::AdjustTimeScale(float axis)
+{
+	ACapstoneProjectGameModeBase::timeScale += axis;
+	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
+}
+
+void APlayerMovement::SpeedUpTime()
+{
+	AdjustTimeScale(0.1f);
+}
+
+void APlayerMovement::SlowDownTime()
+{
+	AdjustTimeScale(-0.1f);
 }
 

@@ -43,14 +43,13 @@ void UInteractable::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!controller)
+	if (controller) return;
+
+	APlayerMovement* player = Cast<APlayerMovement>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass()));
+	if (player)
 	{
-		APlayerMovement* player = Cast<APlayerMovement>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass()));
-		if (player)
-		{
-			AController* tempController = player->GetController();
-			controller = Cast<ABasePlayerController>(tempController);
-		}
+		AController* tempController = player->GetController();
+		controller = Cast<ABasePlayerController>(tempController);
 	}
 }
 

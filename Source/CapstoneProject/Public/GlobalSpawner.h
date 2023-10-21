@@ -58,8 +58,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
-	ATroop* SpawnTroop(ABaseHex* hex, UnitActions::UnitData data);
-	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData);
+	ATroop* SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent = 1.f);
+	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);

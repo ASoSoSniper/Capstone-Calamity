@@ -2,6 +2,7 @@
 
 
 #include "UnitStats.h"
+#include "CapstoneProjectGameModeBase.h"
 
 // Sets default values for this component's properties
 UUnitStats::UUnitStats()
@@ -20,7 +21,7 @@ void UUnitStats::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	currhealTime = maxHealTime;
 }
 
 
@@ -31,12 +32,10 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 	if (HP_current < HP_max)
 	{
-		currhealTime -= DeltaTime;
+		currhealTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		if (currhealTime <= 0)
 		{
-			HP_current += reinforceRate;
-			HP_current = FMath::Clamp(HP_current, 0, HP_max);
-
+			Heal();
 			currhealTime = maxHealTime;
 		}
 	}
@@ -49,5 +48,19 @@ bool UUnitStats::IsAlive()
 		return false;
 	}
 	return true;
+}
+
+void UUnitStats::Heal()
+{
+	HP_current += reinforceRate;
+	HP_current = FMath::Clamp(HP_current, 0, HP_max);
+
+	if (!savedUnits.IsEmpty()) return;
+
+	for (int i = 0; i < savedUnits.Num(); ++i)
+	{
+		savedUnits[i].currentHP += reinforceRate;
+		savedUnits[i].currentHP = FMath::Clamp(savedUnits[i].currentHP, 0, savedUnits[i].maxHP);
+	}
 }
 

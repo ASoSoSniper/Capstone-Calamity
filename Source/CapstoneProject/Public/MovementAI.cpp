@@ -4,6 +4,7 @@
 #include "MovementAI.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "CapstoneProjectGameModeBase.h"
 
 // Sets default values
 AMovementAI::AMovementAI()
@@ -157,8 +158,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f * rangeMulti, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
 
 	if (bHit)
-	{
-		
+	{		
 		for (int i = 0; i < results.Num(); i++)
 		{
 			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
@@ -198,7 +198,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 	if (hexPath.Num() > 0)
 	{
 		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation();
-		FVector newLocation = GetActorLocation() + direction * moveSpeed * DeltaTime;
+		FVector newLocation = GetActorLocation() + direction * moveSpeed * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		SetActorLocation(newLocation);
 		if (hexNav->currentHex == hexPath[hexPathIndex])
 		{

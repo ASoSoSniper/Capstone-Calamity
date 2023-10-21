@@ -27,10 +27,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool IsAlive();
+	void Heal();
 
 	UPROPERTY(EditAnywhere) Factions faction;
 	UPROPERTY(VisibleAnywhere) UnitTypes type;
 	UPROPERTY(VisibleAnywhere) bool upgraded;
+	//Exclusive property for armies
+	TArray<UnitActions::UnitData> savedUnits;
 
 	UPROPERTY(EditAnywhere) int HP_current = 10;
 	UPROPERTY(EditAnywhere) int HP_max = 10;
@@ -43,6 +46,6 @@ public:
 	UPROPERTY(EditAnywhere) int maxDamage = 3;
 	UPROPERTY(EditAnywhere) int reinforceRate = 2;
 	
-	float maxHealTime = 1.f;
-	float currhealTime = 1.f;
+	float maxHealTime = 5.f;
+	float currhealTime = 5.f;
 };

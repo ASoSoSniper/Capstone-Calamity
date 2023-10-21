@@ -127,23 +127,32 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 }
 
-ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data)
+ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!troopPrefab) return nullptr;
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+
+	data.currentHP *= parentHealthPercent;
+
 	newTroop->InputUnitStats(data);
 
 	return newTroop;
 }
 
-AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData)
+AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!mergedArmyPrefab) return nullptr;
 
 	AMergedArmy* newTroop = GetWorld()->SpawnActor<AMergedArmy>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+	
+	for (int i = 0; i < groupData.Num(); ++i)
+	{
+		groupData[i].currentHP *= parentHealthPercent;
+	}
+
 	newTroop->ConsumeData(groupData);
 
 	return newTroop;

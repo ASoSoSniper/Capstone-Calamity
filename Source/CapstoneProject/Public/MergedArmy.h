@@ -18,8 +18,6 @@ class CAPSTONEPROJECT_API AMergedArmy : public ATroop
 public:
 	AMergedArmy();
 
-	TArray<UnitActions::UnitData> mergedUnits;
-
 	void ConsumeUnit(ATroop* mergedUnit);
 	void ConsumeArmy(AMergedArmy* mergedArmy);
 	void ConsumeData(TArray<UnitActions::UnitData>& groupData);

@@ -2,6 +2,7 @@
 
 
 #include "Building.h"
+#include "CapstoneProjectGameModeBase.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -53,7 +54,7 @@ void ABuilding::Tick(float DeltaTime)
 
 void ABuilding::Constructing(float& DeltaTime)
 {
-	currBuildTime -= DeltaTime;
+	currBuildTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 	if (currBuildTime <= 0.f)
 	{
 		SetBuildState();

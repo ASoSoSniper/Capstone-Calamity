@@ -226,16 +226,15 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
         unit->minDamage, 
         unit->maxDamage,
         unit->reinforceRate};
-
-    AMergedArmy* army = Cast<AMergedArmy>(unit);
-    if (army)
+    
+    if (data.unitType == UnitTypes::Army)
     {
-        for (int i = 0; i < army->mergedUnits.Num(); ++i)
+        for (int i = 0; i < unit->savedUnits.Num(); ++i)
         {
-            data.savedUnits.Add(army->mergedUnits[i]);
+            data.savedUnits.Add(unit->savedUnits[i]);
         }
     }
-
+    
     return data;
 }
 

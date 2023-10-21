@@ -3,6 +3,8 @@
 
 #include "BattleObject.h"
 #include "Troop.h"
+#include "MergedArmy.h"
+#include "CapstoneProjectGameModeBase.h"
 
 // Sets default values
 ABattleObject::ABattleObject()
@@ -48,7 +50,7 @@ void ABattleObject::Tick(float DeltaTime)
 
 	if (attacking)
 	{
-		currentAttackTime -= DeltaTime;
+		currentAttackTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		if (currentAttackTime <= 0.f)
 		{
 			Attack();
@@ -132,7 +134,6 @@ void ABattleObject::GenerateArmies()
 			armies.Add(faction.Key, army);
 		}
 	}
-
 	AssignGroups();
 }
 
@@ -175,7 +176,7 @@ void ABattleObject::AssignGroups()
 			break;
 		}
 	}
-
+	
 	attacking = true;
 }
 
@@ -229,7 +230,7 @@ void ABattleObject::Attack()
 			factionsInBattle.Remove(deadFaction);
 		}
 	}
-
+	
 	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty())
 	{
 		attacking = false;
@@ -245,13 +246,20 @@ void ABattleObject::EndBattle()
 
 		for (int i = 0; i < faction.Value.Num(); ++i)
 		{
+			float currHP = armies[faction.Key].currentHP;
+			float maxHP = armies[faction.Key].maxHP;
+			float hpPercent = (currHP / maxHP);			
+
+			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("%d * (%f / %f) = %f"), faction.Value[i].currentHP, currHP, maxHP, faction.Value[i].currentHP * (currHP / maxHP)));	
+			
 			switch (faction.Value[i].unitType)
 			{
 			case UnitTypes::Army:
-				spawner->SpawnArmy(hex, faction.Value[i].savedUnits);
+				spawner->SpawnArmy(hex, faction.Value[i].savedUnits, hpPercent);
 				break;
+
 			default:
-				spawner->SpawnTroop(hex, faction.Value[i]);
+				spawner->SpawnTroop(hex, faction.Value[i], hpPercent);
 				break;
 			}
 		}

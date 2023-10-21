@@ -21,7 +21,7 @@ void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 {
 	UnitActions::UnitData newData = UnitActions::CollectUnitData(mergedUnit->unitStats);
 	
-	mergedUnits.Add(newData);
+	unitStats->savedUnits.Add(newData);
 
 	AddUnitData(newData);
 
@@ -30,11 +30,11 @@ void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 
 void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
 {
-	for (int i = 0; i < mergedArmy->mergedUnits.Num(); ++i)
+	for (int i = 0; i < mergedArmy->unitStats->savedUnits.Num(); ++i)
 	{
-		mergedUnits.Add(mergedArmy->mergedUnits[i]);
+		unitStats->savedUnits.Add(mergedArmy->unitStats->savedUnits[i]);
 
-		AddUnitData(mergedArmy->mergedUnits[i]);
+		AddUnitData(mergedArmy->unitStats->savedUnits[i]);
 	}
 
 	mergedArmy->Destroy();
@@ -46,7 +46,7 @@ void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
 
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
-		mergedUnits.Add(groupData[i]);
+		unitStats->savedUnits.Add(groupData[i]);
 
 		AddUnitData(groupData[i]);
 	}
@@ -54,7 +54,11 @@ void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
 
 ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 {
-	if (groupData.Num() <= 0) return nullptr;
+	if (groupData.IsEmpty()) return nullptr;
+
+	float currHP = unitStats->HP_current;
+	float maxHP = unitStats->HP_max;
+	float hpPercent = currHP / maxHP;
 
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
@@ -66,12 +70,12 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = spawner->SpawnArmy(Cast<ABaseHex>(hexNav->currentHex), groupData);
+		spawnArmy = spawner->SpawnArmy(Cast<ABaseHex>(hexNav->currentHex), groupData, hpPercent);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = spawner->SpawnTroop(Cast<ABaseHex>(hexNav->currentHex), groupData[0]);
+		spawnTroop = spawner->SpawnTroop(Cast<ABaseHex>(hexNav->currentHex), groupData[0], hpPercent);
 
 		return spawnTroop;
 	}
@@ -99,21 +103,21 @@ void AMergedArmy::SplitInHalf()
 	TArray<UnitActions::UnitData> group2;
 
 	//Sort from highest to lowest max damage in each unit
-	mergedUnits.Sort([&](const UnitActions::UnitData& A, const UnitActions::UnitData& B)
+	unitStats->savedUnits.Sort([&](const UnitActions::UnitData& A, const UnitActions::UnitData& B)
 		{
 			return A.maxDamage > B.maxDamage;
 		});
 	
 	//Add even-numbered elements to group 1 and odd-numbered to group 2
-	for (int i = 0; i < mergedUnits.Num(); ++i)
+	for (int i = 0; i < unitStats->savedUnits.Num(); ++i)
 	{
 		if (i % 2 == 0)
 		{
-			group1.Add(mergedUnits[i]);
+			group1.Add(unitStats->savedUnits[i]);
 		}
 		else
 		{
-			group2.Add(mergedUnits[i]);
+			group2.Add(unitStats->savedUnits[i]);
 		}
 	}
 

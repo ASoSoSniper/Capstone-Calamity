@@ -37,4 +37,8 @@ public:
 	void Action4Input();
 
 	void DeselectInput();
+
+	void AdjustTimeScale(float axis);
+	void SpeedUpTime();
+	void SlowDownTime();
 };

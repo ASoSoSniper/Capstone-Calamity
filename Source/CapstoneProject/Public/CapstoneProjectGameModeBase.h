@@ -23,6 +23,8 @@ public:
 	virtual void BeginPlay();
 
 	static inline TMap<Factions, Faction*> activeFactions;
+
+	static inline float timeScale = 1.f;
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 

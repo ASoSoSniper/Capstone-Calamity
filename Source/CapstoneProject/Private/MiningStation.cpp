@@ -3,6 +3,7 @@
 
 #include "MiningStation.h"
 #include "UnitActions.h"
+#include "CapstoneProjectGameModeBase.h"
 
 void AMiningStation::BeginPlay()
 {
@@ -26,7 +27,7 @@ void AMiningStation::Mine(float& DeltaTime)
 {
 	if (currMineTime > 0)
 	{
-		currMineTime -= DeltaTime;
+		currMineTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		return;
 	}
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
