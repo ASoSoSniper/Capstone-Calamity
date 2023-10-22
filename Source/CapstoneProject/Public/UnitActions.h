@@ -15,7 +15,8 @@ enum class ObjectTypes
 	NoType,
 	Hex,
 	MoveAI,
-	Building
+	Building,
+	Battle
 };
 UENUM()
 enum class ActionStates
@@ -51,6 +52,7 @@ class ATroop;
 class AMovementAI;
 class ABuilding;
 class UUnitStats;
+class ABattleObject;
 
 class CAPSTONEPROJECT_API UnitActions
 {
@@ -78,6 +80,7 @@ public:
 		ABaseHex* hex;
 		ATroop* moveAI;
 		ABuilding* building;
+		ABattleObject* battle;
 		ObjectTypes type;
 	};
 

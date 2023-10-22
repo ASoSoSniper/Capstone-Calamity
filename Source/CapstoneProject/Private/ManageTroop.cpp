@@ -3,6 +3,7 @@
 
 #include "ManageTroop.h"
 #include "BasePlayerController.h"
+#include "BattleObject.h"
 
 void UManageTroop::Select(AActor* selectedObject)
 {
@@ -72,6 +73,20 @@ void UManageTroop::SwitchState()
 			controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
 
 			return;
+		}
+		break;
+
+	case ObjectTypes::Battle:
+		EngagementSelect engage = UnitActions::DetermineConflictAlignment(selectedTroop->unitStats->faction, objectType.battle->currentBattle.Group1, objectType.battle->currentBattle.Group2);
+		switch (engage)
+		{
+		case EngagementSelect::DoNotJoin:
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Cannot join this battle"));
+			return;
+		default:
+			if (hexNav)
+				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+			break;
 		}
 		break;
 	}

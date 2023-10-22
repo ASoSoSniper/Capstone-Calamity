@@ -95,11 +95,11 @@ void APlayerMovement::AdjustTimeScale(float axis)
 
 void APlayerMovement::SpeedUpTime()
 {
-	AdjustTimeScale(0.1f);
+	AdjustTimeScale(timeScaleIncrement);
 }
 
 void APlayerMovement::SlowDownTime()
 {
-	AdjustTimeScale(-0.1f);
+	AdjustTimeScale(-timeScaleIncrement);
 }
 

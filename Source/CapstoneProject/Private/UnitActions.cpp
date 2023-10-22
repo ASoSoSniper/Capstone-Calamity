@@ -6,6 +6,7 @@
 #include "BaseHex.h"
 #include "MergedArmy.h"
 #include "Troop.h"
+#include "BattleObject.h"
 #include "Building.h"
 #include "UnitStats.h"
 #include "Faction.h"
@@ -264,7 +265,7 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
 
 UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
 {
-    SelectionIdentity Results{nullptr, nullptr, nullptr, nullptr, ObjectTypes::NoType };
+    SelectionIdentity Results{nullptr, nullptr, nullptr, nullptr, nullptr, ObjectTypes::NoType };
 
     Results.actor = object;
 
@@ -297,5 +298,16 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
         Results.type = ObjectTypes::Building;
         return Results;
     }
+
+    ABattleObject* testForBattle = Cast<ABattleObject>(object);
+    if (testForBattle)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Battle found!"));
+
+        Results.battle = testForBattle;
+        Results.type = ObjectTypes::Battle;
+        return Results;
+    }
+
     return Results;
 }

@@ -134,7 +134,9 @@ ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, fl
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 
-	data.currentHP *= parentHealthPercent;
+	float result = (float)data.currentHP * parentHealthPercent;
+	if (result < 1.f) result = 1.f;
+	data.currentHP = result;
 
 	newTroop->InputUnitStats(data);
 
@@ -150,7 +152,9 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitDa
 	
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
-		groupData[i].currentHP *= parentHealthPercent;
+		float result = (float)groupData[i].currentHP * parentHealthPercent;
+		if (result < 1.f) result = 1.f;
+		groupData[i].currentHP = result;
 	}
 
 	newTroop->ConsumeData(groupData);

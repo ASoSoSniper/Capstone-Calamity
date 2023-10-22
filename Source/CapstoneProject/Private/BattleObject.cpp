@@ -45,7 +45,7 @@ void ABattleObject::Tick(float DeltaTime)
 
 	if (!hex->troopsInHex.IsEmpty())
 	{
-		//AddUnitToFaction(hex->troopsInHex[0]);
+		AddUnitToFaction(hex->troopsInHex[0]);
 	}
 
 	if (attacking)
