@@ -49,4 +49,5 @@ public:
 
 	void Constructing(float& DeltaTime);
 	void SetBuildState();
+	virtual void Harvest(ABaseHex* hex);
 };

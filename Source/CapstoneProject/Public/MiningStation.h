@@ -18,8 +18,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void Mine(float& DeltaTime);
+	virtual void Harvest(ABaseHex* hex) override;
 
-	UPROPERTY(EditAnywhere) float mineTime = 2.f;
-	float currMineTime;
+	UPROPERTY(EditAnywhere) int productionYield = 2;
 };

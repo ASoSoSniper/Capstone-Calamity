@@ -55,9 +55,7 @@ public:
 	void SetActionState();
 	void Deselect();
 
-	void Build(UClass* prefab);
-
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> buildingPrefab;
+	void Build(SpawnableBuildings building);
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 };

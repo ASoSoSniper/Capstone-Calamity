@@ -9,6 +9,7 @@
  * 
  */
 
+
 UENUM()
 enum class ObjectTypes
 {
@@ -37,6 +38,26 @@ enum class UnitTypes
 	Scout,
 	Settler,
 	Army
+};
+
+/*UENUM()
+enum class TerrainType
+{
+	None,
+	Plains,
+	Hills,
+	MountainImpassible,
+	Forest,
+	ForestThick,
+	ToxicSporeField,
+	MapBoundary
+};*/
+UENUM()
+enum class WorkerType
+{
+	Human,
+	Robot,
+	Alien
 };
 
 UENUM()
@@ -107,6 +128,11 @@ public:
 	};
 
 	static UnitData CollectUnitData(UUnitStats* unit);
+
+	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
+
+	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
+	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
 };
 
 

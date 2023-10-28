@@ -15,9 +15,16 @@ public:
 	Faction();
 	~Faction();
 
+	struct WorkerStats
+	{
+		int working;
+		int available;
+	};
+
 	Factions faction;
 
 	TMap<StratResources, int> resourceInventory;
+	TMap<WorkerType, WorkerStats> availableWorkers;
 	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;
 

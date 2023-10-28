@@ -35,7 +35,7 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 		currhealTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		if (currhealTime <= 0)
 		{
-			//Heal();
+			Heal();
 			currhealTime = maxHealTime;
 		}
 	}

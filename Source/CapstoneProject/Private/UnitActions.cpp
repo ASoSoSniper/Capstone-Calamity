@@ -14,7 +14,7 @@
 
 void UnitActions::HarvestResources(Factions faction, int quantity, StratResources resource)
 {
-    if (resource != StratResources::none)
+    if (resource != StratResources::None)
     {
         if (ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory.Find(resource))
         {
@@ -237,6 +237,33 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
     }
     
     return data;
+}
+
+int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
+{
+    return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
+}
+
+int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex)
+{
+    int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
+    if (workersInHex == 10) return 0;
+    int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
+
+    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
+    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working += workersToAdd;
+
+    return workersToAdd;
+}
+
+int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex)
+{
+    int workersToRemove = workersInHex >= desiredWorkers ? desiredWorkers : workersInHex;
+
+    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
+    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
+
+    return workersToRemove;
 }
 
 void UnitActions::AssignFaction(Factions faction, AActor* target)

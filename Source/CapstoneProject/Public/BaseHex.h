@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "HexInfo.h"
 #include "Interactable.h"
 #include "Components/SphereComponent.h"
+#include "TerrainEnum.h"
+#include "StratResources.h"
+#include "UnitActions.h"
 #include "BaseHex.generated.h"
 
 class AMergedArmy;
@@ -33,7 +35,7 @@ public:
 //Components created upon initialization
 #pragma region Components
 
-	UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
+	//UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
 	UPROPERTY(VisibleAnywhere) UInteractable* interactable;
 	UPROPERTY(EditAnywhere) USceneComponent* troopAnchor;
 	UPROPERTY(EditAnywhere) USceneComponent* buildingAnchor;
@@ -55,6 +57,18 @@ public:
 
 #pragma endregion
 
+//Variables that change depending on the hex's identity
+#pragma region Identity
+
+	TMap<StratResources, int> resourceBonuses;
+	UPROPERTY(EditAnywhere) int energyYieldBonus = 1;
+	UPROPERTY(EditAnywhere) int productionYieldBonus = 1;
+	UPROPERTY(EditAnywhere) int foodYieldBonus = 1;
+	UPROPERTY(EditAnywhere) int hexID;
+	UPROPERTY(EditAnywhere) TerrainType hexTerrain;
+
+#pragma endregion
+
 	TArray<AActor*> GetObjectsInHex();
 
 	void CheckForHostility(AMovementAI* refTroop);
@@ -66,4 +80,15 @@ public:
 	AGlobalSpawner* spawner;
 
 	bool battleInProgress;
+
+	UPROPERTY(EditAnywhere) Factions hexOwner = Factions::None;
+
+	TMap<WorkerType, int> workersInHex;
+
+	float currentHarvestTime;
+	float maxHarvestTime = 2.f;
+	bool harvesting;
+
+	void Harvest(float& DeltaTime);
+	bool ActiveHarvesting();
 };

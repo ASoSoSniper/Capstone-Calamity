@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.h"
 #include "BaseHex.h"
-#include "HexInfo.h"
 #include "HexNav.h"
 #include "UnitStats.h"
 #include "Components/SphereComponent.h"

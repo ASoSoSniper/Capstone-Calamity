@@ -10,8 +10,8 @@
 UENUM(BlueprintType)
 enum class StratResources
 {
-	none,
-	iron,
-	copper,
-	oil
+	None,
+	Energy,
+	Production,
+	Food
 };

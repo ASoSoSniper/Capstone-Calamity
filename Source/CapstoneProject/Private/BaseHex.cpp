@@ -6,6 +6,7 @@
 #include "MovementAI.h"
 #include "Building.h"
 #include "BattleObject.h"
+#include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -23,7 +24,7 @@ ABaseHex::ABaseHex()
 		hexMesh->SetStaticMesh(meshAsset);
 	}
 	
-	hexInfo = CreateDefaultSubobject<UHexInfo>(TEXT("Hex Info"));
+	//hexInfo = CreateDefaultSubobject<UHexInfo>(TEXT("Hex Info"));
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 
 	collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
@@ -35,6 +36,16 @@ ABaseHex::ABaseHex()
 
 	buildingAnchor = CreateDefaultSubobject<USceneComponent>("Building Anchor");
 	buildingAnchor->SetupAttachment(RootComponent);
+
+	//Initialize resource yields
+	resourceBonuses.Add(StratResources::Energy, energyYieldBonus);
+	resourceBonuses.Add(StratResources::Production, productionYieldBonus);
+	resourceBonuses.Add(StratResources::Food, foodYieldBonus);
+
+	//Initialize worker types
+	workersInHex.Add(WorkerType::Human, 0);
+	workersInHex.Add(WorkerType::Robot, 0);
+	workersInHex.Add(WorkerType::Alien, 0);
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +58,14 @@ void ABaseHex::BeginPlay()
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
+
+	/*switch (hexTerrain)
+	{
+	case (TerrainType::Plains):
+
+	}*/
+
+	currentHarvestTime = maxHarvestTime;
 }
 
 // Called every frame
@@ -54,6 +73,9 @@ void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!harvesting) return;
+
+	Harvest(DeltaTime);
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -110,5 +132,39 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 void ABaseHex::BeginBattle()
 {
 	spawner->SpawnBattle(this);
+}
+
+void ABaseHex::Harvest(float& DeltaTime)
+{
+	if (currentHarvestTime > 0)
+	{
+		currentHarvestTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+		return;
+	}
+
+	if (hexOwner != Factions::None)
+	{
+		UnitActions::HarvestResources(hexOwner, resourceBonuses[StratResources::Food], StratResources::Food);
+		if (building)
+		{
+			building->Harvest(this);
+		}
+	}
+
+	currentHarvestTime = maxHarvestTime;
+}
+
+bool ABaseHex::ActiveHarvesting()
+{
+	bool workersExist = false;
+
+	for (auto workers : workersInHex)
+	{
+		if (workers.Value > 0) workersExist = true;
+	}
+
+	harvesting = workersExist;
+
+	return workersExist;
 }
 

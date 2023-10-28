@@ -8,9 +8,13 @@
 Faction::Faction()
 {
 	faction = Factions::None;
-	resourceInventory.Add(StratResources::iron, 0);
-	resourceInventory.Add(StratResources::copper, 0);
-	resourceInventory.Add(StratResources::oil, 0);
+	resourceInventory.Add(StratResources::Energy, 0);
+	resourceInventory.Add(StratResources::Production, 0);
+	resourceInventory.Add(StratResources::Food, 0);
+
+	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,10 });
+	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,0 });
+	availableWorkers.Add(WorkerType::Alien, WorkerStats{ 0,0 });
 }
 
 Faction::~Faction()

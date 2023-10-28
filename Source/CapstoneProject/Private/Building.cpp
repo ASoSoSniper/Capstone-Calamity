@@ -49,6 +49,9 @@ void ABuilding::Tick(float DeltaTime)
 	case Building:
 		Constructing(DeltaTime);
 		break;
+	case Complete:
+		//Harvest(DeltaTime);
+		break;
 	}
 }
 
@@ -80,5 +83,9 @@ void ABuilding::SetBuildState()
 		buildState = Upgraded;
 		break;
 	}
+}
+
+void ABuilding::Harvest(ABaseHex* hex)
+{
 }
 

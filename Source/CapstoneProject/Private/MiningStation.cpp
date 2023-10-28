@@ -8,29 +8,22 @@
 void AMiningStation::BeginPlay()
 {
 	Super::BeginPlay();
-	currMineTime = mineTime;
 }
 
 void AMiningStation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void AMiningStation::Harvest(ABaseHex* hex)
+{
 	switch (buildState)
 	{
 	case Complete:
-		Mine(DeltaTime);
+		UnitActions::HarvestResources(unitStats->faction, productionYield + hex->resourceBonuses[StratResources::Production], StratResources::Production);
+		break;
+	case Upgraded:
 		break;
 	}
-}
-
-void AMiningStation::Mine(float& DeltaTime)
-{
-	if (currMineTime > 0)
-	{
-		currMineTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
-		return;
-	}
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-	UnitActions::HarvestResources(unitStats->faction, 1, hex->hexInfo->hexStratResources);
-	currMineTime = mineTime;
+	
 }

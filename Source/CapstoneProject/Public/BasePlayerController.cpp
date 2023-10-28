@@ -85,23 +85,11 @@ void ABasePlayerController::Deselect()
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
 
-void ABasePlayerController::Build(UClass* prefab)
+void ABasePlayerController::Build(SpawnableBuildings building)
 {
 	if (selectedHex)
 	{
-		spawner->SpawnBuilding(playerFaction, SpawnableBuildings::MiningStation, selectedHex);
+		spawner->SpawnBuilding(playerFaction, building, selectedHex);
 		return;
-		if (selectedHex->building == nullptr)
-		{
-			FActorSpawnParameters params;
-			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, selectedHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-			selectedHex->building = newBuilding;
-
-			UHexNav* hexNav = newBuilding->GetComponentByClass<UHexNav>();
-			if (hexNav) hexNav->currentHex = selectedHex;
-
-			UnitActions::AssignFaction(playerFaction, newBuilding);
-		}
-		else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 	}
 }

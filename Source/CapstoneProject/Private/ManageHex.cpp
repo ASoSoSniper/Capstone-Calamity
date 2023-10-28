@@ -2,7 +2,6 @@
 
 
 #include "ManageHex.h"
-
 #include "BasePlayerController.h"
 
 void UManageHex::Select(AActor* selectedObject)
@@ -40,17 +39,34 @@ void UManageHex::Reset()
 
 void UManageHex::Action1()
 {
-	controller->Build(controller->buildingPrefab);
+	controller->Build(SpawnableBuildings::MiningStation);
 }
 
 void UManageHex::Action2()
 {
+	controller->Build(SpawnableBuildings::Farmland);
 }
 
 void UManageHex::Action3()
 {
+	AddWorkersToHex(WorkerType::Human, 2);
 }
 
 void UManageHex::Action4()
 {
+	RemoveWorkers(WorkerType::Human, 2);
+}
+
+void UManageHex::AddWorkersToHex(WorkerType worker, int workers)
+{
+	controller->selectedHex->workersInHex[worker] += UnitActions::AddWorkers(controller->playerFaction, worker, workers, controller->selectedHex->workersInHex[worker]);
+	controller->selectedHex->ActiveHarvesting();
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d workers in hex"), controller->selectedHex->workersInHex[worker]));
+}
+
+void UManageHex::RemoveWorkers(WorkerType worker, int workers)
+{
+	controller->selectedHex->workersInHex[worker] -= UnitActions::RemoveWorkers(controller->playerFaction, worker, workers, controller->selectedHex->workersInHex[worker]);
+	controller->selectedHex->ActiveHarvesting();
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d workers in hex"), controller->selectedHex->workersInHex[worker]));
 }
