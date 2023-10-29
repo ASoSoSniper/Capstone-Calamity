@@ -42,6 +42,10 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Action3", IE_Pressed, this, &APlayerMovement::Action3Input);
 	PlayerInputComponent->BindAction("Action4", IE_Pressed, this, &APlayerMovement::Action4Input);
 
+	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerMovement::PanRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
+	PlayerInputComponent->BindAxis("ZoomIn", this, &APlayerMovement::ZoomIn);
+
 	PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
 
 	PlayerInputComponent->BindAction("TimeScaleIncrease", IE_Pressed, this, &APlayerMovement::SpeedUpTime);
@@ -83,6 +87,27 @@ void APlayerMovement::Action4Input()
 void APlayerMovement::DeselectInput()
 {
 	if (controller) controller->Deselect();
+}
+
+void APlayerMovement::PanRight(float axis)
+{
+	FVector currLocation = GetActorLocation();
+	currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+	SetActorLocation(currLocation);
+}
+
+void APlayerMovement::PanUp(float axis)
+{
+	FVector currLocation = GetActorLocation();
+	currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+	SetActorLocation(currLocation);
+}
+
+void APlayerMovement::ZoomIn(float axis)
+{
+	FVector currLocation = GetActorLocation();
+	currLocation += FVector::UpVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+	SetActorLocation(currLocation);
 }
 
 void APlayerMovement::AdjustTimeScale(float axis)

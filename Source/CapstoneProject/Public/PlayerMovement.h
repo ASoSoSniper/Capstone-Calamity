@@ -38,6 +38,11 @@ public:
 
 	void DeselectInput();
 
+	void PanRight(float axis);
+	void PanUp(float axis);
+	void ZoomIn(float axis);
+	UPROPERTY(EditAnywhere) float cameraVel = 10.0f;
+
 	void AdjustTimeScale(float axis);
 	void SpeedUpTime();
 	void SlowDownTime();
