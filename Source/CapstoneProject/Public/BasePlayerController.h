@@ -40,15 +40,14 @@ public:
 
 	//Interactable object the player has clicked to select
 	UPROPERTY(VisibleAnywhere) AActor* selectedWorldObject;
-
-
+	
 	//Additional info on selectedWorldObject if it is identified as a movable unit
 	UPROPERTY(VisibleAnywhere) ABaseHex* selectedHex;
 
 	UPROPERTY(VisibleAnywhere) ActionStates currentActionState = ActionStates::None;
 	TMap<ActionStates, UManageMode*> actionStates;
 
-	Factions playerFaction = Factions::Human;
+	UPROPERTY(BlueprintReadWrite) Factions playerFaction = Factions::Human;
 
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
@@ -56,6 +55,8 @@ public:
 	void Deselect();
 
 	void Build(SpawnableBuildings building);
+
+	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 };

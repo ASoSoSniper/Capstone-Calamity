@@ -23,7 +23,7 @@ public:
 
 	Factions faction;
 
-	TMap<StratResources, int> resourceInventory;
+	UPROPERTY(BlueprintReadWrite) TMap<StratResources, int> resourceInventory;
 	TMap<WorkerType, WorkerStats> availableWorkers;
 	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;

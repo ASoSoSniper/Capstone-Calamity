@@ -133,6 +133,7 @@ public:
 
 	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
+	static TMap<StratResources, int> GetFactionResources(Factions faction);
 };
 
 

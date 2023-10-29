@@ -266,6 +266,11 @@ int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desired
     return workersToRemove;
 }
 
+TMap<StratResources, int> UnitActions::GetFactionResources(Factions faction)
+{
+    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))
