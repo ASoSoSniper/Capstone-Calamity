@@ -22,9 +22,14 @@ public:
 	ACapstoneProjectGameModeBase();
 	virtual void BeginPlay();
 
+	virtual void Tick(float DeltaTime) override;
+
 	static inline TMap<Factions, Faction*> activeFactions;
 
 	static inline float timeScale = 1.f;
+
+	static inline float currentHarvestTime = 0;
+	UPROPERTY(EditAnywhere) float harvestTickLength = 2.f;
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 

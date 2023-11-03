@@ -91,4 +91,5 @@ public:
 
 	void Harvest(float& DeltaTime);
 	bool ActiveHarvesting();
+	void UpdateResourceYield();
 };

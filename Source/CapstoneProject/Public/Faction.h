@@ -24,6 +24,7 @@ public:
 	Factions faction;
 
 	UPROPERTY(BlueprintReadWrite) TMap<StratResources, int> resourceInventory;
+	UPROPERTY(BlueprintReadWrite) TMap<StratResources, int> resourcePerTick;
 	TMap<WorkerType, WorkerStats> availableWorkers;
 	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;

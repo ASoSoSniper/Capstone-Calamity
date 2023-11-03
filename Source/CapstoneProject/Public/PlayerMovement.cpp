@@ -104,7 +104,7 @@ void APlayerMovement::PanRight(float axis)
 			currLocation.Y = camMinY;
 		}
 		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("X pos = %f"), GetActorLocation().Y));
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X pos = %f"), GetActorLocation().Y));
 	}	
 }
 
@@ -123,7 +123,7 @@ void APlayerMovement::PanUp(float axis)
 			currLocation.X = camMinX;
 		}
 		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().X));
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().X));
 	}
 }
 
@@ -142,7 +142,7 @@ void APlayerMovement::ZoomIn(float axis)
 			currLocation.Z = camMinZ;
 		}
 		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Y Pos = %f"), GetActorLocation().Z));
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y Pos = %f"), GetActorLocation().Z));
 	}
 }
 
@@ -151,7 +151,7 @@ void APlayerMovement::AdjustTimeScale(float axis)
 	ACapstoneProjectGameModeBase::timeScale += axis;
 	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
 }
 
 void APlayerMovement::SpeedUpTime()

@@ -38,6 +38,24 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 }
 
+void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
+{
+	if (currentHarvestTime > 0)
+	{
+		currentHarvestTime -= DeltaTime * timeScale;
+		return;
+	}
+
+	for (auto faction : activeFactions)
+	{
+		for (auto resource : faction.Value->resourceInventory)
+		{
+			resource.Value += faction.Value->resourcePerTick[resource.Key];
+		}
+	}
+	currentHarvestTime = harvestTickLength;
+}
+
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 {
 	//Advance in the Factions enum, element 0 is None

@@ -156,15 +156,33 @@ void ABaseHex::Harvest(float& DeltaTime)
 
 bool ABaseHex::ActiveHarvesting()
 {
+	bool alreadyHarvesting = harvesting;
 	bool workersExist = false;
 
 	for (auto workers : workersInHex)
 	{
-		if (workers.Value > 0) workersExist = true;
+		if (workers.Value >= 10) workersExist = true;
 	}
 
 	harvesting = workersExist;
 
+	if (harvesting != alreadyHarvesting)
+	{
+		UpdateResourceYield();
+	}
+
 	return workersExist;
+}
+
+void ABaseHex::UpdateResourceYield()
+{
+	if (harvesting)
+	{
+		for (auto resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick)
+		{
+			resource.Value += resourceBonuses[resource.Key];
+		}
+		
+	}
 }
 
