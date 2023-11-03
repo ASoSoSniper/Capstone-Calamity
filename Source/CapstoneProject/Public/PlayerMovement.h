@@ -41,7 +41,13 @@ public:
 	void PanRight(float axis);
 	void PanUp(float axis);
 	void ZoomIn(float axis);
-	UPROPERTY(EditAnywhere) float cameraVel = 10.0f;
+	UPROPERTY(EditAnywhere) float cameraVel = 750.0f;
+	float camMinX = -1000;
+	float camMaxX = 1000;
+	float camMinY = -1000;
+	float camMaxY = 1000;
+	float camMinZ = 100;
+	float camMaxZ = 600;
 
 	void AdjustTimeScale(float axis);
 	void SpeedUpTime();

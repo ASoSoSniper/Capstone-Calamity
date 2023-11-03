@@ -91,23 +91,59 @@ void APlayerMovement::DeselectInput()
 
 void APlayerMovement::PanRight(float axis)
 {
-	FVector currLocation = GetActorLocation();
-	currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-	SetActorLocation(currLocation);
+	if (GetActorLocation().Y >= camMinY && GetActorLocation().Y <= camMaxY)
+	{
+		FVector currLocation = GetActorLocation();
+		currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+		if (currLocation.Y > camMaxY)
+		{
+			currLocation.Y = camMaxY;
+		}
+		else if (currLocation.Y < camMinY)
+		{
+			currLocation.Y = camMinY;
+		}
+		SetActorLocation(currLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("X pos = %f"), GetActorLocation().Y));
+	}	
 }
 
 void APlayerMovement::PanUp(float axis)
 {
-	FVector currLocation = GetActorLocation();
-	currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-	SetActorLocation(currLocation);
+	if (GetActorLocation().X >= camMinX && GetActorLocation().X <= camMaxX)
+	{
+		FVector currLocation = GetActorLocation();
+		currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+		if (currLocation.X > camMaxX)
+		{
+			currLocation.X = camMaxX;
+		}
+		else if (currLocation.X < camMinX)
+		{
+			currLocation.X = camMinX;
+		}
+		SetActorLocation(currLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().X));
+	}
 }
 
 void APlayerMovement::ZoomIn(float axis)
 {
-	FVector currLocation = GetActorLocation();
-	currLocation += FVector::UpVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-	SetActorLocation(currLocation);
+	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
+	{
+		FVector currLocation = GetActorLocation();
+		currLocation += FVector::UpVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+		if (currLocation.Z > camMaxZ)
+		{
+			currLocation.Z = camMaxZ;
+		}
+		else if (currLocation.Z < camMinZ)
+		{
+			currLocation.Z = camMinZ;
+		}
+		SetActorLocation(currLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Y Pos = %f"), GetActorLocation().Z));
+	}
 }
 
 void APlayerMovement::AdjustTimeScale(float axis)
