@@ -20,10 +20,15 @@ void AMiningStation::Harvest(ABaseHex* hex)
 	switch (buildState)
 	{
 	case Complete:
-		UnitActions::HarvestResources(unitStats->faction, productionYield + hex->resourceBonuses[StratResources::Production], StratResources::Production);
+		//UnitActions::HarvestResources(unitStats->faction, productionYield + hex->resourceBonuses[StratResources::Production], StratResources::Production);
 		break;
 	case Upgraded:
 		break;
 	}
 	
+}
+
+void AMiningStation::UpdateResources()
+{
+	Cast<ABaseHex>(hexNav->currentHex)->UpdateProductionYield(productionYield);
 }

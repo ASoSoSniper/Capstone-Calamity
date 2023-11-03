@@ -132,7 +132,7 @@ void APlayerMovement::ZoomIn(float axis)
 	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
 	{
 		FVector currLocation = GetActorLocation();
-		currLocation += FVector::UpVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+		currLocation += camera->GetForwardVector() * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
 		if (currLocation.Z > camMaxZ)
 		{
 			currLocation.Z = camMaxZ;

@@ -92,4 +92,8 @@ public:
 	void Harvest(float& DeltaTime);
 	bool ActiveHarvesting();
 	void UpdateResourceYield();
+
+	void UpdateFoodYield(int value);
+	void UpdateProductionYield(int value);
+	void UpdateEnergy(int value);
 };

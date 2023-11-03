@@ -19,6 +19,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Harvest(ABaseHex* hex) override;
+	virtual void UpdateResources() override;
 
 	UPROPERTY(EditAnywhere) int productionYield = 2;
 };

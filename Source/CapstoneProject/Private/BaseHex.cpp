@@ -75,7 +75,7 @@ void ABaseHex::Tick(float DeltaTime)
 
 	if (!harvesting) return;
 
-	Harvest(DeltaTime);
+	//Harvest(DeltaTime);
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -176,13 +176,31 @@ bool ABaseHex::ActiveHarvesting()
 
 void ABaseHex::UpdateResourceYield()
 {
-	if (harvesting)
-	{
-		for (auto resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick)
-		{
-			resource.Value += resourceBonuses[resource.Key];
-		}
-		
-	}
+	int newValue = harvesting ? 1 : -1;
+
+	UpdateFoodYield(newValue);
+}
+
+void ABaseHex::UpdateFoodYield(int value)
+{
+	resourceBonuses[StratResources::Food] += value;
+
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food] += value;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food = %d"), ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food]));
+}
+
+void ABaseHex::UpdateProductionYield(int value)
+{
+	resourceBonuses[StratResources::Production] += value;
+
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production] += value;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Production = %d"), ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production]));
+}
+
+void ABaseHex::UpdateEnergy(int value)
+{
+	resourceBonuses[StratResources::Energy] += value;
+
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Energy] += value;
 }
 

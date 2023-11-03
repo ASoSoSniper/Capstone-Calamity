@@ -75,6 +75,7 @@ void ABuilding::SetBuildState()
 		break;
 	case Building:
 		buildState = Complete;
+		UpdateResources();
 		break;
 	case Complete:
 		currBuildTime = upgradeTime;
@@ -86,6 +87,10 @@ void ABuilding::SetBuildState()
 }
 
 void ABuilding::Harvest(ABaseHex* hex)
+{
+}
+
+void ABuilding::UpdateResources()
 {
 }
 
