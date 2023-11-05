@@ -35,6 +35,14 @@ public:
 	void Action2Input();
 	void Action3Input();
 	void Action4Input();
+	void Action5Input();
+	void Action6Input();
+	void Action7Input();
+	void Action8Input();
+	void Action9Input();
+	void Action10Input();
+	void Action11Input();
+	void Action12Input();
 
 	void DeselectInput();
 

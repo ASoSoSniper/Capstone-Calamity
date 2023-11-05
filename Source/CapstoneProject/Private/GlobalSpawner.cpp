@@ -9,6 +9,7 @@
 #include "MergedArmy.h"
 #include "MiningStation.h"
 #include "Farmland.h"
+#include "PowerPlant.h"
 #include "BattleObject.h"
 
 // Sets default values
@@ -28,6 +29,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!mergedArmyPrefab) mergedArmyPrefab = AMergedArmy::StaticClass();
 	if (!miningStationPrefab) miningStationPrefab = AMiningStation::StaticClass();
 	if (!farmlandPrefab) farmlandPrefab = AFarmland::StaticClass();
+	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 }
 
@@ -46,6 +48,8 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 		return miningStationPrefab;
 	case SpawnableBuildings::Farmland:
 		return farmlandPrefab;
+	case SpawnableBuildings::PowerPlant:
+		return powerPlantPrefab;
 	default:
 		return nullptr;
 	}

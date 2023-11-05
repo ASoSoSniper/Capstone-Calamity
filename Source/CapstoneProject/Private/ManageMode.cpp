@@ -69,3 +69,35 @@ void UManageMode::Action3()
 void UManageMode::Action4()
 {
 }
+
+void UManageMode::Action5()
+{
+}
+
+void UManageMode::Action6()
+{
+}
+
+void UManageMode::Action7()
+{
+}
+
+void UManageMode::Action8()
+{
+}
+
+void UManageMode::Action9()
+{
+}
+
+void UManageMode::Action10()
+{
+}
+
+void UManageMode::Action11()
+{
+}
+
+void UManageMode::Action12()
+{
+}

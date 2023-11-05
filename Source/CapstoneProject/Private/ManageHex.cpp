@@ -33,28 +33,167 @@ void UManageHex::SwitchState()
 
 void UManageHex::Reset()
 {
+	subSelect = None;
 }
 
 
 
 void UManageHex::Action1()
 {
-	controller->Build(SpawnableBuildings::MiningStation);
+	switch (subSelect)
+	{
+	case None:
+		subSelect = BuildingSelect;
+		break;
+	case BuildingSelect:
+		controller->Build(SpawnableBuildings::Farmland);
+		Reset();
+		break;
+	}
 }
 
 void UManageHex::Action2()
 {
-	controller->Build(SpawnableBuildings::Farmland);
+	switch (subSelect)
+	{
+	case None:
+		
+		break;
+	case BuildingSelect:
+		controller->Build(SpawnableBuildings::MiningStation);
+		Reset();
+		break;
+	}
 }
 
 void UManageHex::Action3()
 {
-	AddWorkersToHex(WorkerType::Human, 2);
+	switch (subSelect)
+	{
+	case None:
+		AddWorkersToHex(WorkerType::Human, 2);
+		break;
+	case BuildingSelect:
+		controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
 }
 
 void UManageHex::Action4()
 {
-	RemoveWorkers(WorkerType::Human, 2);
+	switch (subSelect)
+	{
+	case None:
+		RemoveWorkers(WorkerType::Human, 2);
+		break;
+	case BuildingSelect:
+		controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action5()
+{
+	switch (subSelect)
+	{
+	case None:
+		
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action6()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action7()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action8()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action9()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action10()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action11()
+{
+	switch (subSelect)
+	{
+	case None:
+
+		break;
+	case BuildingSelect:
+		//controller->Build(SpawnableBuildings::PowerPlant);
+		Reset();
+		break;
+	}
+}
+
+void UManageHex::Action12()
+{
 }
 
 void UManageHex::AddWorkersToHex(WorkerType worker, int workers)

@@ -4,18 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Building.h"
-#include "Farmland.generated.h"
+#include "PowerPlant.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONEPROJECT_API AFarmland : public ABuilding
+class CAPSTONEPROJECT_API APowerPlant : public ABuilding
 {
 	GENERATED_BODY()
 	
-	virtual void Harvest(ABaseHex* hex) override;
 	virtual void UpdateResources() override;
 
-	UPROPERTY(EditAnywhere) int foodYield = 2;
+	UPROPERTY(EditAnywhere) int energyYield = 2;
 };

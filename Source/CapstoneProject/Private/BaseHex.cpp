@@ -168,24 +168,19 @@ bool ABaseHex::ActiveHarvesting()
 
 	if (harvesting != alreadyHarvesting)
 	{
-		UpdateResourceYield();
+		ToggleResourceYield();
 	}
 
 	return workersExist;
-}
-
-void ABaseHex::UpdateResourceYield()
-{
-	int newValue = harvesting ? 1 : -1;
-
-	UpdateFoodYield(newValue);
 }
 
 void ABaseHex::UpdateFoodYield(int value)
 {
 	resourceBonuses[StratResources::Food] += value;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food] += value;
+	if (harvesting)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food] += value;
+	
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food = %d"), ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food]));
 }
 
@@ -193,14 +188,30 @@ void ABaseHex::UpdateProductionYield(int value)
 {
 	resourceBonuses[StratResources::Production] += value;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production] += value;
+	if (harvesting)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production] += value;
+	
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Production = %d"), ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production]));
 }
 
-void ABaseHex::UpdateEnergy(int value)
+void ABaseHex::UpdateEnergyYield(int value)
 {
 	resourceBonuses[StratResources::Energy] += value;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Energy] += value;
+	if (harvesting)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Energy] += value;
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Energy = %d"), ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Energy]));
+}
+
+void ABaseHex::ToggleResourceYield()
+{
+	if (hexOwner == Factions::None) return;
+
+	int axis = harvesting ? 1 : -1;
+
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Food] += axis * resourceBonuses[StratResources::Food];
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Production] += axis * resourceBonuses[StratResources::Energy];
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourcePerTick[StratResources::Energy] += axis * resourceBonuses[StratResources::Energy];
 }
 

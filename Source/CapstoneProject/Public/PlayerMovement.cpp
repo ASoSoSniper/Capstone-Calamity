@@ -41,6 +41,14 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Action2", IE_Pressed, this, &APlayerMovement::Action2Input);
 	PlayerInputComponent->BindAction("Action3", IE_Pressed, this, &APlayerMovement::Action3Input);
 	PlayerInputComponent->BindAction("Action4", IE_Pressed, this, &APlayerMovement::Action4Input);
+	PlayerInputComponent->BindAction("Action5", IE_Pressed, this, &APlayerMovement::Action5Input);
+	PlayerInputComponent->BindAction("Action6", IE_Pressed, this, &APlayerMovement::Action6Input);
+	PlayerInputComponent->BindAction("Action7", IE_Pressed, this, &APlayerMovement::Action7Input);
+	PlayerInputComponent->BindAction("Action8", IE_Pressed, this, &APlayerMovement::Action8Input);
+	PlayerInputComponent->BindAction("Action9", IE_Pressed, this, &APlayerMovement::Action9Input);
+	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
+	PlayerInputComponent->BindAction("Action11", IE_Pressed, this, &APlayerMovement::Action11Input);
+	PlayerInputComponent->BindAction("Action12", IE_Pressed, this, &APlayerMovement::Action12Input);
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerMovement::PanRight);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
@@ -81,6 +89,70 @@ void APlayerMovement::Action4Input()
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action4();
+	}
+}
+
+void APlayerMovement::Action5Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action5();
+	}
+}
+
+void APlayerMovement::Action6Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action6();
+	}
+}
+
+void APlayerMovement::Action7Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action7();
+	}
+}
+
+void APlayerMovement::Action8Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action8();
+	}
+}
+
+void APlayerMovement::Action9Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action9();
+	}
+}
+
+void APlayerMovement::Action10Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action10();
+	}
+}
+
+void APlayerMovement::Action11Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action11();
+	}
+}
+
+void APlayerMovement::Action12Input()
+{
+	if (controller)
+	{
+		controller->actionStates[controller->currentActionState]->Action12();
 	}
 }
 
