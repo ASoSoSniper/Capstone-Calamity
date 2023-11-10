@@ -37,7 +37,6 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UnitActions::AssignFaction(unitStats->faction, this);
 	SphereCheck();
 	SetBuildState();
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Begun building"));

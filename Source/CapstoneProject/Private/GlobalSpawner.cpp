@@ -129,6 +129,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		if (!prefab) return;
 
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+		UnitActions::AssignFaction(faction, newBuilding);
 	}
 	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 }

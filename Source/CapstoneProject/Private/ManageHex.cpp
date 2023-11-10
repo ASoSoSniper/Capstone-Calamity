@@ -73,7 +73,8 @@ void UManageHex::Action3()
 	switch (subSelect)
 	{
 	case None:
-		AddWorkersToHex(WorkerType::Human, 2);
+		if (controller->selectedHex->hexOwner == controller->playerFaction)
+			AddWorkersToHex(WorkerType::Human, 2);
 		break;
 	case BuildingSelect:
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
@@ -88,7 +89,8 @@ void UManageHex::Action4()
 	switch (subSelect)
 	{
 	case None:
-		RemoveWorkers(WorkerType::Human, 2);
+		if (controller->selectedHex->hexOwner == controller->playerFaction)
+			RemoveWorkers(WorkerType::Human, 2);
 		break;
 	case BuildingSelect:
 		controller->Build(SpawnableBuildings::Outpost);

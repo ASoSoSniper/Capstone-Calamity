@@ -15,7 +15,6 @@ void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UnitActions::AssignFaction(unitStats->faction, this);
 	if (!spawner)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
