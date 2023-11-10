@@ -14,7 +14,7 @@
 
 void UnitActions::HarvestResources(Factions faction, int quantity, StratResources resource)
 {
-    if (resource != StratResources::None)
+    /*if (resource != StratResources::None)
     {
         if (ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory.Find(resource))
         {
@@ -30,7 +30,7 @@ void UnitActions::HarvestResources(Factions faction, int quantity, StratResource
     else
     {
         GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("No resources found"));
-    }
+    }*/
 }
 
 void UnitActions::Attack(TArray<AActor*> attackers, TArray<AActor*> targets)
@@ -193,6 +193,8 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
 
 FactionRelationship UnitActions::GetFactionRelationship(Factions unitFaction, Factions targetFaction)
 {
+    if (unitFaction == targetFaction) return FactionRelationship::Ally;
+
     Faction* faction;
 
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(unitFaction))
@@ -266,9 +268,14 @@ int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desired
     return workersToRemove;
 }
 
-TMap<StratResources, int> UnitActions::GetFactionResources(Factions faction)
+TArray<int> UnitActions::GetFactionResources(Factions faction)
 {
-    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory;
+    TArray<int> resources;
+    for (auto resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        resources.Add(resource.Value.currentResources);
+    }
+    return resources;
 }
 
 void UnitActions::AssignFaction(Factions faction, AActor* target)

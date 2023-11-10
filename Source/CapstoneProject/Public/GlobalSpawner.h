@@ -71,6 +71,7 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> farmlandPrefab;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> powerPlantPrefab;
+	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> outpostPrefab;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere) TSubclassOf<class AMergedArmy> mergedArmyPrefab;

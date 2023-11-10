@@ -3,6 +3,7 @@
 
 #include "Building.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -35,7 +36,9 @@ ABuilding::ABuilding()
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
-		
+	
+	UnitActions::AssignFaction(unitStats->faction, this);
+	SphereCheck();
 	SetBuildState();
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Begun building"));
 }
@@ -76,6 +79,7 @@ void ABuilding::SetBuildState()
 	case Building:
 		buildState = Complete;
 		UpdateResources();
+		BuildingAction();
 		break;
 	case Complete:
 		currBuildTime = upgradeTime;
@@ -92,5 +96,39 @@ void ABuilding::Harvest(ABaseHex* hex)
 
 void ABuilding::UpdateResources()
 {
+}
+
+void ABuilding::BuildingAction()
+{
+}
+
+void ABuilding::SphereCheck()
+{
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(this);
+	TArray<FHitResult> results;
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+
+	if (bHit)
+	{
+		for (int i = 0; i < results.Num(); i++)
+		{
+			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
+			if (hexActor && results[i].GetActor() != hexNav->currentHex)
+			{
+				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
+				{
+					SetActorLocation(hexActor->buildingAnchor->GetComponentLocation());
+					hexActor->building = this;
+					hexNav->currentHex = hexActor;
+
+					if (hexActor->hexOwner == Factions::None) hexActor->hexOwner = unitStats->faction;
+
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
+					break;
+				}
+			}
+		}
+	}
 }
 

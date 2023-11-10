@@ -21,10 +21,15 @@ public:
 		int available;
 	};
 
-	Factions faction;
+	struct InventoryStat
+	{
+		int currentResources = 0;
+		int maxResources = 10;
+		int resourcePerTick = 0;
+	};
 
-	UPROPERTY(BlueprintReadWrite) TMap<StratResources, int> resourceInventory;
-	UPROPERTY(BlueprintReadWrite) TMap<StratResources, int> resourcePerTick;
+	Factions faction;
+	UPROPERTY(BlueprintReadWrite) TMap<StratResources, InventoryStat> resourceInventory;
 	TMap<WorkerType, WorkerStats> availableWorkers;
 	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;

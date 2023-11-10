@@ -46,7 +46,8 @@ void UManageHex::Action1()
 		subSelect = BuildingSelect;
 		break;
 	case BuildingSelect:
-		controller->Build(SpawnableBuildings::Farmland);
+		if (controller->selectedHex->hexOwner == controller->playerFaction)
+			controller->Build(SpawnableBuildings::Farmland);
 		Reset();
 		break;
 	}
@@ -60,7 +61,8 @@ void UManageHex::Action2()
 		
 		break;
 	case BuildingSelect:
-		controller->Build(SpawnableBuildings::MiningStation);
+		if (controller->selectedHex->hexOwner == controller->playerFaction)
+			controller->Build(SpawnableBuildings::MiningStation);
 		Reset();
 		break;
 	}
@@ -74,7 +76,8 @@ void UManageHex::Action3()
 		AddWorkersToHex(WorkerType::Human, 2);
 		break;
 	case BuildingSelect:
-		controller->Build(SpawnableBuildings::PowerPlant);
+		if (controller->selectedHex->hexOwner == controller->playerFaction)
+			controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
 	}
@@ -88,7 +91,7 @@ void UManageHex::Action4()
 		RemoveWorkers(WorkerType::Human, 2);
 		break;
 	case BuildingSelect:
-		controller->Build(SpawnableBuildings::PowerPlant);
+		controller->Build(SpawnableBuildings::Outpost);
 		Reset();
 		break;
 	}

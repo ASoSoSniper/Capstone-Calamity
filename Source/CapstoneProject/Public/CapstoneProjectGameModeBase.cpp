@@ -48,16 +48,17 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 
 	for (auto faction : activeFactions)
 	{
-		//faction.Value->resourceInventory[StratResources::Food] += faction.Value->resourcePerTick[StratResources::Food];
 		for (auto resource : faction.Value->resourceInventory)
 		{	
-			faction.Value->resourceInventory[resource.Key] += faction.Value->resourcePerTick[resource.Key];
+			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources += faction.Value->resourceInventory[resource.Key].resourcePerTick;
+
+			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources = FMath::Clamp(activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources, 0, activeFactions[faction.Key]->resourceInventory[resource.Key].maxResources);
 		}
 	}
 	currentHarvestTime = harvestTickLength;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food], activeFactions[Factions::Human]->resourcePerTick[StratResources::Food]));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production], activeFactions[Factions::Human]->resourcePerTick[StratResources::Production]));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy], activeFactions[Factions::Human]->resourcePerTick[StratResources::Energy]));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].resourcePerTick));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].resourcePerTick));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].resourcePerTick));
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()

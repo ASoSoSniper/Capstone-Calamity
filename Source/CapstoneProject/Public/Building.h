@@ -51,4 +51,8 @@ public:
 	void SetBuildState();
 	virtual void Harvest(ABaseHex* hex);
 	virtual void UpdateResources();
+	virtual void BuildingAction();
+
+	void SphereCheck();
+	UPROPERTY(EditAnywhere) float hexSnapDistance = 20.f;
 };

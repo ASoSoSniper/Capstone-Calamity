@@ -96,12 +96,7 @@ void ABasePlayerController::Build(SpawnableBuildings building)
 
 TArray<int> ABasePlayerController::GetPlayerResources()
 {
-	TArray<int> numbers;
-	TMap<StratResources, int> resources = UnitActions::GetFactionResources(playerFaction);
-	for (auto resource : resources)
-	{
-		numbers.Add(resource.Value);
-	}
+	TArray<int> numbers = UnitActions::GetFactionResources(playerFaction);
 
 	return numbers;
 }

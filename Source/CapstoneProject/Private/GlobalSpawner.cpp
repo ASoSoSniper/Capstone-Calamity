@@ -10,6 +10,7 @@
 #include "MiningStation.h"
 #include "Farmland.h"
 #include "PowerPlant.h"
+#include "Outpost.h"
 #include "BattleObject.h"
 
 // Sets default values
@@ -30,6 +31,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!miningStationPrefab) miningStationPrefab = AMiningStation::StaticClass();
 	if (!farmlandPrefab) farmlandPrefab = AFarmland::StaticClass();
 	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
+	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 }
 
@@ -50,6 +52,8 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 		return farmlandPrefab;
 	case SpawnableBuildings::PowerPlant:
 		return powerPlantPrefab;
+	case SpawnableBuildings::Outpost:
+		return outpostPrefab;
 	default:
 		return nullptr;
 	}
@@ -125,12 +129,6 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		if (!prefab) return;
 
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		hex->building = newBuilding;
-
-		UHexNav* hexNav = newBuilding->GetComponentByClass<UHexNav>();
-		if (hexNav) hexNav->currentHex = hex;
-
-		UnitActions::AssignFaction(faction, newBuilding);
 	}
 	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 }
