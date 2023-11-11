@@ -5,5 +5,5 @@
 
 void AMaterialStorage::UpdateResources()
 {
-
+	Cast<ABaseHex>(hexNav->currentHex)->UpdateResourceCapIncrease(storageIncrease);
 }

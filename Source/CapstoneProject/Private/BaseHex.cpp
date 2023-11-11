@@ -38,9 +38,9 @@ ABaseHex::ABaseHex()
 	buildingAnchor->SetupAttachment(RootComponent);
 
 	//Initialize resource yields
-	resourceBonuses.Add(StratResources::Energy, energyYieldBonus);
-	resourceBonuses.Add(StratResources::Production, productionYieldBonus);
-	resourceBonuses.Add(StratResources::Food, foodYieldBonus);
+	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus,0 });
+	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus, 0 });
+	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus, 0 });
 
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);
@@ -144,7 +144,7 @@ void ABaseHex::Harvest(float& DeltaTime)
 
 	if (hexOwner != Factions::None)
 	{
-		UnitActions::HarvestResources(hexOwner, resourceBonuses[StratResources::Food], StratResources::Food);
+		UnitActions::HarvestResources(hexOwner, resourceBonuses[StratResources::Food].yieldBonus, StratResources::Food);
 		if (building)
 		{
 			building->Harvest(this);
@@ -176,7 +176,7 @@ bool ABaseHex::ActiveHarvesting()
 
 void ABaseHex::UpdateFoodYield(int value)
 {
-	resourceBonuses[StratResources::Food] += value;
+	resourceBonuses[StratResources::Food].yieldBonus += value;
 
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
 	{
@@ -190,7 +190,7 @@ void ABaseHex::UpdateFoodYield(int value)
 
 void ABaseHex::UpdateProductionYield(int value)
 {
-	resourceBonuses[StratResources::Production] += value;
+	resourceBonuses[StratResources::Production].yieldBonus += value;
 
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
 	{
@@ -204,7 +204,7 @@ void ABaseHex::UpdateProductionYield(int value)
 
 void ABaseHex::UpdateEnergyYield(int value)
 {
-	resourceBonuses[StratResources::Energy] += value;
+	resourceBonuses[StratResources::Energy].yieldBonus += value;
 
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
 	{
@@ -222,8 +222,32 @@ void ABaseHex::ToggleResourceYield()
 
 	int axis = harvesting ? 1 : -1;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += axis * resourceBonuses[StratResources::Food];
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += axis * resourceBonuses[StratResources::Production];
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += axis * resourceBonuses[StratResources::Energy];
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += axis * resourceBonuses[StratResources::Food].yieldBonus;
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += axis * resourceBonuses[StratResources::Production].yieldBonus;
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += axis * resourceBonuses[StratResources::Energy].yieldBonus;
+
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].maxResources += axis * resourceBonuses[StratResources::Food].capBonus;
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].maxResources += axis * resourceBonuses[StratResources::Production].capBonus;
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += axis * resourceBonuses[StratResources::Energy].capBonus;
+}
+
+void ABaseHex::UpdateResourceCapIncrease(int value)
+{
+	resourceBonuses[StratResources::Food].capBonus += value;
+	resourceBonuses[StratResources::Production].capBonus += value;
+	resourceBonuses[StratResources::Energy].capBonus += value;
+
+	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
+		return;
+	}
+
+	if (harvesting)
+	{
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].maxResources += value;
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].maxResources += value;
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += value;
+	}
 }
 

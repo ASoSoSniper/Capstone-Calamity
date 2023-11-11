@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Building.h"
-#include "MaterialStorage.generated.h"
+#include "BuildingAttachment.h"
+#include "OutpostStorage.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONEPROJECT_API AMaterialStorage : public ABuilding
+class CAPSTONEPROJECT_API UOutpostStorage : public UBuildingAttachment
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere) int storageIncrease = 200;
-
 	virtual void UpdateResources() override;
+
+	UPROPERTY(EditAnywhere) int storageIncrease = 200;
 };

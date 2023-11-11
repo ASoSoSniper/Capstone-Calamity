@@ -85,3 +85,19 @@ void AOutpost::BuildingAction()
 {
 	claimedHexes = ClaimLand();
 }
+
+void AOutpost::BuildAttachment(BuildingAttachments attachment)
+{
+	UBuildingAttachment* newBuilding;
+	switch (attachment)
+	{
+	case BuildingAttachments::Storage:
+		newBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
+		break;
+	}
+
+	if (newBuilding)
+	{
+		//newBuilding->SetUpAttachment(RootComponent);
+	}
+}

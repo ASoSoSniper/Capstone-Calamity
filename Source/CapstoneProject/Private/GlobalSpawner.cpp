@@ -11,6 +11,7 @@
 #include "Farmland.h"
 #include "PowerPlant.h"
 #include "Outpost.h"
+#include "MaterialStorage.h"
 #include "BattleObject.h"
 
 // Sets default values
@@ -33,6 +34,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
 	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
+	if (!materialStoragePrefab) materialStoragePrefab = AMaterialStorage::StaticClass();
 }
 
 // Called every frame
@@ -54,6 +56,8 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 		return powerPlantPrefab;
 	case SpawnableBuildings::Outpost:
 		return outpostPrefab;
+	case SpawnableBuildings::Storage:
+		return materialStoragePrefab;
 	default:
 		return nullptr;
 	}

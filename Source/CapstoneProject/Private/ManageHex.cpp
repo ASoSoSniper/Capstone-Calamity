@@ -107,7 +107,7 @@ void UManageHex::Action5()
 		
 		break;
 	case BuildingSelect:
-		//controller->Build(SpawnableBuildings::PowerPlant);
+		controller->Build(SpawnableBuildings::Storage);
 		Reset();
 		break;
 	}

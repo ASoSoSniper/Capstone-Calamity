@@ -59,8 +59,14 @@ public:
 
 //Variables that change depending on the hex's identity
 #pragma region Identity
+	struct ResourceStats
+	{
+		int yieldBonus;
+		int capBonus;
+	};
 
-	TMap<StratResources, int> resourceBonuses;
+	TMap<StratResources, ResourceStats> resourceBonuses;
+
 	UPROPERTY(EditAnywhere) int energyYieldBonus = 1;
 	UPROPERTY(EditAnywhere) int productionYieldBonus = 1;
 	UPROPERTY(EditAnywhere) int foodYieldBonus = 1;
@@ -95,6 +101,7 @@ public:
 	void UpdateFoodYield(int value);
 	void UpdateProductionYield(int value);
 	void UpdateEnergyYield(int value);
+	void UpdateResourceCapIncrease(int value);
 
 	void ToggleResourceYield();
 };

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Building.h"
 #include "BaseHex.h"
+#include "OutpostStorage.h"
 #include "Outpost.generated.h"
 
 /**
@@ -26,7 +27,19 @@ public:
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)
 		float traceLength = 50.f;
-	UPROPERTY(VisibleAnywhere)
-		TArray<ABaseHex*> claimedHexes;
-		void BuildingAction() override;
+	UPROPERTY(VisibleAnywhere) TArray<ABaseHex*> claimedHexes;
+	
+	void BuildingAction() override;
+
+	enum BuildingAttachments
+	{
+		None,
+		Storage,
+		DefenseStation,
+		RobotFactory,
+		Barracks
+	};
+	void BuildAttachment(BuildingAttachments attachment);
+
+	UOutpostStorage* storageBuilding;
 };
