@@ -2,7 +2,8 @@
 
 
 #include "Outpost.h"
-
+#include "OutpostStorage.h"
+#include "BuildingAttachment.h"
 
 TArray<ABaseHex*> AOutpost::ClaimLand()
 {
@@ -96,8 +97,8 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 		break;
 	}
 
-	if (newBuilding)
+	/*if (newBuilding)
 	{
 		//newBuilding->SetUpAttachment(RootComponent);
-	}
+	}*/
 }

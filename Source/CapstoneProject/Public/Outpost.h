@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Building.h"
 #include "BaseHex.h"
-#include "OutpostStorage.h"
 #include "Outpost.generated.h"
+
+class UOutpostStorage;
+class UBuildingAttachment;
 
 /**
  * 
