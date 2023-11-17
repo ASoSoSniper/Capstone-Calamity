@@ -1,0 +1,3 @@
+#Event Template: [EventName|#OfButtons|ImageID|ButtonName|ButtonName2|.....;]
+Event001|2|1|Test Event 1|Button 1 (Epic)|Button 2 (Unreal);
+Event002|2|2|Test Event 2|Button 1 (Epic x2)|Button 2 (Unreal x2);
