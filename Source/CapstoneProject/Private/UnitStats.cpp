@@ -21,11 +21,11 @@ void UUnitStats::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (auto faction : ACapstoneProjectGameModeBase::activeFactions)
+	for (auto currentFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		factionVisibility.Add(faction.Key, false);
+		unitVisibility.Add(currentFaction.Key, false);
 	}
-	factionVisibility[faction] = true;
+	//unitVisibility[faction] = true;
 	currhealTime = maxHealTime;
 }
 

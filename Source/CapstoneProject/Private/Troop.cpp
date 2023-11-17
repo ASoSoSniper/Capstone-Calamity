@@ -8,7 +8,17 @@
 
 ATroop::ATroop()
 {
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Knight_Idle.Knight_Idle'"));
+	if (meshComponent)
+	{
+		mesh->SetStaticMesh(meshComponent);
+	}
+	mesh->SetCollisionProfileName("NoCollision");
 	
+	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+
+	mesh->SetupAttachment(sphere);
 }
 
 void ATroop::BeginPlay()
@@ -82,7 +92,40 @@ void ATroop::Action4()
 
 void ATroop::AnalyzeNextHex()
 {
+	if (hexPathIndex >= hexPath.Num()) return;
+
 	ABaseHex* nextHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
 
+	//If this hex is visible to humans:
+	if (nextHex->factionVisibility[Factions::Human].status == ABaseHex::Visible)
+	{
+		switch (unitStats->faction)
+		{
+			//If the troop is human, change nothing
+		case Factions::Human:
+			break;
+			//If the troop is alien, set visibility to active
+		default:
+			ToggleVisibility(false);
+			break;
+		}
+	}
+	else
+	{
+		switch (unitStats->faction)
+		{
+			//If the troop is human, change nothing
+		case Factions::Human:
+			break;
+			//If the troop is alien, set visibility to active
+		default:
+			ToggleVisibility(true);
+			break;
+		}
+	}
+}
 
+void ATroop::ToggleVisibility(bool visible)
+{
+	
 }
