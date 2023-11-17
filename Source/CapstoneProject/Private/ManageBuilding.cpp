@@ -40,3 +40,33 @@ void UManageBuilding::CheckSelection()
 		CueActionState(ActionStates::None);
 	}
 }
+
+void UManageBuilding::Action1()
+{
+	switch (subSelect)
+	{
+	case None:
+		subSelect = Build;
+		break;
+	case Build:
+		
+		break;
+	}
+}
+
+void UManageBuilding::Action2()
+{
+}
+
+void UManageBuilding::Action3()
+{
+}
+
+void UManageBuilding::Action4()
+{
+}
+
+void UManageBuilding::Reset()
+{
+	subSelect = None;
+}

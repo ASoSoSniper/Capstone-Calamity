@@ -32,6 +32,7 @@ public:
 
 	enum BuildStates
 	{
+		Inactive,
 		Building,
 		Complete
 	};
@@ -41,4 +42,6 @@ public:
 	void Constructing(float& DeltaTime);
 
 	virtual void UpdateResources();
+
+	virtual void Activate();
 };

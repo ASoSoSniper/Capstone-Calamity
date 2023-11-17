@@ -40,25 +40,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 {
-	if (currentHarvestTime > 0)
-	{
-		currentHarvestTime -= DeltaTime * timeScale;
-		return;
-	}
-
-	for (auto faction : activeFactions)
-	{
-		for (auto resource : faction.Value->resourceInventory)
-		{	
-			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources += faction.Value->resourceInventory[resource.Key].resourcePerTick;
-
-			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources = FMath::Clamp(activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources, 0, activeFactions[faction.Key]->resourceInventory[resource.Key].maxResources);
-		}
-	}
-	currentHarvestTime = harvestTickLength;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].resourcePerTick));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d max,%d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].resourcePerTick));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].resourcePerTick));
+	Harvest(DeltaTime);
+	Scan(DeltaTime);
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()
@@ -80,4 +63,36 @@ Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 
 	//Return the selected faction
 	return selectedFaction;
+}
+
+void ACapstoneProjectGameModeBase::Harvest(float& DeltaTime)
+{
+	if (currentHarvestTime > 0)
+	{
+		currentHarvestTime -= DeltaTime * timeScale;
+		return;
+	}
+	for (auto faction : activeFactions)
+	{
+		for (auto resource : faction.Value->resourceInventory)
+		{
+			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources += faction.Value->resourceInventory[resource.Key].resourcePerTick;
+
+			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources = FMath::Clamp(activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources, 0, activeFactions[faction.Key]->resourceInventory[resource.Key].maxResources);
+		}
+	}
+	currentHarvestTime = harvestTickLength;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].resourcePerTick));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d max,%d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].resourcePerTick));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].resourcePerTick));
+}
+
+void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
+{
+	if (currentScanTime > 0)
+	{
+		currentScanTime -= DeltaTime;
+		return;
+	}
+	currentScanTime = visibilityScanRate;
 }

@@ -20,6 +20,8 @@ class CAPSTONEPROJECT_API AOutpost : public ABuilding
 
 public:
 
+	AOutpost();
+
 	UPROPERTY(EditAnywhere) int range = 4;
 	TArray<ABaseHex*> ClaimLand();
 
@@ -43,5 +45,5 @@ public:
 	};
 	void BuildAttachment(BuildingAttachments attachment);
 
-	UOutpostStorage* storageBuilding;
+	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
 };

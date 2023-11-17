@@ -3,6 +3,7 @@
 
 #include "UnitStats.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UUnitStats::UUnitStats()
@@ -20,7 +21,11 @@ void UUnitStats::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	for (auto faction : ACapstoneProjectGameModeBase::activeFactions)
+	{
+		factionVisibility.Add(faction.Key, false);
+	}
+	factionVisibility[faction] = true;
 	currhealTime = maxHealTime;
 }
 
@@ -38,6 +43,11 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 			Heal();
 			currhealTime = maxHealTime;
 		}
+	}
+
+	if (ACapstoneProjectGameModeBase::currentScanTime <= 0.f)
+	{
+		Visibility(visibilityRadius);
 	}
 }
 
@@ -61,6 +71,24 @@ void UUnitStats::Heal()
 	{
 		savedUnits[i].currentHP += reinforceRate;
 		savedUnits[i].currentHP = FMath::Clamp(savedUnits[i].currentHP, 0, savedUnits[i].maxHP);
+	}
+}
+
+void UUnitStats::Visibility(float radius)
+{
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(GetOwner());
+	TArray<FHitResult> results;
+
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), radius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+
+	if (bHit)
+	{
+		for (int i = 0; i < results.Num(); ++i)
+		{
+			ABaseHex* hex = Cast<ABaseHex>(results[i].GetActor());
+			if (hex) hex->ToggleVisibility(faction);
+		}
 	}
 }
 

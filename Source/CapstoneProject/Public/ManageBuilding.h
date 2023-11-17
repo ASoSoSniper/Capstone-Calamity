@@ -20,4 +20,18 @@ public:
 	virtual void Select(AActor* selectedObject) override;
 	virtual void SwitchState() override;
 	virtual void CheckSelection() override;
+
+	virtual void Action1() override;
+	virtual void Action2() override;
+	virtual void Action3() override;
+	virtual void Action4() override;
+
+	virtual void Reset() override;
+
+	enum SubSelects
+	{
+		None,
+		Build
+	};
+	SubSelects subSelect;
 };

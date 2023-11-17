@@ -53,6 +53,12 @@ void ABaseHex::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Add visibility categories for all factions
+	for (auto faction : ACapstoneProjectGameModeBase::activeFactions)
+	{
+		factionVisibility.Add(faction.Key, Visibility{Undiscovered, false, false});
+	}
+
 	if (!spawner)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
@@ -73,9 +79,10 @@ void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!harvesting) return;
-
-	//Harvest(DeltaTime);
+	if (ACapstoneProjectGameModeBase::currentScanTime <= 0)
+	{
+		SetVisibility();
+	}
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -248,6 +255,37 @@ void ABaseHex::UpdateResourceCapIncrease(int value)
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].maxResources += value;
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].maxResources += value;
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += value;
+	}
+}
+
+void ABaseHex::ToggleVisibility(Factions faction)
+{
+	if (!factionVisibility.Contains(faction))
+	{
+		factionVisibility.Add(faction, Visibility{ Undiscovered, false, false });
+	}
+
+	factionVisibility[faction].inSight = true;
+}
+
+void ABaseHex::SetVisibility()
+{
+	for (auto faction : factionVisibility)
+	{
+		if (faction.Value.inSight)
+		{
+			factionVisibility[faction.Key].status = Visible;
+			factionVisibility[faction.Key].discoveredByFaction = true;
+		}
+		else
+		{
+			factionVisibility[faction.Key].status = (factionVisibility[faction.Key].discoveredByFaction) ? Discovered : Undiscovered;
+		}
+		factionVisibility[faction.Key].inSight = false;
+		if (faction.Key == Factions::Human)
+		{
+			visibilityToHumans = faction.Value.status;
+		}
 	}
 }
 

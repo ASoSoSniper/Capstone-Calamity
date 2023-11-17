@@ -30,6 +30,8 @@ public:
 
 	static inline float currentHarvestTime = 0;
 	UPROPERTY(EditAnywhere) float harvestTickLength = 2.f;
+	static inline float currentScanTime = 0;
+	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
@@ -38,4 +40,7 @@ public:
 private:
 	Factions CreateNewFaction();
 	int factionCount = 0;
+
+	void Harvest(float& DeltaTime);
+	void Scan(float& DeltaTime);
 };

@@ -34,4 +34,6 @@ public:
 	virtual void Action4();
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
+
+	virtual void AnalyzeNextHex() override;
 };

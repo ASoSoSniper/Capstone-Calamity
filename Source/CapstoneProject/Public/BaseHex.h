@@ -36,12 +36,12 @@ public:
 #pragma region Components
 
 	//UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
-	UPROPERTY(VisibleAnywhere) UInteractable* interactable;
-	UPROPERTY(EditAnywhere) USceneComponent* troopAnchor;
-	UPROPERTY(EditAnywhere) USceneComponent* buildingAnchor;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
+	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
+	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
 
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* hexMesh;
-	UPROPERTY(EditAnywhere) USphereComponent* collider;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
+	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
 
 #pragma endregion
 
@@ -67,12 +67,25 @@ public:
 
 	TMap<StratResources, ResourceStats> resourceBonuses;
 
-	UPROPERTY(EditAnywhere) int energyYieldBonus = 1;
-	UPROPERTY(EditAnywhere) int productionYieldBonus = 1;
-	UPROPERTY(EditAnywhere) int foodYieldBonus = 1;
-	UPROPERTY(EditAnywhere) int hexID;
-	UPROPERTY(EditAnywhere) TerrainType hexTerrain;
+	enum VisibilityStatus
+	{
+		Undiscovered,
+		Discovered,
+		Visible
+	};
+	struct Visibility
+	{
+		VisibilityStatus status = Undiscovered;
+		bool inSight = false;
+		bool discoveredByFaction = false;
+	};
 
+	UPROPERTY(EditAnywhere, Category = "Resources") int energyYieldBonus = 1;
+	UPROPERTY(EditAnywhere, Category = "Resources") int productionYieldBonus = 1;
+	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
+	UPROPERTY(EditAnywhere, Category = "Identity") int hexID;
+	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain;
+	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();
@@ -87,9 +100,8 @@ public:
 
 	bool battleInProgress;
 
-	UPROPERTY(EditAnywhere) Factions hexOwner = Factions::None;
-
 	TMap<WorkerType, int> workersInHex;
+	TMap<Factions, Visibility> factionVisibility;
 
 	float currentHarvestTime;
 	float maxHarvestTime = 2.f;
@@ -104,4 +116,9 @@ public:
 	void UpdateResourceCapIncrease(int value);
 
 	void ToggleResourceYield();
+
+	void ToggleVisibility(Factions faction);
+	void SetVisibility();
+
+	UPROPERTY(VisibleAnywhere) int visibilityToHumans;
 };

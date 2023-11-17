@@ -5,6 +5,11 @@
 #include "OutpostStorage.h"
 #include "BuildingAttachment.h"
 
+AOutpost::AOutpost()
+{
+	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
+}
+
 TArray<ABaseHex*> AOutpost::ClaimLand()
 {
 	TArray<ABaseHex*> hexesToClaim;
@@ -85,20 +90,17 @@ TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
 void AOutpost::BuildingAction()
 {
 	claimedHexes = ClaimLand();
+	BuildAttachment(BuildingAttachments::Storage);
 }
 
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
-{
-	UBuildingAttachment* newBuilding;
+{	
 	switch (attachment)
 	{
 	case BuildingAttachments::Storage:
-		newBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
+		storageBuilding->Activate();
 		break;
 	}
 
-	/*if (newBuilding)
-	{
-		//newBuilding->SetUpAttachment(RootComponent);
-	}*/
+	
 }

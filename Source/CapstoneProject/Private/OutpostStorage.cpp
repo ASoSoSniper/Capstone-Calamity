@@ -7,3 +7,8 @@ void UOutpostStorage::UpdateResources()
 {
 	Cast<ABaseHex>(outpost->hexNav->currentHex)->UpdateResourceCapIncrease(storageIncrease);
 }
+
+void UOutpostStorage::Activate()
+{
+	Super::Activate();
+}

@@ -203,12 +203,17 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 		if (hexNav->currentHex == hexPath[hexPathIndex])
 		{
 			hexPathIndex++;
+			AnalyzeNextHex();
 			if (hexPathIndex > hexPath.Num() - 1)
 			{
 				moveState = Idle;
 			}
 		}
 	}
+}
+
+void AMovementAI::AnalyzeNextHex()
+{
 }
 
 

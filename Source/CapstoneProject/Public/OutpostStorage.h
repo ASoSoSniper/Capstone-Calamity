@@ -16,5 +16,8 @@ class CAPSTONEPROJECT_API UOutpostStorage : public UBuildingAttachment
 	
 	virtual void UpdateResources() override;
 
+public:
+	virtual void Activate() override;
+
 	UPROPERTY(EditAnywhere) int storageIncrease = 200;
 };

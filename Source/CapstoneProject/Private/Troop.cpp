@@ -79,3 +79,10 @@ void ATroop::Action3()
 void ATroop::Action4()
 {
 }
+
+void ATroop::AnalyzeNextHex()
+{
+	ABaseHex* nextHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
+
+
+}
