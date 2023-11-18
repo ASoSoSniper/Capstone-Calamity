@@ -272,17 +272,23 @@ void ABaseHex::SetVisibility()
 {
 	for (auto faction : factionVisibility)
 	{
+		//Declare variable to check whether visibility has changed
 		VisibilityStatus originalVisibility = factionVisibility[faction.Key].status;
 
+		//If this faction has a line of sight on this hex:
 		if (faction.Value.inSight)
 		{
+			//Set hex to visible for this faction
 			factionVisibility[faction.Key].status = Visible;
+			//Faction has discovered this hex
 			factionVisibility[faction.Key].discoveredByFaction = true;
 
+			//If visibility status has changed, and there are troops in hex:
 			if (factionVisibility[faction.Key].status != originalVisibility && !troopsInHex.IsEmpty())
 			{
 				for (int i = 0; i < troopsInHex.Num(); ++i)
 				{
+					//Make all non-human troops visible
 					if (troopsInHex[i]->unitStats->faction != Factions::Human)
 						Cast<ATroop>(troopsInHex[i])->mesh->SetVisibility(true);
 				}
@@ -302,7 +308,7 @@ void ABaseHex::SetVisibility()
 			}
 		}
 		factionVisibility[faction.Key].inSight = false;
-		if (faction.Key == Factions::Human)
+		if (faction.Key == Factions::Alien1)
 		{
 			visibilityToHumans = faction.Value.status;
 		}
