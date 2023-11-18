@@ -35,8 +35,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
-	virtual void AnalyzeNextHex() override;
-	void ToggleVisibility(bool visible);
-
 	UPROPERTY(EditAnywhere) UStaticMeshComponent* mesh;
 };

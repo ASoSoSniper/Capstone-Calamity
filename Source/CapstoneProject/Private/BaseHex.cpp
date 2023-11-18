@@ -272,14 +272,34 @@ void ABaseHex::SetVisibility()
 {
 	for (auto faction : factionVisibility)
 	{
+		VisibilityStatus originalVisibility = factionVisibility[faction.Key].status;
+
 		if (faction.Value.inSight)
 		{
 			factionVisibility[faction.Key].status = Visible;
 			factionVisibility[faction.Key].discoveredByFaction = true;
+
+			if (factionVisibility[faction.Key].status != originalVisibility && !troopsInHex.IsEmpty())
+			{
+				for (int i = 0; i < troopsInHex.Num(); ++i)
+				{
+					if (troopsInHex[i]->unitStats->faction != Factions::Human)
+						Cast<ATroop>(troopsInHex[i])->mesh->SetVisibility(true);
+				}
+			}
 		}
 		else
 		{
 			factionVisibility[faction.Key].status = (factionVisibility[faction.Key].discoveredByFaction) ? Discovered : Undiscovered;
+
+			if (factionVisibility[faction.Key].status != originalVisibility && !troopsInHex.IsEmpty())
+			{
+				for (int i = 0; i < troopsInHex.Num(); ++i)
+				{
+					if (troopsInHex[i]->unitStats->faction != Factions::Human)
+						Cast<ATroop>(troopsInHex[i])->mesh->SetVisibility(false);
+				}
+			}
 		}
 		factionVisibility[faction.Key].inSight = false;
 		if (faction.Key == Factions::Human)

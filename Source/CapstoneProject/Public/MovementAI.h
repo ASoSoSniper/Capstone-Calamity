@@ -68,6 +68,4 @@ public:
 		USphereComponent* sphere;
 	UPROPERTY(EditAnywhere)
 		UUnitStats* unitStats;
-
-	virtual void AnalyzeNextHex();
 };
