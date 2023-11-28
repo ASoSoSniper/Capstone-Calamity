@@ -12,13 +12,17 @@ class ABattleObject;
 UENUM()
 enum class SpawnableBuildings
 {
-	Capitol,
 	MiningStation,
 	Farmland,
 	PowerPlant,
-	Storage,
 	Road,
-	Outpost,
+	Outpost
+};
+
+UENUM()
+enum class BuildingAttachments
+{
+	Storage,
 	DefenseStation,
 	RobotFactory,
 	RobotBarracks,
@@ -38,6 +42,16 @@ enum class SpawnableUnits
 	Scout,
 	Settler,
 	Army
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingCost
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere) int productionCost;
+	UPROPERTY(EditAnywhere) int workerCost;
+
 };
 
 UCLASS()
@@ -77,4 +91,8 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere) TSubclassOf<class AMergedArmy> mergedArmyPrefab;
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABattleObject> battlePrefab;
+	
+
+	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
+	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
 };

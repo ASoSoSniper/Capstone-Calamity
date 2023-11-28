@@ -135,6 +135,9 @@ public:
 	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
 	static TArray<int> GetFactionResources(Factions faction);
+	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);
+	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
+	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex);
 };
 
 

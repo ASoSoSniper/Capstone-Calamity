@@ -278,6 +278,41 @@ TArray<int> UnitActions::GetFactionResources(Factions faction)
     return resources;
 }
 
+TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
+{
+    TMap<StratResources, int> resources;
+    for (auto resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        resources.Add(resource.Key, resource.Value.currentResources);
+    }
+    return resources;
+}
+
+TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
+{
+    TMap<WorkerType, int> workers;
+    for (auto workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
+    {
+        workers.Add(workerType.Key, workerType.Value.available);
+    }
+
+    return workers;
+}
+
+void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex)
+{
+    for (auto resource : resources)
+    {
+        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
+    }
+
+    for (auto worker : workers)
+    {
+        hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex->workersInHex[worker.Key]);
+        hex->ActiveHarvesting();
+    }
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))
