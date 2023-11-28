@@ -20,6 +20,19 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30 });
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30 });
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30 });
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0 });
+
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15 });
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20 });
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30 });
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15 });
+
+	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5 });
+	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5 });
+	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40 });
 }
 
 // Called when the game starts or when spawned
@@ -56,8 +69,6 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 		return powerPlantPrefab;
 	case SpawnableBuildings::Outpost:
 		return outpostPrefab;
-	case SpawnableBuildings::Storage:
-		return materialStoragePrefab;
 	default:
 		return nullptr;
 	}
@@ -126,14 +137,43 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Spawn building"));
 	if (hex->building == nullptr)
 	{
+		
 		FActorSpawnParameters params;
 		UClass* prefab = DetermineBuildingType(building);
+
 		if (!prefab) return;
 
-		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		UnitActions::AssignFaction(faction, newBuilding);
+		bool canAfford = false;
+
+		TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+		TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
+		if (buildingCosts.Contains(building))
+		{
+			TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+			TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
+
+			if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Robot] > buildingCosts[building].workerCost)
+			{
+				canAfford = true;
+			}
+
+			resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
+			workerCosts.Add(WorkerType::Robot, buildingCosts[building].workerCost);
+		}
+
+		if (canAfford)
+		{
+			UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
+			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+			UnitActions::AssignFaction(faction, newBuilding);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
+		}
 	}
 	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 }
