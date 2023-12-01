@@ -5,6 +5,15 @@
 #include "UnitActions.h"
 #include "CapstoneProjectGameModeBase.h"
 
+AMiningStation::AMiningStation()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationModel.BuildingMiningStationModel'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+	}
+}
+
 void AMiningStation::BeginPlay()
 {
 	Super::BeginPlay();

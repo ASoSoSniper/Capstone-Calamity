@@ -18,7 +18,7 @@ ABaseHex::ABaseHex()
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CyTheHexGuy.CyTheHexGuy'"));
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
 	if (meshAsset)
 	{
 		hexMesh->SetStaticMesh(meshAsset);
@@ -36,6 +36,9 @@ ABaseHex::ABaseHex()
 
 	buildingAnchor = CreateDefaultSubobject<USceneComponent>("Building Anchor");
 	buildingAnchor->SetupAttachment(RootComponent);
+
+	hexMeshAttachment = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Attachment"));
+	hexMeshAttachment->SetupAttachment(RootComponent);
 
 	//Initialize resource yields
 	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus,0 });

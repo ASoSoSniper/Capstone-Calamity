@@ -13,6 +13,8 @@ UCLASS()
 class CAPSTONEPROJECT_API APowerPlant : public ABuilding
 {
 	GENERATED_BODY()
+public:
+	APowerPlant();
 	
 	virtual void UpdateResources() override;
 

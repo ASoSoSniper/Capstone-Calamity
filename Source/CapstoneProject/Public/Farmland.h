@@ -13,7 +13,8 @@ UCLASS()
 class CAPSTONEPROJECT_API AFarmland : public ABuilding
 {
 	GENERATED_BODY()
-	
+public:
+	AFarmland();
 	virtual void Harvest(ABaseHex* hex) override;
 	virtual void UpdateResources() override;
 

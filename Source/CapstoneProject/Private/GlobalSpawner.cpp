@@ -137,20 +137,110 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 {
 	UStaticMesh* meshAsset;
+	UStaticMesh* extraAsset;
 	switch (terrainType)
 	{
 	case TerrainType::Plains:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
+		hex->hexMeshAttachment->SetVisibility(false);
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
 		}
 		break;
 	case TerrainType::Hills:
+		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::Mountains:
+		hex->hexMeshAttachment->SetVisibility(false);
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileMountainModel.TileMountainModel'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::Forest:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_HexagonPlains.TileForestModel_HexagonPlains'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_TileForest.TileForestModel_TileForest'"));
+		if (extraAsset)
+		{
+			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+			hex->hexMeshAttachment->SetVisibility(true);
+		}
+		break;
+	case TerrainType::Jungle:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_TileForestThick.TileJungleModel_TileForestThick'"));
+		if (extraAsset)
+		{
+			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+			hex->hexMeshAttachment->SetVisibility(true);
+		}
+		break;
+	case TerrainType::SporeField:
+		hex->hexMeshAttachment->SetVisibility(false);
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileSporefieldModel.TileSporefieldModel'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::Border:
+		hex->hexMeshAttachment->SetVisibility(false);
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::Ship:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip1.BuildingCapitolShip1'"));
+		if (extraAsset)
+		{
+			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+			hex->hexMeshAttachment->SetVisibility(true);
+		}
+		break;
+	case TerrainType::AlienCity:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::TheRock:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingBigRockCity.BuildingBigRockCity'"));
+		if (extraAsset)
+		{
+			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+			hex->hexMeshAttachment->SetVisibility(true);
 		}
 		break;
 	default:

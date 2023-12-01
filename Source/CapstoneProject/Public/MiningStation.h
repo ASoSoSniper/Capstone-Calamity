@@ -15,6 +15,7 @@ class CAPSTONEPROJECT_API AMiningStation : public ABuilding
 	GENERATED_BODY()
 	
 public:
+	AMiningStation();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 

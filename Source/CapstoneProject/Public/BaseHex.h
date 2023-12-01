@@ -41,6 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;
 
 	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
 

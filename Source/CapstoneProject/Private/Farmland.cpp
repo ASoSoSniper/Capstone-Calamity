@@ -3,6 +3,15 @@
 
 #include "Farmland.h"
 
+AFarmland::AFarmland()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationForest.BuildingFarmingStationForest'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+	}
+}
+
 void AFarmland::Harvest(ABaseHex* hex)
 {
 	switch (buildState)

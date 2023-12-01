@@ -16,7 +16,7 @@ ABuilding::ABuilding()
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CysAwfulBuilding.CysAwfulBuilding'"));
 	if (meshAsset)
 	{
-		mesh->SetStaticMesh(meshAsset);
+		//mesh->SetStaticMesh(meshAsset);
 	}
 	mesh->SetCollisionProfileName("NoCollision");
 

@@ -25,7 +25,12 @@ void UUnitStats::BeginPlay()
 	{
 		unitVisibility.Add(currentFaction.Key, false);
 	}
-	if (faction != Factions::None) unitVisibility[faction] = true;
+	if (faction != Factions::None)
+	{
+		if (!unitVisibility.Contains(faction)) unitVisibility.Add(faction, false);
+		unitVisibility[faction] = true;
+	}
+
 	currhealTime = maxHealTime;
 }
 
