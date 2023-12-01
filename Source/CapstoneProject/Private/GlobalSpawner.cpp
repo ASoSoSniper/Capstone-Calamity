@@ -47,7 +47,6 @@ void AGlobalSpawner::BeginPlay()
 	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
 	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
-	if (!materialStoragePrefab) materialStoragePrefab = AMaterialStorage::StaticClass();
 }
 
 // Called every frame
@@ -131,6 +130,35 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 		hex->troopsInHex.Remove(testTarget);
 
 		testSeeker->ConsumeArmy(testTarget);
+		break;
+	}
+}
+
+void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
+{
+	UStaticMesh* meshAsset;
+	switch (terrainType)
+	{
+	case TerrainType::Plains:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	case TerrainType::Hills:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+		break;
+	default:
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CyTheHexGuy.CyTheHexGuy'"));
+		if (meshAsset)
+		{
+			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
 		break;
 	}
 }

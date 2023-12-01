@@ -41,6 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
+
 	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
 
 #pragma endregion
@@ -84,7 +85,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Resources") int productionYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Identity") int hexID;
-	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain;
+	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain = TerrainType::Plains;
+	TerrainType terrainChange = TerrainType::None;
 	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
 #pragma endregion
 
@@ -119,6 +121,9 @@ public:
 
 	void ToggleVisibility(Factions faction);
 	void SetVisibility();
+	void RequestTerrainChange();
 
 	UPROPERTY(VisibleAnywhere) int visibilityToHumans;
+
+	
 };

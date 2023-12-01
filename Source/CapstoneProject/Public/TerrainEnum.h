@@ -10,11 +10,15 @@
 UENUM(BlueprintType)
 enum class TerrainType
 {
-	plains, 
-	hills, 
-	mountains,
-	impassibleMnt,
-	bog, 
-	water, 
-	abyss
+	None,
+	Plains, 
+	Hills, 
+	Mountains,
+	Jungle,
+	SporeField,
+	Border,
+	Forest,
+	Ship,
+	AlienCity,
+	TheRock
 };

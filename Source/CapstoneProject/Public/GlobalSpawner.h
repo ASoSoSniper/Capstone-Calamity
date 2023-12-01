@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "UnitActions.h"
+#include "TerrainEnum.h"
 #include "GlobalSpawner.generated.h"
 
 class AMergedArmy;
@@ -81,18 +82,22 @@ public:
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> miningStationPrefab;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> farmlandPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> miningStationPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> farmlandPrefab;
 
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> powerPlantPrefab;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> outpostPrefab;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABuilding> materialStoragePrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> powerPlantPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
 
-	UPROPERTY(EditAnywhere) TSubclassOf<class ATroop> troopPrefab;
-	UPROPERTY(EditAnywhere) TSubclassOf<class AMergedArmy> mergedArmyPrefab;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ABattleObject> battlePrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ABattleObject> battlePrefab;
 	
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
+
+	//Hex models
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> hillsModel;
+	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
 };

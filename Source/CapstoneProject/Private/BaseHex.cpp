@@ -64,12 +64,8 @@ void ABaseHex::BeginPlay()
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
-
-	/*switch (hexTerrain)
-	{
-	case (TerrainType::Plains):
-
-	}*/
+	
+	if (spawner) RequestTerrainChange();
 
 	currentHarvestTime = maxHarvestTime;
 }
@@ -78,6 +74,16 @@ void ABaseHex::BeginPlay()
 void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
+	if (spawner && terrainChange != hexTerrain)
+	{
+		RequestTerrainChange();
+	}
 
 	if (ACapstoneProjectGameModeBase::currentScanTime <= 0)
 	{
@@ -313,5 +319,13 @@ void ABaseHex::SetVisibility()
 			visibilityToHumans = faction.Value.status;
 		}
 	}
+}
+
+void ABaseHex::RequestTerrainChange()
+{
+	if (terrainChange != TerrainType::None) hexTerrain = terrainChange;
+	else (terrainChange = hexTerrain);
+
+	spawner->CreateHexModel(hexTerrain, this);
 }
 
