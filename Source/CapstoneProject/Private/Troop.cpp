@@ -36,6 +36,12 @@ void ATroop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
+
 	if (merging)
 	{
 		if (hexNav->currentHex == hexNav->targetHex)
@@ -56,7 +62,14 @@ void ATroop::MergeOnTile()
 {
 	if (hexNav->currentHex == targetToMerge->hexNav->currentHex)
 	{
-		spawner->MergeArmies(this, targetToMerge, Cast<ABaseHex>(hexNav->currentHex));
+		if (spawner && targetToMerge)
+		{
+			spawner->MergeArmies(this, targetToMerge, Cast<ABaseHex>(hexNav->currentHex));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No spawner found"));
+		}
 	}
 }
 

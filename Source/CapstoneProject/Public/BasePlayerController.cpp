@@ -48,7 +48,12 @@ void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//actionStates[currentActionState]->CheckSelection();	
+	actionStates[currentActionState]->CheckSelection();	
+
+	if (spawner) return;
+
+	AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+	spawner = Cast<AGlobalSpawner>(temp);
 }
 
 
