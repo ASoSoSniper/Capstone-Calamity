@@ -6,6 +6,20 @@
 ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	MonthDic.Add(Jan, MonthStruct{ TEXT("JAN"), 31, 1 });
+	MonthDic.Add(Feb, MonthStruct{ TEXT("FEB"), 28, 2 });
+	MonthDic.Add(Mar, MonthStruct{ TEXT("MAR"), 30, 3 });
+	MonthDic.Add(Apr, MonthStruct{ TEXT("APR"), 31, 4 });
+	MonthDic.Add(May, MonthStruct{ TEXT("MAY"), 30, 5 });
+	MonthDic.Add(Jun, MonthStruct{ TEXT("JUN"), 31, 6 });
+	MonthDic.Add(Jul, MonthStruct{ TEXT("JUL"), 30, 7 });
+	MonthDic.Add(Aug, MonthStruct{ TEXT("AUG"), 31, 8 });
+	MonthDic.Add(Sep, MonthStruct{ TEXT("SEP"), 30, 9 });
+	MonthDic.Add(Oct, MonthStruct{ TEXT("OCT"), 31, 10 });
+	MonthDic.Add(Nov, MonthStruct{ TEXT("NOV"), 30, 11 });
+	MonthDic.Add(Dec, MonthStruct{ TEXT("DEC"), 31, 12 });
+	dayStruct.currentMonth = 0;
+	currSeconds = 1;
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()
@@ -42,6 +56,86 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 {
 	Harvest(DeltaTime);
 	Scan(DeltaTime);
+	Date(DeltaTime);
+}
+
+float ACapstoneProjectGameModeBase::GetDeltaTime()
+{
+	return timeScale;
+}
+
+void ACapstoneProjectGameModeBase::SetDeltaTime(float deltaTime)
+{
+	timeScale = deltaTime;
+}
+
+FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
+{
+	FText extraMinuteZero = FText::FromString("");
+	FText extraHourZero = FText::FromString("");
+	FText extraDayZero = FText::FromString("");
+
+	if (currSeconds < 1.f)
+	{
+		currSeconds += deltaTime * timeScale;
+	}
+	else
+	{
+		currSeconds = 0.f;
+
+		if (dayStruct.minute == 0)
+		{
+			dayStruct.minute = 30;
+		}
+		else
+		{
+			dayStruct.minute = 0;
+
+			if (dayStruct.hour < 23)
+			{
+				dayStruct.hour += 1;
+			}
+			else
+			{
+				dayStruct.hour = 0;
+
+				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
+				{
+					dayStruct.day += 1;
+				}
+				else
+				{
+					dayStruct.day = 1;
+					
+					if (dayStruct.currentMonth < 12)
+					{
+						dayStruct.currentMonth += 1;
+					}
+					else
+					{
+						dayStruct.currentMonth = 1;
+					}
+				}
+			}
+		}
+	}
+	if (dayStruct.minute < 10) extraMinuteZero = FText::FromString("0");
+	if (dayStruct.hour < 10) extraHourZero = FText::FromString("0");
+	if (dayStruct.day < 10) extraDayZero = FText::FromString("0");
+
+	FString extraDayZeroString = extraDayZero.ToString();
+	FString extraHourZeroString = extraHourZero.ToString();
+	FString extraMinuteZeroString = extraMinuteZero.ToString();
+
+	TArray<FStringFormatArg> Args;
+	Args.Add(FStringFormatArg(MonthDic[MonthEnum(dayStruct.currentMonth)].name));
+	Args.Add(FStringFormatArg(extraDayZeroString));
+	Args.Add(FStringFormatArg(dayStruct.day));
+	Args.Add(FStringFormatArg(extraHourZeroString));
+	Args.Add(FStringFormatArg(dayStruct.hour));
+	Args.Add(FStringFormatArg(extraMinuteZeroString));
+	Args.Add(FStringFormatArg(dayStruct.minute));
+	return FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()

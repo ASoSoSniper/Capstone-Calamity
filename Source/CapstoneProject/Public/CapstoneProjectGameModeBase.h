@@ -37,6 +37,43 @@ public:
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 
+	UFUNCTION(BlueprintCallable) float GetDeltaTime();
+	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);
+
+	UFUNCTION(BlueprintCallable) FString Date(float& deltaTime);
+	struct MonthStruct 
+	{
+		FString name;
+		int numOfDays;
+		int monthOfYear;
+	};
+	enum MonthEnum
+	{
+		Jan,
+		Feb,
+		Mar,
+		Apr,
+		May,
+		Jun,
+		Jul,
+		Aug,
+		Sep,
+		Oct,
+		Nov,
+		Dec
+	};
+	TMap<MonthEnum, MonthStruct> MonthDic;
+
+	struct DayStruct
+	{
+		int currentMonth;
+		int day;
+		int hour;
+		int minute;		
+	};
+	DayStruct dayStruct = DayStruct{0,1,0,0};
+	float currSeconds = 0;
+
 private:
 	Factions CreateNewFaction();
 	int factionCount = 0;
