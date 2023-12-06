@@ -50,6 +50,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 	FActorSpawnParameters params;
 	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
+
+	timeScale = 0.f;
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
