@@ -327,6 +327,21 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     }
 }
 
+void UnitActions::ConsumeSpentResources(Factions faction, TArray<int> values)
+{
+    int index = 0;
+    for (auto resources : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resources.Key].currentResources = FMath::Clamp(values[index], 0, resources.Value.maxResources);
+        index++;
+    }
+    for (auto workers : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
+    {
+        ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[workers.Key].available = values[index] > 0 ? values[index] : 0;
+        index++;
+    }
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))

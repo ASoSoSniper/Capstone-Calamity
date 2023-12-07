@@ -2,6 +2,7 @@
 
 
 #include "EventSpawner.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEventSpawner::AEventSpawner()
@@ -20,8 +21,13 @@ void AEventSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//eventWidget = CreateWidget<UUserWidget>(GetWorld(), eventPrefab, TEXT("CurrEvent"));
-	//eventWidget->AddToViewport();
+	/*controller = GetWorld()->GetFirstPlayerController();
+
+	if (eventPrefab)
+	{
+		//eventWidget = CreateWidget<UUserWidget>(controller, eventPrefab, TEXT("CurrEvent"));
+		//eventWidget->AddToViewport();
+	}*/
 }
 
 // Called every frame

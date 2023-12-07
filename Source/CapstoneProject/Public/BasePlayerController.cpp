@@ -90,6 +90,52 @@ void ABasePlayerController::Deselect()
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
 
+int ABasePlayerController::GetActionState()
+{
+	int state = 0;
+	switch (currentActionState)
+	{
+	case ActionStates::None:
+		state = 0;
+		break;
+	case ActionStates::HexManage:
+		state = 1;
+		break;
+	case ActionStates::BaseManage:
+		state = 2;
+		break;
+	case ActionStates::TroopManage:
+		state = 3;
+		break;
+	}
+	
+	return state;
+}
+
+void ABasePlayerController::ForceActionState(int state)
+{
+	
+	actionStates[currentActionState]->Reset();	
+
+	switch (ActionStates(state))
+	{
+	case ActionStates::None:
+		break;
+	case ActionStates::HexManage:
+		break;
+	case ActionStates::BaseManage:
+		ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+		if (hex && !hex->building)
+		{
+			actionStates[ActionStates(state)]->Select(hex->building);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Action state forced"));
+		}
+		break;
+	}
+
+	currentActionState = ActionStates(state);
+}
+
 void ABasePlayerController::Build(SpawnableBuildings building)
 {
 	if (selectedHex)
@@ -104,4 +150,42 @@ TArray<int> ABasePlayerController::GetPlayerResources()
 	TArray<int> numbers = UnitActions::GetFactionResources(playerFaction);
 
 	return numbers;
+}
+
+void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideCosts)
+{
+	TArray<int> numbers = UnitActions::GetFactionResources(playerFaction);
+	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
+	for (auto worker : workers)
+	{
+		numbers.Add(worker.Value);
+	}
+	bool canAfford = true;
+	for (int i = 0; i < numbers.Num(); ++i)
+	{
+		if (input[i] > 0)
+		{
+			numbers[i] += input[i];
+		}
+		else
+		{
+			if (numbers[i] >= input[i])
+			{
+				numbers[i] -= input[i];
+			}
+			else
+			{
+				if (overrideCosts)
+				{
+					numbers[i] = 0;
+				}
+				else
+				{
+					canAfford = false;
+				}
+			}
+		}
+	}
+	if (canAfford)
+		UnitActions::ConsumeSpentResources(playerFaction, numbers);
 }

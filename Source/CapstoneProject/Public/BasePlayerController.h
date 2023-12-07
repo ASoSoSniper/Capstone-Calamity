@@ -53,10 +53,13 @@ public:
 	void SetSelectedWorldObject(AActor* object);
 	void SetActionState();
 	void Deselect();
+	UFUNCTION(BlueprintCallable) int GetActionState();
+	UFUNCTION(BlueprintCallable) void ForceActionState(int state);
 
 	void Build(SpawnableBuildings building);
 
 	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
+	UFUNCTION(BlueprintCallable) void SetPlayerResources(TArray<int> input, bool overrideCosts);
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 };

@@ -28,8 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable) void SpawnEvent(float deltaTime);
 
-	UUserWidget* eventWidget;
-	TSubclassOf<class UUserWidget> eventPrefab;
+	//APlayerController* controller;
+	//UUserWidget* eventWidget;
+	//TSubclassOf<class UUserWidget> eventPrefab;
 
 protected:
 	// Called when the game starts or when spawned
