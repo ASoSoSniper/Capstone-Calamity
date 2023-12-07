@@ -10,6 +10,8 @@
 
 class AMergedArmy;
 class ABattleObject;
+class ASettler;
+class AOutpost;
 UENUM()
 enum class SpawnableBuildings
 {
@@ -52,7 +54,16 @@ struct FBuildingCost
 
 	UPROPERTY(EditAnywhere) int productionCost;
 	UPROPERTY(EditAnywhere) int workerCost;
+	UPROPERTY(EditAnywhere) int timeToBuild;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopCost
+{
+	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(EditAnywhere) int productionCost;
+	UPROPERTY(EditAnywhere) int timeToBuild;
+	UPROPERTY(EditAnywhere) int populationCost;
 };
 
 UCLASS()
@@ -77,6 +88,9 @@ public:
 	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 
+	bool PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpost* outpost);
+	void BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex* hex, AOutpost* outpost = nullptr);
+
 	UClass* DetermineBuildingType(SpawnableBuildings building);
 	UClass* DetermineUnitType(SpawnableUnits unit);
 
@@ -95,6 +109,7 @@ public:
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
+	UPROPERTY(EditAnywhere) TMap<SpawnableUnits, FTroopCost> troopCosts;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;

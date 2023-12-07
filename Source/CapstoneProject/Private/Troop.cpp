@@ -103,3 +103,22 @@ void ATroop::Action4()
 {
 }
 
+void ATroop::RotateToFaceTarget(FVector direction, float& DeltaTime)
+{
+	if (!mesh) return;
+	FRotator currentRotation = mesh->GetForwardVector().Rotation();
+	FRotator targetRotation = direction.Rotation();
+	float rotationProgress = 1.f;
+	FRotator newRotation = FMath::Lerp(currentRotation, targetRotation, rotationProgress * DeltaTime * rotateSpeedMultiplier);
+
+	mesh->SetWorldRotation(newRotation);
+}
+
+void ATroop::MoveToTarget(float& DeltaTime)
+{
+	Super::MoveToTarget(DeltaTime);
+
+	if (hexPathIndex < hexPath.Num())
+		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation(), DeltaTime);
+}
+

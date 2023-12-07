@@ -25,6 +25,13 @@ public:
 	virtual void Action2() override;
 	virtual void Action3() override;
 	virtual void Action4() override;
+	virtual void Action5() override;
+	//virtual void Action6() override;
+	//virtual void Action7() override;
+	//virtual void Action8() override;
+	//virtual void Action9() override;
+	//virtual void Action10() override;
+
 
 	virtual void Reset() override;
 

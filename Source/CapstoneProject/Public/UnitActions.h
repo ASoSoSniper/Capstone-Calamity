@@ -5,7 +5,6 @@
 #include "StratResources.h"
 #include "CoreMinimal.h"
 
-
 /**
  * 
  */
@@ -71,10 +70,12 @@ enum class EngagementSelect
 
 class ABaseHex;
 class ATroop;
+class ASettler;
 class AMovementAI;
 class ABuilding;
 class UUnitStats;
 class ABattleObject;
+class AOutpost;
 
 class CAPSTONEPROJECT_API UnitActions
 {
@@ -137,7 +138,7 @@ public:
 	static TArray<int> GetFactionResources(Factions faction);
 	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
-	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex);
+	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
 };
 
 

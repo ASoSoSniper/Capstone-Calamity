@@ -55,4 +55,17 @@ public:
 
 	void SphereCheck();
 	UPROPERTY(EditAnywhere) float hexSnapDistance = 20.f;
+
+	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
+
+	virtual void Action1();
+	virtual void Action2();
+	virtual void Action3();
+	virtual void Action4();
+	virtual void Action5();
+	virtual void Action6();
+	virtual void Action7();
+	virtual void Action8();
+	virtual void Action9();
+	virtual void Action10();
 };

@@ -4,10 +4,40 @@
 #include "Outpost.h"
 #include "OutpostStorage.h"
 #include "BuildingAttachment.h"
+#include "CapstoneProjectGameModeBase.h"
 
 AOutpost::AOutpost()
 {
 	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
+
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
+	}
+}
+
+void AOutpost::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (currentTroopBuildTime > 0)
+	{
+		currentTroopBuildTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+	}
+	else
+	{
+		if (!cuedUnits.IsEmpty() && spawner)
+		{
+			spawner->BuildTroop(unitStats->faction, cuedUnits[0], Cast<ABaseHex>(hexNav->currentHex));
+			cuedUnits.RemoveAt(0);
+			if (!cuedUnits.IsEmpty())
+			{
+				currentTroopBuildTime = spawner->troopCosts[cuedUnits[0]].timeToBuild;
+			}
+		}
+	}
 }
 
 TArray<ABaseHex*> AOutpost::ClaimLand()
@@ -103,4 +133,33 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 	}
 
 	
+}
+
+void AOutpost::CueTroopBuild(SpawnableUnits unit)
+{
+	if (!spawner) return;
+
+	if (spawner->troopCosts.Contains(unit))
+	{
+		bool purchased = spawner->PurchaseTroop(unitStats->faction, unit, this);
+		cuedUnits.Add(unit);
+		currentTroopBuildTime = spawner->troopCosts[unit].timeToBuild;
+	}
+}
+
+void AOutpost::Action1()
+{
+	CueTroopBuild(SpawnableUnits::Infantry);
+}
+
+void AOutpost::Action2()
+{
+}
+
+void AOutpost::Action3()
+{
+}
+
+void AOutpost::Action4()
+{
 }

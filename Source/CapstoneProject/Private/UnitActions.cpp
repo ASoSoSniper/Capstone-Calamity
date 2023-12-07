@@ -6,8 +6,10 @@
 #include "BaseHex.h"
 #include "MergedArmy.h"
 #include "Troop.h"
+#include "Settler.h"
 #include "BattleObject.h"
 #include "Building.h"
+#include "Outpost.h"
 #include "UnitStats.h"
 #include "Faction.h"
 
@@ -299,17 +301,29 @@ TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
     return workers;
 }
 
-void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex)
+void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex, AOutpost* outpost)
 {
     for (auto resource : resources)
     {
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
     }
 
-    for (auto worker : workers)
+    if (hex)
     {
-        hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex->workersInHex[worker.Key]);
-        hex->ActiveHarvesting();
+        for (auto worker : workers)
+        {
+            hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex->workersInHex[worker.Key]);
+            hex->ActiveHarvesting();
+        }
+    }
+    
+    if (outpost)
+    {
+        for (auto worker : workers)
+        {
+            ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker.Key].available -= workers[worker.Key];
+            outpost->popInStorage += workers[worker.Key];
+        }
     }
 }
 

@@ -40,12 +40,25 @@ void ABuilding::BeginPlay()
 	SphereCheck();
 	SetBuildState();
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Begun building"));
+
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
 }
 
 // Called every frame
 void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
+
 	switch (buildState)
 	{
 	case Building:
@@ -129,5 +142,45 @@ void ABuilding::SphereCheck()
 			}
 		}
 	}
+}
+
+void ABuilding::Action1()
+{
+}
+
+void ABuilding::Action2()
+{
+}
+
+void ABuilding::Action3()
+{
+}
+
+void ABuilding::Action4()
+{
+}
+
+void ABuilding::Action5()
+{
+}
+
+void ABuilding::Action6()
+{
+}
+
+void ABuilding::Action7()
+{
+}
+
+void ABuilding::Action8()
+{
+}
+
+void ABuilding::Action9()
+{
+}
+
+void ABuilding::Action10()
+{
 }
 

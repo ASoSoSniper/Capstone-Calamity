@@ -47,24 +47,55 @@ void UManageBuilding::Action1()
 	{
 	case None:
 		subSelect = Build;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("WHYYYYYYYYYYYYYYYYYYYYYY"));
 		break;
 	case Build:
-		
+		selectedBuilding->Action1();
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("WHYYYYYYYYYYYYYYYYYYYYYY"));
 		break;
 	}
 }
 
 void UManageBuilding::Action2()
 {
+	switch (subSelect)
+	{
+	case Build:
+		selectedBuilding->Action2();
+		break;
+	}
 }
 
 void UManageBuilding::Action3()
 {
+	switch (subSelect)
+	{
+	case Build:
+		selectedBuilding->Action3();
+		break;
+	}
 }
 
 void UManageBuilding::Action4()
 {
+	switch (subSelect)
+	{
+	case Build:
+		selectedBuilding->Action4();
+		break;
+	}
 }
+
+void UManageBuilding::Action5()
+{
+	switch (subSelect)
+	{
+	case Build:
+		selectedBuilding->Action5();
+		break;
+	}
+}
+
 
 void UManageBuilding::Reset()
 {

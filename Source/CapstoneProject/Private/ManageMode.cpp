@@ -28,6 +28,8 @@ void UManageMode::SwitchState()
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
 		CueActionState(ActionStates::BaseManage);
+		controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Base Manage Mode"));
 		break;
 	}
 }

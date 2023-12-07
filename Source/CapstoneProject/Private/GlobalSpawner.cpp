@@ -6,6 +6,7 @@
 #include "HexNav.h"
 #include "Building.h"
 #include "Troop.h"
+#include "Settler.h"
 #include "MergedArmy.h"
 #include "MiningStation.h"
 #include "Farmland.h"
@@ -20,19 +21,26 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30 });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30 });
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30 });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0 });
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30, 180 });
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30, 150 });
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30, 200 });
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 300 });
 
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15 });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20 });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30 });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15 });
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120 });
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120 });
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30, 150 });
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15, 120 });
 
-	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5 });
-	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5 });
-	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40 });
+	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 80 });
+	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 100 });
+	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
+
+	troopCosts.Add(SpawnableUnits::Infantry, FTroopCost{ 100, 48 });
+	troopCosts.Add(SpawnableUnits::Cavalry, FTroopCost{ 100, 60 });
+	troopCosts.Add(SpawnableUnits::Ranged, FTroopCost{ 100, 48 });
+	troopCosts.Add(SpawnableUnits::Shielder, FTroopCost{ 100, 60 });
+	troopCosts.Add(SpawnableUnits::Scout, FTroopCost{ 20, 24 });
+	troopCosts.Add(SpawnableUnits::Settler, FTroopCost{ 400, 60, 50 });
 }
 
 // Called when the game starts or when spawned
@@ -341,5 +349,47 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 	battle->Start();
 
 	return battle;
+}
+
+bool AGlobalSpawner::PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpost* outpost)
+{
+	bool canAfford = false;
+
+	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	TMap<WorkerType, int> popCosts = TMap<WorkerType, int>();
+	if (troopCosts.Contains(unit))
+	{
+		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+		TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
+
+		if (resources[StratResources::Production] >= troopCosts[unit].productionCost && workers[WorkerType::Human] > troopCosts[unit].populationCost)
+		{
+			canAfford = true;
+		}
+
+		resourceCosts.Add(StratResources::Production, troopCosts[unit].productionCost);
+		popCosts.Add(WorkerType::Human, troopCosts[unit].populationCost);
+	}
+
+	if (canAfford) UnitActions::ConsumeSpentResources(faction, resourceCosts, popCosts, nullptr);
+
+	return canAfford;
+}
+
+void AGlobalSpawner::BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex* hex, AOutpost* outpost)
+{
+	UClass* prefab = DetermineUnitType(unit);
+	FActorSpawnParameters params;
+
+	if (!prefab) return;
+
+	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(prefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+	UnitActions::AssignFaction(faction, newTroop);
+
+	if (outpost && unit == SpawnableUnits::Settler)
+	{
+		Cast<ASettler>(newTroop)->popInStorage += troopCosts[unit].populationCost;
+		outpost->popInStorage -= troopCosts[unit].populationCost;
+	}
 }
 

@@ -5,7 +5,7 @@
 
 AFarmland::AFarmland()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationForest.BuildingFarmingStationForest'"));
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationModel.BuildingFarmingStationModel'"));
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);

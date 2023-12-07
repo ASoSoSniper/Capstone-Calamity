@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Building.h"
 #include "BaseHex.h"
+#include "GlobalSpawner.h"
 #include "Outpost.generated.h"
 
 class UOutpostStorage;
@@ -21,6 +22,8 @@ class CAPSTONEPROJECT_API AOutpost : public ABuilding
 public:
 
 	AOutpost();
+
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere) int range = 4;
 	TArray<ABaseHex*> ClaimLand();
@@ -46,4 +49,14 @@ public:
 	void BuildAttachment(BuildingAttachments attachment);
 
 	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
+
+	TArray<SpawnableUnits> cuedUnits;
+	float currentTroopBuildTime;
+	void CueTroopBuild(SpawnableUnits unit);
+	int popInStorage = 0;
+
+	virtual void Action1() override;
+	virtual void Action2() override;
+	virtual void Action3() override;
+	virtual void Action4() override;
 };

@@ -200,6 +200,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation();
 		FVector newLocation = GetActorLocation() + direction * moveSpeed * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		SetActorLocation(newLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Orange, TEXT("MOVING"));
 		if (hexNav->currentHex == hexPath[hexPathIndex])
 		{
 			hexPathIndex++;
