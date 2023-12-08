@@ -36,6 +36,8 @@ public:
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
+	UPROPERTY(EditAnywhere) TArray<TerrainType> nonBuildableTerrains;
+	
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
 	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);

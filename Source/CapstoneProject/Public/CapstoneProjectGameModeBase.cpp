@@ -20,6 +20,12 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	MonthDic.Add(Dec, MonthStruct{ TEXT("DEC"), 31, 12 });
 	dayStruct.currentMonth = 0;
 	currSeconds = 1;
+
+	nonBuildableTerrains.Add(TerrainType::AlienCity);
+	nonBuildableTerrains.Add(TerrainType::Ship);
+	nonBuildableTerrains.Add(TerrainType::TheRock);
+	nonBuildableTerrains.Add(TerrainType::Mountains);
+	nonBuildableTerrains.Add(TerrainType::None);
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()

@@ -55,7 +55,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere) ABuilding* building;
 
-	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;	
+	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
 #pragma endregion
 
