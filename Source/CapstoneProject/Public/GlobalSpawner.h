@@ -50,11 +50,22 @@ enum class SpawnableUnits
 USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingCost
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere) int productionCost;
-	UPROPERTY(EditAnywhere) int workerCost;
-	UPROPERTY(EditAnywhere) int timeToBuild;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingDisplay
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildTime;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopCost

@@ -12,6 +12,7 @@
 /**
  * 
  */
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -36,8 +37,8 @@ public:
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
-	UPROPERTY(EditAnywhere) TArray<TerrainType> nonBuildableTerrains;
-	
+	static inline TArray<TerrainType> nonBuildableTerrains;
+
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
 	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);

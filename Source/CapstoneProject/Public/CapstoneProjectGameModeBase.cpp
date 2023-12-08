@@ -67,6 +67,8 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 	Date(DeltaTime);
 }
 
+
+
 float ACapstoneProjectGameModeBase::GetDeltaTime()
 {
 	return timeScale;

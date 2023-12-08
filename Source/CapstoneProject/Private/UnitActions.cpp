@@ -342,6 +342,11 @@ void UnitActions::ConsumeSpentResources(Factions faction, TArray<int> values)
     }
 }
 
+TArray<TerrainType> UnitActions::GetNonBuildableTerrain()
+{
+    return ACapstoneProjectGameModeBase::nonBuildableTerrains;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))

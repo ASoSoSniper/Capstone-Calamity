@@ -3,12 +3,12 @@
 #pragma once
 #include "FactionEnum.h"
 #include "StratResources.h"
+#include "TerrainEnum.h"
 #include "CoreMinimal.h"
 
 /**
  * 
  */
-
 
 UENUM()
 enum class ObjectTypes
@@ -140,6 +140,8 @@ public:
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
+
+	static TArray<TerrainType> GetNonBuildableTerrain();
 };
 
 

@@ -21,10 +21,10 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30, 180 });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30, 150 });
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30, 200 });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 300 });
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30, 180, FText::FromString("Mining Station")});
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30, 150, FText::FromString("Farmland") });
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30, 200, FText::FromString("Power Plant") });
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 300, FText::FromString("Outpost") });
 
 	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120 });
 	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120 });

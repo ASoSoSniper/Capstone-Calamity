@@ -62,4 +62,10 @@ public:
 	UFUNCTION(BlueprintCallable) void SetPlayerResources(TArray<int> input, bool overrideCosts);
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
+
+
+	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
+	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
+	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
+	//UFUNCTION(BlueprintCallable)
 };

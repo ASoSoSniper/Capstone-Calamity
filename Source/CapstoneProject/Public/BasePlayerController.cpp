@@ -113,8 +113,7 @@ int ABasePlayerController::GetActionState()
 }
 
 void ABasePlayerController::ForceActionState(int state)
-{
-	
+{	
 	actionStates[currentActionState]->Reset();	
 
 	switch (ActionStates(state))
@@ -125,7 +124,7 @@ void ABasePlayerController::ForceActionState(int state)
 		break;
 	case ActionStates::BaseManage:
 		ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
-		if (hex && !hex->building)
+		if (hex && hex->building)
 		{
 			actionStates[ActionStates(state)]->Select(hex->building);
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Action state forced"));
@@ -190,3 +189,65 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 	if (canAfford)
 		UnitActions::ConsumeSpentResources(playerFaction, numbers);
 }
+
+TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
+{
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	TArray<FBuildingDisplay> buildings;
+	if (!hex) return buildings;
+
+	TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
+	if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
+
+	for (auto building : spawner->buildingCosts)
+	{
+		FText name = building.Value.name;
+		FText production = FText::AsNumber(building.Value.productionCost);
+		FText workers = FText::AsNumber(building.Value.workerCost);
+		FText buildTime = FText::AsNumber(building.Value.timeToBuild);
+
+		buildings.Add(FBuildingDisplay{name, production, workers, buildTime});
+	}
+
+	return buildings;
+}
+
+void ABasePlayerController::EnterSelectionMode(bool active)
+{
+	switch (currentActionState)
+	{
+	case ActionStates::HexManage:
+		if (active)
+		{
+			actionStates[currentActionState]->Action1();
+		}
+		else
+		{
+			actionStates[currentActionState]->Reset();
+		}
+		break;
+	case ActionStates::BaseManage:
+		if (active)
+		{
+			actionStates[currentActionState]->Action1();
+		}
+		else
+		{
+			actionStates[currentActionState]->Reset();
+		}
+		break;
+	}
+}
+
+void ABasePlayerController::SelectBuilding(FText buildingName)
+{
+	for (auto buildings : spawner->buildingCosts)
+	{
+		if (buildingName.EqualTo(buildings.Value.name))
+		{
+			Build(buildings.Key);
+		}
+	}
+}
+
+

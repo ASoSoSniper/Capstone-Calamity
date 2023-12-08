@@ -15,6 +15,35 @@ class AMergedArmy;
 class AMovementAI;
 class ABuilding;
 class AGlobalSpawner;
+
+USTRUCT(BlueprintType)
+struct FHexInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int production;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energy;
+};
+
+USTRUCT(BlueprintType)
+struct FHexDisplay
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText food;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText production;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText currWorkers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText maxWorkers;
+};
+
+
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
 {
