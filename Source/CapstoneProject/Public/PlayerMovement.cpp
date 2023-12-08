@@ -163,7 +163,7 @@ void APlayerMovement::DeselectInput()
 
 void APlayerMovement::PanRight(float axis)
 {
-	if (GetActorLocation().Y >= camMinY && GetActorLocation().Y <= camMaxY)
+	/*if (GetActorLocation().Y >= camMinY && GetActorLocation().Y <= camMaxY)
 	{
 		FVector currLocation = GetActorLocation();
 		currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
@@ -176,8 +176,38 @@ void APlayerMovement::PanRight(float axis)
 			currLocation.Y = camMinY;
 		}
 		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
-	}	
+	}	*/
+
+	if (axis < 0)
+	{
+		if (GetActorLocation().Y < camMaxY)
+		{
+			FVector currLocation = GetActorLocation();
+
+			currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+
+			if (currLocation.Y <= camMaxY)
+			{
+				SetActorLocation(currLocation);
+			}
+		}
+	}
+	else if (axis > 0)
+	{
+		if (GetActorLocation().Y > camMinY)
+		{
+			FVector currLocation = GetActorLocation();
+
+			currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+
+			if (currLocation.Y >= camMinY)
+			{
+				SetActorLocation(currLocation);
+			}
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
+
 }
 
 void APlayerMovement::PanUp(float axis)

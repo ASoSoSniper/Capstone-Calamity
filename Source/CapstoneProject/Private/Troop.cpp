@@ -9,7 +9,7 @@
 ATroop::ATroop()
 {
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Knight_Idle.Knight_Idle'"));
+	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
 	if (meshComponent)
 	{
 		mesh->SetStaticMesh(meshComponent);

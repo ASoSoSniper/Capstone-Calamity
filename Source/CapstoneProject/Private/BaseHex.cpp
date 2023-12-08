@@ -16,15 +16,15 @@ ABaseHex::ABaseHex()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), FText::FromString(TEXT("Standard tile with no unique benefits.")), 3, 2, 1 });
-	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")),FText::FromString(TEXT("High mushroom density makes this tile a rich source of food.")), 4, 3, 1 });
-	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")),FText::FromString(TEXT("Extreme mushroom density makes construction on this tile impossible.")), 3, 3, 1 });
-	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")),FText::FromString(TEXT("Compressed mushroom caps create a hilly terrain that provides extra production.")), 1, 4, 2 });
+	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), FText::FromString(TEXT("Flat terrain with no unique benefits.")), 3, 2, 1 });
+	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")),FText::FromString(TEXT("Full of tall mushrooms and food.")), 4, 3, 1 });
+	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")),FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), 3, 3, 1 });
+	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")),FText::FromString(TEXT("Compressed mushroom caps create a hills.")), 1, 4, 2 });
 	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")),FText::FromString(TEXT("High intensity of mushroom stems in mountain formations make traversal and construction impossible.")), 0, 0, 0 });
-	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")),FText::FromString(TEXT("Toxic mushroom spores are dangerous to humans, but provide a rich source of energy.")), 1, 2, 5 });
+	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")),FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 2, 5 });
 	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")),FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4 });
 	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")),FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1 });
-	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")),FText::FromString(TEXT("Epic rock bro you totally want it.")), 2, 3, 4 });
+	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")),FText::FromString(TEXT("The Rock, contains DST fuel.")), 2, 3, 4 });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
