@@ -173,7 +173,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		}
 		break;
 	case TerrainType::Forest:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_HexagonPlains.TileForestModel_HexagonPlains'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForest.TileForest'"));
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
@@ -187,7 +187,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		}
 		break;
 	case TerrainType::Jungle:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
