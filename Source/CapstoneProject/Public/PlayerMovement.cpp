@@ -176,27 +176,41 @@ void APlayerMovement::PanRight(float axis)
 			currLocation.Y = camMinY;
 		}
 		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X pos = %f"), GetActorLocation().Y));
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
 	}	
 }
 
 void APlayerMovement::PanUp(float axis)
 {
-	if (GetActorLocation().X >= camMinX && GetActorLocation().X <= camMaxX)
+	if (axis < 0)
 	{
-		FVector currLocation = GetActorLocation();
-		currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-		if (currLocation.X > camMaxX)
+		if (GetActorLocation().X < camMaxX + GetActorLocation().Z)
 		{
-			currLocation.X = camMaxX;
+			FVector currLocation = GetActorLocation();
+			
+			currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+			
+			if (currLocation.X <= camMaxX + GetActorLocation().Z)
+			{
+				SetActorLocation(currLocation);
+			}	
 		}
-		else if (currLocation.X < camMinX)
-		{
-			currLocation.X = camMinX;
-		}
-		SetActorLocation(currLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().X));
 	}
+	else if (axis > 0)
+	{
+		if (GetActorLocation().X > camMinX + GetActorLocation().Z)
+		{
+			FVector currLocation = GetActorLocation();
+
+			currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+
+			if (currLocation.X >= camMinX + GetActorLocation().Z)
+			{
+				SetActorLocation(currLocation);
+			}		
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
 }
 
 void APlayerMovement::ZoomIn(float axis)
@@ -204,15 +218,23 @@ void APlayerMovement::ZoomIn(float axis)
 	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
 	{
 		FVector currLocation = GetActorLocation();
-		currLocation += camera->GetForwardVector() * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
+		currLocation += camera->GetForwardVector() * axis * cameraVel * FApp::GetDeltaTime();
+		
+		if (currLocation.Z > camMaxZ)
+		{
+			currLocation.Z = camMaxZ;
+		}
+		else if (currLocation.Z < camMinZ)
+		{
+			currLocation.Z = camMinZ;
+		}
 
-
-		if ((axis > 0 && currLocation.Z < camMaxZ) || (axis < 0 && currLocation.Z > camMinZ))
+		if (currLocation.Z < camMaxZ && currLocation.Z > camMinZ)
 		{
 			SetActorLocation(currLocation);
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y Pos = %f"), GetActorLocation().Z));
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().Z));
 	}
 }
 
