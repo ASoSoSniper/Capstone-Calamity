@@ -32,6 +32,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	end = false;
+
 	//Create initial player faction and assign it to the player controller
 	CreateNewFaction();
 
@@ -146,6 +148,11 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 	Args.Add(FStringFormatArg(extraMinuteZeroString));
 	Args.Add(FStringFormatArg(dayStruct.minute));
 	return FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
+}
+
+bool ACapstoneProjectGameModeBase::HasEnded()
+{
+	return end;
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()

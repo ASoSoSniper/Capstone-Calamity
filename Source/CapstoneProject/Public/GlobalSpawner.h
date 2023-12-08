@@ -52,9 +52,9 @@ struct FBuildingCost
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 };
 USTRUCT(BlueprintType, Blueprintable)
@@ -72,9 +72,9 @@ struct FTroopCost
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere) int productionCost;
-	UPROPERTY(EditAnywhere) int timeToBuild;
-	UPROPERTY(EditAnywhere) int populationCost;
+	UPROPERTY(EditAnywhere) int productionCost = 0;
+	UPROPERTY(EditAnywhere) int timeToBuild = 0;
+	UPROPERTY(EditAnywhere) int populationCost = 0;
 };
 
 UCLASS()

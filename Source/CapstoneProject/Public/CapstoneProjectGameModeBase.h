@@ -38,6 +38,7 @@ public:
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 	static inline TArray<TerrainType> nonBuildableTerrains;
+	static inline bool end;
 
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
@@ -76,6 +77,8 @@ public:
 	};
 	DayStruct dayStruct = DayStruct{0,1,0,0};
 	float currSeconds = 0;
+
+	UFUNCTION(BlueprintCallable) bool HasEnded();
 
 private:
 	Factions CreateNewFaction();

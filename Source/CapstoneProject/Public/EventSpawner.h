@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "Blueprint/UserWidget.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EventSpawner.generated.h"

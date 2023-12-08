@@ -5,6 +5,7 @@
 #include "MergedArmy.h"
 #include "UnitActions.h"
 #include "Kismet/GameplayStatics.h"
+#include "CapstoneProjectGameModeBase.h"
 
 ATroop::ATroop()
 {
@@ -120,5 +121,10 @@ void ATroop::MoveToTarget(float& DeltaTime)
 
 	if (hexPathIndex < hexPath.Num())
 		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation(), DeltaTime);
+
+	if (EndForVSlice && Cast<ABaseHex>(hexNav->currentHex)->hexTerrain == TerrainType::TheRock)
+	{
+		ACapstoneProjectGameModeBase::end = true;
+	}
 }
 

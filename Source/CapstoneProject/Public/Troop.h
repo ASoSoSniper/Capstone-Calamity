@@ -39,4 +39,6 @@ public:
 	void RotateToFaceTarget(FVector direction, float& DeltaTime);
 	virtual void MoveToTarget(float& DeltaTime) override;
 	UPROPERTY(EditAnywhere) float rotateSpeedMultiplier = 3.f;
+
+	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
 };
