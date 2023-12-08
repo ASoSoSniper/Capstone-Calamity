@@ -165,13 +165,13 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 		if (i > input.Num() - 1) continue;
 		if (input[i] > 0)
 		{
-			numbers[i] += input[i];
+			numbers[i] -= input[i];
 		}
 		else
 		{
 			if (numbers[i] >= input[i])
 			{
-				numbers[i] -= input[i];
+				numbers[i] += input[i];
 			}
 			else
 			{
@@ -186,6 +186,7 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 			}
 		}
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d, %d, %d"), numbers[0], numbers[1], numbers[2], numbers[3]));
 	if (canAfford)
 		UnitActions::ConsumeSpentResources(playerFaction, numbers);
 }
