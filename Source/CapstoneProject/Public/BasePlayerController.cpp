@@ -163,7 +163,7 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 	bool canAfford = true;
 	for (int i = 0; i < numbers.Num(); ++i)
 	{
-		if (i > input.Num()) continue;
+		if (i > input.Num() - 1) continue;
 		if (input[i] > 0)
 		{
 			numbers[i] += input[i];
