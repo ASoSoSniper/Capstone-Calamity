@@ -39,8 +39,7 @@ struct FHexDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText production;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energy;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText currWorkers;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText maxWorkers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCount;
 };
 
 
@@ -118,6 +117,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain = TerrainType::Plains;
 	TerrainType terrainChange = TerrainType::None;
 	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
+
+	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();
@@ -153,7 +154,7 @@ public:
 	void SetVisibility();
 	void RequestTerrainChange();
 
-	UPROPERTY(VisibleAnywhere) int visibilityToHumans;
+	FHexDisplay GetDisplayInfo();
 
-	
+	UPROPERTY(VisibleAnywhere) int visibilityToHumans;
 };

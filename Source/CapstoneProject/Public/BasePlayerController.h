@@ -67,5 +67,6 @@ public:
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
 	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
-	//UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
+	UFUNCTION(BlueprintCallable) int GetResourceCap();
 };

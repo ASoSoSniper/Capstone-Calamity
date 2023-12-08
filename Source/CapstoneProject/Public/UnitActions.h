@@ -142,6 +142,7 @@ public:
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 
 	static TArray<TerrainType> GetNonBuildableTerrain();
+	static int GetResourceCap(Factions faction);
 };
 
 

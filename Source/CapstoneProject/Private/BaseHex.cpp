@@ -16,6 +16,16 @@ ABaseHex::ABaseHex()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), FText::FromString(TEXT("Standard tile with no unique benefits.")), 3, 2, 1 });
+	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")),FText::FromString(TEXT("High mushroom density makes this tile a rich source of food.")), 4, 3, 1 });
+	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")),FText::FromString(TEXT("Extreme mushroom density makes construction on this tile impossible.")), 3, 3, 1 });
+	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")),FText::FromString(TEXT("Compressed mushroom caps create a hilly terrain that provides extra production.")), 1, 4, 2 });
+	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")),FText::FromString(TEXT("High intensity of mushroom stems in mountain formations make traversal and construction impossible.")), 0, 0, 0 });
+	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")),FText::FromString(TEXT("Toxic mushroom spores are dangerous to humans, but provide a rich source of energy.")), 1, 2, 5 });
+	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")),FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4 });
+	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")),FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1 });
+	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")),FText::FromString(TEXT("Epic rock bro you totally want it.")), 2, 3, 4 });
+
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
@@ -40,15 +50,15 @@ ABaseHex::ABaseHex()
 	hexMeshAttachment = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Attachment"));
 	hexMeshAttachment->SetupAttachment(RootComponent);
 
-	//Initialize resource yields
-	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus,0 });
-	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus, 0 });
-	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus, 0 });
-
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);
 	workersInHex.Add(WorkerType::Robot, 0);
 	workersInHex.Add(WorkerType::Alien, 0);
+
+	//Initialize resource yields
+	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus, 0 });
+	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus, 0 });
+	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus, 0 });
 }
 
 // Called when the game starts or when spawned
@@ -330,5 +340,34 @@ void ABaseHex::RequestTerrainChange()
 	else (terrainChange = hexTerrain);
 
 	spawner->CreateHexModel(hexTerrain, this);
+
+	FHexInfo info = hexInfo[hexTerrain];
+	resourceBonuses[StratResources::Food].yieldBonus = info.food;
+	resourceBonuses[StratResources::Production].yieldBonus = info.production;
+	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
+}
+
+FHexDisplay ABaseHex::GetDisplayInfo()
+{
+	FHexDisplay display;
+
+	display.name = hexInfo[hexTerrain].name;
+	display.description = hexInfo[hexTerrain].description;
+
+	display.food = FText::AsNumber(resourceBonuses[StratResources::Food].yieldBonus);
+	display.production = FText::AsNumber(resourceBonuses[StratResources::Production].yieldBonus);
+	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy].yieldBonus);
+
+	int workers = 0;
+	for (auto worker : workersInHex)
+	{
+		workers += worker.Value;
+	}
+	TArray<FStringFormatArg> Args;
+	Args.Add(workers);
+	Args.Add(10);
+	display.workerCount = FText::FromString(FString::Format(TEXT("{0}/{1}"), Args));
+
+	return display;
 }
 

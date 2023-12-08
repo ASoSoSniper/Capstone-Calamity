@@ -347,6 +347,11 @@ TArray<TerrainType> UnitActions::GetNonBuildableTerrain()
     return ACapstoneProjectGameModeBase::nonBuildableTerrains;
 }
 
+int UnitActions::GetResourceCap(Factions faction)
+{
+    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].maxResources;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))

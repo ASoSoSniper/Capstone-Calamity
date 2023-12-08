@@ -250,4 +250,20 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	}
 }
 
+FHexDisplay ABasePlayerController::GetHexDisplayInfo()
+{
+	FHexDisplay display;
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!hex) return display;
+	
+	display = hex->GetDisplayInfo();
+
+	return display;
+}
+
+int ABasePlayerController::GetResourceCap()
+{	
+	return UnitActions::GetResourceCap(playerFaction);
+}
+
 
