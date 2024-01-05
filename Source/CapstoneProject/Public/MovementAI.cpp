@@ -71,6 +71,7 @@ void AMovementAI::CreatePath()
 	//Scan for hexes leading to the target hex	
 	for (int i = 0; i < maxHexes; i++)
 	{
+
 		hexPath.Add(HexSearch(hexToSearch));
 		
 		if (hexPath[i] == hexNav->targetHex) break;
@@ -101,6 +102,11 @@ void AMovementAI::SnapToHex(ABaseHex* hex)
 
 ABaseHex* AMovementAI::HexSearch(AActor* hex)
 {	
+	if (!Cast<ABaseHex>(hex))
+	{
+		return nullptr;
+	}
+
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
 	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hex)->GetObjectsInHex();
@@ -126,10 +132,19 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 		//Identify found hex
 		hexesFound.Add(foundHex ? foundHex : nullptr);
 
+		//Check if hex is traversable
+		bool traversable = true;
+		if (foundHex) traversable = foundHex->hexTerrain != TerrainType::Mountains && foundHex->hexTerrain != TerrainType::Border;
+
 		//Get hex's angle to target
 		if (hexNav->targetHex)
 		{
-			anglesToTarget.Add(foundHex ? AngleBetweenVectors(traceEnd - traceStart, GetVectorToTarget(hex->GetActorLocation())) : INFINITY);
+			float angle = INFINITY;
+			if (foundHex && traversable)
+			{
+				angle = AngleBetweenVectors(traceEnd - traceStart, GetVectorToTarget(hex->GetActorLocation()));
+			}
+			anglesToTarget.Add(angle);
 		}	
 
 		// **Debug things**
