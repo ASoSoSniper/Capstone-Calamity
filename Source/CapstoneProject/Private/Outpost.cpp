@@ -142,8 +142,11 @@ void AOutpost::CueTroopBuild(SpawnableUnits unit)
 	if (spawner->troopCosts.Contains(unit))
 	{
 		bool purchased = spawner->PurchaseTroop(unitStats->faction, unit, this);
-		cuedUnits.Add(unit);
-		currentTroopBuildTime = spawner->troopCosts[unit].timeToBuild;
+		if (purchased)
+		{
+			cuedUnits.Add(unit);
+			if (cuedUnits.Num() == 1) currentTroopBuildTime = spawner->troopCosts[unit].timeToBuild;
+		}
 	}
 }
 

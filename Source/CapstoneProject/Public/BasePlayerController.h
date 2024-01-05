@@ -52,7 +52,7 @@ public:
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
 	void SetActionState();
-	void Deselect();
+	UFUNCTION(BlueprintCallable) void Deselect();
 	UFUNCTION(BlueprintCallable) int GetActionState();
 	UFUNCTION(BlueprintCallable) void ForceActionState(int state);
 
