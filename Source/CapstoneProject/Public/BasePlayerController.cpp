@@ -213,6 +213,25 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	return buildings;
 }
 
+TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
+{
+	TArray<FTroopDisplay> troops;
+
+	for (auto troop : spawner->troopCosts)
+	{
+		FText name = troop.Value.name;
+		UTexture2D* icon = troop.Value.icon;
+		FText production = FText::AsNumber(troop.Value.productionCost);
+		FText buildTime = FText::AsNumber(troop.Value.timeToBuild);
+		FText population = FText::AsNumber(troop.Value.populationCost);
+
+		troops.Add(FTroopDisplay{ name, icon, production, buildTime, population });
+	}
+
+	return troops;
+}
+
+//FOR BLUEPRINT: When player selection modes have subselection modes, this function forces the transition into the subselection
 void ABasePlayerController::EnterSelectionMode(bool active)
 {
 	switch (currentActionState)
@@ -220,6 +239,7 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 	case ActionStates::HexManage:
 		if (active)
 		{
+			//For HexManage, Action1 transitions to the building construction mode
 			actionStates[currentActionState]->Action1();
 		}
 		else
@@ -230,6 +250,7 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 	case ActionStates::BaseManage:
 		if (active)
 		{
+			//For BaseManage, Action1 transitions to the troop construction mode
 			actionStates[currentActionState]->Action1();
 		}
 		else
@@ -240,6 +261,7 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 	}
 }
 
+//FOR BLUEPRINT: Triggered when a building is selected from the UI, identifies which building was selected and builds it accordingly
 void ABasePlayerController::SelectBuilding(FText buildingName)
 {
 	for (auto buildings : spawner->buildingCosts)
@@ -251,6 +273,7 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	}
 }
 
+//FOR BLUEPRINT: Converts selected hex info into a struct of FTexts to be used for UI
 FHexDisplay ABasePlayerController::GetHexDisplayInfo()
 {
 	FHexDisplay display;
@@ -262,9 +285,42 @@ FHexDisplay ABasePlayerController::GetHexDisplayInfo()
 	return display;
 }
 
+//FOR BLUEPRINT: Returns the maximum number of resources the player faction can possess
 int ABasePlayerController::GetResourceCap()
 {	
 	return UnitActions::GetResourceCap(playerFaction);
+}
+
+//FOR BLUEPRINT: Checks if selected hex has a building
+bool ABasePlayerController::HexHasBuilding()
+{
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+
+	if (!hex) return false;
+
+	return hex->building != nullptr;
+}
+
+//FOR BLUEPRINT: Gets info and build time for the next troop to be produced from this building
+FCuedTroop ABasePlayerController::GetCuedTroop()
+{
+	FCuedTroop troop;
+
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!hex) return troop;
+
+	ABuilding* building = hex->building;
+	if (!building) return troop;
+
+	AOutpost* outpost = Cast<AOutpost>(building);
+	if (!outpost) return troop;
+
+	if (outpost->cuedUnits.IsEmpty()) return troop;
+
+	troop.troopInfo = spawner->troopCosts[outpost->cuedUnits[0]];
+	troop.currentTime = outpost->currentTroopBuildTime;
+
+	return troop;
 }
 
 

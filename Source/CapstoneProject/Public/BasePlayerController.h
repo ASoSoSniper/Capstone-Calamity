@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MovementAI.h"
 #include "BaseHex.h"
+#include "Outpost.h"
 #include "Building.h"
 #include "Faction.h"
 #include "ManageMode.h"
@@ -65,8 +66,11 @@ public:
 
 
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
+	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
 	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
+	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
+	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
 };

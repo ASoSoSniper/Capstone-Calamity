@@ -72,9 +72,32 @@ struct FTroopCost
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere) int productionCost = 0;
-	UPROPERTY(EditAnywhere) int timeToBuild = 0;
-	UPROPERTY(EditAnywhere) int populationCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopDisplay
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText timeToBuild;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText populationCost;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FCuedTroop
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FTroopCost troopInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
 };
 
 UCLASS()
