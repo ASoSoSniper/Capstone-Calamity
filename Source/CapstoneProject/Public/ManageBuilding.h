@@ -34,11 +34,4 @@ public:
 
 
 	virtual void Reset() override;
-
-	enum SubSelects
-	{
-		None,
-		Build
-	};
-	SubSelects subSelect;
 };

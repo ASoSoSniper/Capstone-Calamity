@@ -68,9 +68,12 @@ public:
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
+	UFUNCTION(BlueprintCallable) bool IsInBuildMode();
 	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
+	UFUNCTION(BlueprintCallable) void SelectTroop(FText troopName);
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
 	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
+	AOutpost* GetOutpost();
 };

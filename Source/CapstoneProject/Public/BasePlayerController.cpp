@@ -234,6 +234,8 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 //FOR BLUEPRINT: When player selection modes have subselection modes, this function forces the transition into the subselection
 void ABasePlayerController::EnterSelectionMode(bool active)
 {
+	if (active && IsInBuildMode()) return;
+
 	switch (currentActionState)
 	{
 	case ActionStates::HexManage:
@@ -261,6 +263,11 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 	}
 }
 
+bool ABasePlayerController::IsInBuildMode()
+{
+	return actionStates[currentActionState]->subSelect == 1;
+}
+
 //FOR BLUEPRINT: Triggered when a building is selected from the UI, identifies which building was selected and builds it accordingly
 void ABasePlayerController::SelectBuilding(FText buildingName)
 {
@@ -269,6 +276,20 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
 			Build(buildings.Key);
+			return;
+		}
+	}
+}
+//FOR BLUEPRINT: Triggered when a troop is selected from the UI, identifies which troop was selected and builds it accordingly
+void ABasePlayerController::SelectTroop(FText troopName)
+{
+	for (auto troop : spawner->troopCosts)
+	{
+		if (troopName.EqualTo(troop.Value.name))
+		{
+			AOutpost* outpost = GetOutpost();
+
+			if (outpost) outpost->CueTroopBuild(troop.Key);
 		}
 	}
 }
@@ -306,13 +327,7 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 {
 	FCuedTroop troop;
 
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
-	if (!hex) return troop;
-
-	ABuilding* building = hex->building;
-	if (!building) return troop;
-
-	AOutpost* outpost = Cast<AOutpost>(building);
+	AOutpost* outpost = GetOutpost();
 	if (!outpost) return troop;
 
 	if (outpost->cuedUnits.IsEmpty()) return troop;
@@ -321,6 +336,21 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 	troop.currentTime = outpost->currentTroopBuildTime;
 
 	return troop;
+}
+
+//Finds whether the selected object is a hex, has a building, and whether that building is an outpost
+AOutpost* ABasePlayerController::GetOutpost()
+{
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!hex) return nullptr;
+
+	ABuilding* building = hex->building;
+	if (!building) return nullptr;
+
+	AOutpost* outpost = Cast<AOutpost>(building);
+	if (!outpost) return nullptr;
+
+	return outpost;
 }
 
 

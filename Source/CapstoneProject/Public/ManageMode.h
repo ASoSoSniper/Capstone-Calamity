@@ -19,6 +19,13 @@ class CAPSTONEPROJECT_API UManageMode : public UDataAsset
 public:
 	ABasePlayerController* controller;
 
+	enum SubSelects
+	{
+		None,
+		Build
+	};
+	SubSelects subSelect;
+
 	virtual void Select(AActor* selectedObject);
 	virtual void SwitchState();
 	virtual void DestroyObject(AActor* selectedObject);	

@@ -43,9 +43,9 @@ void UManageHex::Action1()
 	switch (subSelect)
 	{
 	case None:
-		subSelect = BuildingSelect;
+		subSelect = Build;
 		break;
-	case BuildingSelect:
+	case Build:
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
 			controller->Build(SpawnableBuildings::Farmland);
 		Reset();
@@ -60,7 +60,7 @@ void UManageHex::Action2()
 	case None:
 		
 		break;
-	case BuildingSelect:
+	case Build:
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
 			controller->Build(SpawnableBuildings::MiningStation);
 		Reset();
@@ -76,7 +76,7 @@ void UManageHex::Action3()
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
 			AddWorkersToHex(WorkerType::Human, 2);
 		break;
-	case BuildingSelect:
+	case Build:
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
 			controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
@@ -92,7 +92,7 @@ void UManageHex::Action4()
 		if (controller->selectedHex->hexOwner == controller->playerFaction)
 			RemoveWorkers(WorkerType::Human, 2);
 		break;
-	case BuildingSelect:
+	case Build:
 		controller->Build(SpawnableBuildings::Outpost);
 		Reset();
 		break;
@@ -106,7 +106,7 @@ void UManageHex::Action5()
 	case None:
 		
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::Storage);
 		Reset();
 		break;
@@ -120,7 +120,7 @@ void UManageHex::Action6()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
@@ -134,7 +134,7 @@ void UManageHex::Action7()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
@@ -148,7 +148,7 @@ void UManageHex::Action8()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
@@ -162,7 +162,7 @@ void UManageHex::Action9()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
@@ -176,7 +176,7 @@ void UManageHex::Action10()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;
@@ -190,7 +190,7 @@ void UManageHex::Action11()
 	case None:
 
 		break;
-	case BuildingSelect:
+	case Build:
 		//controller->Build(SpawnableBuildings::PowerPlant);
 		Reset();
 		break;

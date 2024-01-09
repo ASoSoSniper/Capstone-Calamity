@@ -35,11 +35,4 @@ public:
 
 	void AddWorkersToHex(WorkerType worker, int workers);
 	void RemoveWorkers(WorkerType worker, int workers);
-
-	enum SubSelects
-	{
-		None,
-		BuildingSelect
-	};
-	SubSelects subSelect;
 };

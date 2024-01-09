@@ -47,11 +47,9 @@ void UManageBuilding::Action1()
 	{
 	case None:
 		subSelect = Build;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("WHYYYYYYYYYYYYYYYYYYYYYY"));
 		break;
 	case Build:
 		selectedBuilding->Action1();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("WHYYYYYYYYYYYYYYYYYYYYYY"));
 		break;
 	}
 }
