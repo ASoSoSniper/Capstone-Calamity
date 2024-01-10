@@ -43,5 +43,5 @@ public:
 
 	virtual void UpdateResources();
 
-	virtual void Activate();
+	virtual void ActivateAttachment();
 };

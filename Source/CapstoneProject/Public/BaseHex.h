@@ -71,8 +71,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;
 
-	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
-
 #pragma endregion
 
 //Variables that change depending on the hex's interaction with the world

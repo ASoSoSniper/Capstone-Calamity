@@ -71,7 +71,7 @@ void UBuildingAttachment::UpdateResources()
 	
 }
 
-void UBuildingAttachment::Activate()
+void UBuildingAttachment::ActivateAttachment()
 {
 	buildState = Building;
 }

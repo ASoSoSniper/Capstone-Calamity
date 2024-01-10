@@ -41,7 +41,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		float traceLength = 50.f;
 	UPROPERTY(EditAnywhere)
-		float hexSnapDistance = 5.f;
+		float hexSearchDistance = 50.f;
+	UPROPERTY(EditAnywhere)
+		float hexSnapDistance = 2.f;
 	UPROPERTY(EditAnywhere)
 		int maxHexes = 16;
 	UPROPERTY(EditAnywhere)
@@ -51,6 +53,8 @@ public:
 	ABaseHex* HexSearch(AActor* hex);
 	
 	void SphereCheck(float rangeMulti = 1.f);
+	bool HexIsTraversable(AActor* hex);
+	bool HexIsTraversable(ABaseHex* hex);
 
 	float AngleBetweenVectors(FVector a, FVector b);
 	FVector GetVectorToTarget(FVector origin);
@@ -65,7 +69,7 @@ public:
 	virtual void MoveToTarget(float& DeltaTime);
 	
 	UPROPERTY(EditAnywhere)
-		USphereComponent* sphere;
+		UStaticMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)
 		UUnitStats* unitStats;
 };

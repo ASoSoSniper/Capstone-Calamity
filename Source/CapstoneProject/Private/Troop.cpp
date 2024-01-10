@@ -9,17 +9,7 @@
 
 ATroop::ATroop()
 {
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
-	if (meshComponent)
-	{
-		mesh->SetStaticMesh(meshComponent);
-	}
-	mesh->SetCollisionProfileName("NoCollision");
 	
-	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
-
-	mesh->SetupAttachment(sphere);
 }
 
 void ATroop::BeginPlay()
@@ -110,7 +100,7 @@ void ATroop::RotateToFaceTarget(FVector direction, float& DeltaTime)
 	FRotator currentRotation = mesh->GetForwardVector().Rotation();
 	FRotator targetRotation = direction.Rotation();
 	float rotationProgress = 1.f;
-	FRotator newRotation = FMath::Lerp(currentRotation, targetRotation, rotationProgress * DeltaTime * rotateSpeedMultiplier);
+	FRotator newRotation = FMath::Lerp(currentRotation, targetRotation, rotationProgress * DeltaTime * rotateSpeedMultiplier * ACapstoneProjectGameModeBase::timeScale);
 
 	mesh->SetWorldRotation(newRotation);
 }

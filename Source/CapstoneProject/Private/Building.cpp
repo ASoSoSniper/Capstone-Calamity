@@ -20,13 +20,6 @@ ABuilding::ABuilding()
 	}
 	mesh->SetCollisionProfileName("NoCollision");
 
-	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collider"));
-	collider->SetupAttachment(RootComponent);
-	collider->bHiddenInGame = false;
-	collider->SetCollisionProfileName(TEXT("BlockAllDynamic"));
-	collider->InitBoxExtent(FVector(20.f, 20.f, 20.f));
-	collider->SetRelativeLocation(FVector(0.f, 0.f, 20.f));
-
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	unitStats = CreateDefaultSubobject<UUnitStats>(TEXT("Unit Stats"));

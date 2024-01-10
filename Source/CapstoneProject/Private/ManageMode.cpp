@@ -53,6 +53,7 @@ void UManageMode::CheckSelection()
 
 void UManageMode::CueActionState(ActionStates nextState)
 {
+	Reset();
 	controller->currentActionState = nextState;
 }
 

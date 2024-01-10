@@ -29,7 +29,7 @@ void UInteractable::BeginPlay()
 		controller = Cast<ABasePlayerController>(tempController);
 	}
 
-	collider = GetOwner()->FindComponentByClass<UShapeComponent>();
+	collider = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
 	if (collider)
 	{
 		collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
@@ -65,5 +65,15 @@ void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
 	if (controller) controller->SetSelectedWorldObject(GetOwner());
 
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Selected Hex!")));
+}
+
+void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)
+{
+	otherCollider = mesh;
+	if (otherCollider)
+	{
+		otherCollider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+		otherCollider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+	}
 }
 

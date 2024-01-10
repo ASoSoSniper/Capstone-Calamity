@@ -35,7 +35,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* mesh;
 	void RotateToFaceTarget(FVector direction, float& DeltaTime);
 	virtual void MoveToTarget(float& DeltaTime) override;
 	UPROPERTY(EditAnywhere) float rotateSpeedMultiplier = 3.f;

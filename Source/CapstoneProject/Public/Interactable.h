@@ -33,5 +33,9 @@ public:
 	void Selected(UPrimitiveComponent* item, FKey ButtonPressed);
 
 	UPROPERTY(EditAnywhere)
-	UShapeComponent* collider;
+	UStaticMeshComponent* collider;
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* otherCollider;
+
+	void CreateExtraCollision(UStaticMeshComponent* mesh);
 };

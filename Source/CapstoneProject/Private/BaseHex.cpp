@@ -32,14 +32,7 @@ ABaseHex::ABaseHex()
 	if (meshAsset)
 	{
 		hexMesh->SetStaticMesh(meshAsset);
-	}
-	
-	//hexInfo = CreateDefaultSubobject<UHexInfo>(TEXT("Hex Info"));
-	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
-
-	collider = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collider"));
-	collider->SetupAttachment(RootComponent);
-	collider->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	}	
 
 	troopAnchor = CreateDefaultSubobject<USceneComponent>("Troop Anchor");
 	troopAnchor->SetupAttachment(RootComponent);
@@ -49,6 +42,9 @@ ABaseHex::ABaseHex()
 
 	hexMeshAttachment = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Attachment"));
 	hexMeshAttachment->SetupAttachment(RootComponent);
+
+	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
+	interactable->CreateExtraCollision(hexMeshAttachment);
 
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);

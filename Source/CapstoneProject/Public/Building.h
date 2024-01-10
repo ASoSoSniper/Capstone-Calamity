@@ -30,7 +30,6 @@ public:
 	UPROPERTY(VisibleAnywhere)UInteractable* interactable;
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
-	UPROPERTY(EditAnywhere)UBoxComponent* collider;
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
 
 	enum BuildStates

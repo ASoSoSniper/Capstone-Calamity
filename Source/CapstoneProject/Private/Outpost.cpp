@@ -128,7 +128,7 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 	switch (attachment)
 	{
 	case BuildingAttachments::Storage:
-		storageBuilding->Activate();
+		storageBuilding->ActivateAttachment();
 		break;
 	}
 

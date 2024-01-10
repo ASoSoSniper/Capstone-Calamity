@@ -15,11 +15,16 @@ AMovementAI::AMovementAI()
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	unitStats = CreateDefaultSubobject<UUnitStats>("Faction Stats");
-	sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Body"));
-	sphere->SetupAttachment(RootComponent);
-	sphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
-	sphere->InitSphereRadius(20.f);
-	sphere->bHiddenInGame = false;
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = mesh;
+	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
+	if (meshComponent)
+	{
+		mesh->SetStaticMesh(meshComponent);
+	}
+	mesh->SetCollisionProfileName("BlockAllDynamic");
+
+	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 }
 
 // Called when the game starts or when spawned
@@ -27,7 +32,7 @@ void AMovementAI::BeginPlay()
 {
 	Super::BeginPlay();	
 
-	SphereCheck();
+	SphereCheck(5.f);
 }
 
 // Called every frame
@@ -49,6 +54,11 @@ void AMovementAI::Tick(float DeltaTime)
 void AMovementAI::CreatePath()
 {
 	if (hexNav->targetHex == hexNav->currentHex) return;
+	if (!HexIsTraversable(hexNav->targetHex))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot move here"));
+		return;
+	}
 
 	//Save last hex destination, if interrupted
 	AActor* temp = nullptr;
@@ -134,7 +144,7 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 
 		//Check if hex is traversable
 		bool traversable = true;
-		if (foundHex) traversable = foundHex->hexTerrain != TerrainType::Mountains && foundHex->hexTerrain != TerrainType::Border;
+		if (foundHex) traversable = HexIsTraversable(foundHex);
 
 		//Get hex's angle to target
 		if (hexNav->targetHex)
@@ -170,7 +180,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
 	TArray<FHitResult> results;
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f * rangeMulti, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), hexSearchDistance, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
 
 	if (bHit)
 	{		
@@ -179,7 +189,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
 			if (hexActor && results[i].GetActor() != hexNav->currentHex)
 			{
-				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
+				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance * rangeMulti && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance * rangeMulti)
 				{
 					SnapToHex(hexActor);
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
@@ -188,6 +198,17 @@ void AMovementAI::SphereCheck(float rangeMulti)
 			}
 		}
 	}
+}
+
+bool AMovementAI::HexIsTraversable(AActor* hex)
+{
+	ABaseHex* foundHex = Cast<ABaseHex>(hex);
+	return foundHex->hexTerrain != TerrainType::Mountains && foundHex->hexTerrain != TerrainType::Border;
+}
+
+bool AMovementAI::HexIsTraversable(ABaseHex* hex)
+{
+	return hex->hexTerrain != TerrainType::Mountains && hex->hexTerrain != TerrainType::Border;
 }
 
 float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
@@ -210,6 +231,12 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 
 void AMovementAI::MoveToTarget(float& DeltaTime)
 {
+	if (!hexNav->currentHex)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("No current hex"));
+		return;
+	}
+
 	if (hexPath.Num() > 0)
 	{
 		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation();
