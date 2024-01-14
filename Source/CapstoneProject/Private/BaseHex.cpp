@@ -46,6 +46,8 @@ ABaseHex::ABaseHex()
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	interactable->CreateExtraCollision(hexMeshAttachment);
 
+	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
+
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);
 	workersInHex.Add(WorkerType::Robot, 0);
@@ -61,12 +63,6 @@ ABaseHex::ABaseHex()
 void ABaseHex::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//Add visibility categories for all factions
-	for (auto faction : ACapstoneProjectGameModeBase::activeFactions)
-	{
-		factionVisibility.Add(faction.Key, Visibility{Undiscovered, false, false});
-	}
 
 	if (!spawner)
 	{
@@ -92,11 +88,6 @@ void ABaseHex::Tick(float DeltaTime)
 	if (spawner && terrainChange != hexTerrain)
 	{
 		RequestTerrainChange();
-	}
-
-	if (ACapstoneProjectGameModeBase::currentScanTime <= 0)
-	{
-		SetVisibility();
 	}
 }
 
@@ -273,69 +264,21 @@ void ABaseHex::UpdateResourceCapIncrease(int value)
 	}
 }
 
-void ABaseHex::ToggleVisibility(Factions faction)
-{
-	if (!factionVisibility.Contains(faction))
-	{
-		factionVisibility.Add(faction, Visibility{ Undiscovered, false, false });
-	}
-
-	factionVisibility[faction].inSight = true;
-}
-
-void ABaseHex::SetVisibility()
-{
-	for (auto faction : factionVisibility)
-	{
-		//Declare variable to check whether visibility has changed
-		VisibilityStatus originalVisibility = factionVisibility[faction.Key].status;
-
-		//If this faction has a line of sight on this hex:
-		if (faction.Value.inSight)
-		{
-			//Set hex to visible for this faction
-			factionVisibility[faction.Key].status = Visible;
-			//Faction has discovered this hex
-			factionVisibility[faction.Key].discoveredByFaction = true;
-
-			//If visibility status has changed, and there are troops in hex:
-			if (factionVisibility[faction.Key].status != originalVisibility && !troopsInHex.IsEmpty())
-			{
-				for (int i = 0; i < troopsInHex.Num(); ++i)
-				{
-					//Make all non-human troops visible
-					if (troopsInHex[i]->unitStats->faction != Factions::Human)
-						Cast<ATroop>(troopsInHex[i])->mesh->SetVisibility(true);
-				}
-			}
-		}
-		else
-		{
-			factionVisibility[faction.Key].status = (factionVisibility[faction.Key].discoveredByFaction) ? Discovered : Undiscovered;
-
-			if (factionVisibility[faction.Key].status != originalVisibility && !troopsInHex.IsEmpty())
-			{
-				for (int i = 0; i < troopsInHex.Num(); ++i)
-				{
-					if (troopsInHex[i]->unitStats->faction != Factions::Human)
-						Cast<ATroop>(troopsInHex[i])->mesh->SetVisibility(false);
-				}
-			}
-		}
-		factionVisibility[faction.Key].inSight = false;
-		if (faction.Key == Factions::Alien1)
-		{
-			visibilityToHumans = faction.Value.status;
-		}
-	}
-}
-
-void ABaseHex::RequestTerrainChange()
+void ABaseHex::RequestTerrainChange(bool modelOnly)
 {
 	if (terrainChange != TerrainType::None) hexTerrain = terrainChange;
 	else (terrainChange = hexTerrain);
 
-	spawner->CreateHexModel(hexTerrain, this);
+	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
+	{
+		spawner->CreateHexModel(TerrainType::Plains, this);
+	}
+	else
+	{
+		spawner->CreateHexModel(hexTerrain, this);
+	}
+
+	if (modelOnly) return;
 
 	FHexInfo info = hexInfo[hexTerrain];
 	resourceBonuses[StratResources::Food].yieldBonus = info.food;

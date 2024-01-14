@@ -195,10 +195,12 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
 
 FactionRelationship UnitActions::GetFactionRelationship(Factions unitFaction, Factions targetFaction)
 {
+    //If comparing unit faction to itself, return Ally.
     if (unitFaction == targetFaction) return FactionRelationship::Ally;
 
     Faction* faction;
 
+    //If unit faction doesn't exist, return Ally.
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(unitFaction))
     {
         faction = ACapstoneProjectGameModeBase::activeFactions[unitFaction];
@@ -208,11 +210,13 @@ FactionRelationship UnitActions::GetFactionRelationship(Factions unitFaction, Fa
         return FactionRelationship::Ally;
     }
 
+    //If unit faction has a relationship with target faction, return that relationship.
     if (faction->factionRelationships.Contains(targetFaction))
     {
         return faction->factionRelationships[targetFaction];
     }
 
+    //Otherwise, return Neutral.
     return FactionRelationship::Neutral;
 }
 

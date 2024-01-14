@@ -152,6 +152,12 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 {
 	UStaticMesh* meshAsset;
 	UStaticMesh* extraAsset;
+
+	UMaterialInterface* matAssetVisible;
+	UMaterialInterface* matAssetHidden;
+	UMaterialInterface* extraMatAssetVisible;
+	UMaterialInterface* extraMatAssetHidden;
+
 	switch (terrainType)
 	{
 	case TerrainType::Plains:
@@ -161,6 +167,17 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
 		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
+		}
 		break;
 	case TerrainType::Hills:
 		hex->hexMeshAttachment->SetVisibility(false);
@@ -169,6 +186,17 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
 		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainHillMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainHillMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
+		}
 		break;
 	case TerrainType::Mountains:
 		hex->hexMeshAttachment->SetVisibility(false);
@@ -176,6 +204,17 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainMntMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainMntMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
 		}
 		break;
 	case TerrainType::Forest:
@@ -191,6 +230,27 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
 			hex->hexMeshAttachment->SetVisibility(true);
 		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestFloor_Mat"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainForestMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
+		}
+		extraMatAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainForestMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->otherMeshMaterials.visibleTexture = extraMatAssetVisible;
+		}
+		extraMatAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainForestMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->otherMeshMaterials.hiddenTexture = extraMatAssetHidden;
+		}
 		break;
 	case TerrainType::Jungle:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
@@ -205,6 +265,27 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
 			hex->hexMeshAttachment->SetVisibility(true);
 		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestHeavyFloor_Mat"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainJungleMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
+		}
+		extraMatAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainJungleMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->otherMeshMaterials.visibleTexture = extraMatAssetVisible;
+		}
+		extraMatAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainJungleMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->otherMeshMaterials.hiddenTexture = extraMatAssetHidden;
+		}
 		break;
 	case TerrainType::SporeField:
 		hex->hexMeshAttachment->SetVisibility(false);
@@ -212,6 +293,17 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		if (meshAsset)
 		{
 			hex->hexMesh->SetStaticMesh(meshAsset);
+		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainToxicMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainToxicMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
 		}
 		break;
 	case TerrainType::Border:
@@ -234,6 +326,27 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		{
 			hex->hexMeshAttachment->SetStaticMesh(extraAsset);
 			hex->hexMeshAttachment->SetVisibility(true);
+		}
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestHeavyFloor_Mat"));
+		if (matAssetVisible)
+		{
+			hex->visibility->meshMaterials.visibleTexture = matAssetVisible;
+		}
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainJungleMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->meshMaterials.hiddenTexture = matAssetHidden;
+		}
+		extraMatAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/ShipMat01"));
+		if (matAssetVisible)
+		{
+			hex->visibility->otherMeshMaterials.visibleTexture = extraMatAssetVisible;
+		}
+		extraMatAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/ShipMat01_Hidden"));
+		if (matAssetHidden)
+		{
+			hex->visibility->otherMeshMaterials.hiddenTexture = extraMatAssetHidden;
 		}
 		break;
 	case TerrainType::AlienCity:
