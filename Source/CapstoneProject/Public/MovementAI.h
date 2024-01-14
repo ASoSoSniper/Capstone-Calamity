@@ -8,6 +8,7 @@
 #include "BaseHex.h"
 #include "HexNav.h"
 #include "UnitStats.h"
+#include "MeshVisibility.h"
 #include "Components/SphereComponent.h"
 #include "MovementAI.generated.h"
 
@@ -72,4 +73,6 @@ public:
 		UStaticMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)
 		UUnitStats* unitStats;
+	UPROPERTY(EditAnywhere)
+		UMeshVisibility* visibility;
 };

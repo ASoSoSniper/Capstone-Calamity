@@ -28,9 +28,6 @@ public:
 
 	bool IsAlive();
 	void Heal();
-	void Visibility(float radius);
-	UPROPERTY(EditAnywhere) float visibilityRadius = 50.f;
-	TMap<Factions, bool> unitVisibility;
 
 	UPROPERTY(EditAnywhere) Factions faction;
 	UPROPERTY(VisibleAnywhere) UnitTypes type;

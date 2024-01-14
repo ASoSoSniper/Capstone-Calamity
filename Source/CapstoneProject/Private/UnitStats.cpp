@@ -21,16 +21,6 @@ void UUnitStats::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (auto currentFaction : ACapstoneProjectGameModeBase::activeFactions)
-	{
-		unitVisibility.Add(currentFaction.Key, false);
-	}
-	if (faction != Factions::None)
-	{
-		if (!unitVisibility.Contains(faction)) unitVisibility.Add(faction, false);
-		unitVisibility[faction] = true;
-	}
-
 	currhealTime = maxHealTime;
 }
 
@@ -48,11 +38,6 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 			Heal();
 			currhealTime = maxHealTime;
 		}
-	}
-
-	if (ACapstoneProjectGameModeBase::currentScanTime <= 0.f)
-	{
-		Visibility(visibilityRadius);
 	}
 }
 
@@ -76,24 +61,6 @@ void UUnitStats::Heal()
 	{
 		savedUnits[i].currentHP += reinforceRate;
 		savedUnits[i].currentHP = FMath::Clamp(savedUnits[i].currentHP, 0, savedUnits[i].maxHP);
-	}
-}
-
-void UUnitStats::Visibility(float radius)
-{
-	TArray<AActor*> actorsToIgnore;
-	actorsToIgnore.Add(GetOwner());
-	TArray<FHitResult> results;
-
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), radius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
-
-	if (bHit)
-	{
-		for (int i = 0; i < results.Num(); ++i)
-		{
-			ABaseHex* hex = Cast<ABaseHex>(results[i].GetActor());
-			if (hex) hex->ToggleVisibility(faction);
-		}
 	}
 }
 

@@ -109,6 +109,8 @@ void ATroop::MoveToTarget(float& DeltaTime)
 {
 	Super::MoveToTarget(DeltaTime);
 
+	if (!hexNav->currentHex) return;
+
 	if (hexPathIndex < hexPath.Num())
 		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation(), DeltaTime);
 

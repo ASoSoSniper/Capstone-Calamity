@@ -9,6 +9,7 @@
 #include "TerrainEnum.h"
 #include "StratResources.h"
 #include "UnitActions.h"
+#include "MeshVisibility.h"
 #include "BaseHex.generated.h"
 
 class AMergedArmy;
@@ -65,6 +66,7 @@ public:
 
 	//UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
 
@@ -95,19 +97,6 @@ public:
 
 	TMap<StratResources, ResourceStats> resourceBonuses;
 
-	enum VisibilityStatus
-	{
-		Undiscovered,
-		Discovered,
-		Visible
-	};
-	struct Visibility
-	{
-		VisibilityStatus status = Undiscovered;
-		bool inSight = false;
-		bool discoveredByFaction = false;
-	};
-
 	UPROPERTY(EditAnywhere, Category = "Resources") int energyYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int productionYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
@@ -132,7 +121,6 @@ public:
 	bool battleInProgress;
 
 	TMap<WorkerType, int> workersInHex;
-	TMap<Factions, Visibility> factionVisibility;
 
 	float currentHarvestTime;
 	float maxHarvestTime = 2.f;
@@ -148,11 +136,7 @@ public:
 
 	void ToggleResourceYield();
 
-	void ToggleVisibility(Factions faction);
-	void SetVisibility();
-	void RequestTerrainChange();
+	void RequestTerrainChange(bool modelOnly = false);
 
 	FHexDisplay GetDisplayInfo();
-
-	UPROPERTY(VisibleAnywhere) int visibilityToHumans;
 };

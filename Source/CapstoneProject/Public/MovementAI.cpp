@@ -15,6 +15,7 @@ AMovementAI::AMovementAI()
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	unitStats = CreateDefaultSubobject<UUnitStats>("Faction Stats");
+	visibility = CreateDefaultSubobject<UMeshVisibility>("Mesh Visibility");
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
 	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
