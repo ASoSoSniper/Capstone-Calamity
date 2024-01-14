@@ -19,10 +19,13 @@ ABuilding::ABuilding()
 		//mesh->SetStaticMesh(meshAsset);
 	}
 	mesh->SetCollisionProfileName("NoCollision");
+	mesh->SetCollisionObjectType(ECC_GameTraceChannel1);
 
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	unitStats = CreateDefaultSubobject<UUnitStats>(TEXT("Unit Stats"));
+	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
+	visibility->enableScan = false;
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +88,7 @@ void ABuilding::SetBuildState()
 		buildState = Complete;
 		UpdateResources();
 		BuildingAction();
+		visibility->enableScan = true;
 		break;
 	case Complete:
 		currBuildTime = upgradeTime;

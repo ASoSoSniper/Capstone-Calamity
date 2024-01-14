@@ -24,19 +24,7 @@ void UMeshVisibility::BeginPlay()
 	objectType = UnitActions::DetermineObjectType(GetOwner()).type;
 	mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 
-	ABaseHex* hex;
-	switch (objectType)
-	{
-	case ObjectTypes::Hex:
-		hex = Cast<ABaseHex>(GetOwner());
-		faction = hex->hexOwner;
-		otherMesh = hex->hexMeshAttachment;
-		break;
-	default:
-		UUnitStats* unit = GetOwner()->GetComponentByClass<UUnitStats>();
-		faction = unit->faction;
-		break;
-	}
+	FindFactionOfOwner();
 
 	for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
@@ -57,18 +45,24 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (faction == Factions::None) FindFactionOfOwner();
+
 	if (factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num())
 	{
 		for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
 		{
-			factionVisibility.Add(curFaction.Key, FVisibility{ Undiscovered, false, false });
+			if (!factionVisibility.Contains(curFaction.Key))
+				factionVisibility.Add(curFaction.Key, FVisibility{ Undiscovered, false, false });
 		}
 		return;
 	}
 
 	if (ACapstoneProjectGameModeBase::currentScanTime <= 0.f)
 	{
-		if (objectType != ObjectTypes::Hex) Scan(visibilityRadius);
+		if (objectType != ObjectTypes::Hex)
+		{
+			if (enableScan) Scan(visibilityRadius);
+		}
 		SetVisibility();
 	}
 }
@@ -129,7 +123,7 @@ void UMeshVisibility::SetVisibility()
 		}
 	}
 
-	if (faction == Factions::Human) return;
+	if (faction == Factions::Human && objectType != ObjectTypes::Hex) return;
 
 	UMaterialInterface* material = nullptr;
 	UMaterialInterface* otherMaterial = nullptr;
@@ -202,6 +196,23 @@ void UMeshVisibility::SetVisibility()
 			otherMesh->SetMaterial(0, otherMaterial);
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Other material changed"));
 		}
+	}
+}
+
+void UMeshVisibility::FindFactionOfOwner()
+{
+	ABaseHex* hex;
+	switch (objectType)
+	{
+	case ObjectTypes::Hex:
+		hex = Cast<ABaseHex>(GetOwner());
+		faction = hex->hexOwner;
+		otherMesh = hex->hexMeshAttachment;
+		break;
+	default:
+		UUnitStats* unit = GetOwner()->GetComponentByClass<UUnitStats>();
+		faction = unit->faction;
+		break;
 	}
 }
 

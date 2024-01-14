@@ -45,17 +45,19 @@ public:
 	};
 
 	UPROPERTY(VisibleAnywhere) Factions faction;
-	ObjectTypes objectType;
+	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
 	FVisibilityMaterials meshMaterials;
 	FVisibilityMaterials otherMeshMaterials;
 	UStaticMeshComponent* mesh;
 	UStaticMeshComponent* otherMesh;
 	UPROPERTY(VisibleAnywhere) bool selected;
+	UPROPERTY(VisibleAnywhere) bool enableScan = true;
 	UPROPERTY(EditAnywhere) bool debug;
 	bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) float visibilityRadius = 50.f;
 	TMap<Factions, FVisibility> factionVisibility;
 
+	void FindFactionOfOwner();
 	void Scan(float radius);
 	void InSight(Factions thisFaction);
 	void SetVisibility();

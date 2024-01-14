@@ -7,6 +7,7 @@
 #include "Interactable.h"
 #include "HexNav.h"
 #include "UnitStats.h"
+#include "MeshVisibility.h"
 #include "Components/BoxComponent.h"
 #include "Building.generated.h"
 
@@ -30,6 +31,7 @@ public:
 	UPROPERTY(VisibleAnywhere)UInteractable* interactable;
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
+	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
 
 	enum BuildStates

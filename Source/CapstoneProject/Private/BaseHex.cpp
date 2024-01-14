@@ -266,6 +266,8 @@ void ABaseHex::UpdateResourceCapIncrease(int value)
 
 void ABaseHex::RequestTerrainChange(bool modelOnly)
 {
+	if (visibility->factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num()) return;
+
 	if (terrainChange != TerrainType::None) hexTerrain = terrainChange;
 	else (terrainChange = hexTerrain);
 

@@ -12,6 +12,22 @@ AMiningStation::AMiningStation()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/ProdStationMat01"));
+	if (visibleMat)
+	{
+		visibility->meshMaterials.visibleTexture = visibleMat;
+	}
+	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/ProdStationMat01_Hidden"));
+	if (hiddenMat)
+	{
+		visibility->meshMaterials.hiddenTexture = hiddenMat;
+	}
+	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/ProdStationMat01_HL"));
+	if (selectedMat)
+	{
+		visibility->meshMaterials.selectedTexture = selectedMat;
+	}
 }
 
 void AMiningStation::BeginPlay()

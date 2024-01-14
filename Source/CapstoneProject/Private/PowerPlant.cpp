@@ -10,6 +10,22 @@ APowerPlant::APowerPlant()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/BuildingEnergyStation_Mat"));
+	if (visibleMat)
+	{
+		visibility->meshMaterials.visibleTexture = visibleMat;
+	}
+	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/EnergyStationMat01_Hidden"));
+	if (hiddenMat)
+	{
+		visibility->meshMaterials.hiddenTexture = hiddenMat;
+	}
+	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/EnergyStationMat01_HL"));
+	if (selectedMat)
+	{
+		visibility->meshMaterials.selectedTexture = selectedMat;
+	}
 }
 
 void APowerPlant::UpdateResources()

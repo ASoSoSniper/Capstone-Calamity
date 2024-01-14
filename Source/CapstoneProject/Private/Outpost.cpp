@@ -16,6 +16,24 @@ AOutpost::AOutpost()
 		mesh->SetStaticMesh(meshAsset);
 		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
 	}
+
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/OutpostMat01"));
+	if (visibleMat)
+	{
+		visibility->meshMaterials.visibleTexture = visibleMat;
+	}
+	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/ProdStationMat01_Hidden"));
+	if (hiddenMat)
+	{
+		visibility->meshMaterials.hiddenTexture = hiddenMat;
+	}
+	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/ProdStationMat01_HL"));
+	if (selectedMat)
+	{
+		visibility->meshMaterials.selectedTexture = selectedMat;
+	}
+
+	visibility->visibilityRadius *= range;
 }
 
 void AOutpost::Tick(float DeltaTime)

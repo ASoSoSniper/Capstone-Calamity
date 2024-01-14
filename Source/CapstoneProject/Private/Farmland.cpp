@@ -10,6 +10,22 @@ AFarmland::AFarmland()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/FoodStationMat02"));
+	if (visibleMat)
+	{
+		visibility->meshMaterials.visibleTexture = visibleMat;
+	}
+	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/FoodStationMat01_Hidden"));
+	if (hiddenMat)
+	{
+		visibility->meshMaterials.hiddenTexture = hiddenMat;
+	}
+	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/FoodStationMat01_HL"));
+	if (selectedMat)
+	{
+		visibility->meshMaterials.selectedTexture = selectedMat;
+	}
 }
 
 void AFarmland::Harvest(ABaseHex* hex)
