@@ -273,7 +273,7 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 
 	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
 	{
-		spawner->CreateHexModel(TerrainType::Plains, this);
+		spawner->CreateHexModel(TerrainType::None, this);
 	}
 	else
 	{
