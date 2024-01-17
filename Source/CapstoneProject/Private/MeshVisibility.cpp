@@ -123,7 +123,7 @@ void UMeshVisibility::SetVisibility()
 		}
 	}
 
-	if (faction == Factions::Human && objectType != ObjectTypes::Hex) return;
+	if (faction == Factions::Human && objectType != ObjectTypes::Hex) visibleToPlayer = true;
 
 	UMaterialInterface* material = nullptr;
 	UMaterialInterface* otherMaterial = nullptr;
@@ -132,8 +132,16 @@ void UMeshVisibility::SetVisibility()
 		switch (objectType)
 		{
 		case ObjectTypes::Hex:
-			material = meshMaterials.visibleTexture;
-			otherMaterial = otherMeshMaterials.visibleTexture;
+			if (selected)
+			{
+				material = meshMaterials.selectedTexture;
+				otherMaterial = otherMeshMaterials.selectedTexture;
+			}
+			else
+			{
+				material = meshMaterials.visibleTexture;
+				otherMaterial = otherMeshMaterials.visibleTexture;
+			}
 
 			if (otherMesh) otherMesh->SetVisibility(true);
 
@@ -146,11 +154,27 @@ void UMeshVisibility::SetVisibility()
 
 		case ObjectTypes::MoveAI:
 			mesh->SetVisibility(true);
+
+			if (selected)
+			{
+				material = meshMaterials.selectedTexture;
+			}
+			else
+			{
+				material = meshMaterials.visibleTexture;
+			}
 			break;
 
 		case ObjectTypes::Building:
 			mesh->SetVisibility(true);
-			material = meshMaterials.visibleTexture;
+			if (selected)
+			{
+				material = meshMaterials.selectedTexture;
+			}
+			else
+			{
+				material = meshMaterials.visibleTexture;
+			}
 			break;
 		}
 	}
@@ -182,7 +206,10 @@ void UMeshVisibility::SetVisibility()
 		}
 	}
 
-	if (!material) return;
+	if (!material)
+	{
+		return;
+	}
 
 	if (mesh->GetMaterial(0) != material)
 	{
@@ -216,3 +243,7 @@ void UMeshVisibility::FindFactionOfOwner()
 	}
 }
 
+void UMeshVisibility::SetSelected(bool active)
+{
+	selected = active;
+}

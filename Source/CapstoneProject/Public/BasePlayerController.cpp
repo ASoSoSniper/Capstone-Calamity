@@ -64,7 +64,17 @@ void ABasePlayerController::SetHoveredWorldObject(AActor* object)
 
 void ABasePlayerController::SetSelectedWorldObject(AActor* object)
 {
+	if (selectedWorldObject)
+	{
+		UMeshVisibility* oldVisibility = selectedWorldObject->GetComponentByClass<UMeshVisibility>();
+		if (oldVisibility) oldVisibility->SetSelected(false);
+	}
+
 	selectedWorldObject = object;
+
+	UMeshVisibility* newVisibility = selectedWorldObject->GetComponentByClass<UMeshVisibility>();
+	if (newVisibility) newVisibility->SetSelected(true);
+	
 	SetActionState();
 }
 
@@ -83,6 +93,9 @@ void ABasePlayerController::SetActionState()
 
 void ABasePlayerController::Deselect()
 {
+	UMeshVisibility* visibility = selectedWorldObject->GetComponentByClass<UMeshVisibility>();
+	if (visibility) visibility->SetSelected(false);
+
 	selectedHex = nullptr;
 	selectedWorldObject = nullptr;
 	actionStates[currentActionState]->Reset();

@@ -61,4 +61,5 @@ public:
 	void Scan(float radius);
 	void InSight(Factions thisFaction);
 	void SetVisibility();
+	void SetSelected(bool active);
 };
