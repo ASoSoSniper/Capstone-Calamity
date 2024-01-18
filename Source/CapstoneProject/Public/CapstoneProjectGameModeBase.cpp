@@ -155,6 +155,11 @@ bool ACapstoneProjectGameModeBase::HasEnded()
 	return end;
 }
 
+FDayStruct ACapstoneProjectGameModeBase::GetDateInfo()
+{
+	return FDayStruct();
+}
+
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 {
 	//Advance in the Factions enum, element 0 is None

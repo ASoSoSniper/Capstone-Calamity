@@ -13,6 +13,16 @@
  * 
  */
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FDayStruct
+{
+	GENERATED_USTRUCT_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentMonth = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int day = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int hour = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int minute = 0;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -68,17 +78,13 @@ public:
 	};
 	TMap<MonthEnum, MonthStruct> MonthDic;
 
-	struct DayStruct
-	{
-		int currentMonth;
-		int day;
-		int hour;
-		int minute;		
-	};
-	DayStruct dayStruct = DayStruct{0,1,0,0};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FDayStruct dayStruct = FDayStruct{};
 	float currSeconds = 0;
 
 	UFUNCTION(BlueprintCallable) bool HasEnded();
+
+	UFUNCTION(BlueprintCallable) FDayStruct GetDateInfo();
 
 private:
 	Factions CreateNewFaction();
