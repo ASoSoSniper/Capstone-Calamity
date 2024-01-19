@@ -7,7 +7,11 @@
 
 void UManageTroop::Select(AActor* selectedObject)
 {
+	if (selectedTroop) HighlightSelected(selectedTroop, false);
+
 	selectedTroop = Cast<ATroop>(selectedObject);
+
+	HighlightSelected(selectedObject, true);
 }
 
 void UManageTroop::SwitchState()
@@ -39,7 +43,7 @@ void UManageTroop::SwitchState()
 			{
 			case None:
 				//Set selected troop to that (friendly) troop
-				selectedTroop = objectType.moveAI;
+				Select(objectType.actor);
 				return;
 			case Merge:
 				//Move toward friendly troop with the intent to merge
@@ -97,8 +101,8 @@ void UManageTroop::SwitchState()
 
 void UManageTroop::Reset()
 {
-	Super::Reset();
 	subSelect = None;
+	HighlightSelected(selectedTroop, false);
 }
 
 void UManageTroop::CheckSelection()

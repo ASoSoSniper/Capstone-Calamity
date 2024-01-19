@@ -32,6 +32,7 @@ public:
 	virtual void Reset();
 	virtual void CheckSelection();
 	virtual void CueActionState(ActionStates nextState);
+	virtual void HighlightSelected(AActor* object, bool enable);
 
 	//Commands
 	virtual void Upgrade(AActor* selectedObject);

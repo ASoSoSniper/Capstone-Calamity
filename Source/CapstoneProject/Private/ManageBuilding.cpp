@@ -6,7 +6,11 @@
 
 void UManageBuilding::Select(AActor* selectedObject)
 {
+	if (selectedBuilding) HighlightSelected(selectedBuilding, false);
+
 	selectedBuilding = Cast<ABuilding>(selectedObject);
+
+	HighlightSelected(selectedObject, true);
 }
 
 void UManageBuilding::SwitchState()
@@ -19,7 +23,7 @@ void UManageBuilding::SwitchState()
 		//If hex, switch to None state
 	case ObjectTypes::Hex:		
 		CueActionState(ActionStates::None);
-		controller->selectedHex = objectType.hex;
+		controller->actionStates[ActionStates::HexManage]->Select(objectType.actor);
 		break;
 		//If troop, set to TroopManage state
 	case ObjectTypes::MoveAI:
@@ -28,7 +32,7 @@ void UManageBuilding::SwitchState()
 		break;
 
 	case ObjectTypes::Building:
-		selectedBuilding = objectType.building;
+		Select(objectType.actor);
 		break;
 	}
 }
@@ -98,4 +102,5 @@ void UManageBuilding::Action5()
 void UManageBuilding::Reset()
 {
 	subSelect = None;
+	HighlightSelected(selectedBuilding, false);
 }

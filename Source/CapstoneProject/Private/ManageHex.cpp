@@ -6,6 +6,15 @@
 
 void UManageHex::Select(AActor* selectedObject)
 {
+	//Un-highlight the previously selected hex
+	if (controller->selectedHex) HighlightSelected(controller->selectedHex, false);
+	
+	//Set new hex to selected hex
+	ABaseHex* hex = Cast<ABaseHex>(selectedObject);
+	if (hex) controller->selectedHex = hex;
+
+	//Highlight new hex
+	HighlightSelected(selectedObject, true);
 }
 
 void UManageHex::SwitchState()
@@ -17,7 +26,7 @@ void UManageHex::SwitchState()
 	{
 		//If hex, save in hex pointer
 	case ObjectTypes::Hex:
-		controller->selectedHex = objectType.hex;
+		Select(objectType.actor);
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
@@ -34,6 +43,7 @@ void UManageHex::SwitchState()
 void UManageHex::Reset()
 {
 	subSelect = None;
+	HighlightSelected(controller->selectedHex, false);
 }
 
 

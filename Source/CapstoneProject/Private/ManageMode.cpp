@@ -17,8 +17,8 @@ void UManageMode::SwitchState()
 	{
 		//If hex, save in hex pointer
 	case ObjectTypes::Hex:
-		controller->selectedHex = objectType.hex;
 		CueActionState(ActionStates::HexManage);
+		controller->actionStates[ActionStates::HexManage]->Select(objectType.actor);
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
@@ -55,6 +55,12 @@ void UManageMode::CueActionState(ActionStates nextState)
 {
 	Reset();
 	controller->currentActionState = nextState;
+}
+
+void UManageMode::HighlightSelected(AActor* object, bool enable)
+{
+	UMeshVisibility* visibility = object->GetComponentByClass<UMeshVisibility>();
+	if (visibility) visibility->SetSelected(enable);
 }
 
 void UManageMode::Action1()
