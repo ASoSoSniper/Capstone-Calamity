@@ -16,16 +16,19 @@ ABasePlayerController::ABasePlayerController()
 	UManageHex* hex = NewObject<UManageHex>();
 	UManageTroop* troop = NewObject<UManageTroop>();
 	UManageBuilding* building = NewObject<UManageBuilding>();
+	UManageBattle* battle = NewObject<UManageBattle>();
 
 	none->AddToRoot();
 	hex->AddToRoot();
 	troop->AddToRoot();
 	building->AddToRoot();
+	battle->AddToRoot();
 
 	actionStates.Add(ActionStates::None, none);
 	actionStates.Add(ActionStates::HexManage, hex);
 	actionStates.Add(ActionStates::TroopManage, troop);
 	actionStates.Add(ActionStates::BaseManage, building);
+	actionStates.Add(ActionStates::BattleManage, battle);
 
 	for (const auto& state : actionStates)
 	{
@@ -107,6 +110,9 @@ int ABasePlayerController::GetActionState()
 		break;
 	case ActionStates::TroopManage:
 		state = 3;
+		break;
+	case ActionStates::BattleManage:
+		state = 4;
 		break;
 	}
 	

@@ -92,4 +92,5 @@ private:
 
 	void Harvest(float& DeltaTime);
 	void Scan(float& DeltaTime);
+	void FindExistingBuildingsAndTroops();
 };

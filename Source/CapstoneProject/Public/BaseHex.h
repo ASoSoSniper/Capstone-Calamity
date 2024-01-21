@@ -139,4 +139,6 @@ public:
 	void RequestTerrainChange(bool modelOnly = false);
 
 	FHexDisplay GetDisplayInfo();
+
+	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
 };

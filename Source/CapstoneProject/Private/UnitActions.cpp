@@ -356,9 +356,40 @@ int UnitActions::GetResourceCap(Factions faction)
     return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].maxResources;
 }
 
+ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referencePoint)
+{
+    TArray<AOutpost*> outposts;
+
+    for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Num(); i++)
+    {
+        AOutpost* outpost = Cast<AOutpost>(ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings[i]);
+        if (outpost) outposts.Add(outpost);
+    }
+
+    float shortestDistance = INFINITY;
+    AOutpost* closestOutpost = nullptr;
+    for (int i = 0; i < outposts.Num(); i++)
+    {
+        float distance = FVector::Distance(outposts[i]->GetActorLocation(), referencePoint->GetActorLocation());
+        if (distance < shortestDistance)
+        {
+            shortestDistance = distance;
+            closestOutpost = outposts[i];
+        }
+    }
+
+    if (closestOutpost)
+    {
+        ABaseHex* outpostHex = Cast<ABaseHex>(closestOutpost->hexNav->currentHex);
+        if (outpostHex) return outpostHex;
+    }
+
+    return nullptr;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
-    if (ACapstoneProjectGameModeBase::activeFactions.Find(faction))
+    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
     {
         ATroop* testForAI = Cast<ATroop>(target);
         if (testForAI)

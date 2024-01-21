@@ -229,6 +229,7 @@ void UMeshVisibility::SetVisibility()
 void UMeshVisibility::FindFactionOfOwner()
 {
 	ABaseHex* hex;
+	UUnitStats* unit;
 	switch (objectType)
 	{
 	case ObjectTypes::Hex:
@@ -236,8 +237,12 @@ void UMeshVisibility::FindFactionOfOwner()
 		faction = hex->hexOwner;
 		otherMesh = hex->hexMeshAttachment;
 		break;
-	default:
-		UUnitStats* unit = GetOwner()->GetComponentByClass<UUnitStats>();
+	case ObjectTypes::MoveAI:
+		unit = GetOwner()->GetComponentByClass<UUnitStats>();
+		faction = unit->faction;
+		break;
+	case ObjectTypes::Building:
+		unit = GetOwner()->GetComponentByClass<UUnitStats>();
 		faction = unit->faction;
 		break;
 	}

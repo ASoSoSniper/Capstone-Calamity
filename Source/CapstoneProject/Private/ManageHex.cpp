@@ -14,7 +14,7 @@ void UManageHex::Select(AActor* selectedObject)
 	if (hex) controller->selectedHex = hex;
 
 	//Highlight new hex
-	HighlightSelected(selectedObject, true);
+	if (selectedObject) HighlightSelected(selectedObject, true);
 }
 
 void UManageHex::SwitchState()
@@ -30,12 +30,14 @@ void UManageHex::SwitchState()
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
-		CueActionState(ActionStates::TroopManage);
-		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
+		CueActionState(ActionStates::TroopManage, objectType.actor);
 		break;
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
 		CueActionState(ActionStates::BaseManage);
+		break;
+	case ObjectTypes::Battle:
+		CueActionState(ActionStates::BattleManage, objectType.actor);
 		break;
 	}
 }

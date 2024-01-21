@@ -11,7 +11,7 @@ void UManageTroop::Select(AActor* selectedObject)
 
 	selectedTroop = Cast<ATroop>(selectedObject);
 
-	HighlightSelected(selectedObject, true);
+	if (selectedObject) HighlightSelected(selectedObject, true);
 }
 
 void UManageTroop::SwitchState()
@@ -73,8 +73,7 @@ void UManageTroop::SwitchState()
 		else
 		{
 			//else switch to BaseManage state
-			CueActionState(ActionStates::BaseManage);
-			controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
+			CueActionState(ActionStates::BaseManage, objectType.actor);
 
 			return;
 		}

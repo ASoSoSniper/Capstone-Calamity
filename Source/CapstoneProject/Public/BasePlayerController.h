@@ -13,6 +13,7 @@
 #include "ManageHex.h"
 #include "ManageTroop.h"
 #include "ManageBuilding.h"
+#include "ManageBattle.h"
 #include "GlobalSpawner.h"
 #include "BasePlayerController.generated.h"
 

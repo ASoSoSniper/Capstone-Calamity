@@ -17,19 +17,18 @@ void UManageMode::SwitchState()
 	{
 		//If hex, save in hex pointer
 	case ObjectTypes::Hex:
-		CueActionState(ActionStates::HexManage);
-		controller->actionStates[ActionStates::HexManage]->Select(objectType.actor);
+		CueActionState(ActionStates::HexManage, objectType.actor);
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:
-		CueActionState(ActionStates::TroopManage);
-		controller->actionStates[ActionStates::TroopManage]->Select(objectType.actor);
+		CueActionState(ActionStates::TroopManage, objectType.actor);
 		break;
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
-		CueActionState(ActionStates::BaseManage);
-		controller->actionStates[ActionStates::BaseManage]->Select(objectType.actor);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Base Manage Mode"));
+		CueActionState(ActionStates::BaseManage, objectType.actor);
+		break;
+	case ObjectTypes::Battle:
+		CueActionState(ActionStates::BattleManage, objectType.actor);
 		break;
 	}
 }
@@ -51,10 +50,15 @@ void UManageMode::CheckSelection()
 {
 }
 
-void UManageMode::CueActionState(ActionStates nextState)
+void UManageMode::CueActionState(ActionStates nextState, AActor* selectedObject)
 {
 	Reset();
 	controller->currentActionState = nextState;
+
+	if (selectedObject)
+	{
+		controller->actionStates[nextState]->Select(selectedObject);
+	}
 }
 
 void UManageMode::HighlightSelected(AActor* object, bool enable)

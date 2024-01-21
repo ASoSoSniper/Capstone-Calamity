@@ -25,7 +25,8 @@ enum class ActionStates
 	None,
 	HexManage,
 	BaseManage,
-	TroopManage
+	TroopManage,
+	BattleManage
 };
 UENUM()
 enum class UnitTypes
@@ -143,6 +144,7 @@ public:
 
 	static TArray<TerrainType> GetNonBuildableTerrain();
 	static int GetResourceCap(Factions faction);
+	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
 };
 
 

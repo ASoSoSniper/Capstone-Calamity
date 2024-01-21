@@ -60,6 +60,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 
 	timeScale = 0.f;
+	FindExistingBuildingsAndTroops();
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
@@ -211,4 +212,33 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 		return;
 	}
 	currentScanTime = visibilityScanRate;
+}
+
+void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
+{
+	TArray<AActor*> buildings; 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABuilding::StaticClass(), buildings);
+
+	for (int i = 0; i < buildings.Num(); i++)
+	{
+		ABuilding* building = Cast<ABuilding>(buildings[i]);
+		Factions buildingFaction = building->unitStats->faction;
+		if (activeFactions.Contains(buildingFaction))
+		{
+			activeFactions[buildingFaction]->allBuildings.Add(building);
+		}
+	}
+
+	TArray<AActor*> troops;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATroop::StaticClass(), troops);
+
+	for (int i = 0; i < troops.Num(); i++)
+	{
+		ATroop* troop = Cast<ATroop>(troops[i]);
+		Factions troopFaction = troop->unitStats->faction;
+		if (activeFactions.Contains(troopFaction))
+		{
+			activeFactions[troopFaction]->allUnits.Add(troop);
+		}
+	}
 }

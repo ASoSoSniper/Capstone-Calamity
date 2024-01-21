@@ -28,8 +28,10 @@ public:
 
 	UInteractable* interact;
 	UHexNav* hexNav;
-	USphereComponent* sphere;
+	UMeshVisibility* visibility;
 	ABaseHex* hex;
+	UStaticMeshComponent* group1Mesh;
+	UStaticMeshComponent* group2Mesh;
 
 	//Every troop participating in this battle, sorted into their factions
 	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;
@@ -56,6 +58,9 @@ public:
 	void Attack();
 	void EndBattle();
 	bool IsAlive(UnitActions::UnitData& group);
+	void FleeFromBattle(Factions faction);
+	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
+	void RemoveArmy(Factions faction);
 
 	UPROPERTY(EditAnywhere) float attackRate = 2.f;
 	float currentAttackTime;

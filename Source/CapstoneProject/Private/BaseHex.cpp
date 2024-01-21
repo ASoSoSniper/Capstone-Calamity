@@ -288,6 +288,53 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
 }
 
+ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes)
+{
+	//Return this hex if no troops in this faction are positioned on it
+	bool factionInThis = false;
+	for (int j = 0; j < troopsInHex.Num(); j++)
+	{
+		if (troopsInHex[j]->unitStats->faction == faction) factionInThis = true;
+	}
+	if (!factionInThis)
+	{
+		for (int i = 0; i < ignoredHexes.Num(); i++)
+		{
+			if (ignoredHexes[i] == this) factionInThis = true;
+		}
+		if (!factionInThis) return this;
+	}
+
+	//Otherwise, check surrounding hexes for a free spot and return the first available
+	TArray<AActor*> adjacentHexes;
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(this);
+
+	bool found = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), 50.f, TArray<TEnumAsByte<EObjectTypeQuery>>(), ABaseHex::StaticClass(), actorsToIgnore, adjacentHexes);
+	if (!found) return this;
+
+	for (int i = 0; i < adjacentHexes.Num(); i++)
+	{
+		ABaseHex* hex = Cast<ABaseHex>(adjacentHexes[i]);
+
+		for (int k = 0; k < ignoredHexes.Num(); k++)
+		{
+			if (ignoredHexes[k] == adjacentHexes[i]) continue;
+		}
+
+		if (hex->hexTerrain == TerrainType::Mountains || hex->hexTerrain == TerrainType::Border) continue;
+
+		bool factionInHex = false;
+		for (int j = 0; j < hex->troopsInHex.Num(); j++)
+		{
+			if (hex->troopsInHex[j]->unitStats->faction == faction) factionInHex = true;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 6.f, FColor::Orange, TEXT("WEEEEEEEEEEEEEE"));
+		if (!factionInHex) return hex;
+	}
+	return this;
+}
+
 FHexDisplay ABaseHex::GetDisplayInfo()
 {
 	FHexDisplay display;
