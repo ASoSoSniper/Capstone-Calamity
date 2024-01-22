@@ -284,6 +284,12 @@ TArray<int> UnitActions::GetFactionResources(Factions faction)
     return resources;
 }
 
+int UnitActions::GetFactionPopulation(Factions faction)
+{
+    int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].working;
+    return humanPop;
+}
+
 TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
 {
     TMap<StratResources, int> resources;

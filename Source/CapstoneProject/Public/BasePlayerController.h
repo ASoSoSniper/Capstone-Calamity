@@ -62,6 +62,7 @@ public:
 
 	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
 	UFUNCTION(BlueprintCallable) void SetPlayerResources(TArray<int> input, bool overrideCosts);
+	UFUNCTION(BlueprintCallable) int GetPlayerPopulation();
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 

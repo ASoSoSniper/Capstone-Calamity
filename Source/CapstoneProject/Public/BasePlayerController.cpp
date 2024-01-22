@@ -198,6 +198,11 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 		UnitActions::ConsumeSpentResources(playerFaction, numbers);
 }
 
+int ABasePlayerController::GetPlayerPopulation()
+{
+	return UnitActions::GetFactionPopulation(playerFaction);
+}
+
 TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 {
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
