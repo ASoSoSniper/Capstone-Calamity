@@ -11,6 +11,7 @@ Faction::Faction()
 	resourceInventory.Add(StratResources::Energy, InventoryStat{ 500,2500,0 });
 	resourceInventory.Add(StratResources::Production, InventoryStat{ 500,2500,0 });
 	resourceInventory.Add(StratResources::Food, InventoryStat{ 500,2500,0 });
+	resourceInventory.Add(StratResources::Wealth, InventoryStat{ 500, 2500, 0 });
 
 	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,100 });
 	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,100 });

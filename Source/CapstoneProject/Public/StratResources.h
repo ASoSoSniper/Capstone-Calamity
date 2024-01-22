@@ -13,5 +13,6 @@ enum class StratResources
 	None,
 	Energy,
 	Production,
-	Food
+	Food,
+	Wealth
 };
