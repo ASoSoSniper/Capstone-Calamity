@@ -27,6 +27,13 @@ struct FHexInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int production;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defenderBonus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float moveMultiplier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float attritionMultiplier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int visionModifier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 };
 
 USTRUCT(BlueprintType)
@@ -41,6 +48,12 @@ struct FHexDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defenderBonus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText moveMultiplier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attritionBonus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText visionModifier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 };
 
 

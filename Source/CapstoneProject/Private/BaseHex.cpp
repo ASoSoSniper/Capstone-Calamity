@@ -16,15 +16,41 @@ ABaseHex::ABaseHex()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), FText::FromString(TEXT("Flat terrain with no unique benefits.")), 3, 2, 1 });
-	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")),FText::FromString(TEXT("Full of tall mushrooms and food.")), 4, 3, 1 });
-	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")),FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), 3, 3, 1 });
-	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")),FText::FromString(TEXT("Compressed mushroom caps create a hills.")), 1, 4, 2 });
-	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")),FText::FromString(TEXT("High intensity of mushroom stems in mountain formations make traversal and construction impossible.")), 0, 0, 0 });
-	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")),FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 2, 5 });
-	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")),FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4 });
-	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")),FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1 });
-	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")),FText::FromString(TEXT("The Rock, contains DST fuel.")), 2, 3, 4 });
+	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), 
+		FText::FromString(TEXT("Flat terrain with no unique benefits.")), 3, 2, 1, 0, 1.f, 1.f, 0,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Plain'")) });
+
+	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")), 
+		FText::FromString(TEXT("Full of tall mushrooms and food.")), 4, 3, 1, 1, 0.85f, 1.1f, 0, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Forest'")) });
+
+	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")), 
+		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), 3, 3, 1, 1, 0.7f, 1.2f, -1, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Dense_Forest'")) });
+
+	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")), 
+		FText::FromString(TEXT("Compressed mushroom caps create a hills.")), 1, 4, 2, 1, 0.8f, 1.1f, 1, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Hills_TEMP'")) });
+
+	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")), 
+		FText::FromString(TEXT("High intensity of mushroom stems in mountain formations make traversal and construction impossible.")), 0, 0, 0, 0, 0, 0, 0,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Mountain'")) });
+
+	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")), 
+		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 2, 5, 0, 0.8f, 1.0f, -1, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Toxic'")) });
+
+	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 
+		FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4, 3, 1.0f, 1.0f, 0,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Soup_TEMP'")) });
+
+	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")), 
+		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1, 2, 1.f, 1.f, 0,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Soup_TEMP'")) });
+
+	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")), 
+		FText::FromString(TEXT("The Rock, contains DST fuel.")), 2, 3, 4, 3, 1.f, 1.f, 1, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Biomes/Landscape_Icon_Soup_TEMP'")) });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
@@ -345,6 +371,13 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	display.food = FText::AsNumber(resourceBonuses[StratResources::Food].yieldBonus);
 	display.production = FText::AsNumber(resourceBonuses[StratResources::Production].yieldBonus);
 	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy].yieldBonus);
+
+	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
+	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
+	display.attritionBonus = FText::AsNumber(hexInfo[hexTerrain].attritionMultiplier);
+	display.visionModifier = FText::AsNumber(hexInfo[hexTerrain].visionModifier);
+
+	display.icon = hexInfo[hexTerrain].icon;
 
 	int workers = 0;
 	for (auto worker : workersInHex)
