@@ -19,6 +19,10 @@ public:
 	{
 		int working;
 		int available;
+
+		int workingEnergyCost;
+		int workingFoodCost;
+		int workingProductionCost;
 	};
 
 	struct InventoryStat

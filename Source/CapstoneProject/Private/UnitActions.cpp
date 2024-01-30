@@ -252,10 +252,15 @@ int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
 }
 
-int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex)
+int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex)
 {
     int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
-    if (workersInHex == 10) return 0;
+    int workersInHex = 0;
+    for (auto workers : hex->workersInHex)
+    {
+        workersInHex += workers.Value;
+    }
+    if (workersInHex >= hex->maxWorkers) return 0;
     int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
@@ -264,9 +269,9 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWor
     return workersToAdd;
 }
 
-int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex)
+int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex)
 {
-    int workersToRemove = workersInHex >= desiredWorkers ? desiredWorkers : workersInHex;
+    int workersToRemove = desiredWorkers <= hex->workersInHex[worker] ? desiredWorkers : hex->workersInHex[worker];
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
@@ -322,7 +327,7 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     {
         for (auto worker : workers)
         {
-            hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex->workersInHex[worker.Key]);
+            hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex);
             hex->ActiveHarvesting();
         }
     }

@@ -43,6 +43,8 @@ public:
 	UPROPERTY(EditAnywhere) float harvestTickLength = 2.f;
 	static inline float currentScanTime = 0;
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
+	static inline float currentStarveTime = 0;
+	UPROPERTY(EditAnywhere) float starveRate = 1.f;
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
@@ -92,5 +94,7 @@ private:
 
 	void Harvest(float& DeltaTime);
 	void Scan(float& DeltaTime);
+	void FeedPop();
+	void StarvePop(Factions faction);
 	void FindExistingBuildingsAndTroops();
 };

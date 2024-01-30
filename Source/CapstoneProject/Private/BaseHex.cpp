@@ -386,7 +386,7 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	}
 	TArray<FStringFormatArg> Args;
 	Args.Add(workers);
-	Args.Add(10);
+	Args.Add(maxWorkers);
 	display.workerCount = FText::FromString(FString::Format(TEXT("{0}/{1}"), Args));
 
 	return display;

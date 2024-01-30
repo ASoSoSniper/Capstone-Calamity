@@ -115,6 +115,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 				{
 					dayStruct.day += 1;
+					FeedPop();
 				}
 				else
 				{
@@ -212,6 +213,53 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 		return;
 	}
 	currentScanTime = visibilityScanRate;
+}
+
+void ACapstoneProjectGameModeBase::FeedPop()
+{
+	/*if (currentStarveTime > 0)
+	{
+		currentStarveTime -= DeltaTime;
+		return;
+	}*/
+
+	//currentStarveTime = starveRate;
+
+	for (auto &faction : activeFactions)
+	{
+		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
+		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
+		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1)) * 50;
+
+		int workerFoodCost = 0;
+
+		for (auto &workers : faction.Value->availableWorkers)
+		{
+			workerFoodCost += workers.Value.workingFoodCost;
+		}
+
+		//Enter full starvation if unaffordable non-working food cost
+		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
+		{
+			StarvePop(faction.Key);
+			return;
+		}
+		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
+
+		//Enter worker starvation if unaffordable working food cost
+		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerFoodCost)
+		{
+			StarvePop(faction.Key);
+			return;
+		}
+		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
+	}
+}
+
+void ACapstoneProjectGameModeBase::StarvePop(Factions faction)
+{
+	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Bro what the fuck I'm so hungry"));
 }
 
 void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()

@@ -134,6 +134,7 @@ public:
 	bool battleInProgress;
 
 	TMap<WorkerType, int> workersInHex;
+	int maxWorkers = 10;
 
 	float currentHarvestTime;
 	float maxHarvestTime = 2.f;

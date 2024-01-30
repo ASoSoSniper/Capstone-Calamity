@@ -122,11 +122,10 @@ public:
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
-	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
-	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, int& workersInHex);
+	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex);
+	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex);
 	static TArray<int> GetFactionResources(Factions faction);
 	static int GetFactionPopulation(Factions faction);
-	static int GetFactionCurrency(Factions faction);
 	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
