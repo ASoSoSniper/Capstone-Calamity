@@ -298,9 +298,20 @@ int UnitActions::GetFactionPopulation(Factions faction)
 TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
 {
     TMap<StratResources, int> resources;
-    for (auto resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
         resources.Add(resource.Key, resource.Value.currentResources);
+    }
+    return resources;
+}
+
+TMap<StratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
+{
+    TMap<StratResources, int> resources;
+
+    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        resources.Add(resource.Key, resource.Value.resourcePerTick);
     }
     return resources;
 }
@@ -308,7 +319,7 @@ TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions 
 TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
 {
     TMap<WorkerType, int> workers;
-    for (auto workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
+    for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
     {
         workers.Add(workerType.Key, workerType.Value.available);
     }

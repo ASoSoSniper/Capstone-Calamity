@@ -127,6 +127,7 @@ public:
 	static TArray<int> GetFactionResources(Factions faction);
 	static int GetFactionPopulation(Factions faction);
 	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);
+	static TMap<StratResources, int> GetResourcesPerTick(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);

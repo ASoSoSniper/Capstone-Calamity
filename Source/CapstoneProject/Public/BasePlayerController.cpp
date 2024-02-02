@@ -325,6 +325,19 @@ int ABasePlayerController::GetResourceCap()
 	return UnitActions::GetResourceCap(playerFaction);
 }
 
+FResourcesPerTick ABasePlayerController::GetResourcesPerTick()
+{
+	FResourcesPerTick resources;
+	TMap<StratResources, int> playerInventory = UnitActions::GetResourcesPerTick(playerFaction);
+
+	resources.energy = playerInventory[StratResources::Energy];
+	resources.production = playerInventory[StratResources::Production];
+	resources.food = playerInventory[StratResources::Food];
+	resources.wealth = playerInventory[StratResources::Wealth];
+
+	return resources;
+}
+
 //FOR BLUEPRINT: Checks if selected hex has a building
 bool ABasePlayerController::HexHasBuilding()
 {

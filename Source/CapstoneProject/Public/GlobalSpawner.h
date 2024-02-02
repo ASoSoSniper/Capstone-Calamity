@@ -102,6 +102,17 @@ struct FCuedTroop
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FResourcesPerTick
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energy = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int production = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealth = 0;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {
