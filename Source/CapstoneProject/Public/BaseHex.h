@@ -140,7 +140,6 @@ public:
 	float maxHarvestTime = 2.f;
 	bool harvesting;
 
-	void Harvest(float& DeltaTime);
 	bool ActiveHarvesting();
 
 	void UpdateFoodYield(int value);

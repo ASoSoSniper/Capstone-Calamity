@@ -75,6 +75,7 @@ public:
 	UFUNCTION(BlueprintCallable) void SelectTroop(FText troopName);
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
+	UFUNCTION(BlueprintCallable) FResourcesPerTick GetResourcesPerTick();
 	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
 	AOutpost* GetOutpost();
