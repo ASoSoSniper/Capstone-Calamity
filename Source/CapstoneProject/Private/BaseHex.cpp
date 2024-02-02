@@ -173,25 +173,6 @@ void ABaseHex::BeginBattle()
 	spawner->SpawnBattle(this);
 }
 
-void ABaseHex::Harvest(float& DeltaTime)
-{
-	if (currentHarvestTime > 0)
-	{
-		currentHarvestTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
-		return;
-	}
-
-	if (hexOwner != Factions::None)
-	{
-		UnitActions::HarvestResources(hexOwner, resourceBonuses[StratResources::Food].yieldBonus, StratResources::Food);
-		if (building)
-		{
-			building->Harvest(this);
-		}
-	}
-
-	currentHarvestTime = maxHarvestTime;
-}
 
 bool ABaseHex::ActiveHarvesting()
 {

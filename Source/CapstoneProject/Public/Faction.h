@@ -37,8 +37,13 @@ public:
 	TMap<WorkerType, WorkerStats> availableWorkers;
 	TArray<ATroop*> allUnits;
 	TArray<ABuilding*> allBuildings;
+	TArray<ABaseHex*> ownedHexes;
 
 	TMap<Factions, FactionRelationship> factionRelationships;
 
 	void FindActiveFactions();
+
+	int daysTillStarve = 3;
+	int currStarveDays = 0;
+	bool starving = false;
 };

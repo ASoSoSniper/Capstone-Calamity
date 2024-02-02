@@ -217,14 +217,6 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 
 void ACapstoneProjectGameModeBase::FeedPop()
 {
-	/*if (currentStarveTime > 0)
-	{
-		currentStarveTime -= DeltaTime;
-		return;
-	}*/
-
-	//currentStarveTime = starveRate;
-
 	for (auto &faction : activeFactions)
 	{
 		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
@@ -235,13 +227,13 @@ void ACapstoneProjectGameModeBase::FeedPop()
 
 		for (auto &workers : faction.Value->availableWorkers)
 		{
-			workerFoodCost += workers.Value.workingFoodCost;
+			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
 		}
 
 		//Enter full starvation if unaffordable non-working food cost
 		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
 		{
-			StarvePop(faction.Key);
+			StarvePop(faction.Key, workerAvailableCost + workerFoodCost);
 			return;
 		}
 		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
@@ -249,17 +241,57 @@ void ACapstoneProjectGameModeBase::FeedPop()
 		//Enter worker starvation if unaffordable working food cost
 		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerFoodCost)
 		{
-			StarvePop(faction.Key);
+			StarvePop(faction.Key, workerAvailableCost + workerFoodCost);
 			return;
 		}
 		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
+
+		activeFactions[faction.Key]->currStarveDays = 0;
+		activeFactions[faction.Key]->starving = false;
 	}
 }
 
-void ACapstoneProjectGameModeBase::StarvePop(Factions faction)
+void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 {
-	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Bro what the fuck I'm so hungry"));
+	int missingFood = foodCost - activeFactions[faction]->resourceInventory[StratResources::Food].currentResources;
+
+	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;	
+
+	if (activeFactions[faction]->currStarveDays < activeFactions[faction]->daysTillStarve)
+	{
+		activeFactions[faction]->currStarveDays += 1;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining"), activeFactions[faction]->daysTillStarve - activeFactions[faction]->currStarveDays));
+		return;
+	}
+	if (!activeFactions[faction]->starving)
+	{
+		activeFactions[faction]->starving = true;
+		RemoveWorkers(faction);
+	}
+
+	//Kill non-working population
+	activeFactions[faction]->availableWorkers[WorkerType::Human].available -= missingFood * popStarveRate;
+	if (activeFactions[faction]->availableWorkers[WorkerType::Human].available < 0)
+	{
+		missingFood = -1 * activeFactions[faction]->availableWorkers[WorkerType::Human].available;
+		activeFactions[faction]->availableWorkers[WorkerType::Human].available = 0;
+	}
+
+	//Kill working population
+	activeFactions[faction]->availableWorkers[WorkerType::Human].working -= missingFood * popStarveRate;
+	if (activeFactions[faction]->availableWorkers[WorkerType::Human].working < 0)
+	{
+		activeFactions[faction]->availableWorkers[WorkerType::Human].working = 0;
+	}
+}
+
+void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction)
+{
+	for (auto hex : activeFactions[faction]->ownedHexes)
+	{
+		activeFactions[faction]->availableWorkers[WorkerType::Human].available = hex->workersInHex[WorkerType::Human];
+		hex->workersInHex[WorkerType::Human] = 0;
+	}
 }
 
 void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
