@@ -218,8 +218,9 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 		FText production = FText::AsNumber(building.Value.productionCost);
 		FText workers = FText::AsNumber(building.Value.workerCost);
 		FText buildTime = FText::AsNumber(building.Value.timeToBuild);
+		UTexture2D* buildingIcon = building.Value.buildingIcon;
 
-		buildings.Add(FBuildingDisplay{name, production, workers, buildTime});
+		buildings.Add(FBuildingDisplay{name, production, workers, buildTime, buildingIcon});
 	}
 
 	return buildings;

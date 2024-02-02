@@ -56,6 +56,7 @@ struct FBuildingCost
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingDisplay
@@ -66,6 +67,7 @@ struct FBuildingDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopCost
