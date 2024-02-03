@@ -202,9 +202,9 @@ void ACapstoneProjectGameModeBase::Harvest(float& DeltaTime)
 		}
 	}
 	currentHarvestTime = harvestTickLength;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].resourcePerTick));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d max,%d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].resourcePerTick));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].resourcePerTick));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Food = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Food].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Food].resourcePerTick));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Production = %d, %d max,%d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Production].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Production].resourcePerTick));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Energy = %d, %d max, %d per tick"), activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].currentResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].maxResources, activeFactions[Factions::Human]->resourceInventory[StratResources::Energy].resourcePerTick));
 }
 
 void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
@@ -223,7 +223,7 @@ void ACapstoneProjectGameModeBase::FeedPop()
 	{
 		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
 		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
-		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1)) * 50;
+		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
 
 		int workerFoodCost = 0;
 
@@ -231,7 +231,7 @@ void ACapstoneProjectGameModeBase::FeedPop()
 		{
 			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
 		}
-
+		if (faction.Key == Factions::Human) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Available = %d, Working = %d"), workerAvailableCost, workerFoodCost));
 		//Enter full starvation if unaffordable non-working food cost
 		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
 		{
@@ -256,6 +256,7 @@ void ACapstoneProjectGameModeBase::FeedPop()
 void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 {
 	int missingFood = foodCost - activeFactions[faction]->resourceInventory[StratResources::Food].currentResources;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food cost = %d"), missingFood));
 
 	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;	
 
@@ -279,13 +280,48 @@ void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 		missingFood = -1 * activeFactions[faction]->availableWorkers[WorkerType::Human].available;
 		activeFactions[faction]->availableWorkers[WorkerType::Human].available = 0;
 	}
+	else return;
 
 	//Kill working population
-	activeFactions[faction]->availableWorkers[WorkerType::Human].working -= missingFood * popStarveRate;
-	if (activeFactions[faction]->availableWorkers[WorkerType::Human].working < 0)
+	TArray<ABaseHex*> hexesWithWorkers;
+	for (int i = 0; i < activeFactions[faction]->ownedHexes.Num(); i++)
 	{
-		activeFactions[faction]->availableWorkers[WorkerType::Human].working = 0;
+		if (activeFactions[faction]->ownedHexes[i]->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(activeFactions[faction]->ownedHexes[i]);
 	}
+
+	int scanIndex = 0;
+	int workersToRemove = FMath::Min((missingFood), activeFactions[faction]->availableWorkers[WorkerType::Human].working);
+	if (hexesWithWorkers.IsEmpty())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
+		return;
+	}
+	int overloadStopper = 0;
+	while (workersToRemove != 0)
+	{
+		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
+		{
+			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
+			workersToRemove--;
+		}
+
+		scanIndex++;
+		if (!hexesWithWorkers.IsValidIndex(scanIndex))
+		{
+			scanIndex = 0;
+		}
+
+		overloadStopper++;
+		if (overloadStopper == 100)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
+			return;
+		}
+	}
+	activeFactions[faction]->availableWorkers[WorkerType::Human].working -= missingFood;
+
+	if (activeFactions[faction]->availableWorkers[WorkerType::Human].working < 0) 
+		activeFactions[faction]->availableWorkers[WorkerType::Human].working = 0;
 }
 
 void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction)
