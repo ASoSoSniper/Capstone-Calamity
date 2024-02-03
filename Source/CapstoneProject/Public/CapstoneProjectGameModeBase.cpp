@@ -61,6 +61,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 	timeScale = 0.f;
 	FindExistingBuildingsAndTroops();
+	FindExistingHexes();
+
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
@@ -257,16 +259,17 @@ void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 
 	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;	
 
+	if (!activeFactions[faction]->starving)
+	{
+		activeFactions[faction]->starving = true;
+		//RemoveWorkers(faction);
+	}
+
 	if (activeFactions[faction]->currStarveDays < activeFactions[faction]->daysTillStarve)
 	{
 		activeFactions[faction]->currStarveDays += 1;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining"), activeFactions[faction]->daysTillStarve - activeFactions[faction]->currStarveDays));
 		return;
-	}
-	if (!activeFactions[faction]->starving)
-	{
-		activeFactions[faction]->starving = true;
-		RemoveWorkers(faction);
 	}
 
 	//Kill non-working population
@@ -287,9 +290,9 @@ void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 
 void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction)
 {
-	for (auto hex : activeFactions[faction]->ownedHexes)
+	for (auto& hex : activeFactions[faction]->ownedHexes)
 	{
-		activeFactions[faction]->availableWorkers[WorkerType::Human].available = hex->workersInHex[WorkerType::Human];
+		activeFactions[faction]->availableWorkers[WorkerType::Human].available += hex->workersInHex[WorkerType::Human];
 		hex->workersInHex[WorkerType::Human] = 0;
 	}
 }
@@ -320,5 +323,17 @@ void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
 		{
 			activeFactions[troopFaction]->allUnits.Add(troop);
 		}
+	}
+}
+
+void ACapstoneProjectGameModeBase::FindExistingHexes()
+{
+	TArray<AActor*> hexes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseHex::StaticClass(), hexes);
+
+	for (int i = 0; i < hexes.Num(); i++)
+	{
+		ABaseHex* hex = Cast<ABaseHex>(hexes[i]);
+		hex->SetFaction(hex->hexOwner);
 	}
 }

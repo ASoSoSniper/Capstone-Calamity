@@ -84,6 +84,7 @@ public:
 	static FactionRelationship GetFactionRelationship(Factions unitFaction, Factions targetFaction);
 
 	static void AssignFaction(Factions faction, AActor* target);
+	static void AssignFaction(Factions faction, ABaseHex* hex);
 
 	
 	struct SelectionIdentity
@@ -135,6 +136,7 @@ public:
 	static TArray<TerrainType> GetNonBuildableTerrain();
 	static int GetResourceCap(Factions faction);
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
+	static int GetFactionStarveLevel(Factions faction);
 };
 
 

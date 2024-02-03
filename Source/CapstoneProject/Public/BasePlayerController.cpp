@@ -364,6 +364,11 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 	return troop;
 }
 
+int ABasePlayerController::GetStarveLevel()
+{
+	return UnitActions::GetFactionStarveLevel(playerFaction);
+}
+
 //Finds whether the selected object is a hex, has a building, and whether that building is an outpost
 AOutpost* ABasePlayerController::GetOutpost()
 {

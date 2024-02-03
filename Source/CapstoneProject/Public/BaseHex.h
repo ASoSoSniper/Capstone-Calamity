@@ -154,4 +154,6 @@ public:
 	FHexDisplay GetDisplayInfo();
 
 	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
+
+	void SetFaction(Factions faction);
 };

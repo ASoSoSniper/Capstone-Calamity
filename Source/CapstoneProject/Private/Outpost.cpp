@@ -126,7 +126,7 @@ TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
 			if (foundHex->hexOwner == Factions::None)
 			{
 				//Add hex to list of found hexes
-				foundHex->hexOwner = unitStats->faction;
+				foundHex->SetFaction(unitStats->faction);
 				foundHexes.Add(foundHex);
 			}
 		}

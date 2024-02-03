@@ -373,3 +373,7 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	return display;
 }
 
+void ABaseHex::SetFaction(Factions faction)
+{
+	UnitActions::AssignFaction(faction, this);
+}

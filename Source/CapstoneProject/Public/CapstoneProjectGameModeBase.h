@@ -98,4 +98,5 @@ private:
 	void StarvePop(Factions faction, int foodCost);
 	void RemoveWorkers(Factions faction);
 	void FindExistingBuildingsAndTroops();
+	void FindExistingHexes();
 };

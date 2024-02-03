@@ -78,5 +78,6 @@ public:
 	UFUNCTION(BlueprintCallable) FResourcesPerTick GetResourcesPerTick();
 	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
+	UFUNCTION(BlueprintCallable) int GetStarveLevel();
 	AOutpost* GetOutpost();
 };

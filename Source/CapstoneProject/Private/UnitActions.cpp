@@ -409,6 +409,21 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
     return nullptr;
 }
 
+int UnitActions::GetFactionStarveLevel(Factions faction)
+{
+    int level = 0;
+    if (ACapstoneProjectGameModeBase::activeFactions[faction]->starving)
+    {
+        ++level;
+        if (ACapstoneProjectGameModeBase::activeFactions[faction]->currStarveDays >= ACapstoneProjectGameModeBase::activeFactions[faction]->daysTillStarve)
+        {
+            ++level;
+        }
+    }
+    
+    return level;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
@@ -431,6 +446,21 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
             return;
         }
     }
+}
+
+void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
+{
+    if (faction == Factions::None) return;
+
+    if (hex->hexOwner != Factions::None)
+    {
+        if (ACapstoneProjectGameModeBase::activeFactions[hex->hexOwner]->ownedHexes.Contains(hex))
+            ACapstoneProjectGameModeBase::activeFactions[hex->hexOwner]->ownedHexes.Remove(hex);
+    }
+
+    hex->hexOwner = faction;
+    if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(hex))
+        ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(hex);
 }
 
 UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
