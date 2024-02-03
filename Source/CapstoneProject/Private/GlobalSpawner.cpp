@@ -28,7 +28,7 @@ AGlobalSpawner::AGlobalSpawner()
 	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30, 200, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
 	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 300, FText::FromString("Outpost"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Wealth_Station.Wealth_Station'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 
 	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120 });
 	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120 });
