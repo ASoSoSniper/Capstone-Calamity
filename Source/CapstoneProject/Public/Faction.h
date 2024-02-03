@@ -43,7 +43,7 @@ public:
 
 	void FindActiveFactions();
 
-	int daysTillStarve = 1;
+	int daysTillStarve = 3;
 	int currStarveDays = 0;
 	bool starving = false;
 };
