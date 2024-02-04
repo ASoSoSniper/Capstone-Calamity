@@ -216,13 +216,11 @@ void UManageHex::Action12()
 void UManageHex::AddWorkersToHex(WorkerType worker, int workers)
 {
 	controller->selectedHex->workersInHex[worker] += UnitActions::AddWorkers(controller->playerFaction, worker, workers, controller->selectedHex);
-	controller->selectedHex->ActiveHarvesting();
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d workers in hex"), controller->selectedHex->workersInHex[worker]));
 }
 
 void UManageHex::RemoveWorkers(WorkerType worker, int workers)
 {
 	controller->selectedHex->workersInHex[worker] -= UnitActions::RemoveWorkers(controller->playerFaction, worker, workers, controller->selectedHex);
-	controller->selectedHex->ActiveHarvesting();
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d workers in hex"), controller->selectedHex->workersInHex[worker]));
 }

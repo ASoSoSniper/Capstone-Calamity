@@ -46,4 +46,8 @@ public:
 	int daysTillStarve = 3;
 	int currStarveDays = 0;
 	bool starving = false;
+
+	int daysTillPowerOutage = 3;
+	int currPowerDays = 0;
+	bool powerOutage = false;
 };

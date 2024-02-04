@@ -369,6 +369,11 @@ int ABasePlayerController::GetStarveLevel()
 	return UnitActions::GetFactionStarveLevel(playerFaction);
 }
 
+int ABasePlayerController::GetPowerOutageLevel()
+{
+	return UnitActions::GetFactionPowerOutageLevel(playerFaction);
+}
+
 //Finds whether the selected object is a hex, has a building, and whether that building is an outpost
 AOutpost* ABasePlayerController::GetOutpost()
 {

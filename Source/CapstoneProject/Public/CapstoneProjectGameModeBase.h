@@ -44,7 +44,8 @@ public:
 	static inline float currentScanTime = 0;
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 
-	UPROPERTY(EditAnywhere) int popStarveRate = 5;
+	UPROPERTY(EditAnywhere) int popDeathsPerFoodMissing = 5;
+	UPROPERTY(EditAnywhere) int popDeathsPerPowerMissing = 5;
 	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
@@ -94,8 +95,15 @@ private:
 
 	void Harvest(float& DeltaTime);
 	void Scan(float& DeltaTime);
+
 	void FeedPop();
 	void StarvePop(Factions faction, int foodCost);
+
+	void ConsumeEnergy();
+	void PowerOutage(Factions faction, int energyCost);
+
+	void KillPopulation(Factions faction, int cost, int deathsPerResource);
+
 	void RemoveWorkers(Factions faction);
 	void FindExistingBuildingsAndTroops();
 	void FindExistingHexes();

@@ -115,6 +115,8 @@ void ABaseHex::Tick(float DeltaTime)
 	{
 		RequestTerrainChange();
 	}
+
+	if (hexOwner != Factions::None) ActiveHarvesting();
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -179,10 +181,12 @@ bool ABaseHex::ActiveHarvesting()
 	bool alreadyHarvesting = harvesting;
 	bool workersExist = false;
 
+	int workerQuantity = 0;
 	for (auto workers : workersInHex)
 	{
-		if (workers.Value >= 10) workersExist = true;
+		workerQuantity += workers.Value;
 	}
+	if (workerQuantity >= 10) workersExist = true;
 
 	harvesting = workersExist;
 

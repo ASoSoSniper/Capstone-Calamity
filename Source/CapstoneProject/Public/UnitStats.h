@@ -45,6 +45,7 @@ public:
 	UPROPERTY(EditAnywhere) int minDamage = 1;
 	UPROPERTY(EditAnywhere) int maxDamage = 3;
 	UPROPERTY(EditAnywhere) int reinforceRate = 2;
+	UPROPERTY(EditAnywhere) int energyUpkeepCost = 2;
 	
 	float maxHealTime = 5.f;
 	float currhealTime = 5.f;

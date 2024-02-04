@@ -15,6 +15,7 @@ AMergedArmy::AMergedArmy()
 	unitStats->minDamage = 0;
 	unitStats->maxDamage = 0;
 	unitStats->reinforceRate = 0;
+	unitStats->energyUpkeepCost = 0;
 }
 
 void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
@@ -94,6 +95,7 @@ void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
 	unitStats->minDamage += unitData.minDamage;
 	unitStats->maxDamage += unitData.maxDamage;
 	unitStats->reinforceRate += unitData.reinforceRate;
+	unitStats->energyUpkeepCost += unitData.energyUpkeep;
 }
 
 

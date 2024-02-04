@@ -115,6 +115,7 @@ public:
 		int minDamage;
 		int maxDamage;
 		int reinforceRate;
+		int energyUpkeep;
 
 		TArray<UnitData> savedUnits;
 	};
@@ -137,6 +138,7 @@ public:
 	static int GetResourceCap(Factions faction);
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
 	static int GetFactionStarveLevel(Factions faction);
+	static int GetFactionPowerOutageLevel(Factions faction);
 };
 
 

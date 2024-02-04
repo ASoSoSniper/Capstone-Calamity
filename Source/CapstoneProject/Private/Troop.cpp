@@ -76,6 +76,7 @@ void ATroop::InputUnitStats(UnitActions::UnitData data)
 	unitStats->minDamage = data.minDamage;
 	unitStats->maxDamage = data.maxDamage;
 	unitStats->reinforceRate = data.reinforceRate;
+	unitStats->energyUpkeepCost = data.energyUpkeep;
 }
 
 void ATroop::Action1()

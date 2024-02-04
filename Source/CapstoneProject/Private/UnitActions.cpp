@@ -234,7 +234,8 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
         unit->maxMorale,
         unit->minDamage, 
         unit->maxDamage,
-        unit->reinforceRate};
+        unit->reinforceRate,
+        unit->energyUpkeepCost};
     
     if (data.unitType == UnitTypes::Army)
     {
@@ -424,6 +425,21 @@ int UnitActions::GetFactionStarveLevel(Factions faction)
     return level;
 }
 
+int UnitActions::GetFactionPowerOutageLevel(Factions faction)
+{
+    int level = 0;
+    if (ACapstoneProjectGameModeBase::activeFactions[faction]->powerOutage)
+    {
+        ++level;
+        if (ACapstoneProjectGameModeBase::activeFactions[faction]->currPowerDays >= ACapstoneProjectGameModeBase::activeFactions[faction]->daysTillPowerOutage)
+        {
+            ++level;
+        }
+    }
+
+    return level;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
@@ -450,8 +466,6 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
 
 void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
 {
-    if (faction == Factions::None) return;
-
     if (hex->hexOwner != Factions::None)
     {
         if (ACapstoneProjectGameModeBase::activeFactions[hex->hexOwner]->ownedHexes.Contains(hex))
@@ -459,6 +473,9 @@ void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
     }
 
     hex->hexOwner = faction;
+
+    if (faction == Factions::None) return;
+
     if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(hex))
         ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(hex);
 }

@@ -9,6 +9,7 @@
 #include "Outpost.generated.h"
 
 class UOutpostStorage;
+class UOutpostBarracks;
 class UBuildingAttachment;
 
 /**
@@ -49,6 +50,7 @@ public:
 	void BuildAttachment(BuildingAttachments attachment);
 
 	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
+	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
 
 	TArray<SpawnableUnits> cuedUnits;
 	float currentTroopBuildTime;

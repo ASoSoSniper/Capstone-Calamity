@@ -79,5 +79,7 @@ public:
 	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
 	UFUNCTION(BlueprintCallable) int GetStarveLevel();
+	UFUNCTION(BlueprintCallable) int GetPowerOutageLevel();
+
 	AOutpost* GetOutpost();
 };

@@ -3,12 +3,14 @@
 
 #include "Outpost.h"
 #include "OutpostStorage.h"
+#include "OutpostBarracks.h"
 #include "BuildingAttachment.h"
 #include "CapstoneProjectGameModeBase.h"
 
 AOutpost::AOutpost()
 {
 	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
+	barracksBuilding = CreateDefaultSubobject<UOutpostBarracks>(TEXT("Barracks"));
 
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
 	if (meshAsset)
@@ -147,6 +149,9 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 	{
 	case BuildingAttachments::Storage:
 		storageBuilding->ActivateAttachment();
+		break;
+	case BuildingAttachments::Barracks:
+		barracksBuilding->ActivateAttachment();
 		break;
 	}
 
