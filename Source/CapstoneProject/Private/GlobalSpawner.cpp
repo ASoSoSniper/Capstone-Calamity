@@ -311,13 +311,13 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
 			TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
 
-			if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Robot] > buildingCosts[building].workerCost)
+			if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Human] > buildingCosts[building].workerCost)
 			{
 				canAfford = true;
 			}
 
 			resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
-			workerCosts.Add(WorkerType::Robot, buildingCosts[building].workerCost);
+			workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost);
 		}
 
 		if (canAfford)

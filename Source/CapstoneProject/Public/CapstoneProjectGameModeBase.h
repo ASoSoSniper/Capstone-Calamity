@@ -107,4 +107,5 @@ private:
 	void RemoveWorkers(Factions faction);
 	void FindExistingBuildingsAndTroops();
 	void FindExistingHexes();
+	void UpdateResourceCosts();
 };

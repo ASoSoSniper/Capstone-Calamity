@@ -113,6 +113,24 @@ struct FResourcesPerTick
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealth = 0;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FResourceGainLoss
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthGain = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthLoss = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyGain = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyLoss = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodGain = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodLoss = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionGain = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionLoss = 0;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {

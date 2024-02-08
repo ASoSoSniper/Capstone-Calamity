@@ -81,5 +81,7 @@ public:
 	UFUNCTION(BlueprintCallable) int GetStarveLevel();
 	UFUNCTION(BlueprintCallable) int GetPowerOutageLevel();
 
+	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
+
 	AOutpost* GetOutpost();
 };

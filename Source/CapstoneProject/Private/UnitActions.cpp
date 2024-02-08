@@ -317,6 +317,30 @@ TMap<StratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
     return resources;
 }
 
+TMap<StratResources, int> UnitActions::GetResourceGains(Factions faction)
+{
+    TMap<StratResources, int> resources;
+
+    resources.Add(StratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Wealth].resourcePerTick);
+    resources.Add(StratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Energy].resourcePerTick);
+    resources.Add(StratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].resourcePerTick);
+    resources.Add(StratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Production].resourcePerTick);
+
+    return resources;
+}
+
+TMap<StratResources, int> UnitActions::GetResourceLosses(Factions faction)
+{
+    TMap<StratResources, int> resources;
+
+    resources.Add(StratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Wealth].lossesPerDay);
+    resources.Add(StratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Energy].lossesPerDay);
+    resources.Add(StratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].lossesPerDay);
+    resources.Add(StratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Production].lossesPerDay);
+
+    return resources;
+}
+
 TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
 {
     TMap<WorkerType, int> workers;

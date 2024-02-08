@@ -30,6 +30,7 @@ public:
 		int currentResources = 0;
 		int maxResources = 10;
 		int resourcePerTick = 0;
+		int lossesPerDay = 0;
 	};
 
 	Factions faction;

@@ -113,6 +113,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 			else
 			{
 				dayStruct.hour = 0;
+				UpdateResourceCosts();
 
 				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 				{
@@ -195,7 +196,7 @@ void ACapstoneProjectGameModeBase::Harvest(float& DeltaTime)
 	}
 	for (auto faction : activeFactions)
 	{
-		for (auto resource : faction.Value->resourceInventory)
+		for (auto& resource : faction.Value->resourceInventory)
 		{
 			activeFactions[faction.Key]->resourceInventory[resource.Key].currentResources += faction.Value->resourceInventory[resource.Key].resourcePerTick;
 
@@ -232,12 +233,13 @@ void ACapstoneProjectGameModeBase::FeedPop()
 		{
 			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
 		}
-		//if (faction.Key == Factions::Human) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Available = %d, Working = %d"), workerAvailableCost, workerFoodCost));
+
+		int totalCost = activeFactions[faction.Key]->resourceInventory[StratResources::Food].lossesPerDay;
 		
 		//Enter full starvation if unaffordable non-working food cost
 		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
 		{
-			StarvePop(faction.Key, workerAvailableCost + workerFoodCost);
+			StarvePop(faction.Key, totalCost);
 			return;
 		}
 		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
@@ -245,7 +247,7 @@ void ACapstoneProjectGameModeBase::FeedPop()
 		//Enter worker starvation if unaffordable working food cost
 		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerFoodCost)
 		{
-			StarvePop(faction.Key, workerAvailableCost + workerFoodCost);
+			StarvePop(faction.Key, totalCost);
 			return;
 		}
 		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
@@ -282,7 +284,7 @@ void ACapstoneProjectGameModeBase::ConsumeEnergy()
 {
 	for (auto& faction : activeFactions)
 	{
-		int energyCost = 0;
+		/*int energyCost = 0;
 		for (int i = 0; i < faction.Value->allUnits.Num(); i++)
 		{
 			energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
@@ -290,7 +292,8 @@ void ACapstoneProjectGameModeBase::ConsumeEnergy()
 		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
 		{
 			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeepCost;
-		}
+		}*/
+		int energyCost = activeFactions[faction.Key]->resourceInventory[StratResources::Energy].lossesPerDay;
 
 		if (energyCost > faction.Value->resourceInventory[StratResources::Energy].currentResources)
 		{
@@ -425,5 +428,38 @@ void ACapstoneProjectGameModeBase::FindExistingHexes()
 	{
 		ABaseHex* hex = Cast<ABaseHex>(hexes[i]);
 		hex->SetFaction(hex->hexOwner);
+	}
+}
+
+void ACapstoneProjectGameModeBase::UpdateResourceCosts()
+{
+	for (auto faction : activeFactions)
+	{
+		//Food
+		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
+		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
+		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
+
+		int workerFoodCost = 0;
+
+		for (auto& workers : faction.Value->availableWorkers)
+		{
+			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
+		}
+
+		faction.Value->resourceInventory[StratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
+
+		//Energy
+		int energyCost = 0;
+		for (int i = 0; i < faction.Value->allUnits.Num(); i++)
+		{
+			energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
+		}
+		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
+		{
+			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeepCost;
+		}
+
+		faction.Value->resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
 	}
 }

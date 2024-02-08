@@ -374,6 +374,25 @@ int ABasePlayerController::GetPowerOutageLevel()
 	return UnitActions::GetFactionPowerOutageLevel(playerFaction);
 }
 
+FResourceGainLoss ABasePlayerController::GetResourceRates()
+{
+	FResourceGainLoss result;
+
+	TMap<StratResources, int> resourceGains = UnitActions::GetResourcesPerTick(playerFaction);
+	TMap<StratResources, int> resourceLosses = UnitActions::GetResourceLosses(playerFaction);
+
+	result.wealthGain = resourceGains[StratResources::Wealth];
+	result.wealthLoss = resourceLosses[StratResources::Wealth];
+	result.energyGain = resourceGains[StratResources::Energy];
+	result.energyLoss = resourceLosses[StratResources::Energy];
+	result.foodGain = resourceGains[StratResources::Food];
+	result.foodLoss = resourceLosses[StratResources::Food];
+	result.productionGain = resourceGains[StratResources::Production];
+	result.productionLoss = resourceLosses[StratResources::Production];
+
+	return result;
+}
+
 //Finds whether the selected object is a hex, has a building, and whether that building is an outpost
 AOutpost* ABasePlayerController::GetOutpost()
 {
