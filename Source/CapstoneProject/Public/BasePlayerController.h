@@ -83,5 +83,7 @@ public:
 
 	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
 
+	UFUNCTION(BlueprintCallable) FWorkerSliders SetWorkerCount(FWorkerSliders sliders);
+
 	AOutpost* GetOutpost();
 };

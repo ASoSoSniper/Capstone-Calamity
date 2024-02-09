@@ -393,6 +393,20 @@ FResourceGainLoss ABasePlayerController::GetResourceRates()
 	return result;
 }
 
+FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
+{
+	selectedHex->workersInHex[WorkerType::Human] = sliders.humanWorkers * selectedHex->maxWorkers;
+	selectedHex->workersInHex[WorkerType::Robot] = sliders.robotWorkers * selectedHex->maxWorkers;
+	selectedHex->workersInHex[WorkerType::Alien] = sliders.alienWorkers * selectedHex->maxWorkers;
+
+	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
+	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];
+	sliders.alienDisplay = selectedHex->workersInHex[WorkerType::Alien];
+
+	sliders.maxWorkers = selectedHex->maxWorkers;
+	sliders.currWorkers = selectedHex->workersInHex[WorkerType::Human] + selectedHex->workersInHex[WorkerType::Robot] + selectedHex->workersInHex[WorkerType::Alien];
+}
+
 //Finds whether the selected object is a hex, has a building, and whether that building is an outpost
 AOutpost* ABasePlayerController::GetOutpost()
 {

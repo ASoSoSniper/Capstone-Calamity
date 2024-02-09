@@ -131,6 +131,23 @@ struct FResourceGainLoss
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionLoss = 0;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FWorkerSliders
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float humanWorkers = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float robotWorkers = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float alienWorkers = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int humanDisplay = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robotDisplay = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int alienDisplay = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currWorkers;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {
