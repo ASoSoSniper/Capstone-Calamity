@@ -405,6 +405,8 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 
 	sliders.maxWorkers = selectedHex->maxWorkers;
 	sliders.currWorkers = selectedHex->workersInHex[WorkerType::Human] + selectedHex->workersInHex[WorkerType::Robot] + selectedHex->workersInHex[WorkerType::Alien];
+
+	return sliders;
 }
 
 //Finds whether the selected object is a hex, has a building, and whether that building is an outpost
