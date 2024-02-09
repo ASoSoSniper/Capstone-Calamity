@@ -352,6 +352,17 @@ TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
     return workers;
 }
 
+TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
+{
+    TMap<WorkerType, int> workers;
+    for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
+    {
+        workers.Add(workerType.Key, workerType.Value.workingEnergyCost);
+    }
+
+    return workers;
+}
+
 void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex, AOutpost* outpost)
 {
     for (auto resource : resources)
@@ -462,6 +473,19 @@ int UnitActions::GetFactionPowerOutageLevel(Factions faction)
     }
 
     return level;
+}
+
+void UnitActions::EnableRobots(Factions faction, bool enable)
+{
+    for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Num(); i++)
+    {
+        ATroop* troop = ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits[i];
+        if (troop)
+        {
+            troop->interact->SetInteract(enable);
+            if (!enable) troop->CancelPath();
+        }
+    }
 }
 
 void UnitActions::AssignFaction(Factions faction, AActor* target)

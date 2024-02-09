@@ -109,6 +109,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 			if (dayStruct.hour < 23)
 			{
 				dayStruct.hour += 1;
+				UpdateResourceCosts();
 			}
 			else
 			{
@@ -284,37 +285,31 @@ void ACapstoneProjectGameModeBase::ConsumeEnergy()
 {
 	for (auto& faction : activeFactions)
 	{
-		/*int energyCost = 0;
-		for (int i = 0; i < faction.Value->allUnits.Num(); i++)
-		{
-			energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
-		}
-		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
-		{
-			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeepCost;
-		}*/
 		int energyCost = activeFactions[faction.Key]->resourceInventory[StratResources::Energy].lossesPerDay;
 
 		if (energyCost > faction.Value->resourceInventory[StratResources::Energy].currentResources)
 		{
 			PowerOutage(faction.Key, energyCost);
+			RemoveWorkers(faction.Key, WorkerType::Robot);
 			return;
 		}
 
 		faction.Value->resourceInventory[StratResources::Energy].currentResources -= energyCost;
 		faction.Value->currPowerDays = 0;
 		faction.Value->powerOutage = false;
+		if (faction.Key == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
 	}
 }
 
 void ACapstoneProjectGameModeBase::PowerOutage(Factions faction, int energyCost)
 {
-	int missingEnergy = energyCost - activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources;
-	activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources = 0;
+	int missingEnergy = energyCost - activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources;	
 
 	if (!activeFactions[faction]->powerOutage)
 	{
 		activeFactions[faction]->powerOutage = true;
+		activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources = 0;
+		if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, false);
 	}
 
 	if (activeFactions[faction]->currPowerDays < activeFactions[faction]->daysTillPowerOutage)
@@ -324,6 +319,7 @@ void ACapstoneProjectGameModeBase::PowerOutage(Factions faction, int energyCost)
 		return;
 	}
 
+	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
 	KillPopulation(faction, missingEnergy, popDeathsPerPowerMissing);
 }
 
@@ -381,12 +377,12 @@ void ACapstoneProjectGameModeBase::KillPopulation(Factions faction, int cost, in
 		activeFactions[faction]->availableWorkers[WorkerType::Human].working = 0;
 }
 
-void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction)
+void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction, WorkerType worker)
 {
 	for (auto& hex : activeFactions[faction]->ownedHexes)
 	{
-		activeFactions[faction]->availableWorkers[WorkerType::Human].available += hex->workersInHex[WorkerType::Human];
-		hex->workersInHex[WorkerType::Human] = 0;
+		activeFactions[faction]->availableWorkers[worker].available += hex->workersInHex[worker];
+		hex->workersInHex[worker] = 0;
 	}
 }
 
@@ -451,13 +447,20 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 
 		//Energy
 		int energyCost = 0;
-		for (int i = 0; i < faction.Value->allUnits.Num(); i++)
+		if (!faction.Value->powerOutage)
 		{
-			energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
+			for (int i = 0; i < faction.Value->allUnits.Num(); i++)
+			{
+				energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
+			}
 		}
 		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
 		{
 			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeepCost;
+		}
+		for (int i = 0; i < faction.Value->ownedHexes.Num(); i++)
+		{
+			energyCost += faction.Value->ownedHexes[i]->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction.Key)[WorkerType::Robot];
 		}
 
 		faction.Value->resourceInventory[StratResources::Energy].lossesPerDay = energyCost;

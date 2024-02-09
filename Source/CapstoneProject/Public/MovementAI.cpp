@@ -268,4 +268,12 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 	}
 }
 
+void AMovementAI::CancelPath()
+{
+	if (hexPath.IsEmpty() || hexNav->currentHex == hexNav->targetHex) return;
+
+	hexNav->targetHex = hexPath[hexPathIndex];
+	CreatePath();
+}
+
 

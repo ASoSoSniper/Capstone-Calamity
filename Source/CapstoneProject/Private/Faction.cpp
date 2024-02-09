@@ -8,7 +8,7 @@
 Faction::Faction()
 {
 	faction = Factions::None;
-	resourceInventory.Add(StratResources::Energy, InventoryStat{ 500,2500,0, 0 });
+	resourceInventory.Add(StratResources::Energy, InventoryStat{ 10,2500,0, 0 });
 	resourceInventory.Add(StratResources::Production, InventoryStat{ 500,2500,0, 0 });
 	resourceInventory.Add(StratResources::Food, InventoryStat{ 500,2500,0, 0 });
 	resourceInventory.Add(StratResources::Wealth, InventoryStat{ 500, 2500, 0, 0 });

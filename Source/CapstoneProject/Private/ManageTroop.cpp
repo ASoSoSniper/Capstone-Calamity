@@ -110,6 +110,11 @@ void UManageTroop::CheckSelection()
 	{
 		CueActionState(ActionStates::None);
 	}
+
+	if (selectedTroop->interact->canInteract == false)
+	{
+		CueActionState(ActionStates::None);
+	}
 }
 
 void UManageTroop::CommandToMerge(ATroop* troop, ATroop* targetTroop)

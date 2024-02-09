@@ -133,6 +133,7 @@ public:
 	static TMap<StratResources, int> GetResourceGains(Factions faction);
 	static TMap<StratResources, int> GetResourceLosses(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
+	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 
@@ -141,6 +142,8 @@ public:
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
 	static int GetFactionStarveLevel(Factions faction);
 	static int GetFactionPowerOutageLevel(Factions faction);
+
+	static void EnableRobots(Factions faction, bool enable);
 };
 
 

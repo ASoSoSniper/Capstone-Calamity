@@ -36,6 +36,9 @@ public:
 	UStaticMeshComponent* collider;
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* otherCollider;
+	UPROPERTY(EditAnywhere)
+	bool canInteract = true;
 
 	void CreateExtraCollision(UStaticMeshComponent* mesh);
+	bool SetInteract(bool active);
 };

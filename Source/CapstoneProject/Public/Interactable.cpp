@@ -14,6 +14,7 @@ UInteractable::UInteractable()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
+	canInteract = true;
 }
 
 
@@ -55,6 +56,8 @@ void UInteractable::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void UInteractable::MouseHover(UPrimitiveComponent* item)
 {
+	if (!canInteract) return;
+
 	if (controller) controller->SetHoveredWorldObject(GetOwner());
 
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Hovering over Hex")));
@@ -62,6 +65,8 @@ void UInteractable::MouseHover(UPrimitiveComponent* item)
 
 void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
 {
+	if (!canInteract) return;
+
 	if (controller) controller->SetSelectedWorldObject(GetOwner());
 
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Selected Hex!")));
@@ -75,5 +80,11 @@ void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)
 		otherCollider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
 		otherCollider->OnClicked.AddDynamic(this, &UInteractable::Selected);
 	}
+}
+
+bool UInteractable::SetInteract(bool active)
+{
+	canInteract = active;
+	return canInteract;
 }
 

@@ -104,7 +104,7 @@ private:
 
 	void KillPopulation(Factions faction, int cost, int deathsPerResource);
 
-	void RemoveWorkers(Factions faction);
+	void RemoveWorkers(Factions faction, WorkerType worker);
 	void FindExistingBuildingsAndTroops();
 	void FindExistingHexes();
 	void UpdateResourceCosts();
