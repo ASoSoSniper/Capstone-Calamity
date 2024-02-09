@@ -146,6 +146,10 @@ struct FWorkerSliders
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currWorkers;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableHumans = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableRobots = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableAliens = 0;
 };
 
 UCLASS()

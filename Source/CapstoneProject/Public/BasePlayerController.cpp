@@ -406,6 +406,10 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 	sliders.maxWorkers = selectedHex->maxWorkers;
 	sliders.currWorkers = selectedHex->workersInHex[WorkerType::Human] + selectedHex->workersInHex[WorkerType::Robot] + selectedHex->workersInHex[WorkerType::Alien];
 
+	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);
+	sliders.availableRobots = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Robot);
+	sliders.availableAliens = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Alien);
+
 	return sliders;
 }
 
