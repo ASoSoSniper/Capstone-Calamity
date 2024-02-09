@@ -124,8 +124,9 @@ public:
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
-	static int AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex);
-	static int RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex);
+	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
 	static TArray<int> GetFactionResources(Factions faction);
 	static int GetFactionPopulation(Factions faction);
 	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);

@@ -253,7 +253,7 @@ int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
 }
 
-int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex)
+int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
     int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
     int workersInHex = 0;
@@ -270,7 +270,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int& desiredWor
     return workersToAdd;
 }
 
-int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desiredWorkers, ABaseHex* hex)
+int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
     int workersToRemove = desiredWorkers <= hex->workersInHex[worker] ? desiredWorkers : hex->workersInHex[worker];
 
@@ -280,10 +280,24 @@ int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int& desired
     return workersToRemove;
 }
 
+int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
+{
+    if (desiredWorkers > hex->workersInHex[worker])
+    {
+        return AddWorkers(faction, worker, desiredWorkers - hex->workersInHex[worker], hex);
+    }
+    else if (desiredWorkers < hex->workersInHex[worker])
+    {
+        return RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
+    }
+    
+    return hex->workersInHex[worker];
+}
+
 TArray<int> UnitActions::GetFactionResources(Factions faction)
 {
     TArray<int> resources;
-    for (auto resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
         resources.Add(resource.Value.currentResources);
     }
