@@ -288,10 +288,10 @@ int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWork
     }
     else if (desiredWorkers < hex->workersInHex[worker])
     {
-        return RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
+        return -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
     }
     
-    return hex->workersInHex[worker];
+    return 0;
 }
 
 TArray<int> UnitActions::GetFactionResources(Factions faction)

@@ -395,9 +395,11 @@ FResourceGainLoss ABasePlayerController::GetResourceRates()
 
 FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 {
-	selectedHex->workersInHex[WorkerType::Human] = UnitActions::SetWorkers(Factions::Human, WorkerType::Human, sliders.humanWorkers * selectedHex->maxWorkers, selectedHex);
-	selectedHex->workersInHex[WorkerType::Robot] = UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, sliders.robotWorkers * selectedHex->maxWorkers, selectedHex);
-	selectedHex->workersInHex[WorkerType::Alien] = UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, sliders.alienWorkers * selectedHex->maxWorkers, selectedHex);
+	if (!selectedHex) return sliders;
+
+	selectedHex->workersInHex[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, sliders.humanWorkers * selectedHex->maxWorkers, selectedHex);
+	selectedHex->workersInHex[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, sliders.robotWorkers * selectedHex->maxWorkers, selectedHex);
+	selectedHex->workersInHex[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, sliders.alienWorkers * selectedHex->maxWorkers, selectedHex);
 
 	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
 	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];
