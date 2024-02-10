@@ -5,10 +5,16 @@
 
 void UOutpostStorage::UpdateResources()
 {
-	Cast<ABaseHex>(outpost->hexNav->currentHex)->UpdateResourceCapIncrease(storageIncrease);
+	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, storageIncrease);
 }
 
 void UOutpostStorage::ActivateAttachment()
 {
-	Super::Activate();
+	Super::ActivateAttachment();
+}
+
+void UOutpostStorage::DisableAttachment()
+{
+	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, -storageIncrease);
+	Super::DisableAttachment();
 }

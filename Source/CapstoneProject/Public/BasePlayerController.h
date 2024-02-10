@@ -86,4 +86,5 @@ public:
 	UFUNCTION(BlueprintCallable) FWorkerSliders SetWorkerCount(FWorkerSliders sliders);
 
 	AOutpost* GetOutpost();
+	UFUNCTION(BlueprintCallable) bool OutpostCanBuildTroops();
 };

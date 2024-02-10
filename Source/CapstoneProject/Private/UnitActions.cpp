@@ -418,6 +418,14 @@ void UnitActions::ConsumeSpentResources(Factions faction, TArray<int> values)
     }
 }
 
+void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
+{
+    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        resource.Value.maxResources += addedCap;
+    }
+}
+
 TArray<TerrainType> UnitActions::GetNonBuildableTerrain()
 {
     return ACapstoneProjectGameModeBase::nonBuildableTerrains;
@@ -540,6 +548,45 @@ void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
 
     if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(hex))
         ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(hex);
+}
+
+void UnitActions::RemoveFromFaction(Factions faction, AActor* target)
+{
+    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
+    {
+        ATroop* testForAI = Cast<ATroop>(target);
+        if (testForAI)
+        {
+            if (ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Contains(testForAI))
+            {
+                ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Remove(testForAI);
+            }
+
+            return;
+        }
+
+        ABuilding* testForBuilding = Cast<ABuilding>(target);
+        if (testForBuilding)
+        {
+            if (ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Contains(testForBuilding))
+            {
+                ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Remove(testForBuilding);
+            }
+
+            return;
+        }
+
+        ABaseHex* testForHex = Cast<ABaseHex>(target);
+        if (testForHex)
+        {
+            if (ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(testForHex))
+            {
+                ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Remove(testForHex);
+            }
+
+            return;
+        }
+    }
 }
 
 UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)

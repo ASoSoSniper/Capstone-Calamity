@@ -145,7 +145,6 @@ public:
 	void UpdateFoodYield(int value);
 	void UpdateProductionYield(int value);
 	void UpdateEnergyYield(int value);
-	void UpdateResourceCapIncrease(int value);
 
 	void ToggleResourceYield();
 

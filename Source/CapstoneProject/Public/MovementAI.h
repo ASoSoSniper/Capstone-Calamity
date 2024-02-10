@@ -69,6 +69,7 @@ public:
 	MoveStates moveState = Idle;
 	virtual void MoveToTarget(float& DeltaTime);
 	virtual void CancelPath();
+	virtual void Destroyed() override;
 	
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* mesh;

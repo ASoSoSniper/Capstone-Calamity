@@ -10,11 +10,13 @@
 
 class UOutpostStorage;
 class UOutpostBarracks;
+class UOutpostTroopFactory;
 class UBuildingAttachment;
 
 /**
  * 
  */
+
 UCLASS()
 class CAPSTONEPROJECT_API AOutpost : public ABuilding
 {
@@ -48,9 +50,11 @@ public:
 		Barracks
 	};
 	void BuildAttachment(BuildingAttachments attachment);
+	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
 
 	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
 	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
+	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
 
 	TArray<SpawnableUnits> cuedUnits;
 	float currentTroopBuildTime;
@@ -61,4 +65,6 @@ public:
 	virtual void Action2() override;
 	virtual void Action3() override;
 	virtual void Action4() override;
+
+	virtual void Destroyed() override;
 };

@@ -4,6 +4,7 @@
 #include "Outpost.h"
 #include "OutpostStorage.h"
 #include "OutpostBarracks.h"
+#include "OutpostTroopFactory.h"
 #include "BuildingAttachment.h"
 #include "CapstoneProjectGameModeBase.h"
 
@@ -11,6 +12,7 @@ AOutpost::AOutpost()
 {
 	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
 	barracksBuilding = CreateDefaultSubobject<UOutpostBarracks>(TEXT("Barracks"));
+	troopFactoryBuilding = CreateDefaultSubobject<UOutpostTroopFactory>(TEXT("Troop Factory"));
 
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
 	if (meshAsset)
@@ -158,9 +160,29 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 	
 }
 
+bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
+{
+	switch (attachment)
+	{
+	case Storage:
+		return storageBuilding->AttachmentIsActive();
+	case RobotFactory:
+		return troopFactoryBuilding->AttachmentIsActive();
+	case Barracks:
+		return storageBuilding->AttachmentIsActive();
+	default:
+		return false;
+	}
+}
+
 void AOutpost::CueTroopBuild(SpawnableUnits unit)
 {
 	if (!spawner) return;
+	if (!troopFactoryBuilding->AttachmentIsActive())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Robot factory not built"));
+		return;
+	}
 
 	if (spawner->troopCosts.Contains(unit))
 	{
@@ -188,4 +210,20 @@ void AOutpost::Action3()
 
 void AOutpost::Action4()
 {
+}
+
+void AOutpost::Destroyed()
+{
+	TArray<UActorComponent*> attachments;
+	GetComponents(UBuildingAttachment::StaticClass(), attachments);
+
+	for (UActorComponent* attachment : attachments)
+	{
+		if (UBuildingAttachment* buildingAttachment = Cast<UBuildingAttachment>(attachment))
+		{
+			buildingAttachment->DisableAttachment();
+		}
+	}
+
+	Super::Destroyed();
 }

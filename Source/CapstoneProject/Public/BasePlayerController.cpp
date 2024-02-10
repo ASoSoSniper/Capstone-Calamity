@@ -430,4 +430,11 @@ AOutpost* ABasePlayerController::GetOutpost()
 	return outpost;
 }
 
+bool ABasePlayerController::OutpostCanBuildTroops()
+{
+	AOutpost* outpost = GetOutpost();
+
+	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::RobotFactory);
+}
+
 

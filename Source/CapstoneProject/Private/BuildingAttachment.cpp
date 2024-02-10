@@ -76,3 +76,13 @@ void UBuildingAttachment::ActivateAttachment()
 	buildState = Building;
 }
 
+void UBuildingAttachment::DisableAttachment()
+{
+	buildState = Inactive;
+}
+
+bool UBuildingAttachment::AttachmentIsActive()
+{
+	return buildState == Complete;
+}
+

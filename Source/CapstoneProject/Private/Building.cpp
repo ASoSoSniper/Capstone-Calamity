@@ -181,3 +181,10 @@ void ABuilding::Action10()
 {
 }
 
+void ABuilding::Destroyed()
+{
+	UnitActions::RemoveFromFaction(unitStats->faction, this);
+
+	Super::Destroyed();
+}
+

@@ -85,6 +85,7 @@ public:
 
 	static void AssignFaction(Factions faction, AActor* target);
 	static void AssignFaction(Factions faction, ABaseHex* hex);
+	static void RemoveFromFaction(Factions faction, AActor* target);
 
 	
 	struct SelectionIdentity
@@ -137,6 +138,7 @@ public:
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
+	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
 	static TArray<TerrainType> GetNonBuildableTerrain();
 	static int GetResourceCap(Factions faction);

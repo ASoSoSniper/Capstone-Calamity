@@ -36,7 +36,7 @@ public:
 		Building,
 		Complete
 	};
-	BuildStates buildState = Building;
+	BuildStates buildState = Inactive;
 
 	void SetBuildState();
 	void Constructing(float& DeltaTime);
@@ -44,4 +44,8 @@ public:
 	virtual void UpdateResources();
 
 	virtual void ActivateAttachment();
+
+	virtual void DisableAttachment();
+
+	virtual bool AttachmentIsActive();
 };

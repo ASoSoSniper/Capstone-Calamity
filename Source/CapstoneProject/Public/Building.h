@@ -69,4 +69,6 @@ public:
 	virtual void Action8();
 	virtual void Action9();
 	virtual void Action10();
+
+	virtual void Destroyed() override;
 };

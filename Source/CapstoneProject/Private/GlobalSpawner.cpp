@@ -12,7 +12,6 @@
 #include "Farmland.h"
 #include "PowerPlant.h"
 #include "Outpost.h"
-#include "MaterialStorage.h"
 #include "BattleObject.h"
 
 // Sets default values

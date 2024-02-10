@@ -255,26 +255,6 @@ void ABaseHex::ToggleResourceYield()
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += axis * resourceBonuses[StratResources::Energy].capBonus;
 }
 
-void ABaseHex::UpdateResourceCapIncrease(int value)
-{
-	resourceBonuses[StratResources::Food].capBonus += value;
-	resourceBonuses[StratResources::Production].capBonus += value;
-	resourceBonuses[StratResources::Energy].capBonus += value;
-
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
-		return;
-	}
-
-	if (harvesting)
-	{
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].maxResources += value;
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].maxResources += value;
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += value;
-	}
-}
-
 void ABaseHex::RequestTerrainChange(bool modelOnly)
 {
 	if (visibility->factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num()) return;
