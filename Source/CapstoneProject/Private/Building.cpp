@@ -184,6 +184,7 @@ void ABuilding::Action10()
 void ABuilding::Destroyed()
 {
 	UnitActions::RemoveFromFaction(unitStats->faction, this);
+	Cast<ABaseHex>(hexNav->currentHex)->building = nullptr;
 
 	Super::Destroyed();
 }

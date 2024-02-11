@@ -51,32 +51,32 @@ void ATroop::CreatePath()
 
 void ATroop::MergeOnTile()
 {
-	if (hexNav->currentHex == targetToMerge->hexNav->currentHex)
+	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(targetToMerge);
+	switch (objectType.type)
 	{
-		if (spawner && targetToMerge)
+	case ObjectTypes::Hex:
+		break;
+	case ObjectTypes::MoveAI:
+		if (hexNav->currentHex == objectType.moveAI->hexNav->currentHex)
 		{
-			spawner->MergeArmies(this, targetToMerge, Cast<ABaseHex>(hexNav->currentHex));
+			if (spawner && targetToMerge)
+			{
+				spawner->MergeArmies(this, objectType.moveAI, Cast<ABaseHex>(hexNav->currentHex));
+			}
 		}
-		else
+		break;
+	case ObjectTypes::Building:
+		if (hexNav->currentHex == objectType.building->hexNav->currentHex && objectType.building->unitStats->faction == unitStats->faction)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No spawner found"));
+			if (AOutpost* outpost = Cast<AOutpost>(objectType.building))
+			{
+				if (!outpost->BuildingAttachmentIsActive(AOutpost::Storage)) return;
+
+				outpost->StoreTroop(this);
+			}
 		}
 	}
-}
-
-void ATroop::InputUnitStats(UnitActions::UnitData data)
-{
-	unitStats->faction = data.faction;
-	unitStats->HP_current = data.currentHP;
-	unitStats->HP_max = data.maxHP;
-	unitStats->defense = data.defense;
-	unitStats->speed = data.speed;
-	unitStats->currentMorale = data.currentMorale;
-	unitStats->maxMorale = data.maxMorale;
-	unitStats->minDamage = data.minDamage;
-	unitStats->maxDamage = data.maxDamage;
-	unitStats->reinforceRate = data.reinforceRate;
-	unitStats->energyUpkeepCost = data.energyUpkeep;
+	
 }
 
 void ATroop::Action1()

@@ -39,7 +39,7 @@ AGlobalSpawner::AGlobalSpawner()
 	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
 
 	troopCosts.Add(SpawnableUnits::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Infantry_Icon.Unit_Infantry_Icon'"))});
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Infantry_Icon.Unit_Infantry_Icon'")) });
 	troopCosts.Add(SpawnableUnits::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Cav_Icon.Unit_Cav_Icon'")) });
 	troopCosts.Add(SpawnableUnits::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
@@ -114,9 +114,6 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 	case 0:
 		mergedArmy = GetWorld()->SpawnActor<AMergedArmy>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 
-		hex->troopsInHex.Remove(seeker);
-		hex->troopsInHex.Remove(target);
-
 		mergedArmy->unitStats->faction = seeker->unitStats->faction;
 		mergedArmy->ConsumeUnit(seeker);
 		mergedArmy->ConsumeUnit(target);
@@ -144,8 +141,6 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 
 		//If both units are armies, let the seeker be the dominant army and merge the other army into it
 	case 2:
-		hex->troopsInHex.Remove(testTarget);
-
 		testSeeker->ConsumeArmy(testTarget);
 		break;
 	}
@@ -345,7 +340,8 @@ ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, fl
 	if (result < 1.f) result = 1.f;
 	data.currentHP = result;
 
-	newTroop->InputUnitStats(data);
+	//newTroop->InputUnitStats(data);
+	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, data);
 
 	return newTroop;
 }
@@ -419,7 +415,7 @@ void AGlobalSpawner::BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex*
 	if (outpost && unit == SpawnableUnits::Settler)
 	{
 		Cast<ASettler>(newTroop)->popInStorage += troopCosts[unit].populationCost;
-		outpost->popInStorage -= troopCosts[unit].populationCost;
+		//outpost->popInStorage -= troopCosts[unit].populationCost;
 	}
 }
 

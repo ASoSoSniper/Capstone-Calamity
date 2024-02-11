@@ -79,6 +79,7 @@ struct FTroopCost
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	//UnitActions::UnitData stats;
 };
 
 USTRUCT(BlueprintType, Blueprintable)

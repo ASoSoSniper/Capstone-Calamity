@@ -278,6 +278,7 @@ void AMovementAI::CancelPath()
 void AMovementAI::Destroyed()
 {
 	UnitActions::RemoveFromFaction(unitStats->faction, this);
+	Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
 
 	Super::Destroyed();
 }

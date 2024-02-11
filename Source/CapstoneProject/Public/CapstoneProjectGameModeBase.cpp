@@ -451,12 +451,12 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 		{
 			for (int i = 0; i < faction.Value->allUnits.Num(); i++)
 			{
-				energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeepCost;
+				energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeep;
 			}
 		}
 		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
 		{
-			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeepCost;
+			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeep;
 		}
 		for (int i = 0; i < faction.Value->ownedHexes.Num(); i++)
 		{

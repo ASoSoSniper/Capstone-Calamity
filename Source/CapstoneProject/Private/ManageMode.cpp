@@ -55,7 +55,7 @@ void UManageMode::CueActionState(ActionStates nextState, AActor* selectedObject)
 	Reset();
 	controller->currentActionState = nextState;
 
-	if (selectedObject)
+	if (selectedObject && nextState != ActionStates::None)
 	{
 		controller->actionStates[nextState]->Select(selectedObject);
 	}
@@ -63,8 +63,10 @@ void UManageMode::CueActionState(ActionStates nextState, AActor* selectedObject)
 
 void UManageMode::HighlightSelected(AActor* object, bool enable)
 {
-	UMeshVisibility* visibility = object->GetComponentByClass<UMeshVisibility>();
-	if (visibility) visibility->SetSelected(enable);
+	if (!object) return;
+
+	//UMeshVisibility* visibility = object->GetComponentByClass<UMeshVisibility>();
+	//if (visibility) visibility->SetSelected(enable);
 }
 
 void UManageMode::Action1()

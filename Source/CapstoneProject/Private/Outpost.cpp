@@ -6,6 +6,8 @@
 #include "OutpostBarracks.h"
 #include "OutpostTroopFactory.h"
 #include "BuildingAttachment.h"
+#include "MergedArmy.h"
+#include "Troop.h"
 #include "CapstoneProjectGameModeBase.h"
 
 AOutpost::AOutpost()
@@ -142,7 +144,11 @@ TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
 void AOutpost::BuildingAction()
 {
 	claimedHexes = ClaimLand();
+
+	//Build these attachments by default for testing purposes
 	BuildAttachment(BuildingAttachments::Storage);
+	BuildAttachment(BuildingAttachments::Barracks);
+	BuildAttachment(BuildingAttachments::RobotFactory);
 }
 
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
@@ -154,6 +160,11 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 		break;
 	case BuildingAttachments::Barracks:
 		barracksBuilding->ActivateAttachment();
+		break;
+	case BuildingAttachments::RobotFactory:
+		troopFactoryBuilding->ActivateAttachment();
+		break;
+	case BuildingAttachments::DefenseStation:
 		break;
 	}
 
@@ -195,6 +206,43 @@ void AOutpost::CueTroopBuild(SpawnableUnits unit)
 	}
 }
 
+void AOutpost::StoreTroop(ATroop* troop)
+{
+	UnitActions::UnitData troopData = UnitActions::CollectUnitData(troop->unitStats);
+	troopsInStorage.Add(troopData);
+
+	troop->Destroy();
+}
+
+TArray<ATroop*> AOutpost::ReleaseTroops()
+{
+	TArray<ATroop*> spawnedTroops;
+	TArray<ABaseHex*> usedHexes;
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+
+	for (int i = 0; i < troopsInStorage.Num(); ++i)
+	{
+		ATroop* spawn = nullptr;
+		ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->hexOwner, usedHexes);
+		usedHexes.Add(spawnPoint);
+
+		switch (troopsInStorage[i].unitType)
+		{
+		case UnitTypes::Army:
+			spawn = spawner->SpawnArmy(spawnPoint, troopsInStorage[i].savedUnits);
+			break;
+
+		default:
+			spawn = spawner->SpawnTroop(spawnPoint, troopsInStorage[i]);
+			break;
+		}
+
+		spawnedTroops.Add(spawn);
+	}
+	troopsInStorage.Empty();
+	return spawnedTroops;
+}
+
 void AOutpost::Action1()
 {
 	CueTroopBuild(SpawnableUnits::Infantry);
@@ -202,6 +250,7 @@ void AOutpost::Action1()
 
 void AOutpost::Action2()
 {
+	ReleaseTroops();
 }
 
 void AOutpost::Action3()

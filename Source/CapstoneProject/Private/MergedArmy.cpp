@@ -5,17 +5,21 @@
 
 AMergedArmy::AMergedArmy()
 {
-	unitStats->type = UnitTypes::Army;
-	unitStats->HP_current = 0;
-	unitStats->HP_max = 0;
-	unitStats->defense = 0;
-	unitStats->speed = 0;
+	unitStats->unitType = UnitTypes::Army;
+	unitStats->currentHP = 0;
+	unitStats->maxHP = 0;
 	unitStats->currentMorale = 0;
 	unitStats->maxMorale = 0;
+	
+	unitStats->vision = 0;
+	unitStats->speed = 0;
+	
 	unitStats->minDamage = 0;
 	unitStats->maxDamage = 0;
+	unitStats->siegePower = 0;
+
 	unitStats->reinforceRate = 0;
-	unitStats->energyUpkeepCost = 0;
+	unitStats->energyUpkeep = 0;
 }
 
 void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
@@ -24,7 +28,8 @@ void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 	
 	unitStats->savedUnits.Add(newData);
 
-	AddUnitData(newData);
+	//AddUnitData(newData);
+	UnitActions::AddUnitData(unitStats, newData);
 
 	mergedUnit->Destroy();
 }
@@ -35,7 +40,8 @@ void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
 	{
 		unitStats->savedUnits.Add(mergedArmy->unitStats->savedUnits[i]);
 
-		AddUnitData(mergedArmy->unitStats->savedUnits[i]);
+		//AddUnitData(mergedArmy->unitStats->savedUnits[i]);
+		UnitActions::AddUnitData(unitStats, mergedArmy->unitStats->savedUnits[i]);
 	}
 
 	mergedArmy->Destroy();
@@ -49,7 +55,8 @@ void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
 	{
 		unitStats->savedUnits.Add(groupData[i]);
 
-		AddUnitData(groupData[i]);
+		//AddUnitData(groupData[i]);
+		UnitActions::AddUnitData(unitStats, groupData[i]);
 	}
 }
 
@@ -57,8 +64,8 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 {
 	if (groupData.IsEmpty()) return nullptr;
 
-	float currHP = unitStats->HP_current;
-	float maxHP = unitStats->HP_max;
+	float currHP = unitStats->currentHP;
+	float maxHP = unitStats->maxHP;
 	float hpPercent = currHP / maxHP;
 
 	ATroop* spawnTroop;
@@ -84,7 +91,7 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	return nullptr;
 }
 
-void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
+/*void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
 {
 	unitStats->HP_current += unitData.currentHP;
 	unitStats->HP_max += unitData.maxHP;
@@ -96,7 +103,7 @@ void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
 	unitStats->maxDamage += unitData.maxDamage;
 	unitStats->reinforceRate += unitData.reinforceRate;
 	unitStats->energyUpkeepCost += unitData.energyUpkeep;
-}
+}*/
 
 
 void AMergedArmy::SplitInHalf()

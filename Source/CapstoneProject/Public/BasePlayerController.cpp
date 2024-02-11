@@ -12,23 +12,23 @@ ABasePlayerController::ABasePlayerController()
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 
-	UManageMode* none = NewObject<UManageMode>();
-	UManageHex* hex = NewObject<UManageHex>();
-	UManageTroop* troop = NewObject<UManageTroop>();
-	UManageBuilding* building = NewObject<UManageBuilding>();
-	UManageBattle* battle = NewObject<UManageBattle>();
+	noneMode = NewObject<UManageMode>();
+	hexMode = NewObject<UManageHex>();
+	troopMode = NewObject<UManageTroop>();
+	buildingMode = NewObject<UManageBuilding>();
+	battleMode = NewObject<UManageBattle>();
 
-	none->AddToRoot();
-	hex->AddToRoot();
-	troop->AddToRoot();
-	building->AddToRoot();
-	battle->AddToRoot();
+	noneMode->AddToRoot();
+	hexMode->AddToRoot();
+	troopMode->AddToRoot();
+	buildingMode->AddToRoot();
+	battleMode->AddToRoot();
 
-	actionStates.Add(ActionStates::None, none);
-	actionStates.Add(ActionStates::HexManage, hex);
-	actionStates.Add(ActionStates::TroopManage, troop);
-	actionStates.Add(ActionStates::BaseManage, building);
-	actionStates.Add(ActionStates::BattleManage, battle);
+	actionStates.Add(ActionStates::None, noneMode);
+	actionStates.Add(ActionStates::HexManage, hexMode);
+	actionStates.Add(ActionStates::TroopManage, troopMode);
+	actionStates.Add(ActionStates::BaseManage, buildingMode);
+	actionStates.Add(ActionStates::BattleManage, battleMode);
 
 	for (const auto& state : actionStates)
 	{
@@ -52,6 +52,7 @@ void ABasePlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	actionStates[currentActionState]->CheckSelection();	
+	//CheckForActionStates();
 
 	if (spawner) return;
 
@@ -434,7 +435,32 @@ bool ABasePlayerController::OutpostCanBuildTroops()
 {
 	AOutpost* outpost = GetOutpost();
 
+	if (!outpost) return false;
+	if (outpost->unitStats->faction != Factions::Human) return false;
+
 	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::RobotFactory);
+}
+
+bool ABasePlayerController::OutpostCanStoreTroops()
+{
+	AOutpost* outpost = GetOutpost();
+
+	if (!outpost) return false;
+	if (outpost->unitStats->faction != Factions::Human) return false;
+
+	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::Barracks);
+}
+
+void ABasePlayerController::CheckForActionStates()
+{
+	int actionStatesActive = 0;
+
+	for (auto& state : actionStates)
+	{
+		if (state.Value != nullptr) actionStatesActive++;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
 }
 
 

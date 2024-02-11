@@ -8,6 +8,8 @@ void UManageBuilding::Select(AActor* selectedObject)
 {
 	if (selectedBuilding) HighlightSelected(selectedBuilding, false);
 
+	if (!selectedObject) return;
+
 	selectedBuilding = Cast<ABuilding>(selectedObject);
 
 	if (selectedObject) HighlightSelected(selectedObject, true);

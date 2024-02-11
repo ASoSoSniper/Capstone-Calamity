@@ -30,22 +30,29 @@ public:
 	void Heal();
 
 	UPROPERTY(EditAnywhere) Factions faction;
-	UPROPERTY(VisibleAnywhere) UnitTypes type;
+	UPROPERTY(VisibleAnywhere) UnitTypes unitType;
 	UPROPERTY(VisibleAnywhere) bool upgraded;
 	//Exclusive property for armies
 	TArray<UnitActions::UnitData> savedUnits;
 
-	UPROPERTY(EditAnywhere) int HP_current = 10;
-	UPROPERTY(EditAnywhere) int HP_max = 10;
-	UPROPERTY(EditAnywhere) int defense = 1;
-
-	UPROPERTY(EditAnywhere) float speed = 2.f;
+	//Health and Morale
+	UPROPERTY(EditAnywhere) int currentHP = 10;
+	UPROPERTY(EditAnywhere) int maxHP = 10;
 	UPROPERTY(EditAnywhere) int currentMorale = 5;
 	UPROPERTY(EditAnywhere) int maxMorale = 5;
+
+	//Environment
+	UPROPERTY(EditAnywhere) int vision = 1;
+	UPROPERTY(EditAnywhere) float speed = 2.f;
+	
+	//Damage
 	UPROPERTY(EditAnywhere) int minDamage = 1;
 	UPROPERTY(EditAnywhere) int maxDamage = 3;
+	UPROPERTY(EditAnywhere) int siegePower = 10;
+
+	//Other
 	UPROPERTY(EditAnywhere) int reinforceRate = 2;
-	UPROPERTY(EditAnywhere) int energyUpkeepCost = 2;
+	UPROPERTY(EditAnywhere) int energyUpkeep = 2;
 	
 	float maxHealTime = 5.f;
 	float currhealTime = 5.f;

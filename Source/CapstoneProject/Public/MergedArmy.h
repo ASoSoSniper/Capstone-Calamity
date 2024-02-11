@@ -22,7 +22,7 @@ public:
 	void ConsumeArmy(AMergedArmy* mergedArmy);
 	void ConsumeData(TArray<UnitActions::UnitData>& groupData);
 	ATroop* SpawnUnit(TArray<UnitActions::UnitData>& groupData);
-	void AddUnitData(UnitActions::UnitData& unitData);
+	//void AddUnitData(UnitActions::UnitData& unitData);
 
 	void SplitInHalf();
 	virtual void Action1() override;

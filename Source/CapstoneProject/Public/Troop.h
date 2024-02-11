@@ -20,14 +20,12 @@ public:
 	ATroop();
 	UPROPERTY(VisibleAnywhere) bool attacking;
 	UPROPERTY(VisibleAnywhere) bool merging;
-	ATroop* targetToMerge;
+	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void CreatePath() override;
 	virtual void MergeOnTile();
 	
-	void InputUnitStats(UnitActions::UnitData data);
-
 	virtual void Action1();
 	virtual void Action2();
 	virtual void Action3();

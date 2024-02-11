@@ -9,6 +9,8 @@ void UManageTroop::Select(AActor* selectedObject)
 {
 	if (selectedTroop) HighlightSelected(selectedTroop, false);
 
+	if (!selectedObject) return;
+
 	selectedTroop = Cast<ATroop>(selectedObject);
 
 	if (selectedObject) HighlightSelected(selectedObject, true);
@@ -26,7 +28,19 @@ void UManageTroop::SwitchState()
 	{
 		//If hex, set troop's destination to the hex
 	case ObjectTypes::Hex:
-		selectedTroop->hexNav->targetHex = objectType.actor;
+		switch (subSelect)
+		{
+		case None:
+			selectedTroop->hexNav->targetHex = objectType.actor;
+			break;
+		case Merge:
+			if (controller->OutpostCanStoreTroops())
+			{
+				selectedTroop->hexNav->targetHex = objectType.actor;
+
+				if (selectedTroop) CommandToMerge(selectedTroop, controller->GetOutpost());
+			}
+		}
 		break;
 
 		//If troop (and hostile), set troop's destination to that troop's current hex
@@ -95,7 +109,8 @@ void UManageTroop::SwitchState()
 	}
 
 	subSelect = None;
-	selectedTroop->CreatePath();
+	if (selectedTroop->hexNav->targetHex)
+		selectedTroop->CreatePath();
 }
 
 void UManageTroop::Reset()
@@ -117,10 +132,10 @@ void UManageTroop::CheckSelection()
 	}
 }
 
-void UManageTroop::CommandToMerge(ATroop* troop, ATroop* targetTroop)
+void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 {
 	troop->merging = true;
-	troop->targetToMerge = targetTroop;
+	troop->targetToMerge = target;
 	CueActionState(ActionStates::None);
 }
 

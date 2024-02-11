@@ -37,6 +37,12 @@ private:
 	virtual void Tick(float DeltaTime) override;	
 
 public:	
+	UPROPERTY() UManageMode* noneMode;
+	UPROPERTY() UManageHex* hexMode;
+	UPROPERTY() UManageTroop* troopMode;
+	UPROPERTY() UManageBuilding* buildingMode;
+	UPROPERTY() UManageBattle* battleMode;
+
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
 
@@ -87,4 +93,7 @@ public:
 
 	AOutpost* GetOutpost();
 	UFUNCTION(BlueprintCallable) bool OutpostCanBuildTroops();
+	UFUNCTION(BlueprintCallable) bool OutpostCanStoreTroops();
+
+	void CheckForActionStates();
 };

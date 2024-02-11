@@ -131,15 +131,7 @@ void ABattleObject::GenerateArmies()
 			TArray<UnitActions::UnitData> factionData = faction.Value;
 			for (int i = 0; i < faction.Value.Num(); ++i)
 			{
-				UnitActions::UnitData unit = factionData[i];
-				army.currentHP += unit.currentHP;
-				army.maxHP += unit.maxHP;
-				army.defense += unit.defense;
-				army.currentMorale += unit.currentMorale;
-				army.maxMorale += unit.maxMorale;
-				army.minDamage += unit.minDamage;
-				army.maxDamage += unit.maxDamage;
-				army.reinforceRate += unit.reinforceRate;
+				army = UnitActions::AddUnitData(army, factionData[i]);
 			}
 			armies.Add(faction.Key, army);
 		}
@@ -152,14 +144,7 @@ void ABattleObject::AddUnitToArmy(UnitActions::UnitData data)
 {
 	if (armies.Contains(data.faction))
 	{
-		armies[data.faction].currentHP += data.currentHP;
-		armies[data.faction].maxHP += data.maxHP;
-		armies[data.faction].defense += data.defense;
-		armies[data.faction].currentMorale += data.currentMorale;
-		armies[data.faction].maxMorale += data.maxMorale;
-		armies[data.faction].minDamage += data.minDamage;
-		armies[data.faction].maxDamage += data.maxDamage;
-		armies[data.faction].reinforceRate += data.reinforceRate;
+		armies[data.faction] = UnitActions::AddUnitData(armies[data.faction], data);
 	}
 }
 
@@ -277,10 +262,10 @@ void ABattleObject::FleeFromBattle(Factions faction)
 	for (int i = 0; i < fleeingTroops.Num(); i++)
 	{
 		//Troop health reduced by 50%
-		float troopHP = fleeingTroops[i]->unitStats->HP_current;
+		float troopHP = fleeingTroops[i]->unitStats->currentHP;
 		troopHP *= 0.5f;
 		if (troopHP < 1.f) troopHP = 1.f;
-		fleeingTroops[i]->unitStats->HP_current = troopHP;
+		fleeingTroops[i]->unitStats->currentHP = troopHP;
 	}
 
 	RemoveArmy(faction);

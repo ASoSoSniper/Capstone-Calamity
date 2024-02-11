@@ -108,13 +108,16 @@ public:
 
 		int currentHP;
 		int maxHP;
-		int defense;
-
-		int speed;
 		int currentMorale;
 		int maxMorale;
+
+		int vision;
+		int speed;
+		
 		int minDamage;
 		int maxDamage;
+		int siegePower;
+
 		int reinforceRate;
 		int energyUpkeep;
 
@@ -122,6 +125,9 @@ public:
 	};
 
 	static UnitData CollectUnitData(UUnitStats* unit);
+	static void ApplyDataToUnitStats(UUnitStats* unit, UnitData& data);
+	static void AddUnitData(UUnitStats* unit, UnitData& data);
+	static UnitData AddUnitData(UnitData& unit, UnitData& data);
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 

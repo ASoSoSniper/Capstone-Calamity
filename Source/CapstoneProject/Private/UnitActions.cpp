@@ -224,18 +224,23 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
 {
     UnitData data{
         unit->faction,
-        unit->type, 
-        unit->upgraded, 
-        unit->HP_current, 
-        unit->HP_max, 
-        unit->defense, 
-        unit->speed, 
+        unit->unitType, 
+        unit->upgraded,
+
+        unit->currentHP, 
+        unit->maxHP, 
         unit->currentMorale,
         unit->maxMorale,
+
+        unit->vision, 
+        unit->speed, 
+        
         unit->minDamage, 
         unit->maxDamage,
+        unit->siegePower,
+
         unit->reinforceRate,
-        unit->energyUpkeepCost};
+        unit->energyUpkeep};
     
     if (data.unitType == UnitTypes::Army)
     {
@@ -246,6 +251,66 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
     }
     
     return data;
+}
+
+void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, UnitData& data)
+{
+    unit->faction = data.faction;
+    unit->unitType = data.unitType;
+    unit->upgraded = data.upgraded;
+
+    unit->currentHP = data.currentHP;
+    unit->maxHP = data.maxHP;
+    unit->currentMorale = data.currentMorale;
+    unit->maxMorale = data.maxMorale;
+
+    unit->vision = data.vision;
+    unit->speed = data.speed;
+
+    unit->minDamage = data.minDamage;
+    unit->maxDamage = data.maxDamage;
+    unit->siegePower = data.siegePower;
+
+    unit->reinforceRate = data.reinforceRate;
+    unit->energyUpkeep = data.energyUpkeep;
+}
+
+void UnitActions::AddUnitData(UUnitStats* unit, UnitData& data)
+{
+    unit->currentHP += data.currentHP;
+    unit->maxHP += data.maxHP;
+    unit->currentMorale += data.currentMorale;
+    unit->maxMorale += data.maxMorale;
+
+    unit->vision += data.vision;
+    unit->speed += data.speed;
+
+    unit->minDamage += data.minDamage;
+    unit->maxDamage += data.maxDamage;
+    unit->siegePower += data.siegePower;
+
+    unit->reinforceRate += data.reinforceRate;
+    unit->energyUpkeep += data.energyUpkeep;
+}
+
+UnitActions::UnitData UnitActions::AddUnitData(UnitData& unit, UnitData& data)
+{
+    unit.currentHP += data.currentHP;
+    unit.maxHP += data.maxHP;
+    unit.currentMorale += data.currentMorale;
+    unit.maxMorale += data.maxMorale;
+
+    unit.vision += data.vision;
+    unit.speed += data.speed;
+
+    unit.minDamage += data.minDamage;
+    unit.maxDamage += data.maxDamage;
+    unit.siegePower += data.siegePower;
+
+    unit.reinforceRate += data.reinforceRate;
+    unit.energyUpkeep += data.energyUpkeep;
+
+    return unit;
 }
 
 int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
@@ -397,8 +462,8 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     {
         for (auto worker : workers)
         {
-            ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker.Key].available -= workers[worker.Key];
-            outpost->popInStorage += workers[worker.Key];
+            //ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker.Key].available -= workers[worker.Key];
+            //outpost->popInStorage += workers[worker.Key];
         }
     }
 }

@@ -30,12 +30,12 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (HP_current < HP_max)
+	if (currentHP < maxHP)
 	{
 		currhealTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		if (currhealTime <= 0)
 		{
-			Heal();
+			//Heal();
 			currhealTime = maxHealTime;
 		}
 	}
@@ -43,7 +43,7 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 bool UUnitStats::IsAlive()
 {
-	if (HP_current <= 0)
+	if (currentHP <= 0)
 	{
 		return false;
 	}
@@ -52,8 +52,8 @@ bool UUnitStats::IsAlive()
 
 void UUnitStats::Heal()
 {
-	HP_current += reinforceRate;
-	HP_current = FMath::Clamp(HP_current, 0, HP_max);
+	currentHP += reinforceRate;
+	currentHP = FMath::Clamp(currentHP, 0, maxHP);
 
 	if (!savedUnits.IsEmpty()) return;
 

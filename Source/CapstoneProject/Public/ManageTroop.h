@@ -31,7 +31,7 @@ public:
 	SubSelections subSelect;
 
 	//Commands
-	void CommandToMerge(ATroop* selectedTroop, ATroop* targetTroop);
+	void CommandToMerge(ATroop* selectedTroop, AActor* target);
 	virtual void Action1() override;
 	virtual void Action2() override;
 	virtual void Action3() override;

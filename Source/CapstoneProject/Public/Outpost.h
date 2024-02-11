@@ -59,7 +59,10 @@ public:
 	TArray<SpawnableUnits> cuedUnits;
 	float currentTroopBuildTime;
 	void CueTroopBuild(SpawnableUnits unit);
-	int popInStorage = 0;
+	
+	TArray<UnitActions::UnitData> troopsInStorage;
+	void StoreTroop(ATroop* troop);
+	TArray<ATroop*> ReleaseTroops();
 
 	virtual void Action1() override;
 	virtual void Action2() override;
