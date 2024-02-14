@@ -15,6 +15,7 @@ class AOutpost;
 UENUM()
 enum class SpawnableBuildings
 {
+	None,
 	MiningStation,
 	Farmland,
 	PowerPlant,

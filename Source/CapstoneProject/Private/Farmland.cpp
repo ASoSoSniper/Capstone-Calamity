@@ -2,6 +2,7 @@
 
 
 #include "Farmland.h"
+#include "GlobalSpawner.h"
 
 AFarmland::AFarmland()
 {
@@ -26,6 +27,8 @@ AFarmland::AFarmland()
 	{
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
+
+	buildingType = SpawnableBuildings::Farmland;
 }
 
 void AFarmland::Harvest(ABaseHex* hex)
@@ -43,4 +46,9 @@ void AFarmland::Harvest(ABaseHex* hex)
 void AFarmland::UpdateResources()
 {
 	Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(foodYield);
+}
+
+void AFarmland::RevertResources()
+{
+	Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(-foodYield);
 }

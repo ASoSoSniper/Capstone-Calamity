@@ -154,6 +154,7 @@ public:
 
 	static void EnableRobots(Factions faction, bool enable);
 	static void RobotIsActive(Factions faction, ATroop* robot);
+	static void AddResources(Factions faction, TMap<StratResources, int> resources);
 };
 
 

@@ -4,6 +4,7 @@
 #include "MiningStation.h"
 #include "UnitActions.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "GlobalSpawner.h"
 
 AMiningStation::AMiningStation()
 {
@@ -28,6 +29,8 @@ AMiningStation::AMiningStation()
 	{
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
+
+	buildingType = SpawnableBuildings::MiningStation;
 }
 
 void AMiningStation::BeginPlay()
@@ -56,4 +59,9 @@ void AMiningStation::Harvest(ABaseHex* hex)
 void AMiningStation::UpdateResources()
 {
 	Cast<ABaseHex>(hexNav->currentHex)->UpdateProductionYield(productionYield);
+}
+
+void AMiningStation::RevertResources()
+{
+	Cast<ABaseHex>(hexNav->currentHex)->UpdateProductionYield(-productionYield);
 }

@@ -17,6 +17,7 @@ public:
 	AFarmland();
 	virtual void Harvest(ABaseHex* hex) override;
 	virtual void UpdateResources() override;
+	virtual void RevertResources() override;
 
 	UPROPERTY(EditAnywhere) int foodYield = 2;
 };

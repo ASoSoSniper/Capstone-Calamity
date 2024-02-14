@@ -82,8 +82,11 @@ void UManageBuilding::Action4()
 {
 	switch (subSelect)
 	{
+	case None:
+		selectedBuilding->BeginDestroying();
 	case Build:
-		selectedBuilding->Action4();
+		//selectedBuilding->Action4();
+		selectedBuilding->BeginDestroying();
 		break;
 	}
 }

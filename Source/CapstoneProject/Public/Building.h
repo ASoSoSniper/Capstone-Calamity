@@ -9,7 +9,9 @@
 #include "UnitStats.h"
 #include "MeshVisibility.h"
 #include "Components/BoxComponent.h"
+#include "GlobalSpawner.h"
 #include "Building.generated.h"
+
 
 UCLASS()
 class CAPSTONEPROJECT_API ABuilding : public AActor
@@ -33,6 +35,7 @@ public:
 	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
+	UPROPERTY(EditAnywhere)SpawnableBuildings buildingType;
 
 	enum BuildStates
 	{
@@ -40,7 +43,8 @@ public:
 		Building,
 		Complete,
 		Uprading,
-		Upgraded
+		Upgraded,
+		Destroying
 	};
 	BuildStates buildState = None;
 
@@ -52,6 +56,7 @@ public:
 	void SetBuildState();
 	virtual void Harvest(ABaseHex* hex);
 	virtual void UpdateResources();
+	virtual void RevertResources();
 	virtual void BuildingAction();
 
 	void SphereCheck();
@@ -70,5 +75,9 @@ public:
 	virtual void Action9();
 	virtual void Action10();
 
+	virtual void BeginDestroying();
+	virtual void DestroyingBuilding(float& DeltaTime);
+	float destructionTime = 10.f;
+	float currDestructionTime = 0.f;
 	virtual void Destroyed() override;
 };

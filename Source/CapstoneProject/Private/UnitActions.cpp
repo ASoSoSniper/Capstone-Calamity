@@ -585,6 +585,15 @@ void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
     }
 }
 
+void UnitActions::AddResources(Factions faction, TMap<StratResources, int> resources)
+{
+    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    {
+        if (!resources.Contains(resource.Key)) continue;
+        resource.Value.currentResources += resources[resource.Key];
+    }
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))

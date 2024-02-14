@@ -2,6 +2,7 @@
 
 
 #include "PowerPlant.h"
+#include "GlobalSpawner.h"
 
 APowerPlant::APowerPlant()
 {
@@ -26,9 +27,16 @@ APowerPlant::APowerPlant()
 	{
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
+
+	buildingType = SpawnableBuildings::PowerPlant;
 }
 
 void APowerPlant::UpdateResources()
 {
 	Cast<ABaseHex>(hexNav->currentHex)->UpdateEnergyYield(energyYield);
+}
+
+void APowerPlant::RevertResources()
+{
+	Cast<ABaseHex>(hexNav->currentHex)->UpdateEnergyYield(-energyYield);
 }

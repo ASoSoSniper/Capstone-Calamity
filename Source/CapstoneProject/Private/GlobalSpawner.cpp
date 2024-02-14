@@ -316,7 +316,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 
 		if (canAfford)
 		{
-			hex->maxWorkers = buildingCosts[building].workerCost;
+			//hex->maxWorkers = buildingCosts[building].workerCost;
 			UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
 			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 			UnitActions::AssignFaction(faction, newBuilding);

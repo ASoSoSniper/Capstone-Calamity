@@ -105,7 +105,6 @@ public:
 	struct ResourceStats
 	{
 		int yieldBonus;
-		int capBonus;
 	};
 
 	TMap<StratResources, ResourceStats> resourceBonuses;

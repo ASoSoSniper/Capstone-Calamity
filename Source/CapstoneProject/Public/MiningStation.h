@@ -21,6 +21,7 @@ public:
 
 	virtual void Harvest(ABaseHex* hex) override;
 	virtual void UpdateResources() override;
+	virtual void RevertResources() override;
 
 	UPROPERTY(EditAnywhere) int productionYield = 2;
 };

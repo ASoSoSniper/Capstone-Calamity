@@ -80,9 +80,9 @@ ABaseHex::ABaseHex()
 	workersInHex.Add(WorkerType::Alien, 0);
 
 	//Initialize resource yields
-	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus, 0 });
-	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus, 0 });
-	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus, 0 });
+	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus});
+	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus});
+	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus});
 }
 
 // Called when the game starts or when spawned
@@ -249,10 +249,6 @@ void ABaseHex::ToggleResourceYield()
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += axis * resourceBonuses[StratResources::Food].yieldBonus;
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += axis * resourceBonuses[StratResources::Production].yieldBonus;
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += axis * resourceBonuses[StratResources::Energy].yieldBonus;
-
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].maxResources += axis * resourceBonuses[StratResources::Food].capBonus;
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].maxResources += axis * resourceBonuses[StratResources::Production].capBonus;
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].maxResources += axis * resourceBonuses[StratResources::Energy].capBonus;
 }
 
 void ABaseHex::RequestTerrainChange(bool modelOnly)

@@ -9,6 +9,7 @@
 #include "MergedArmy.h"
 #include "Troop.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "GlobalSpawner.h"
 
 AOutpost::AOutpost()
 {
@@ -40,6 +41,7 @@ AOutpost::AOutpost()
 	}
 
 	visibility->visibilityRadius *= range;
+	buildingType = SpawnableBuildings::Outpost;
 }
 
 void AOutpost::Tick(float DeltaTime)
