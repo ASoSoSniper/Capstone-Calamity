@@ -33,12 +33,14 @@ void UManageTroop::SwitchState()
 		case None:
 			selectedTroop->hexNav->targetHex = objectType.actor;
 			break;
+			//If hex contains outpost that store troops, move to merge
 		case Merge:
 			if (controller->OutpostCanStoreTroops())
 			{
 				selectedTroop->hexNav->targetHex = objectType.actor;
 
 				if (selectedTroop) CommandToMerge(selectedTroop, controller->GetOutpost());
+				return;
 			}
 		}
 		break;
@@ -66,6 +68,7 @@ void UManageTroop::SwitchState()
 					selectedTroop->hexNav->targetHex = hexNav->currentHex;
 
 					if (selectedTroop) CommandToMerge(selectedTroop, objectType.moveAI);
+					return;
 				}
 				else
 				{
@@ -88,7 +91,6 @@ void UManageTroop::SwitchState()
 		{
 			//else switch to BaseManage state
 			CueActionState(ActionStates::BaseManage, objectType.actor);
-
 			return;
 		}
 		break;
@@ -109,6 +111,8 @@ void UManageTroop::SwitchState()
 	}
 
 	subSelect = None;
+	if (!selectedTroop) return;
+
 	if (selectedTroop->hexNav->targetHex)
 		selectedTroop->CreatePath();
 }
@@ -116,7 +120,8 @@ void UManageTroop::SwitchState()
 void UManageTroop::Reset()
 {
 	subSelect = None;
-	HighlightSelected(selectedTroop, false);
+	if (selectedTroop) HighlightSelected(selectedTroop, false);
+	selectedTroop = nullptr;
 }
 
 void UManageTroop::CheckSelection()
@@ -136,6 +141,8 @@ void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 {
 	troop->merging = true;
 	troop->targetToMerge = target;
+	if (selectedTroop->hexNav->targetHex)
+		selectedTroop->CreatePath();
 	CueActionState(ActionStates::None);
 }
 

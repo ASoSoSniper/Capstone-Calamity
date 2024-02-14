@@ -65,8 +65,8 @@ void UManageMode::HighlightSelected(AActor* object, bool enable)
 {
 	if (!object) return;
 
-	//UMeshVisibility* visibility = object->GetComponentByClass<UMeshVisibility>();
-	//if (visibility) visibility->SetSelected(enable);
+	UMeshVisibility* visibility = object->GetComponentByClass<UMeshVisibility>();
+	if (visibility) visibility->SetSelected(enable);
 }
 
 void UManageMode::Action1()

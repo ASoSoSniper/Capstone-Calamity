@@ -27,6 +27,15 @@ void ATroop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!spawnCheck)
+	{
+		if (unitStats->faction != Factions::None)
+		{
+			UnitActions::RobotIsActive(unitStats->faction, this);
+			spawnCheck = true;
+		}
+	}
+
 	if (!spawner)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());

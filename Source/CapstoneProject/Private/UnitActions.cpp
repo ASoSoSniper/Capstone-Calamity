@@ -575,6 +575,16 @@ void UnitActions::EnableRobots(Factions faction, bool enable)
     }
 }
 
+void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
+{
+    if (faction == Factions::None) return;
+
+    if (ACapstoneProjectGameModeBase::activeFactions[faction]->powerOutage)
+    {
+        robot->interact->SetInteract(false);
+    }
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))

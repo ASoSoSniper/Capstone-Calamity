@@ -153,6 +153,7 @@ public:
 	static int GetFactionPowerOutageLevel(Factions faction);
 
 	static void EnableRobots(Factions faction, bool enable);
+	static void RobotIsActive(Factions faction, ATroop* robot);
 };
 
 
