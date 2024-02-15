@@ -171,6 +171,16 @@ struct FWorkerSliders
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableAliens = 0;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FWorkersInHex
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int humans;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robots;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {

@@ -75,7 +75,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
-
+	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);

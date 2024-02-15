@@ -204,6 +204,20 @@ int ABasePlayerController::GetPlayerPopulation()
 	return UnitActions::GetFactionPopulation(playerFaction);
 }
 
+FWorkersInHex ABasePlayerController::GetWorkersInHex()
+{
+	FWorkersInHex workers = FWorkersInHex{ 0,0,0 };
+
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!hex) return workers;
+
+	workers.humans = hex->workersInHex[WorkerType::Human];
+	workers.robots = hex->workersInHex[WorkerType::Robot];
+	workers.aliens = hex->workersInHex[WorkerType::Alien];
+
+	return workers;
+}
+
 TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 {
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);

@@ -311,7 +311,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			}
 
 			resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
-			workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost);
+			workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->workersInHex[WorkerType::Human]);
 		}
 
 		if (canAfford)
