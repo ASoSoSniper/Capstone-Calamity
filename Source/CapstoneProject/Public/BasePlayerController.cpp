@@ -458,6 +458,8 @@ bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 	{
 		buildingOnHex.farmland->ToggleResourcesProduced(produceFood);
 	}
+
+	return produceFood;
 }
 
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
