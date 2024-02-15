@@ -488,6 +488,9 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 		hexBuilding.outpost = outpost;
 		return hexBuilding;
 	}
+
+	hexBuilding.buildingType = SpawnableBuildings::None;
+	return hexBuilding;
 }
 
 void ABasePlayerController::CheckForActionStates()
