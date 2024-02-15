@@ -451,6 +451,15 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::Barracks);
 }
 
+bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
+{
+	FBuildingOnHex buildingOnHex = GetBuildingOnHex();
+	if (buildingOnHex.farmland)
+	{
+		buildingOnHex.farmland->ToggleResourcesProduced(produceFood);
+	}
+}
+
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 {
 	FBuildingOnHex hexBuilding;
