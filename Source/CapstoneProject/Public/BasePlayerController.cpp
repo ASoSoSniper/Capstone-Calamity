@@ -214,6 +214,7 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 	workers.humans = hex->workersInHex[WorkerType::Human];
 	workers.robots = hex->workersInHex[WorkerType::Robot];
 	workers.aliens = hex->workersInHex[WorkerType::Alien];
+	workers.maxWorkers = hex->maxWorkers;
 
 	return workers;
 }

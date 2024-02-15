@@ -176,9 +176,10 @@ struct FWorkersInHex
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int humans;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robots;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int humans = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robots = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers = 0;
 };
 
 UCLASS()
