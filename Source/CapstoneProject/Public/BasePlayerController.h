@@ -92,6 +92,8 @@ public:
 	UFUNCTION(BlueprintCallable) FWorkerSliders SetWorkerCount(FWorkerSliders sliders);
 
 	AOutpost* GetOutpost();
+	UFUNCTION(BlueprintCallable) FBuildingOnHex GetBuildingOnHex();
+
 	UFUNCTION(BlueprintCallable) bool OutpostCanBuildTroops();
 	UFUNCTION(BlueprintCallable) bool OutpostCanStoreTroops();
 

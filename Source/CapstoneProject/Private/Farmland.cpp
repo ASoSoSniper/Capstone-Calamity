@@ -45,10 +45,27 @@ void AFarmland::Harvest(ABaseHex* hex)
 
 void AFarmland::UpdateResources()
 {
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(foodYield);
+	if (producingFood)
+		Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(resourceYield);
+	else
+		Cast<ABaseHex>(hexNav->currentHex)->UpdateWealthYield(resourceYield);
 }
 
 void AFarmland::RevertResources()
 {
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(-foodYield);
+	if (producingFood)
+		Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(-resourceYield);
+	else
+		Cast<ABaseHex>(hexNav->currentHex)->UpdateWealthYield(-resourceYield);
+}
+
+bool AFarmland::ToggleResourcesProduced(bool produceFood)
+{
+	if (producingFood == produceFood) return producingFood;
+
+	producingFood = produceFood;
+
+	RevertResources();
+	UpdateResources();
+	return producingFood;
 }

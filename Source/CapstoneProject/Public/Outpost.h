@@ -8,6 +8,7 @@
 #include "GlobalSpawner.h"
 #include "Outpost.generated.h"
 
+class UOutpostDefenses;
 class UOutpostStorage;
 class UOutpostBarracks;
 class UOutpostTroopFactory;
@@ -55,6 +56,7 @@ public:
 	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
 	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
 	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
+	UPROPERTY(EditAnywhere) UOutpostDefenses* defenseBuilding;
 
 	TArray<SpawnableUnits> cuedUnits;
 	float currentTroopBuildTime;

@@ -18,6 +18,8 @@ public:
 	virtual void Harvest(ABaseHex* hex) override;
 	virtual void UpdateResources() override;
 	virtual void RevertResources() override;
+	UFUNCTION(BlueprintCallable) bool ToggleResourcesProduced(bool produceFood);
 
-	UPROPERTY(EditAnywhere) int foodYield = 2;
+	UPROPERTY(EditAnywhere) int resourceYield = 2;
+	bool producingFood = true;
 };

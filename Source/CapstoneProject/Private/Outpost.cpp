@@ -5,6 +5,7 @@
 #include "OutpostStorage.h"
 #include "OutpostBarracks.h"
 #include "OutpostTroopFactory.h"
+#include "OutpostDefenses.h"
 #include "BuildingAttachment.h"
 #include "MergedArmy.h"
 #include "Troop.h"
@@ -16,6 +17,7 @@ AOutpost::AOutpost()
 	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
 	barracksBuilding = CreateDefaultSubobject<UOutpostBarracks>(TEXT("Barracks"));
 	troopFactoryBuilding = CreateDefaultSubobject<UOutpostTroopFactory>(TEXT("Troop Factory"));
+	defenseBuilding = CreateDefaultSubobject<UOutpostDefenses>(TEXT("Defense Station"));
 
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
 	if (meshAsset)
@@ -151,6 +153,7 @@ void AOutpost::BuildingAction()
 	BuildAttachment(BuildingAttachments::Storage);
 	BuildAttachment(BuildingAttachments::Barracks);
 	BuildAttachment(BuildingAttachments::RobotFactory);
+	BuildAttachment(BuildingAttachments::DefenseStation);
 }
 
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
@@ -167,6 +170,7 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 		troopFactoryBuilding->ActivateAttachment();
 		break;
 	case BuildingAttachments::DefenseStation:
+		defenseBuilding->ActivateAttachment();
 		break;
 	}
 
@@ -183,6 +187,8 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 		return troopFactoryBuilding->AttachmentIsActive();
 	case Barracks:
 		return storageBuilding->AttachmentIsActive();
+	case DefenseStation:
+		return defenseBuilding->AttachmentIsActive();
 	default:
 		return false;
 	}

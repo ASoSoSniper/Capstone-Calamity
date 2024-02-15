@@ -197,6 +197,19 @@ bool ABaseHex::ActiveHarvesting()
 
 	return workersExist;
 }
+void ABaseHex::UpdateWealthYield(int value)
+{
+	resourceBonuses[StratResources::Wealth].yieldBonus += value;
+
+	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
+		return;
+	}
+
+	if (harvesting)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Wealth].resourcePerTick += value;
+}
 
 void ABaseHex::UpdateFoodYield(int value)
 {

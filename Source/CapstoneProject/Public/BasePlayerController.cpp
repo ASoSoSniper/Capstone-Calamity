@@ -451,6 +451,45 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::Barracks);
 }
 
+FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
+{
+	FBuildingOnHex hexBuilding;
+
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!hex) return hexBuilding;
+
+	ABuilding* building = hex->building;
+	if (!building) return hexBuilding;
+
+	if (AFarmland* farmland = Cast<AFarmland>(hex->building))
+	{
+		hexBuilding.buildingType = SpawnableBuildings::Farmland;
+		hexBuilding.farmland = farmland;
+		return hexBuilding;
+	}
+
+	if (APowerPlant* powerplant = Cast<APowerPlant>(hex->building))
+	{
+		hexBuilding.buildingType = SpawnableBuildings::PowerPlant;
+		hexBuilding.powerplant = powerplant;
+		return hexBuilding;
+	}
+
+	if (AMiningStation* miningStation = Cast<AMiningStation>(hex->building))
+	{
+		hexBuilding.buildingType = SpawnableBuildings::MiningStation;
+		hexBuilding.miningStation = miningStation;
+		return hexBuilding;
+	}
+
+	if (AOutpost* outpost = Cast<AOutpost>(hex->building))
+	{
+		hexBuilding.buildingType = SpawnableBuildings::Outpost;
+		hexBuilding.outpost = outpost;
+		return hexBuilding;
+	}
+}
+
 void ABasePlayerController::CheckForActionStates()
 {
 	int actionStatesActive = 0;

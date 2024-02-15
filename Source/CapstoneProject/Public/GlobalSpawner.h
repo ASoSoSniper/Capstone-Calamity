@@ -6,12 +6,17 @@
 #include "GameFramework/Actor.h"
 #include "UnitActions.h"
 #include "TerrainEnum.h"
+
 #include "GlobalSpawner.generated.h"
 
 class AMergedArmy;
 class ABattleObject;
 class ASettler;
 class AOutpost;
+class AFarmland;
+class AMiningStation;
+class APowerPlant;
+
 UENUM()
 enum class SpawnableBuildings
 {
@@ -69,6 +74,18 @@ struct FBuildingDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingOnHex
+{
+	GENERATED_BODY()
+
+	SpawnableBuildings buildingType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AFarmland* farmland;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) APowerPlant* powerplant;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AMiningStation* miningStation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AOutpost* outpost;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopCost
