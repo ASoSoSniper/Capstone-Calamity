@@ -80,6 +80,7 @@ ABaseHex::ABaseHex()
 	workersInHex.Add(WorkerType::Alien, 0);
 
 	//Initialize resource yields
+	resourceBonuses.Add(StratResources::Wealth, ResourceStats{ wealthYieldBonus });
 	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus});
 	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus});
 	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus});
@@ -259,6 +260,7 @@ void ABaseHex::ToggleResourceYield()
 
 	int axis = harvesting ? 1 : -1;
 
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Wealth].resourcePerTick += axis * resourceBonuses[StratResources::Wealth].yieldBonus;
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += axis * resourceBonuses[StratResources::Food].yieldBonus;
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += axis * resourceBonuses[StratResources::Production].yieldBonus;
 	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += axis * resourceBonuses[StratResources::Energy].yieldBonus;

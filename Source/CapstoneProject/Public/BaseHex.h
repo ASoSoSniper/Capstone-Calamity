@@ -112,6 +112,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Resources") int energyYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int productionYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
+	UPROPERTY(EditAnywhere, Category = "Resources") int wealthYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Identity") int hexID;
 	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain = TerrainType::Plains;
 	TerrainType terrainChange = TerrainType::None;
