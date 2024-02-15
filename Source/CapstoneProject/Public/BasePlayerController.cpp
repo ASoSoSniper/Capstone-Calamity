@@ -464,7 +464,7 @@ bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 {
-	FBuildingOnHex hexBuilding;
+	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, nullptr, nullptr, nullptr, nullptr };
 
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	if (!hex) return hexBuilding;
