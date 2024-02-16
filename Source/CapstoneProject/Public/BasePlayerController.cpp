@@ -531,12 +531,55 @@ void ABasePlayerController::CheckForActionStates()
 	GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
 }
 
+<<<<<<< Updated upstream
 void ABasePlayerController::ResourceCheats(int resourceToChange, int val)
 {
 	if (0 < resourceToChange && resourceToChange < 5)
 	{
 		UnitActions::SetFactionResources(playerFaction, StratResources(resourceToChange), val);
 	}	
+=======
+FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
+{
+	FBuildingTTInfo buildingInfo;
+	FBuildingCost buildingCost;
+
+	for (auto building : spawner->buildingCosts)
+	{
+		if (buildingName.EqualTo(building.Value.name))
+		{
+			buildingCost = building.Value;
+			break;
+		}
+	}
+
+	buildingInfo.titleTT = buildingCost.name;
+	//buildingInfo.descTT = 
+	//buildingInfo.energyMod = 
+
+	return buildingInfo;
+}
+
+FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
+{
+	FTroopTTInfo info = FTroopTTInfo{};
+	FTroopCost troopCost;
+
+	for (auto troop : spawner->troopCosts)
+	{
+		if (troopName.EqualTo(troop.Value.name))
+		{
+			troopCost = troop.Value;
+			break;
+		}
+	}
+
+	info.titleTT = troopCost.name;
+	//info.descTT = 
+	//info.HP = FText::AsNumber();
+	
+	return info;
+>>>>>>> Stashed changes
 }
 
 

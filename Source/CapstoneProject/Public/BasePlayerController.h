@@ -104,5 +104,10 @@ public:
 
 	void CheckForActionStates();
 
+<<<<<<< Updated upstream
 	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
+=======
+	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(FText buildingName);
+	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
+>>>>>>> Stashed changes
 };
