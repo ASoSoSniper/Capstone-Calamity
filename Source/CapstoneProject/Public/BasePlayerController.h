@@ -104,5 +104,5 @@ public:
 
 	void CheckForActionStates();
 
-	UFUNCTION(BlueprintCallable) void ResourceCheats(FString resourceToChange, int val);
+	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
 };
