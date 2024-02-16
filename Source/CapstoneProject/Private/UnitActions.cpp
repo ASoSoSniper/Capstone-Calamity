@@ -369,6 +369,11 @@ TArray<int> UnitActions::GetFactionResources(Factions faction)
     return resources;
 }
 
+void UnitActions::SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal)
+{
+    ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resourceToChange].currentResources = desiredResourceVal;
+}
+
 int UnitActions::GetFactionPopulation(Factions faction)
 {
     int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].working;

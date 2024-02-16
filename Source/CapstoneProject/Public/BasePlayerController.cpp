@@ -531,4 +531,24 @@ void ABasePlayerController::CheckForActionStates()
 	GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
 }
 
+void ABasePlayerController::ResourceCheats(FString resourceToChange, int val)
+{
+	if (resourceToChange == TEXT("Food") || TEXT("food"))
+	{
+		UnitActions::SetFactionResources(playerFaction, StratResources::Food, val);
+	}
+	else if (resourceToChange == TEXT("Production") || TEXT("production") || TEXT("Prod") || TEXT("prod"))
+	{
+		UnitActions::SetFactionResources(playerFaction, StratResources::Production, val);
+	}
+	else if (resourceToChange == TEXT("Energy") || TEXT("energy") || TEXT("Power") || TEXT("power"))
+	{
+		UnitActions::SetFactionResources(playerFaction, StratResources::Energy, val);
+	}
+	else if (resourceToChange == TEXT("Wealth") || TEXT("wealth") || TEXT("Gold") || TEXT("gold"))
+	{
+		UnitActions::SetFactionResources(playerFaction, StratResources::Wealth, val);
+	}
+}
+
 

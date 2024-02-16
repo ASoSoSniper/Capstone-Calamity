@@ -103,4 +103,6 @@ public:
 	UFUNCTION(BlueprintCallable) bool ToggleFarmlandYield(bool produceFood);
 
 	void CheckForActionStates();
+
+	UFUNCTION(BlueprintCallable) void ResourceCheats(FString resourceToChange, int val);
 };
