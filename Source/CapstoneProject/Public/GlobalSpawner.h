@@ -77,6 +77,28 @@ struct FBuildingDisplay
 };
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingTTInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText titleTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText descTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText foodMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText prodMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText wealthMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText resourceStorageMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText robotStorageMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText diploMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText tradeMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText unrestMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText maxWorkers;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingOnHex
 {
 	GENERATED_BODY()
@@ -110,6 +132,29 @@ struct FTroopDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText timeToBuild;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText populationCost;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopTTInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText titleTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText descTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText Speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText Damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegePower;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText vision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText reinforceRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText infRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText cavRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText rangedRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText shielderRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText scoutRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText settlerRel;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
