@@ -12,6 +12,7 @@
 #include "Farmland.h"
 #include "PowerPlant.h"
 #include "Outpost.h"
+#include "BuildingAttachment.h"
 #include "BattleObject.h"
 
 // Sets default values
@@ -425,6 +426,41 @@ void AGlobalSpawner::BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex*
 	{
 		Cast<ASettler>(newTroop)->popInStorage += troopCosts[unit].populationCost;
 		//outpost->popInStorage -= troopCosts[unit].populationCost;
+	}
+}
+
+void AGlobalSpawner::BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost)
+{
+	if (faction == Factions::None) return;
+
+	UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
+
+	bool canAfford = false;
+
+	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
+
+	if (!attachmentCosts.Contains(attachment)) return;
+
+	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
+
+	if (resources[StratResources::Production] >= attachmentCosts[attachment].workerCost && workers[WorkerType::Human] > attachmentCosts[attachment].workerCost)
+	{
+		canAfford = true;
+	}
+
+	resourceCosts.Add(StratResources::Production, attachmentCosts[attachment].productionCost);
+	workerCosts.Add(WorkerType::Human, attachmentCosts[attachment].workerCost - selectedAttachment->GetNumberOfWorkers());
+
+	if (canAfford)
+	{
+		outpost->BuildAttachment(attachment);
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, outpost, attachment);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford attachment"));
 	}
 }
 

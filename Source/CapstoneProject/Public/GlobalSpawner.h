@@ -16,6 +16,7 @@ class AOutpost;
 class AFarmland;
 class AMiningStation;
 class APowerPlant;
+class UBuildingAttachment;
 
 UENUM()
 enum class SpawnableBuildings
@@ -251,6 +252,7 @@ public:
 
 	bool PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpost* outpost);
 	void BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex* hex, AOutpost* outpost = nullptr);
+	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);
 	UClass* DetermineUnitType(SpawnableUnits unit);

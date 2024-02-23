@@ -38,8 +38,13 @@ public:
 	};
 	BuildStates buildState = Inactive;
 
+	TMap<WorkerType, int> workersInAttachment;
+	int maxWorkers = 15;
+	int GetNumberOfWorkers();
+
 	void SetBuildState();
 	void Constructing(float& DeltaTime);
+
 
 	virtual void UpdateResources();
 

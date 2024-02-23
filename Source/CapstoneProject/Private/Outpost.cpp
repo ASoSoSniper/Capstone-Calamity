@@ -156,10 +156,25 @@ void AOutpost::BuildingAction()
 	BuildAttachment(BuildingAttachments::DefenseStation);
 }
 
+UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)
+{
+	switch (attachment)
+	{
+	case BuildingAttachments::Storage:
+		return storageBuilding;
+	case BuildingAttachments::RobotFactory:
+		return troopFactoryBuilding;
+	case BuildingAttachments::RobotBarracks:
+		return storageBuilding;
+	case BuildingAttachments::DefenseStation:
+		return defenseBuilding;
+	default:
+		return nullptr;
+	}
+}
+
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
 {	
-
-
 	switch (attachment)
 	{
 	case BuildingAttachments::Storage:
@@ -174,6 +189,26 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 	case BuildingAttachments::DefenseStation:
 		defenseBuilding->ActivateAttachment();
 		break;
+	}
+}
+
+void AOutpost::AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value)
+{
+	switch (attachment)
+	{
+	case BuildingAttachments::Storage:
+		storageBuilding->workersInAttachment[worker] += value;
+		break;
+	case BuildingAttachments::RobotFactory:
+		troopFactoryBuilding->workersInAttachment[worker] += value;
+		break;
+	case BuildingAttachments::RobotBarracks:
+		storageBuilding->workersInAttachment[worker] += value;
+	case BuildingAttachments::DefenseStation:
+		defenseBuilding->workersInAttachment[worker] += value;
+		break;
+	default:
+		return;
 	}
 }
 

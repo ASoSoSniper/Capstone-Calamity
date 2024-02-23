@@ -12,7 +12,9 @@ UBuildingAttachment::UBuildingAttachment()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	workersInAttachment.Add(WorkerType::Human, 0);
+	workersInAttachment.Add(WorkerType::Robot, 0);
+	workersInAttachment.Add(WorkerType::Alien, 0);
 }
 
 
@@ -40,6 +42,18 @@ void UBuildingAttachment::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		break;
 
 	}
+}
+
+int UBuildingAttachment::GetNumberOfWorkers()
+{
+	int totalWorkers = 0;
+
+	for (auto worker : workersInAttachment)
+	{
+		totalWorkers += worker.Value;
+	}
+
+	return totalWorkers;
 }
 
 void UBuildingAttachment::SetBuildState()

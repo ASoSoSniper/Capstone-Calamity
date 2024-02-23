@@ -242,6 +242,29 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	return buildings;
 }
 
+FBuildingDisplay ABasePlayerController::GetBuildingDisplay(FText buildingName)
+{
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	FBuildingDisplay attachmentDisplay;
+	if (!hex->building) return attachmentDisplay;
+
+	for (auto building : spawner->buildingCosts)
+	{
+		if (building.Value.name.EqualTo(buildingName))
+		{
+			attachmentDisplay.name = building.Value.name;
+			attachmentDisplay.productionCost = FText::AsNumber(building.Value.productionCost);
+			attachmentDisplay.workerCost = FText::AsNumber(building.Value.workerCost);
+			attachmentDisplay.buildTime = FText::AsNumber(building.Value.timeToBuild);
+			attachmentDisplay.buildingIcon = building.Value.buildingIcon;
+
+			break;
+		}
+	}
+
+	return attachmentDisplay;
+}
+
 TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 {
 	TArray<FTroopDisplay> troops;
@@ -341,7 +364,7 @@ void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 			AOutpost* outpost = GetOutpost();
 			if (outpost)
 			{
-				outpost->BuildAttachment(attachment.Key);
+				spawner->BuildAttachment(playerFaction, attachment.Key, outpost);
 			}
 
 			return;

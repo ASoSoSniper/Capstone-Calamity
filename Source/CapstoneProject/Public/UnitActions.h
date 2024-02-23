@@ -65,6 +65,8 @@ class ABuilding;
 class UUnitStats;
 class ABattleObject;
 class AOutpost;
+class UBuildingAttachment;
+enum class BuildingAttachments;
 
 class CAPSTONEPROJECT_API UnitActions
 {
@@ -132,8 +134,11 @@ public:
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
 	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+
 	static TArray<int> GetFactionResources(Factions faction);
 	static void SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal);
 	static int GetFactionPopulation(Factions faction);
@@ -144,6 +149,7 @@ public:
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
+	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, AOutpost* outpost, BuildingAttachments attachment);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
