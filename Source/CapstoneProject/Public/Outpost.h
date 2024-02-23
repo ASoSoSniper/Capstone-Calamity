@@ -42,14 +42,6 @@ public:
 	
 	void BuildingAction() override;
 
-	enum BuildingAttachments
-	{
-		None,
-		Storage,
-		DefenseStation,
-		RobotFactory,
-		Barracks
-	};
 	void BuildAttachment(BuildingAttachments attachment);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
 

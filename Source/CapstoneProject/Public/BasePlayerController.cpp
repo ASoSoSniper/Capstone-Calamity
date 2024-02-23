@@ -260,6 +260,29 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 	return troops;
 }
 
+TArray<FBuildingDisplay> ABasePlayerController::GetAttachmentDisplays()
+{
+	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	TArray<FBuildingDisplay> buildings;
+	if (!hex) return buildings;
+
+	TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
+	if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
+
+	for (auto building : spawner->attachmentCosts)
+	{
+		FText name = building.Value.name;
+		FText production = FText::AsNumber(building.Value.productionCost);
+		FText workers = FText::AsNumber(building.Value.workerCost);
+		FText buildTime = FText::AsNumber(building.Value.timeToBuild);
+		UTexture2D* buildingIcon = building.Value.buildingIcon;
+
+		buildings.Add(FBuildingDisplay{ name, production, workers, buildTime, buildingIcon });
+	}
+
+	return buildings;
+}
+
 //FOR BLUEPRINT: When player selection modes have subselection modes, this function forces the transition into the subselection
 void ABasePlayerController::EnterSelectionMode(bool active)
 {
@@ -305,6 +328,22 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
 			Build(buildings.Key);
+			return;
+		}
+	}
+}
+void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
+{
+	for (auto attachment : spawner->attachmentCosts)
+	{
+		if (attachmentName.EqualTo(attachment.Value.name))
+		{
+			AOutpost* outpost = GetOutpost();
+			if (outpost)
+			{
+				outpost->BuildAttachment(attachment.Key);
+			}
+
 			return;
 		}
 	}
@@ -453,7 +492,7 @@ bool ABasePlayerController::OutpostCanBuildTroops()
 	if (!outpost) return false;
 	if (outpost->unitStats->faction != Factions::Human) return false;
 
-	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::RobotFactory);
+	return outpost->BuildingAttachmentIsActive(BuildingAttachments::RobotFactory);
 }
 
 bool ABasePlayerController::OutpostCanStoreTroops()
@@ -463,7 +502,7 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 	if (!outpost) return false;
 	if (outpost->unitStats->faction != Factions::Human) return false;
 
-	return outpost->BuildingAttachmentIsActive(AOutpost::BuildingAttachments::Barracks);
+	return outpost->BuildingAttachmentIsActive(BuildingAttachments::RobotBarracks);
 }
 
 bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
@@ -531,14 +570,14 @@ void ABasePlayerController::CheckForActionStates()
 	GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
 }
 
-<<<<<<< Updated upstream
 void ABasePlayerController::ResourceCheats(int resourceToChange, int val)
 {
 	if (0 < resourceToChange && resourceToChange < 5)
 	{
 		UnitActions::SetFactionResources(playerFaction, StratResources(resourceToChange), val);
-	}	
-=======
+	}
+}
+
 FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
 {
 	FBuildingTTInfo buildingInfo;
@@ -579,7 +618,6 @@ FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
 	//info.HP = FText::AsNumber();
 	
 	return info;
->>>>>>> Stashed changes
 }
 
 

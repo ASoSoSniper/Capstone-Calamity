@@ -29,10 +29,14 @@ AGlobalSpawner::AGlobalSpawner()
 	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 300, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120 });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120 });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30, 150 });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15, 120 });
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120, FText::FromString("Storage"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage'")) });
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120, FText::FromString("Defense Station"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory'")) });
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30, 150, FText::FromString("Robot Factory"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost'")) });
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15, 120, FText::FromString("Robot Barracks"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage'")) });
 
 	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 80 });
 	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 100 });
@@ -287,46 +291,51 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Spawn building"));
-	if (hex->building == nullptr)
+	//If hex already
+	if (hex->building)
 	{
-		
-		FActorSpawnParameters params;
-		UClass* prefab = DetermineBuildingType(building);
-
-		if (!prefab) return;
-
-		bool canAfford = false;
-
-		TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
-		TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
-		if (buildingCosts.Contains(building))
-		{
-			TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
-			TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
-
-			if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Human] > buildingCosts[building].workerCost)
-			{
-				canAfford = true;
-			}
-
-			resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
-			workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->workersInHex[WorkerType::Human]);
-		}
-
-		if (canAfford)
-		{
-			//hex->maxWorkers = buildingCosts[building].workerCost;
-			UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
-			ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-			UnitActions::AssignFaction(faction, newBuilding);
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
 	}
-	else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
+
+	//Determine building prefab to spawn
+	FActorSpawnParameters params;
+	UClass* prefab = DetermineBuildingType(building);
+
+	//If no prefab found, return
+	if (!prefab) return;
+
+	//Declare bool for whether this building is affordable
+	bool canAfford = false;
+
+	//Declare TMaps for resources and workers to spend on this building
+	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
+
+	//If the desired building exists in the 
+	if (buildingCosts.Contains(building))
+	{
+		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+		TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
+
+		if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Human] > buildingCosts[building].workerCost)
+		{
+			canAfford = true;
+		}
+
+		resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
+		workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->workersInHex[WorkerType::Human]);
+	}
+
+	if (canAfford)
+	{
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
+		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+		UnitActions::AssignFaction(faction, newBuilding);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
+	}
 }
 
 ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent)

@@ -78,9 +78,12 @@ public:
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
+	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();
+
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
 	UFUNCTION(BlueprintCallable) bool IsInBuildMode();
 	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
+	UFUNCTION(BlueprintCallable) void SelectBuildingAttachment(FText buildingName);
 	UFUNCTION(BlueprintCallable) void SelectTroop(FText troopName);
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
@@ -104,10 +107,7 @@ public:
 
 	void CheckForActionStates();
 
-<<<<<<< Updated upstream
 	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
-=======
 	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(FText buildingName);
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
->>>>>>> Stashed changes
 };

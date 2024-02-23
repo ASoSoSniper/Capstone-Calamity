@@ -151,19 +151,21 @@ void AOutpost::BuildingAction()
 
 	//Build these attachments by default for testing purposes
 	BuildAttachment(BuildingAttachments::Storage);
-	BuildAttachment(BuildingAttachments::Barracks);
+	BuildAttachment(BuildingAttachments::RobotBarracks);
 	BuildAttachment(BuildingAttachments::RobotFactory);
 	BuildAttachment(BuildingAttachments::DefenseStation);
 }
 
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
 {	
+
+
 	switch (attachment)
 	{
 	case BuildingAttachments::Storage:
 		storageBuilding->ActivateAttachment();
 		break;
-	case BuildingAttachments::Barracks:
+	case BuildingAttachments::RobotBarracks:
 		barracksBuilding->ActivateAttachment();
 		break;
 	case BuildingAttachments::RobotFactory:
@@ -173,21 +175,19 @@ void AOutpost::BuildAttachment(BuildingAttachments attachment)
 		defenseBuilding->ActivateAttachment();
 		break;
 	}
-
-	
 }
 
 bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 {
 	switch (attachment)
 	{
-	case Storage:
+	case BuildingAttachments::Storage:
 		return storageBuilding->AttachmentIsActive();
-	case RobotFactory:
+	case BuildingAttachments::RobotFactory:
 		return troopFactoryBuilding->AttachmentIsActive();
-	case Barracks:
+	case BuildingAttachments::RobotBarracks:
 		return storageBuilding->AttachmentIsActive();
-	case DefenseStation:
+	case BuildingAttachments::DefenseStation:
 		return defenseBuilding->AttachmentIsActive();
 	default:
 		return false;

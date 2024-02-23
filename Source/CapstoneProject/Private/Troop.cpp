@@ -79,7 +79,7 @@ void ATroop::MergeOnTile()
 		{
 			if (AOutpost* outpost = Cast<AOutpost>(objectType.building))
 			{
-				if (!outpost->BuildingAttachmentIsActive(AOutpost::Storage)) return;
+				if (!outpost->BuildingAttachmentIsActive(BuildingAttachments::Storage)) return;
 
 				outpost->StoreTroop(this);
 			}
