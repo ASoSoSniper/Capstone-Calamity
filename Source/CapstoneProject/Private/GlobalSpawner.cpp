@@ -323,13 +323,13 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		}
 
 		resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
-		workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->workersInHex[WorkerType::Human]);
+		workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->GetNumberOfWorkers());
 	}
 
 	if (canAfford)
 	{
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
 		UnitActions::AssignFaction(faction, newBuilding);
 	}
 	else

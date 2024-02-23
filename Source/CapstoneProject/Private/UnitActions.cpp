@@ -459,7 +459,6 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
         for (auto worker : workers)
         {
             hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex);
-            hex->ActiveHarvesting();
         }
     }
     

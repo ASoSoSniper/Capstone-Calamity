@@ -73,6 +73,7 @@ ABaseHex::ABaseHex()
 	interactable->CreateExtraCollision(hexMeshAttachment);
 
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
+	visibility->enableScan = false;
 
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);
@@ -182,16 +183,16 @@ bool ABaseHex::ActiveHarvesting()
 	bool alreadyHarvesting = harvesting;
 	bool workersExist = false;
 
-	int workerQuantity = 0;
-	for (auto workers : workersInHex)
-	{
-		workerQuantity += workers.Value;
-	}
-	if (workerQuantity >= 10) workersExist = true;
+	if (GetNumberOfWorkers() >= 1) workersExist = true;
 
 	harvesting = workersExist;
 
 	if (harvesting != alreadyHarvesting)
+	{
+		if (building) building->visibility->enableScan = harvesting;
+	}
+
+	if (GetOutputPercent() != outputPercent)
 	{
 		ToggleResourceYield();
 	}
@@ -258,12 +259,20 @@ void ABaseHex::ToggleResourceYield()
 {
 	if (hexOwner == Factions::None) return;
 
-	int axis = harvesting ? 1 : -1;
+	float newOutputPercent = GetOutputPercent();
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Wealth].resourcePerTick += axis * resourceBonuses[StratResources::Wealth].yieldBonus;
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += axis * resourceBonuses[StratResources::Food].yieldBonus;
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += axis * resourceBonuses[StratResources::Production].yieldBonus;
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += axis * resourceBonuses[StratResources::Energy].yieldBonus;
+	for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory)
+	{
+		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key].yieldBonus;
+		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key].yieldBonus;
+
+		resource.Value.resourcePerTick -= originalOutput;
+		resource.Value.resourcePerTick += newOutput;
+	}
+
+	if (debug) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, FString::Printf(TEXT("Output Percent: %f"), newOutputPercent));
+
+	outputPercent = newOutputPercent;
 }
 
 void ABaseHex::RequestTerrainChange(bool modelOnly)
@@ -288,6 +297,23 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	resourceBonuses[StratResources::Food].yieldBonus = info.food;
 	resourceBonuses[StratResources::Production].yieldBonus = info.production;
 	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
+}
+
+int ABaseHex::GetNumberOfWorkers()
+{
+	int totalWorkers = 0;
+
+	for (auto worker : workersInHex)
+	{
+		totalWorkers += worker.Value;
+	}
+
+	return totalWorkers;
+}
+
+float ABaseHex::GetOutputPercent()
+{
+	return (float)GetNumberOfWorkers() / (float)maxWorkers;
 }
 
 ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes)

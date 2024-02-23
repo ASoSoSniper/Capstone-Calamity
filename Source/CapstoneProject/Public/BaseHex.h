@@ -126,6 +126,8 @@ public:
 	void CheckForHostility(AMovementAI* refTroop);
 	void AddTroopToHex(AMovementAI* troop);
 	void RemoveTroopFromHex(AMovementAI* troop);
+	int GetNumberOfWorkers();
+	float GetOutputPercent();
 
 	void BeginBattle();
 
@@ -139,6 +141,9 @@ public:
 	float currentHarvestTime;
 	float maxHarvestTime = 2.f;
 	bool harvesting;
+	float outputPercent;
+
+	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 
 	bool ActiveHarvesting();
 
