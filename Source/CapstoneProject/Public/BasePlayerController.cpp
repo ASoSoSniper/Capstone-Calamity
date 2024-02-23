@@ -242,25 +242,19 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	return buildings;
 }
 
-FBuildingDisplay ABasePlayerController::GetBuildingDisplay(FText buildingName)
+FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
 {
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	FBuildingDisplay attachmentDisplay;
 	if (!hex->building) return attachmentDisplay;
 
-	for (auto building : spawner->buildingCosts)
-	{
-		if (building.Value.name.EqualTo(buildingName))
-		{
-			attachmentDisplay.name = building.Value.name;
-			attachmentDisplay.productionCost = FText::AsNumber(building.Value.productionCost);
-			attachmentDisplay.workerCost = FText::AsNumber(building.Value.workerCost);
-			attachmentDisplay.buildTime = FText::AsNumber(building.Value.timeToBuild);
-			attachmentDisplay.buildingIcon = building.Value.buildingIcon;
+	SpawnableBuildings selectedBuilding = building->buildingType;
 
-			break;
-		}
-	}
+	attachmentDisplay.name = spawner->buildingCosts[selectedBuilding].name;	
+	attachmentDisplay.productionCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].productionCost);
+	attachmentDisplay.workerCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].workerCost);
+	attachmentDisplay.buildTime = FText::AsNumber(spawner->buildingCosts[selectedBuilding].timeToBuild);
+	attachmentDisplay.buildingIcon = spawner->buildingCosts[selectedBuilding].buildingIcon;
 
 	return attachmentDisplay;
 }

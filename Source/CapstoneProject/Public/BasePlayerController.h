@@ -77,7 +77,7 @@ public:
 
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
-	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(FText buildingName);
+	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(ABuilding* building);
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();
 
