@@ -44,17 +44,17 @@ AGlobalSpawner::AGlobalSpawner()
 	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
 
 	troopCosts.Add(SpawnableUnits::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Infantry_Icon.Unit_Infantry_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Infantry.Infantry'")) });
 	troopCosts.Add(SpawnableUnits::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Cav_Icon.Unit_Cav_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Cavalry.Cavalry'")) });
 	troopCosts.Add(SpawnableUnits::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Ranged_Icon.Unit_Ranged_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Ranged.Ranged'")) });
 	troopCosts.Add(SpawnableUnits::Shielder, FTroopCost{ 100, 60, 0, FText::FromString("Shielder"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Shielder_Icon.Unit_Shielder_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Shielder.Shielder'")) });
 	troopCosts.Add(SpawnableUnits::Scout, FTroopCost{ 20, 24, 0, FText::FromString("Scout"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Scout_Icon.Unit_Scout_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Scout.Scout'")) });
 	troopCosts.Add(SpawnableUnits::Settler, FTroopCost{ 400, 60, 50, FText::FromString("Settler"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Unit_Settler_Icon.Unit_Settler_Icon'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Settler.Settler'")) });
 }
 
 // Called when the game starts or when spawned
