@@ -580,6 +580,23 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 	return outpost->BuildingAttachmentIsActive(BuildingAttachments::RobotBarracks);
 }
 
+bool ABasePlayerController::AttachmentIsActive(FText attachmentName)
+{
+	for (auto attachment : spawner->attachmentCosts)
+	{
+		if (attachmentName.EqualTo(attachment.Value.name))
+		{
+			AOutpost* outpost = GetOutpost();
+			if (outpost)
+			{
+				return outpost->GetAttachment(attachment.Key)->AttachmentIsActive();
+			}
+		}
+	}
+
+	return false;
+}
+
 bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 {
 	FBuildingOnHex buildingOnHex = GetBuildingOnHex();

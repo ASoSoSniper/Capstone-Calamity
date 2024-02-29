@@ -106,6 +106,7 @@ public:
 
 	UFUNCTION(BlueprintCallable) bool OutpostCanBuildTroops();
 	UFUNCTION(BlueprintCallable) bool OutpostCanStoreTroops();
+	UFUNCTION(BlueprintCallable) bool AttachmentIsActive(FText attachmentName);
 
 	UFUNCTION(BlueprintCallable) bool ToggleFarmlandYield(bool produceFood);
 
