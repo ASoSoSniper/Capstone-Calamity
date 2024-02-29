@@ -3,3 +3,7 @@
 
 #include "OutpostBarracks.h"
 
+UOutpostBarracks::UOutpostBarracks()
+{
+	type = BuildingAttachments::RobotBarracks;
+}

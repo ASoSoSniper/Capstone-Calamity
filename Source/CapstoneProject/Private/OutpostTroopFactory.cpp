@@ -3,3 +3,7 @@
 
 #include "OutpostTroopFactory.h"
 
+UOutpostTroopFactory::UOutpostTroopFactory()
+{
+	type = BuildingAttachments::RobotFactory;
+}

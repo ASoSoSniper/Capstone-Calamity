@@ -16,6 +16,7 @@
 #include "ManageHex.h"
 #include "ManageTroop.h"
 #include "ManageBuilding.h"
+#include "BuildingAttachment.h"
 #include "ManageBattle.h"
 #include "GlobalSpawner.h"
 #include "BasePlayerController.generated.h"
@@ -98,6 +99,7 @@ public:
 	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
 
 	UFUNCTION(BlueprintCallable) FWorkerSliders SetWorkerCount(FWorkerSliders sliders);
+	UFUNCTION(BlueprintCallable) FWorkerSliders SetAttachmentWorkerCount(FWorkerSliders sliders, FText attachmentName);
 
 	AOutpost* GetOutpost();
 	UFUNCTION(BlueprintCallable) FBuildingOnHex GetBuildingOnHex();

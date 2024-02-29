@@ -13,4 +13,6 @@ UCLASS()
 class CAPSTONEPROJECT_API UOutpostTroopFactory : public UBuildingAttachment
 {
 	GENERATED_BODY()
+public:
+	UOutpostTroopFactory();
 };
