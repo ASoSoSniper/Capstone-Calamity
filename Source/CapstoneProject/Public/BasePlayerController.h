@@ -80,6 +80,7 @@ public:
 	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(ABuilding* building);
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();
+	UFUNCTION(BlueprintCallable) FBuildingDisplay GetAttachmentDisplay(FText attachmentName);
 
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
 	UFUNCTION(BlueprintCallable) bool IsInBuildMode();

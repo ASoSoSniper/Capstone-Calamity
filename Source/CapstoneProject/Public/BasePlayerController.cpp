@@ -300,6 +300,28 @@ TArray<FBuildingDisplay> ABasePlayerController::GetAttachmentDisplays()
 	return buildings;
 }
 
+FBuildingDisplay ABasePlayerController::GetAttachmentDisplay(FText attachmentName)
+{
+	FBuildingDisplay display;
+
+	for (auto attachment : spawner->attachmentCosts)
+	{
+		if (attachmentName.EqualTo(attachment.Value.name))
+		{
+			
+			display.name = attachment.Value.name;
+			display.productionCost = FText::AsNumber(attachment.Value.productionCost);
+			display.workerCost = FText::AsNumber(attachment.Value.workerCost);
+			display.buildTime = FText::AsNumber(attachment.Value.timeToBuild);
+			display.buildingIcon = attachment.Value.buildingIcon;
+
+			break;
+		}
+	}
+
+	return display;
+}
+
 //FOR BLUEPRINT: When player selection modes have subselection modes, this function forces the transition into the subselection
 void ABasePlayerController::EnterSelectionMode(bool active)
 {
