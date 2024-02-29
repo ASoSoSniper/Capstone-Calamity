@@ -227,6 +227,8 @@ void ABuilding::DestroyingBuilding(float& DeltaTime)
 void ABuilding::Destroyed()
 {
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (!hex) return;
+
 	hex->maxWorkers = 10;
 	int totalWorkers = 0;
 	for (auto& worker : hex->workersInHex)

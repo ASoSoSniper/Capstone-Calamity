@@ -16,6 +16,7 @@ class AOutpost;
 class AFarmland;
 class AMiningStation;
 class APowerPlant;
+class ACapitalHub;
 class UBuildingAttachment;
 
 UENUM()
@@ -265,6 +266,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> powerPlantPrefab;
 	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> capitalPrefab;
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;

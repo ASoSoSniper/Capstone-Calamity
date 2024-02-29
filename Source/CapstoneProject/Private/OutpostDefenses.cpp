@@ -12,6 +12,8 @@ void UOutpostDefenses::UpdateResources()
 
 void UOutpostDefenses::DisableAttachment()
 {
+	if (!outpost) return;
+
 	outpost->unitStats->currentHP -= HPInrease;
 	outpost->unitStats->maxHP -= HPInrease;
 	outpost->unitStats->siegePower -= siegeIncrease;

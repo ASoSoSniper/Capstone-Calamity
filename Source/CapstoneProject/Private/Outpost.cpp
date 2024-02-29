@@ -148,12 +148,6 @@ TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
 void AOutpost::BuildingAction()
 {
 	claimedHexes = ClaimLand();
-
-	//Build these attachments by default for testing purposes
-	BuildAttachment(BuildingAttachments::Storage);
-	BuildAttachment(BuildingAttachments::RobotBarracks);
-	BuildAttachment(BuildingAttachments::RobotFactory);
-	BuildAttachment(BuildingAttachments::DefenseStation);
 }
 
 UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)

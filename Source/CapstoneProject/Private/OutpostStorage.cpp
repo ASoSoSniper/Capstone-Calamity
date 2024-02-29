@@ -15,6 +15,7 @@ void UOutpostStorage::ActivateAttachment()
 
 void UOutpostStorage::DisableAttachment()
 {
+	if (!outpost) return;
 	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, -storageIncrease);
 	Super::DisableAttachment();
 }

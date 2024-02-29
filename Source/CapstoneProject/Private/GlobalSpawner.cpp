@@ -12,6 +12,7 @@
 #include "Farmland.h"
 #include "PowerPlant.h"
 #include "Outpost.h"
+#include "CapitalHub.h"
 #include "BuildingAttachment.h"
 #include "BattleObject.h"
 
@@ -68,6 +69,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!farmlandPrefab) farmlandPrefab = AFarmland::StaticClass();
 	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
 	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
+	if (!capitalPrefab) capitalPrefab = ACapitalHub::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 }
 
@@ -164,6 +166,8 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	UMaterialInterface* matAssetSelected = nullptr;
 	UMaterialInterface* extraMatAssetSelected = nullptr;
 
+	ABuilding* newBuilding = nullptr;
+
 	switch (terrainType)
 	{
 	case TerrainType::None:
@@ -234,14 +238,13 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		break;
 	case TerrainType::Ship:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_HexagonPlains.TileForestModel_HexagonPlains'"));
-		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip1.BuildingCapitolShip1'"));
+
+		newBuilding = GetWorld()->SpawnActor<ABuilding>(capitalPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		UnitActions::AssignFaction(Factions::Human, newBuilding);
 
 		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestHeavyFloor_Mat"));
 		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TileForestHeavyFloor_Mat_Hidden"));
-		extraMatAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/ShipMat01"));
-		extraMatAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/ShipMat01_Hidden"));
 		matAssetSelected = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TileForestHeavyFloor_Mat_HL"));
-		extraMatAssetSelected = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/ShipMat01_HL"));
 		break;
 	case TerrainType::AlienCity:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
