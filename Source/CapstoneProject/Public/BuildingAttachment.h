@@ -29,6 +29,7 @@ public:
 	float currBuildTime;
 	
 	UPROPERTY(VisibleAnywhere) AOutpost* outpost;
+	UPROPERTY(VisibleAnywhere) BuildingAttachments type;
 
 	enum BuildStates
 	{

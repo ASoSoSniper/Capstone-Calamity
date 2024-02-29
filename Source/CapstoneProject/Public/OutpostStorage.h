@@ -17,6 +17,7 @@ class CAPSTONEPROJECT_API UOutpostStorage : public UBuildingAttachment
 	virtual void UpdateResources() override;
 
 public:
+	UOutpostStorage();
 	virtual void ActivateAttachment() override;
 	virtual void DisableAttachment() override;
 

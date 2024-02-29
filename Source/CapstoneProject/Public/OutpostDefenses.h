@@ -13,7 +13,9 @@ UCLASS()
 class CAPSTONEPROJECT_API UOutpostDefenses : public UBuildingAttachment
 {
 	GENERATED_BODY()
-	
+
+public:
+	UOutpostDefenses();
 	virtual void UpdateResources() override;
 	virtual void DisableAttachment() override;
 

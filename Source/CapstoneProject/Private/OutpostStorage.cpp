@@ -8,6 +8,11 @@ void UOutpostStorage::UpdateResources()
 	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, storageIncrease);
 }
 
+UOutpostStorage::UOutpostStorage()
+{
+	type = BuildingAttachments::Storage;
+}
+
 void UOutpostStorage::ActivateAttachment()
 {
 	Super::ActivateAttachment();

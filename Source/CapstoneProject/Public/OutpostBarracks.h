@@ -15,5 +15,7 @@ class CAPSTONEPROJECT_API UOutpostBarracks : public UBuildingAttachment
 	GENERATED_BODY()
 
 public:
+
+	UOutpostBarracks();
 	TArray<ATroop*> storedTroops;
 };

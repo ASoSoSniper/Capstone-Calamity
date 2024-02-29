@@ -308,7 +308,6 @@ FBuildingDisplay ABasePlayerController::GetAttachmentDisplay(FText attachmentNam
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
-			
 			display.name = attachment.Value.name;
 			display.productionCost = FText::AsNumber(attachment.Value.productionCost);
 			display.workerCost = FText::AsNumber(attachment.Value.workerCost);
@@ -505,6 +504,43 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);
 	sliders.availableRobots = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Robot);
 	sliders.availableAliens = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Alien);
+
+	return sliders;
+}
+
+FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sliders, FText attachmentName)
+{
+	if (!selectedHex) return sliders;
+
+	BuildingAttachments attachmentType;
+	for (auto& attachment : spawner->attachmentCosts)
+	{
+		if (attachmentName.EqualTo(attachment.Value.name))
+		{
+			attachmentType = attachment.Key;
+			break;
+		}
+	}
+
+	if (AOutpost* outpost = GetOutpost())
+	{
+		UBuildingAttachment* attachment = outpost->GetAttachment(BuildingAttachments::Storage);
+
+		attachment->workersInAttachment[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * attachment->maxWorkers), outpost, attachmentType);
+		attachment->workersInAttachment[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * attachment->maxWorkers), outpost, attachmentType);
+		attachment->workersInAttachment[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * attachment->maxWorkers), outpost, attachmentType);
+
+		sliders.humanDisplay = attachment->workersInAttachment[WorkerType::Human];
+		sliders.robotDisplay = attachment->workersInAttachment[WorkerType::Robot];
+		sliders.alienDisplay = attachment->workersInAttachment[WorkerType::Alien];
+
+		sliders.maxWorkers = attachment->maxWorkers;
+		sliders.currWorkers = attachment->workersInAttachment[WorkerType::Human] + attachment->workersInAttachment[WorkerType::Robot] + attachment->workersInAttachment[WorkerType::Alien];
+
+		sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);
+		sliders.availableRobots = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Robot);
+		sliders.availableAliens = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Alien);
+	}
 
 	return sliders;
 }

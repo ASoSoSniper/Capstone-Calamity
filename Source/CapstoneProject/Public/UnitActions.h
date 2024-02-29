@@ -138,6 +138,7 @@ public:
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
+	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 
 	static TArray<int> GetFactionResources(Factions faction);
 	static void SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal);

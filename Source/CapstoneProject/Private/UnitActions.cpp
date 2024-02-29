@@ -390,6 +390,22 @@ int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWork
     return 0;
 }
 
+int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment)
+{
+    UBuildingAttachment* attachmentType = outpost->GetAttachment(attachment);
+
+    if (desiredWorkers > attachmentType->workersInAttachment[worker])
+    {
+        return AddWorkers(faction, worker, desiredWorkers - attachmentType->workersInAttachment[worker], outpost, attachmentType->type);
+    }
+    else if (desiredWorkers < attachmentType->workersInAttachment[worker])
+    {
+        return -RemoveWorkers(faction, worker, attachmentType->workersInAttachment[worker] - desiredWorkers, outpost, attachmentType->type);
+    }
+
+    return 0;
+}
+
 TArray<int> UnitActions::GetFactionResources(Factions faction)
 {
     TArray<int> resources;

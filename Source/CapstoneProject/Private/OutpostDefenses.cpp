@@ -3,6 +3,11 @@
 
 #include "OutpostDefenses.h"
 
+UOutpostDefenses::UOutpostDefenses()
+{
+	type = BuildingAttachments::DefenseStation;
+}
+
 void UOutpostDefenses::UpdateResources()
 {
 	outpost->unitStats->currentHP += HPInrease;
