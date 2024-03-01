@@ -30,8 +30,10 @@ public:
 	UHexNav* hexNav;
 	UMeshVisibility* visibility;
 	ABaseHex* hex;
-	UStaticMeshComponent* group1Mesh;
-	UStaticMeshComponent* group2Mesh;
+
+	UPROPERTY(EditAnywhere) UStaticMeshComponent* group1Mesh;
+	UPROPERTY(EditAnywhere) UStaticMeshComponent* group2Mesh;
+	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
 	//Every troop participating in this battle, sorted into their factions
 	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;

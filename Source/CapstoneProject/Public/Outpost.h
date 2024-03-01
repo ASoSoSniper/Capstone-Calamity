@@ -42,7 +42,7 @@ public:
 	
 	void BuildingAction() override;
 
-	UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
+	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
 	void BuildAttachment(BuildingAttachments attachment);
 	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);

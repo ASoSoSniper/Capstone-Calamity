@@ -119,6 +119,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
 
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
+
+	UPROPERTY(EditAnywhere, Category = "Identity") float moveMultiplier = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Identity") float attritionMultiplier = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Identity") int defenderBonus = 0;
+	UPROPERTY(EditAnywhere, Category = "Identity") int vision = 0;
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();

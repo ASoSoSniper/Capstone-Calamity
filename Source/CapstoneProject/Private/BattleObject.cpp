@@ -12,18 +12,24 @@ ABattleObject::ABattleObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	baseRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Base Root"));
+	
+	SetRootComponent(baseRoot);
+
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
-	group1Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 1 Mesh"));
-	group2Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 2 Mesh"));
 
-	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
-	if (meshComponent)
-	{
-		group1Mesh->SetStaticMesh(meshComponent);
-	}
+	group1Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 1 Mesh"));
+	group1Mesh->SetupAttachment(RootComponent);
+	group1Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+
+	group2Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 2 Mesh"));
+	group2Mesh->SetupAttachment(RootComponent);
+	group2Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+
 	group1Mesh->SetCollisionProfileName("BlockAllDynamic");
+	group2Mesh->SetCollisionProfileName("BlockAllDynamic");
 }
 
 // Called when the game starts or when spawned
@@ -31,7 +37,11 @@ void ABattleObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	group1Mesh->SetRelativeLocation(GetActorRightVector() * 30.f);
+	group2Mesh->SetRelativeLocation(GetActorRightVector() * -30.f);
+
+	group1Mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
+	group2Mesh->SetRelativeRotation(FRotator(0, 90.f, 0));
 }
 
 void ABattleObject::Start()
@@ -171,6 +181,26 @@ void ABattleObject::AssignGroups()
 			}
 			break;
 		}
+	}
+	UStaticMesh* robotMesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
+	UStaticMesh* alienMesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
+
+	if (currentBattle.Group1.Contains(Factions::Human))
+	{
+		group1Mesh->SetStaticMesh(robotMesh);
+	}
+	else
+	{
+		group1Mesh->SetStaticMesh(alienMesh);
+	}
+
+	if (currentBattle.Group2.Contains(Factions::Human))
+	{
+		group2Mesh->SetStaticMesh(robotMesh);
+	}
+	else
+	{
+		group2Mesh->SetStaticMesh(alienMesh);
 	}
 	
 	attacking = true;

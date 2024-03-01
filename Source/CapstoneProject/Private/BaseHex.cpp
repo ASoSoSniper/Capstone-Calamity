@@ -297,6 +297,11 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	resourceBonuses[StratResources::Food].yieldBonus = info.food;
 	resourceBonuses[StratResources::Production].yieldBonus = info.production;
 	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
+
+	moveMultiplier = info.moveMultiplier;
+	attritionMultiplier = info.attritionMultiplier;
+	defenderBonus = info.defenderBonus;
+	vision = info.visionModifier;
 }
 
 int ABaseHex::GetNumberOfWorkers()

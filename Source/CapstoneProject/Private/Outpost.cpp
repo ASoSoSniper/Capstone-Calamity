@@ -169,58 +169,22 @@ UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)
 
 void AOutpost::BuildAttachment(BuildingAttachments attachment)
 {	
-	switch (attachment)
-	{
-	case BuildingAttachments::Storage:
-		storageBuilding->ActivateAttachment();
-		break;
-	case BuildingAttachments::RobotBarracks:
-		barracksBuilding->ActivateAttachment();
-		break;
-	case BuildingAttachments::RobotFactory:
-		troopFactoryBuilding->ActivateAttachment();
-		break;
-	case BuildingAttachments::DefenseStation:
-		defenseBuilding->ActivateAttachment();
-		break;
-	}
+	UBuildingAttachment* attachmentType = GetAttachment(attachment);
+	if (attachmentType) attachmentType->ActivateAttachment();
 }
 
 void AOutpost::AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value)
 {
-	switch (attachment)
-	{
-	case BuildingAttachments::Storage:
-		storageBuilding->workersInAttachment[worker] += value;
-		break;
-	case BuildingAttachments::RobotFactory:
-		troopFactoryBuilding->workersInAttachment[worker] += value;
-		break;
-	case BuildingAttachments::RobotBarracks:
-		storageBuilding->workersInAttachment[worker] += value;
-	case BuildingAttachments::DefenseStation:
-		defenseBuilding->workersInAttachment[worker] += value;
-		break;
-	default:
-		return;
-	}
+	UBuildingAttachment* attachmentType = GetAttachment(attachment);
+	if (attachmentType) attachmentType->workersInAttachment[worker] += value;
 }
 
 bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 {
-	switch (attachment)
-	{
-	case BuildingAttachments::Storage:
-		return storageBuilding->AttachmentIsActive();
-	case BuildingAttachments::RobotFactory:
-		return troopFactoryBuilding->AttachmentIsActive();
-	case BuildingAttachments::RobotBarracks:
-		return storageBuilding->AttachmentIsActive();
-	case BuildingAttachments::DefenseStation:
-		return defenseBuilding->AttachmentIsActive();
-	default:
-		return false;
-	}
+	UBuildingAttachment* attachmentType = GetAttachment(attachment);
+	if (attachmentType) attachmentType->AttachmentIsActive();
+
+	return false;
 }
 
 void AOutpost::CueTroopBuild(SpawnableUnits unit)
