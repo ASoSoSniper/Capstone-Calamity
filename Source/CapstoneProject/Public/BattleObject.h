@@ -69,4 +69,10 @@ public:
 	bool attacking;
 
 	AGlobalSpawner* spawner;
+
+	UPROPERTY(VisibleAnywhere) int group1Die = 0;
+	UPROPERTY(VisibleAnywhere) int group2Die = 0;
+
+	int RollDie(int& groupDie);
+	float GetRollModifier(int& groupDie);
 };

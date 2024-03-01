@@ -354,3 +354,30 @@ void ABattleObject::RemoveArmy(Factions faction)
 	}
 }
 
+int ABattleObject::RollDie(int& groupDie)
+{
+	groupDie = FMath::RandRange(1, 6);
+	return group1Die;
+}
+
+float ABattleObject::GetRollModifier(int& groupDie)
+{
+	switch (group1Die)
+	{
+	case 1:
+		return 0.85f;
+	case 2:
+		return 0.85f;
+	case 3:
+		return 1.f;
+	case 4:
+		return 1.f;
+	case 5: 
+		return 1.15f;
+	case 6:
+		return 1.15f;
+	}
+
+	return 1.f;
+}
+

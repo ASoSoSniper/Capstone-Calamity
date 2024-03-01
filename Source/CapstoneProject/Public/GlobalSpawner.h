@@ -123,7 +123,6 @@ struct FTroopCost
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
-	//UnitActions::UnitData stats;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -136,6 +135,30 @@ struct FTroopDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText timeToBuild;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText populationCost;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText desc;
+	UnitTypes type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegePower;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int vision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int reinforceRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int infRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int cavRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int rangedRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int shielderRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int scoutRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerRel;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -153,6 +176,7 @@ struct FTroopTTInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText morale;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText reinforceRate;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText infRel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText cavRel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText rangedRel;
@@ -278,6 +302,7 @@ public:
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
 	UPROPERTY(EditAnywhere) TMap<SpawnableUnits, FTroopCost> troopCosts;
+	UPROPERTY(EditAnywhere) TMap<SpawnableUnits, FTroopStats> troopStats;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;

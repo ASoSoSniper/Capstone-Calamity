@@ -5,6 +5,7 @@
 #include "StratResources.h"
 #include "TerrainEnum.h"
 #include "CoreMinimal.h"
+//#include "GlobalSpawner.h"
 
 /**
  * 
@@ -35,7 +36,7 @@ enum class UnitTypes
 	Cavalry,
 	Infantry,
 	Ranged,
-	Shield,
+	Shielder,
 	Scout,
 	Settler,
 	Army
@@ -66,6 +67,8 @@ class UUnitStats;
 class ABattleObject;
 class AOutpost;
 class UBuildingAttachment;
+class AGlobalSpawner;
+struct FTroopStats;
 enum class BuildingAttachments;
 
 class CAPSTONEPROJECT_API UnitActions
@@ -128,6 +131,7 @@ public:
 
 	static UnitData CollectUnitData(UUnitStats* unit);
 	static void ApplyDataToUnitStats(UUnitStats* unit, UnitData& data);
+	static void ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data);
 	static void AddUnitData(UUnitStats* unit, UnitData& data);
 	static UnitData AddUnitData(UnitData& unit, UnitData& data);
 

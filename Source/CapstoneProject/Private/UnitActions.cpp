@@ -12,6 +12,7 @@
 #include "Outpost.h"
 #include "UnitStats.h"
 #include "BuildingAttachment.h"
+#include "GlobalSpawner.h"
 #include "Faction.h"
 
 
@@ -274,6 +275,26 @@ void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, UnitData& data)
 
     unit->reinforceRate = data.reinforceRate;
     unit->energyUpkeep = data.energyUpkeep;
+}
+
+void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data)
+{
+    unit->unitType = data.type;
+
+    unit->currentHP = data.HP;
+    unit->maxHP = data.HP;
+    unit->currentMorale = data.morale;
+    unit->maxMorale = data.morale;
+
+    unit->vision = data.vision;
+    unit->speed = data.speed;
+
+    unit->minDamage = data.damage;
+    unit->maxDamage = data.damage;
+    unit->siegePower = data.siegePower;
+
+    unit->reinforceRate = data.reinforceRate;
+    unit->energyUpkeep = data.energyUpkeepCost;
 }
 
 void UnitActions::AddUnitData(UUnitStats* unit, UnitData& data)
