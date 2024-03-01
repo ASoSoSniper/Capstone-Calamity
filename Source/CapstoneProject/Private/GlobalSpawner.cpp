@@ -13,6 +13,7 @@
 #include "PowerPlant.h"
 #include "Outpost.h"
 #include "CapitalHub.h"
+#include "AlienCity.h"
 #include "BuildingAttachment.h"
 #include "BattleObject.h"
 
@@ -71,6 +72,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
 	if (!capitalPrefab) capitalPrefab = ACapitalHub::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
+	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 }
 
 // Called every frame
@@ -248,6 +250,9 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		break;
 	case TerrainType::AlienCity:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+
+		newBuilding = GetWorld()->SpawnActor<ABuilding>(alienCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 		break;
 	case TerrainType::TheRock:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
