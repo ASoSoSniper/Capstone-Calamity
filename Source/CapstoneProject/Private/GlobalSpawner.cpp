@@ -80,6 +80,8 @@ void AGlobalSpawner::BeginPlay()
 	if (!capitalPrefab) capitalPrefab = ACapitalHub::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
+
+	ProceduralHexGen(400, ShapesOfMap::Square);
 }
 
 // Called every frame
@@ -302,6 +304,51 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	if (extraMatAssetSelected)
 	{
 		hex->visibility->otherMeshMaterials.selectedTexture = extraMatAssetSelected;
+	}
+}
+
+void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
+{
+	bool shipExists = false;
+	bool rockExists = false;
+	float offsetSide = 0.0f;
+	float offsetUp = 0.0f;
+	FVector origin = GetActorLocation();
+	double sqroot;
+	int roundedSQRoot;
+	AActor* newHex;
+
+	TArray<TArray<AActor*>> arrayOfHexColumns;
+
+	switch (shape)
+	{
+	case ShapesOfMap::None:
+		break;
+	case ShapesOfMap::Square:
+		sqroot = FMath::Sqrt(static_cast<double>(numHexs));
+		roundedSQRoot = sqroot;
+
+
+		for (int i = 0; i < roundedSQRoot; i++)
+		{
+			for (int j = 0; j < roundedSQRoot; j++)
+			{
+				newHex = GetWorld()->SpawnActor<AActor>(hexActor, origin, FRotator(0,0,0));
+				
+				
+				arrayOfHexColumns[i][j] = newHex;
+			}
+		}
+
+		break;
+	case ShapesOfMap::Rectangle:
+		break;
+	case ShapesOfMap::Catan:
+		break;
+	case ShapesOfMap::Circle:
+		break;
+	default:
+		break;
 	}
 }
 

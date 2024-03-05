@@ -56,6 +56,16 @@ enum class SpawnableUnits
 	Army
 };
 
+UENUM()
+enum class ShapesOfMap
+{
+	None,
+	Square,
+	Rectangle,
+	Catan,
+	Circle
+};
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingCost
 {
@@ -308,4 +318,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> hillsModel;
 	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
+
+	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
+	UPROPERTY(EditAnywhere) TSubclassOf<class AActor> hexActor;
 };
