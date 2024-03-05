@@ -48,8 +48,10 @@ public:
 	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
 	FVisibilityMaterials meshMaterials;
 	FVisibilityMaterials otherMeshMaterials;
+	FVisibilityMaterials hexBaseMaterials;
 	UStaticMeshComponent* mesh;
 	UStaticMeshComponent* otherMesh;
+	UStaticMeshComponent* hexBaseMesh;
 	UPROPERTY(VisibleAnywhere) bool selected;
 	UPROPERTY(VisibleAnywhere) bool enableScan = true;
 	UPROPERTY(EditAnywhere) bool debug;
