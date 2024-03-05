@@ -13,9 +13,8 @@ AMergedArmy::AMergedArmy()
 	
 	unitStats->vision = 0;
 	unitStats->speed = 0;
-	
-	unitStats->minDamage = 0;
-	unitStats->maxDamage = 0;
+
+	unitStats->damage = 0;
 	unitStats->siegePower = 0;
 
 	unitStats->reinforceRate = 0;
@@ -91,21 +90,6 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	return nullptr;
 }
 
-/*void AMergedArmy::AddUnitData(UnitActions::UnitData& unitData)
-{
-	unitStats->HP_current += unitData.currentHP;
-	unitStats->HP_max += unitData.maxHP;
-	unitStats->defense += unitData.defense;
-	//Something with speed
-	unitStats->currentMorale += unitData.currentMorale;
-	unitStats->maxMorale += unitData.maxMorale;
-	unitStats->minDamage += unitData.minDamage;
-	unitStats->maxDamage += unitData.maxDamage;
-	unitStats->reinforceRate += unitData.reinforceRate;
-	unitStats->energyUpkeepCost += unitData.energyUpkeep;
-}*/
-
-
 void AMergedArmy::SplitInHalf()
 {
 	TArray<UnitActions::UnitData> group1;
@@ -114,7 +98,7 @@ void AMergedArmy::SplitInHalf()
 	//Sort from highest to lowest max damage in each unit
 	unitStats->savedUnits.Sort([&](const UnitActions::UnitData& A, const UnitActions::UnitData& B)
 		{
-			return A.maxDamage > B.maxDamage;
+			return A.damage > B.damage;
 		});
 	
 	//Add even-numbered elements to group 1 and odd-numbered to group 2

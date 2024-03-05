@@ -36,6 +36,7 @@ void UUnitStats::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 		if (currhealTime <= 0)
 		{
 			//Heal();
+			RecoverMorale();
 			currhealTime = maxHealTime;
 		}
 	}
@@ -62,5 +63,14 @@ void UUnitStats::Heal()
 		savedUnits[i].currentHP += reinforceRate;
 		savedUnits[i].currentHP = FMath::Clamp(savedUnits[i].currentHP, 0, savedUnits[i].maxHP);
 	}
+}
+
+void UUnitStats::RecoverMorale()
+{
+	float currMoralePercent = (float)currentMorale / (float)maxMorale;
+
+	currMoralePercent += moraleRecovery;
+
+	currentMorale = FMath::Clamp(FMath::RoundToInt((float)maxMorale * currMoralePercent), 0, maxMorale);
 }
 

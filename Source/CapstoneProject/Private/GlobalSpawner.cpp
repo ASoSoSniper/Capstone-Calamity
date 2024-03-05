@@ -45,25 +45,132 @@ AGlobalSpawner::AGlobalSpawner()
 	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 100 });
 	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
 
-	troopCosts.Add(SpawnableUnits::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
+	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Infantry.Infantry'")) });
-	troopCosts.Add(SpawnableUnits::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
+	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Cavalry.Cavalry'")) });
-	troopCosts.Add(SpawnableUnits::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
+	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Ranged.Ranged'")) });
-	troopCosts.Add(SpawnableUnits::Shielder, FTroopCost{ 100, 60, 0, FText::FromString("Shielder"), 
+	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 100, 60, 0, FText::FromString("Shielder"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Shielder.Shielder'")) });
-	troopCosts.Add(SpawnableUnits::Scout, FTroopCost{ 20, 24, 0, FText::FromString("Scout"), 
+	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 20, 24, 0, FText::FromString("Scout"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Scout.Scout'")) });
-	troopCosts.Add(SpawnableUnits::Settler, FTroopCost{ 400, 60, 50, FText::FromString("Settler"), 
+	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 400, 60, 50, FText::FromString("Settler"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Settler.Settler'")) });
 
-	troopStats.Add(SpawnableUnits::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Goofy ahh"), UnitTypes::Infantry, 100, 60, 6, 10, 1, 100, 1, 1 });
-	troopStats.Add(SpawnableUnits::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Goofy ahh"), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1 });
-	troopStats.Add(SpawnableUnits::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Goofy ahh"), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1 });
-	troopStats.Add(SpawnableUnits::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Goofy ahh"), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1 });
-	troopStats.Add(SpawnableUnits::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Goofy ahh"), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1 });
-	troopStats.Add(SpawnableUnits::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("Goofy ahh"), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1 });
+	//Infantry Unit Stats
+	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Goofy ahh"), UnitTypes::Infantry, 100, 60, 6, 10, 1, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 50,
+		/*Ranged*/ 100,
+		/*Shielder*/ 200,
+		/*Scout*/ 100, 
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 200,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+
+	//Cavalry Unit Stats
+	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Goofy ahh"), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 200,
+		/*Shielder*/ 50,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 50,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+
+	//Ranged Unit Stats
+	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Goofy ahh"), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 200,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 50,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 200,
+		/*Ranged*/ 100,
+		/*Shielder*/ 50,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+
+	//Shielder Unit Stats
+	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Goofy ahh"), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 50,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 200,
+		/*Cavalry*/ 50,
+		/*Ranged*/ 50,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+
+	//Scout Unit Stats
+	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Goofy ahh"), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+
+	//Settler Unit Stats
+	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("Goofy ahh"), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
 }
 
 // Called when the game starts or when spawned
@@ -108,7 +215,7 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 	}
 }
 
-UClass* AGlobalSpawner::DetermineUnitType(SpawnableUnits unit)
+UClass* AGlobalSpawner::DetermineUnitType(UnitTypes unit)
 {
 	return troopPrefab;
 }
@@ -412,7 +519,6 @@ ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, fl
 	if (result < 1.f) result = 1.f;
 	data.currentHP = result;
 
-	//newTroop->InputUnitStats(data);
 	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, data);
 
 	return newTroop;
@@ -449,7 +555,7 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 	return battle;
 }
 
-bool AGlobalSpawner::PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpost* outpost)
+bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost)
 {
 	bool canAfford = false;
 
@@ -474,7 +580,7 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpo
 	return canAfford;
 }
 
-void AGlobalSpawner::BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex* hex, AOutpost* outpost)
+void AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex, AOutpost* outpost)
 {
 	FTroopStats unitData = troopStats[unit];	
 
@@ -483,7 +589,7 @@ void AGlobalSpawner::BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex*
 	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, unitData);
 
 
-	if (outpost && unit == SpawnableUnits::Settler)
+	if (outpost && unit == UnitTypes::Settler)
 	{
 		Cast<ASettler>(newTroop)->popInStorage += troopCosts[unit].populationCost;
 		//outpost->popInStorage -= troopCosts[unit].populationCost;

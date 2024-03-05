@@ -187,7 +187,7 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 	return false;
 }
 
-void AOutpost::CueTroopBuild(SpawnableUnits unit)
+void AOutpost::CueTroopBuild(UnitTypes unit)
 {
 	if (!spawner) return;
 	if (!troopFactoryBuilding->AttachmentIsActive())
@@ -246,7 +246,7 @@ TArray<ATroop*> AOutpost::ReleaseTroops()
 
 void AOutpost::Action1()
 {
-	CueTroopBuild(SpawnableUnits::Infantry);
+	CueTroopBuild(UnitTypes::Infantry);
 }
 
 void AOutpost::Action2()

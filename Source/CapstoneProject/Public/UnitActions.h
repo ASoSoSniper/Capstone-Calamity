@@ -118,9 +118,8 @@ public:
 
 		int vision;
 		int speed;
-		
-		int minDamage;
-		int maxDamage;
+
+		int damage;
 		int siegePower;
 
 		int reinforceRate;

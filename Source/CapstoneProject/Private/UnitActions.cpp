@@ -237,8 +237,7 @@ UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
         unit->vision, 
         unit->speed, 
         
-        unit->minDamage, 
-        unit->maxDamage,
+        unit->damage,
         unit->siegePower,
 
         unit->reinforceRate,
@@ -269,8 +268,7 @@ void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, UnitData& data)
     unit->vision = data.vision;
     unit->speed = data.speed;
 
-    unit->minDamage = data.minDamage;
-    unit->maxDamage = data.maxDamage;
+    unit->damage = data.damage;
     unit->siegePower = data.siegePower;
 
     unit->reinforceRate = data.reinforceRate;
@@ -289,8 +287,7 @@ void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data)
     unit->vision = data.vision;
     unit->speed = data.speed;
 
-    unit->minDamage = data.damage;
-    unit->maxDamage = data.damage;
+    unit->damage = data.damage;
     unit->siegePower = data.siegePower;
 
     unit->reinforceRate = data.reinforceRate;
@@ -307,8 +304,7 @@ void UnitActions::AddUnitData(UUnitStats* unit, UnitData& data)
     unit->vision += data.vision;
     unit->speed += data.speed;
 
-    unit->minDamage += data.minDamage;
-    unit->maxDamage += data.maxDamage;
+    unit->damage += data.damage;
     unit->siegePower += data.siegePower;
 
     unit->reinforceRate += data.reinforceRate;
@@ -325,8 +321,7 @@ UnitActions::UnitData UnitActions::AddUnitData(UnitData& unit, UnitData& data)
     unit.vision += data.vision;
     unit.speed += data.speed;
 
-    unit.minDamage += data.minDamage;
-    unit.maxDamage += data.maxDamage;
+    unit.damage += data.damage;
     unit.siegePower += data.siegePower;
 
     unit.reinforceRate += data.reinforceRate;
@@ -618,7 +613,7 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
         if (outpostHex) return outpostHex;
     }
 
-    return nullptr;
+    return Cast<ABaseHex>(referencePoint);
 }
 
 int UnitActions::GetFactionStarveLevel(Factions faction)

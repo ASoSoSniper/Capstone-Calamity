@@ -163,12 +163,19 @@ struct FTroopStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int reinforceRate;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int infRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int cavRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int rangedRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int shielderRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int scoutRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsSettler;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsSettler;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -287,12 +294,12 @@ public:
 	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 
-	bool PurchaseTroop(Factions faction, SpawnableUnits unit, AOutpost* outpost);
-	void BuildTroop(Factions faction, SpawnableUnits unit, ABaseHex* hex, AOutpost* outpost = nullptr);
+	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
+	void BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex, AOutpost* outpost = nullptr);
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);
-	UClass* DetermineUnitType(SpawnableUnits unit);
+	UClass* DetermineUnitType(UnitTypes unit);
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
@@ -311,8 +318,8 @@ public:
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
-	UPROPERTY(EditAnywhere) TMap<SpawnableUnits, FTroopCost> troopCosts;
-	UPROPERTY(EditAnywhere) TMap<SpawnableUnits, FTroopStats> troopStats;
+	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
+	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;

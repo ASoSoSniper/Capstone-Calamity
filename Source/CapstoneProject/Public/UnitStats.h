@@ -30,7 +30,7 @@ public:
 	void Heal();
 
 	UPROPERTY(EditAnywhere) Factions faction;
-	UPROPERTY(VisibleAnywhere) UnitTypes unitType;
+	UPROPERTY(EditAnywhere) UnitTypes unitType;
 	UPROPERTY(VisibleAnywhere) bool upgraded;
 	//Exclusive property for armies
 	TArray<UnitActions::UnitData> savedUnits;
@@ -46,8 +46,7 @@ public:
 	UPROPERTY(EditAnywhere) float speed = 2.f;
 	
 	//Damage
-	UPROPERTY(EditAnywhere) int minDamage = 1;
-	UPROPERTY(EditAnywhere) int maxDamage = 3;
+	UPROPERTY(EditAnywhere) int damage = 3;
 	UPROPERTY(EditAnywhere) int siegePower = 10;
 
 	//Other
@@ -56,4 +55,7 @@ public:
 	
 	float maxHealTime = 5.f;
 	float currhealTime = 5.f;
+
+	float moraleRecovery = 0.1f;
+	void RecoverMorale();
 };

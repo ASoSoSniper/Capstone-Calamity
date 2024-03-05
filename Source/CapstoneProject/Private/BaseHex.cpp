@@ -323,6 +323,7 @@ float ABaseHex::GetOutputPercent()
 
 ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes)
 {
+	//if (this == nullptr) return nullptr;
 	//Return this hex if no troops in this faction are positioned on it
 	bool factionInThis = false;
 	for (int j = 0; j < troopsInHex.Num(); j++)

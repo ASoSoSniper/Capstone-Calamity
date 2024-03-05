@@ -52,9 +52,9 @@ public:
 	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
 	UPROPERTY(EditAnywhere) UOutpostDefenses* defenseBuilding;
 
-	TArray<SpawnableUnits> cuedUnits;
+	TArray<UnitTypes> cuedUnits;
 	float currentTroopBuildTime;
-	void CueTroopBuild(SpawnableUnits unit);
+	void CueTroopBuild(UnitTypes unit);
 	
 	TArray<UnitActions::UnitData> troopsInStorage;
 	void StoreTroop(ATroop* troop);

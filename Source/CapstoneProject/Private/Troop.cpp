@@ -20,6 +20,14 @@ void ATroop::BeginPlay()
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
+		
+		if (spawner && unitStats->unitType != UnitTypes::None)
+		{
+			if (spawner->troopStats.Contains(unitStats->unitType))
+			{
+				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
+			}
+		}
 	}
 }
 
@@ -40,7 +48,16 @@ void ATroop::Tick(float DeltaTime)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
+		
+		if (spawner && unitStats->unitType != UnitTypes::None)
+		{
+			if (spawner->troopStats.Contains(unitStats->unitType))
+			{
+				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
+			}
+		}
 	}
+	
 
 	if (merging)
 	{

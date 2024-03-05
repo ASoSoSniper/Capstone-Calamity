@@ -254,7 +254,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 		ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
 
 		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hex->GetActorLocation();
-		FVector newLocation = GetActorLocation() + (direction * unitStats->speed / 10.f) * hex->moveMultiplier * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+		FVector newLocation = GetActorLocation() + (direction * unitStats->speed / 50.f) * hex->moveMultiplier * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		SetActorLocation(newLocation);
 		if (hex == hexPath[hexPathIndex])
 		{

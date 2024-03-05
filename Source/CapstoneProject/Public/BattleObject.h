@@ -48,6 +48,12 @@ public:
 	};
 	Battle currentBattle;
 
+	struct UnitComposition
+	{
+		int quantity = 0;
+		float compPercent = 0.f;
+	};
+
 	void Start();
 
 	void CreateFactions();
@@ -72,7 +78,17 @@ public:
 
 	UPROPERTY(VisibleAnywhere) int group1Die = 0;
 	UPROPERTY(VisibleAnywhere) int group2Die = 0;
+	UPROPERTY(VisibleAnywhere) int group1Damage = 0;
+	UPROPERTY(VisibleAnywhere) int group2Damage = 0;
 
 	int RollDie(int& groupDie);
 	float GetRollModifier(int& groupDie);
+
+	UPROPERTY(EditAnywhere) float moraleDecayRate = 0.1f;
+	float GetMoralePercent(Factions faction);
+	float DecayMorale(Factions faction, float percentReduction);
+
+	Factions attackingFaction = Factions::None;
+	void CalculateGroupDamage();
+	TMap<UnitTypes, UnitComposition> GetArmyComposition(TArray<Factions>& group);
 };
