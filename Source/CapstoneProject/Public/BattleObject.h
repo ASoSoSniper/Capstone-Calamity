@@ -81,6 +81,9 @@ public:
 	UPROPERTY(VisibleAnywhere) int group1Damage = 0;
 	UPROPERTY(VisibleAnywhere) int group2Damage = 0;
 
+	UPROPERTY(EditAnywhere) int ticksTillRoll = 5;
+	int currentTickTillRoll = 0;
+
 	int RollDie(int& groupDie);
 	float GetRollModifier(int& groupDie);
 

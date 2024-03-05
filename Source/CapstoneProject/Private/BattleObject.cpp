@@ -228,8 +228,17 @@ void ABattleObject::Attack()
 
 	CalculateGroupDamage();
 
-	int group1DamageTotal = group1Damage * GetRollModifier(group1Die);
-	int group2DamageTotal = group2Damage * GetRollModifier(group2Die);
+	++currentTickTillRoll;
+	if (currentTickTillRoll >= ticksTillRoll)
+	{
+		currentTickTillRoll = 0;
+		RollDie(group1Die);
+		RollDie(group2Die); 
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
+	}
+
+	int group1DamageTotal = FMath::RoundToInt((float)group1Damage * GetRollModifier(group1Die));
+	int group2DamageTotal = FMath::RoundToInt((float)group2Damage * GetRollModifier(group2Die));
 
 	//Apply damage to each group
 	for (int i = 0; i < currentBattle.Group1.Num(); ++i)
@@ -237,14 +246,14 @@ void ABattleObject::Attack()
 		armies[currentBattle.Group1[i]].currentHP -= group2DamageTotal;
 		armies[currentBattle.Group1[i]].currentHP = FMath::Clamp(armies[currentBattle.Group1[i]].currentHP, 0, armies[currentBattle.Group1[i]].maxHP);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2Damage, armies[currentBattle.Group1[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
 	}
 	for (int i = 0; i < currentBattle.Group2.Num(); ++i)
 	{
 		armies[currentBattle.Group2[i]].currentHP -= group1DamageTotal;
 		armies[currentBattle.Group2[i]].currentHP = FMath::Clamp(armies[currentBattle.Group2[i]].currentHP, 0, armies[currentBattle.Group2[i]].maxHP);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1Damage, armies[currentBattle.Group2[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
 	}
 
 	//Remove armies as they are killed
@@ -367,12 +376,12 @@ void ABattleObject::RemoveArmy(Factions faction)
 int ABattleObject::RollDie(int& groupDie)
 {
 	groupDie = FMath::RandRange(1, 6);
-	return group1Die;
+	return groupDie;
 }
 
 float ABattleObject::GetRollModifier(int& groupDie)
 {
-	switch (group1Die)
+	switch (groupDie)
 	{
 	case 1:
 		return 0.85f;

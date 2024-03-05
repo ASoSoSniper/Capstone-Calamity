@@ -188,7 +188,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 
-	ProceduralHexGen(400, ShapesOfMap::Square);
+	//ProceduralHexGen(400, ShapesOfMap::Square);
 }
 
 // Called every frame
