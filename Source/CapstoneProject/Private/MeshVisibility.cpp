@@ -73,7 +73,7 @@ void UMeshVisibility::Scan(float radius)
 	actorsToIgnore.Add(GetOwner());
 	TArray<FHitResult> results;
 
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), radius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), radius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, showDebugSphere ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, results, true);
 
 	if (bHit)
 	{

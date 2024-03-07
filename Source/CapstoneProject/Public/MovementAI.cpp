@@ -44,7 +44,7 @@ void AMovementAI::BeginPlay()
 {
 	Super::BeginPlay();	
 
-	SphereCheck(5.f);
+	SphereCheck(20.f);
 }
 
 // Called every frame
@@ -52,12 +52,18 @@ void AMovementAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	if (!hexNav->currentHex)
+	{
+		SphereCheck(20.f);
+		return;
+	}
+
 	switch (moveState)
 	{
 	case Idle:
 		break;
 	case Move:
-		SphereCheck();
+		SphereCheck(ACapstoneProjectGameModeBase::timeScale);
 		MoveToTarget(DeltaTime);
 		break;
 	}
@@ -192,7 +198,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
 	TArray<FHitResult> results;
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), hexSearchDistance, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), hexSearchDistance, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::None, results, true);
 
 	if (bHit)
 	{		

@@ -90,6 +90,31 @@ struct FBuildingDisplay
 };
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceCapIncrease;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robotStorage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float diplomacy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float trade;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegeDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float unrestMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
+};
+USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingTTInfo
 {
 	GENERATED_BODY()
@@ -194,12 +219,18 @@ struct FTroopTTInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText reinforceRate;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText infRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText cavRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText rangedRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText shielderRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText scoutRel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText settlerRel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText attackvsSettler;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsSettler;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -299,7 +330,6 @@ public:
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);
-	UClass* DetermineUnitType(UnitTypes unit);
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
@@ -318,6 +348,8 @@ public:
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
+	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingStats> buildingStats;
+	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingStats> attachmentStats;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
 
@@ -327,5 +359,5 @@ public:
 	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
 
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
-	UPROPERTY(EditAnywhere) TSubclassOf<class AActor> hexActor;
+	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
 };

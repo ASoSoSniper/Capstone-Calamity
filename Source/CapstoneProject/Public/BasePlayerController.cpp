@@ -512,7 +512,7 @@ FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sl
 {
 	if (!selectedHex) return sliders;
 
-	BuildingAttachments attachmentType;
+	BuildingAttachments attachmentType = BuildingAttachments::Storage;
 	for (auto& attachment : spawner->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
@@ -524,7 +524,8 @@ FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sl
 
 	if (AOutpost* outpost = GetOutpost())
 	{
-		UBuildingAttachment* attachment = outpost->GetAttachment(BuildingAttachments::Storage);
+		UBuildingAttachment* attachment = outpost->GetAttachment(attachmentType);
+		if (!attachment) return sliders;
 
 		attachment->workersInAttachment[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * attachment->maxWorkers), outpost, attachmentType);
 		attachment->workersInAttachment[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * attachment->maxWorkers), outpost, attachmentType);
@@ -675,20 +676,54 @@ void ABasePlayerController::ResourceCheats(int resourceToChange, int val)
 FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
 {
 	FBuildingTTInfo buildingInfo;
-	FBuildingCost buildingCost;
+	FBuildingStats buildingStats;
 
-	for (auto building : spawner->buildingCosts)
+	bool statsFound = false;
+
+	for (auto& building : spawner->buildingStats)
 	{
 		if (buildingName.EqualTo(building.Value.name))
 		{
-			buildingCost = building.Value;
+			buildingStats = building.Value;
+			statsFound = true;
 			break;
 		}
 	}
 
-	buildingInfo.titleTT = buildingCost.name;
-	//buildingInfo.descTT = 
-	//buildingInfo.energyMod = 
+	if (!statsFound)
+	{
+		for (auto& building : spawner->attachmentStats)
+		{
+			if (buildingName.EqualTo(building.Value.name))
+			{
+				buildingStats = building.Value;
+				statsFound = true;
+				break;
+			}
+		}
+	}
+	if (!statsFound) return buildingInfo;
+
+	buildingInfo.titleTT = buildingStats.name;
+	buildingInfo.descTT = buildingStats.description;
+
+	buildingInfo.energyMod = FText::AsNumber(buildingStats.energyYield);
+	buildingInfo.foodMod = FText::AsNumber(buildingStats.foodYield);
+	buildingInfo.prodMod = FText::AsNumber(buildingStats.productionYield);
+	buildingInfo.wealthMod = FText::AsNumber(buildingStats.wealthYield);
+
+	buildingInfo.resourceStorageMod = FText::AsNumber(buildingStats.resourceCapIncrease);
+	buildingInfo.robotStorageMod = FText::AsNumber(buildingStats.robotStorage);
+
+	buildingInfo.diploMod = FText::AsNumber(buildingStats.diplomacy);
+	buildingInfo.tradeMod = FText::AsNumber(buildingStats.trade);
+
+	buildingInfo.siegeDamage = FText::AsNumber(buildingStats.siegeDamage);
+	buildingInfo.siegeHP = FText::AsNumber(buildingStats.HP);
+
+	buildingInfo.unrestMod = FText::AsNumber(buildingStats.unrestMod);
+	buildingInfo.energyUpkeepCost = FText::AsNumber(buildingStats.energyUpkeepCost);
+	buildingInfo.maxWorkers = FText::AsNumber(buildingStats.maxWorkers);
 
 	return buildingInfo;
 }
@@ -696,20 +731,41 @@ FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
 FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
 {
 	FTroopTTInfo info = FTroopTTInfo{};
-	FTroopCost troopCost;
+	FTroopStats troopStats;
 
-	for (auto troop : spawner->troopCosts)
+	for (auto troop : spawner->troopStats)
 	{
-		if (troopName.EqualTo(troop.Value.name))
+		if (troopName.EqualTo(troop.Value.title))
 		{
-			troopCost = troop.Value;
+			troopStats = troop.Value;
 			break;
 		}
 	}
 
-	info.titleTT = troopCost.name;
-	//info.descTT = 
-	//info.HP = FText::AsNumber();
+	info.titleTT = troopStats.title;
+	info.descTT = troopStats.desc;
+	info.HP = FText::AsNumber(troopStats.HP);
+	info.Speed = FText::AsNumber(troopStats.speed);
+	info.Damage = FText::AsNumber(troopStats.damage);
+	info.siegePower = FText::AsNumber(troopStats.siegePower);
+	info.vision = FText::AsNumber(troopStats.vision);
+	info.morale = FText::AsNumber(troopStats.morale);
+	info.reinforceRate = FText::AsNumber(troopStats.reinforceRate);
+	info.energyUpkeepCost = FText::AsNumber(troopStats.energyUpkeepCost);
+
+	info.attackvsInfantry = FText::AsNumber(troopStats.attackvsInfantry);
+	info.attackvsCavalry = FText::AsNumber(troopStats.attackvsCavalry);
+	info.attackvsRanged = FText::AsNumber(troopStats.attackvsRanged);
+	info.attackvsShielder = FText::AsNumber(troopStats.attackvsShielder);
+	info.attackvsScout = FText::AsNumber(troopStats.attackvsScout);
+	info.attackvsSettler = FText::AsNumber(troopStats.attackvsSettler);
+
+	info.defendvsInfantry = FText::AsNumber(troopStats.defendvsInfantry);
+	info.defendvsCavalry = FText::AsNumber(troopStats.defendvsCavalry);
+	info.defendvsRanged = FText::AsNumber(troopStats.defendvsRanged);
+	info.defendvsShielder = FText::AsNumber(troopStats.defendvsShielder);
+	info.defendvsScout = FText::AsNumber(troopStats.defendvsScout);
+	info.defendvsSettler = FText::AsNumber(troopStats.defendvsSettler);
 	
 	return info;
 }

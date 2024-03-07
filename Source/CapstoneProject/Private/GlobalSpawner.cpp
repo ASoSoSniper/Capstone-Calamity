@@ -76,7 +76,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
-
 	//Cavalry Unit Stats
 	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Goofy ahh"), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1,
 		/*** Attacking ***/
@@ -95,7 +94,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
-
 	//Ranged Unit Stats
 	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Goofy ahh"), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1,
 		/*** Attacking ***/
@@ -114,7 +112,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
-
 	//Shielder Unit Stats
 	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Goofy ahh"), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1,
 		/*** Attacking ***/
@@ -133,7 +130,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
-
 	//Scout Unit Stats
 	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Goofy ahh"), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1,
 		/*** Attacking ***/
@@ -152,7 +148,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
-
 	//Settler Unit Stats
 	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("Goofy ahh"), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1,
 		/*** Attacking ***/
@@ -171,6 +166,327 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
+
+	//Mining Station Stats
+	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		2,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		5,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		30
+		});
+	//Farm Stats
+	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farm"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		2,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		2,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		5,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		30
+		});
+	//Power Plant Stats
+	buildingStats.Add(SpawnableBuildings::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		2,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		5,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		30
+		});
+	//Outpost Stats
+	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		2,
+		/*Food Yield*/
+		2,
+		/*Production Yield*/
+		2,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		100,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		7,
+		/*HP*/
+		15,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		50
+		});
+
+	//Material Storage Stats
+	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		5,
+		/*HP*/
+		10,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		15
+		});
+	//Defense Station Stats
+	attachmentStats.Add(BuildingAttachments::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		10,
+		/*HP*/
+		20,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		20
+		});
+	//Robot Factory Stats
+	attachmentStats.Add(BuildingAttachments::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		5,
+		/*HP*/
+		10,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		30
+		});
+	//Robot Factory Stats
+	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		1000,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		5,
+		/*HP*/
+		20,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		15
+		});
+	//Trade Outpost Stats
+	attachmentStats.Add(BuildingAttachments::TradeOutpost, FBuildingStats{ FText::FromString("Trade Outpost"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		1.15f,
+		/*Damage*/
+		2,
+		/*HP*/
+		5,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		5
+		});
+	//Embassy Stats
+	attachmentStats.Add(BuildingAttachments::Embassy, FBuildingStats{ FText::FromString("Embassy"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		1.15f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		2,
+		/*HP*/
+		5,
+		/*Unrest*/
+		0.f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		5
+		});
+	//Police Station Stats
+	attachmentStats.Add(BuildingAttachments::PoliceStation, FBuildingStats{ FText::FromString("Police Station"), FText::FromString("Goofy ah"),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0.f,
+		/*Trade*/
+		0.f,
+		/*Damage*/
+		5,
+		/*HP*/
+		10,
+		/*Unrest*/
+		-0.85f,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		40
+		});
 }
 
 // Called when the game starts or when spawned
@@ -188,7 +504,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 
-	//ProceduralHexGen(400, ShapesOfMap::Square);
+	ProceduralHexGen(200, ShapesOfMap::Square);
 }
 
 // Called every frame
@@ -213,11 +529,6 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 	default:
 		return nullptr;
 	}
-}
-
-UClass* AGlobalSpawner::DetermineUnitType(UnitTypes unit)
-{
-	return troopPrefab;
 }
 
 void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
@@ -418,33 +729,43 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 {
 	bool shipExists = false;
 	bool rockExists = false;
-	float offsetSide = 0.0f;
-	float offsetUp = 0.0f;
-	FVector origin = GetActorLocation();
-	double sqroot;
+	float stepDistanceX = 63.f;
+	float stepDistanceY = -73.5f;
+	FVector origin = FVector(-250.f, 400.f, -1.f);
+	float sqroot;
 	int roundedSQRoot;
-	AActor* newHex;
+	ABaseHex* newHex;
 
-	TArray<TArray<AActor*>> arrayOfHexColumns;
+	TArray<TArray<ABaseHex*>> arrayOfHexColumns;
 
 	switch (shape)
 	{
 	case ShapesOfMap::None:
 		break;
 	case ShapesOfMap::Square:
-		sqroot = FMath::Sqrt(static_cast<double>(numHexs));
+		sqroot = FMath::Sqrt((float)numHexs);
 		roundedSQRoot = sqroot;
-
-
-		for (int i = 0; i < roundedSQRoot; i++)
+		if (roundedSQRoot % 2 > 0)
 		{
-			for (int j = 0; j < roundedSQRoot; j++)
+			roundedSQRoot += 1;
+		}
+		
+		for (int x = 0; x < roundedSQRoot; x++)
+		{
+			TArray<ABaseHex*> column;
+
+			for (int y = 0; y < roundedSQRoot; y++)
 			{
-				newHex = GetWorld()->SpawnActor<AActor>(hexActor, origin, FRotator(0,0,0));
-				
-				
-				arrayOfHexColumns[i][j] = newHex;
+				float oddHex = (x % 2 > 0) ? 1 : 0;
+
+				FVector spawnPos = origin + FVector(stepDistanceX * x, (stepDistanceY * y) + (oddHex * stepDistanceY / 2), 0.f);
+
+				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
+
+				column.Add(newHex);
 			}
+
+			arrayOfHexColumns.Add(column);
 		}
 
 		break;

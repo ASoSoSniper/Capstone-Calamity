@@ -19,8 +19,7 @@ ABuilding::ABuilding()
 	{
 		//mesh->SetStaticMesh(meshAsset);
 	}
-	mesh->SetCollisionProfileName("NoCollision");
-	mesh->SetCollisionObjectType(ECC_GameTraceChannel1);
+	mesh->SetCollisionProfileName("BlockAllDynamic");
 
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
@@ -44,7 +43,10 @@ void ABuilding::BeginPlay()
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
+	}
 
+	if (hexNav->currentHex)
+	{
 		if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
 		{
 			if (hex->maxWorkers != spawner->buildingCosts[buildingType].workerCost)
@@ -64,13 +66,23 @@ void ABuilding::Tick(float DeltaTime)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
+	}
 
-		if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
+	if (!hexNav->currentHex)
+	{
+		if (SphereCheck())
 		{
-			if (hex->maxWorkers != spawner->buildingCosts[buildingType].workerCost)
+			if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
 			{
-				hex->maxWorkers = spawner->buildingCosts[buildingType].workerCost;
+				if (hex->maxWorkers != spawner->buildingCosts[buildingType].workerCost)
+				{
+					hex->maxWorkers = spawner->buildingCosts[buildingType].workerCost;
+				}
 			}
+		}
+		else
+		{
+			return;
 		}
 	}
 
@@ -137,12 +149,12 @@ void ABuilding::BuildingAction()
 {
 }
 
-void ABuilding::SphereCheck()
+bool ABuilding::SphereCheck()
 {
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
 	TArray<FHitResult> results;
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), 20.f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::ForOneFrame, results, true);
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), hexSearchDistance, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, EDrawDebugTrace::None, results, true);
 
 	if (bHit)
 	{
@@ -159,12 +171,13 @@ void ABuilding::SphereCheck()
 
 					if (hexActor->hexOwner == Factions::None) hexActor->hexOwner = unitStats->faction;
 
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
-					break;
+					return true;
 				}
 			}
 		}
 	}
+
+	return false;
 }
 
 void ABuilding::Action1()

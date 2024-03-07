@@ -90,7 +90,8 @@ void UManageTroop::SwitchState()
 		else
 		{
 			//else switch to BaseManage state
-			CueActionState(ActionStates::BaseManage, objectType.actor);
+			controller->selectedWorldObject = objectType.building->hexNav->currentHex;
+			CueActionState(ActionStates::HexManage, objectType.building->hexNav->currentHex);
 			return;
 		}
 		break;

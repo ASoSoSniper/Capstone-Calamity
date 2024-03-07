@@ -42,7 +42,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float traceLength = 50.f;
 	UPROPERTY(EditAnywhere)
-		float hexSearchDistance = 50.f;
+		float hexSearchDistance = 100.f;
 	UPROPERTY(EditAnywhere)
 		float hexSnapDistance = 2.f;
 	UPROPERTY(EditAnywhere)

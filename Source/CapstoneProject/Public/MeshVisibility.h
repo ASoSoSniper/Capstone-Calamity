@@ -57,6 +57,7 @@ public:
 	UPROPERTY(EditAnywhere) bool debug;
 	bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) float visibilityRadius = 50.f;
+	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 	TMap<Factions, FVisibility> factionVisibility;
 
 	void FindFactionOfOwner();

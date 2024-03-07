@@ -59,8 +59,9 @@ public:
 	virtual void RevertResources();
 	virtual void BuildingAction();
 
-	void SphereCheck();
-	UPROPERTY(EditAnywhere) float hexSnapDistance = 20.f;
+	bool SphereCheck();
+	UPROPERTY(EditAnywhere) float hexSearchDistance = 100.f;
+	UPROPERTY(EditAnywhere) float hexSnapDistance = 50.f;
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
