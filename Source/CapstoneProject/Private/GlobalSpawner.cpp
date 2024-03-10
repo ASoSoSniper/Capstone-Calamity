@@ -168,7 +168,7 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 
 	//Mining Station Stats
-	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("Goofy ah"),
+	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("Goofy ah Mining"),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -197,7 +197,7 @@ AGlobalSpawner::AGlobalSpawner()
 		30
 		});
 	//Farm Stats
-	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farm"), FText::FromString("Goofy ah"),
+	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Goofy ah Farm"),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
