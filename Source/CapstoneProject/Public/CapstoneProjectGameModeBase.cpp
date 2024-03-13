@@ -26,6 +26,14 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	nonBuildableTerrains.Add(TerrainType::TheRock);
 	nonBuildableTerrains.Add(TerrainType::Mountains);
 	nonBuildableTerrains.Add(TerrainType::None);
+
+	factionColors.Add(Factions::Human, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/HumanOwned.HumanOwned")));
+	factionColors.Add(Factions::Alien1, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned01.AlienOwned01")));
+	factionColors.Add(Factions::Alien2, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned02.AlienOwned02")));
+	factionColors.Add(Factions::Alien3, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned03.AlienOwned03")));
+	factionColors.Add(Factions::Alien4, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned04.AlienOwned04")));
+	factionColors.Add(Factions::Alien5, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned05.AlienOwned05")));
+	factionColors.Add(Factions::Alien6, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned06.AlienOwned06")));
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()
@@ -43,9 +51,10 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 		CreateNewFaction();
 	}
 
-	for (auto currentFaction : activeFactions)
+	for (auto& currentFaction : activeFactions)
 	{
 		currentFaction.Value->FindActiveFactions();
+		currentFaction.Value->factionColor = factionColors[currentFaction.Key];
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("%d factions created!"), activeFactions.Num()));
 

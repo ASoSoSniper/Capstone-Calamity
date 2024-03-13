@@ -711,11 +711,16 @@ void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
     }
 
     hex->hexOwner = faction;
-
+    
     if (faction == Factions::None) return;
 
+    hex->visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
+
     if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(hex))
+    {
         ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(hex);
+    }
+        
 }
 
 void UnitActions::RemoveFromFaction(Factions faction, AActor* target)

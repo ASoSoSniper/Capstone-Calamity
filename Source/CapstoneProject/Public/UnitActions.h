@@ -29,8 +29,30 @@ enum class ActionStates
 	TroopManage,
 	BattleManage
 };
-UENUM()
-enum class UnitTypes
+UENUM(BlueprintType)
+enum class SpawnableBuildings : uint8
+{
+	None,
+	MiningStation,
+	Farmland,
+	PowerPlant,
+	Road,
+	Outpost
+};
+
+UENUM(BlueprintType)
+enum class BuildingAttachments : uint8
+{
+	Storage,
+	DefenseStation,
+	RobotFactory,
+	RobotBarracks,
+	TradeOutpost,
+	Embassy,
+	PoliceStation
+};
+UENUM(BlueprintType)
+enum class UnitTypes : uint8
 {
 	None,
 	Cavalry,
@@ -69,7 +91,6 @@ class AOutpost;
 class UBuildingAttachment;
 class AGlobalSpawner;
 struct FTroopStats;
-enum class BuildingAttachments;
 
 class CAPSTONEPROJECT_API UnitActions
 {

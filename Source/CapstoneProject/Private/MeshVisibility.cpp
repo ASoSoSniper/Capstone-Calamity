@@ -12,7 +12,9 @@ UMeshVisibility::UMeshVisibility()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	hexBaseMaterials.hiddenTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
+	hexBaseMaterials.visibleTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
+	hexBaseMaterials.selectedTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
 }
 
 
@@ -127,6 +129,8 @@ void UMeshVisibility::SetVisibility()
 
 	UMaterialInterface* material = nullptr;
 	UMaterialInterface* otherMaterial = nullptr;
+	UMaterialInterface* baseMaterial = nullptr;
+
 	if (visibleToPlayer)
 	{
 		switch (objectType)
@@ -144,6 +148,7 @@ void UMeshVisibility::SetVisibility()
 			}
 
 			if (otherMesh) otherMesh->SetVisibility(true);
+			if (hexBaseMesh) baseMaterial = hexBaseMaterials.visibleTexture;
 
 			if (!discoveredByPlayer)
 			{
@@ -185,6 +190,7 @@ void UMeshVisibility::SetVisibility()
 		case ObjectTypes::Hex:
 			material = meshMaterials.hiddenTexture;
 			otherMaterial = otherMeshMaterials.hiddenTexture;
+			baseMaterial = hexBaseMaterials.hiddenTexture;
 
 			if (!factionVisibility[Factions::Human].discoveredByFaction)
 			{
@@ -222,6 +228,14 @@ void UMeshVisibility::SetVisibility()
 		{
 			otherMesh->SetMaterial(0, otherMaterial);
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Other material changed"));
+		}
+	}
+	if (hexBaseMesh)
+	{
+		if (hexBaseMesh->GetMaterial(0) != baseMaterial)
+		{
+			hexBaseMesh->SetMaterial(0, baseMaterial);
+			hexBaseMaterials.hiddenTexture = baseMaterial;
 		}
 	}
 }

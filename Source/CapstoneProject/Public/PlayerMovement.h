@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
-#include "BasePlayerController.h"
+#include "Components/AudioComponent.h"
 #include "PlayerMovement.generated.h"
+
+class ABasePlayerController;
 
 UCLASS()
 class CAPSTONEPROJECT_API APlayerMovement : public APawn
@@ -28,8 +30,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UCameraComponent* camera;
 	ABasePlayerController* controller;
+	UPROPERTY(EditAnywhere) UCameraComponent* camera;
+	UPROPERTY(EditAnywhere) UAudioComponent* audioComponent;
 
 	void Action1Input();
 	void Action2Input();

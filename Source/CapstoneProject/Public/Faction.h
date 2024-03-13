@@ -51,4 +51,6 @@ public:
 	int daysTillPowerOutage = 3;
 	int currPowerDays = 0;
 	bool powerOutage = false;
+
+	UMaterialInterface* factionColor;
 };

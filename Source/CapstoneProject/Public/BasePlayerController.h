@@ -19,6 +19,7 @@
 #include "BuildingAttachment.h"
 #include "ManageBattle.h"
 #include "GlobalSpawner.h"
+#include "PlayerMovement.h"
 #include "BasePlayerController.generated.h"
 
 /**
@@ -46,6 +47,15 @@ public:
 	UPROPERTY() UManageTroop* troopMode;
 	UPROPERTY() UManageBuilding* buildingMode;
 	UPROPERTY() UManageBattle* battleMode;
+
+	//Sound Things
+	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
+	UPROPERTY(EditAnywhere) TMap<UnitTypes, USoundBase*> UITroopSounds;
+	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
+	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
+	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
+	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
+	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
@@ -115,4 +125,6 @@ public:
 	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
 	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(FText buildingName);
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
+
+	UFUNCTION(BlueprintCallable) void PlayUISound(USoundBase* sound);
 };

@@ -36,6 +36,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	static inline TMap<Factions, Faction*> activeFactions;
+	TMap<Factions, UMaterialInterface*> factionColors;
 
 	static inline float timeScale = 1.f;
 

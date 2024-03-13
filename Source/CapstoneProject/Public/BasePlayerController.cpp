@@ -45,6 +45,12 @@ void ABasePlayerController::BeginPlay()
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
+
+	if (!playerCamera)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass());
+		playerCamera = Cast<APlayerMovement>(temp);
+	}
 }
 
 void ABasePlayerController::Tick(float DeltaTime)
@@ -54,10 +60,46 @@ void ABasePlayerController::Tick(float DeltaTime)
 	actionStates[currentActionState]->CheckSelection();	
 	//CheckForActionStates();
 
-	if (spawner) return;
+	if (spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
 
-	AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-	spawner = Cast<AGlobalSpawner>(temp);
+	if (!playerCamera)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass());
+		playerCamera = Cast<APlayerMovement>(temp);
+	}
+}
+void ABasePlayerController::PlayUISound(USoundBase* sound)
+{
+	playerCamera->audioComponent->SetSound(sound);
+	playerCamera->audioComponent->Play();
+}
+
+void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
+{
+	if (!UITroopSounds.Contains(unitType)) return;
+
+	playerCamera->audioComponent->SetSound(UITroopSounds[unitType]);
+	playerCamera->audioComponent->Play();
+}
+
+void ABasePlayerController::PlayUIBuildingSound(SpawnableBuildings buildingType)
+{
+	if (!UIBuildingSounds.Contains(buildingType)) return;
+
+	playerCamera->audioComponent->SetSound(UIBuildingSounds[buildingType]);
+	playerCamera->audioComponent->Play();
+}
+
+void ABasePlayerController::PlayUIAttachmentSound(BuildingAttachments attachmentType)
+{
+	if (!UIAttachmentSounds.Contains(attachmentType)) return;
+
+	playerCamera->audioComponent->SetSound(UIAttachmentSounds[attachmentType]);
+	playerCamera->audioComponent->Play();
 }
 
 

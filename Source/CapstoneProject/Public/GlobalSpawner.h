@@ -20,43 +20,7 @@ class ACapitalHub;
 class AAlienCity;
 class UBuildingAttachment;
 
-UENUM()
-enum class SpawnableBuildings
-{
-	None,
-	MiningStation,
-	Farmland,
-	PowerPlant,
-	Road,
-	Outpost
-};
-
-UENUM()
-enum class BuildingAttachments
-{
-	Storage,
-	DefenseStation,
-	RobotFactory,
-	RobotBarracks,
-	TradeOutpost,
-	Embassy,
-	PoliceStation
-};
-
-UENUM()
-enum class SpawnableUnits
-{
-	None,
-	Cavalry,
-	Infantry,
-	Ranged,
-	Shielder,
-	Scout,
-	Settler,
-	Army
-};
-
-UENUM()
+UENUM(BlueprintType)
 enum class ShapesOfMap
 {
 	None,

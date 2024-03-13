@@ -3,6 +3,7 @@
 
 #include "PlayerMovement.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 
 
 // Sets default values
@@ -14,6 +15,10 @@ APlayerMovement::APlayerMovement()
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(RootComponent);
 	camera->SetWorldRotation(FRotator(-45.f, 0.f, 0.f));
+
+	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	audioComponent->SetupAttachment(RootComponent);
+	audioComponent->SetUISound(true);
 }
 
 // Called when the game starts or when spawned
@@ -163,21 +168,6 @@ void APlayerMovement::DeselectInput()
 
 void APlayerMovement::PanRight(float axis)
 {
-	/*if (GetActorLocation().Y >= camMinY && GetActorLocation().Y <= camMaxY)
-	{
-		FVector currLocation = GetActorLocation();
-		currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-		if (currLocation.Y > camMaxY)
-		{
-			currLocation.Y = camMaxY;
-		}
-		else if (currLocation.Y < camMinY)
-		{
-			currLocation.Y = camMinY;
-		}
-		SetActorLocation(currLocation);
-	}	*/
-
 	if (axis < 0)
 	{
 		if (GetActorLocation().Y < camMaxY)
@@ -206,7 +196,7 @@ void APlayerMovement::PanRight(float axis)
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
 
 }
 
@@ -240,7 +230,7 @@ void APlayerMovement::PanUp(float axis)
 			}		
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
 }
 
 void APlayerMovement::ZoomIn(float axis)
@@ -264,7 +254,7 @@ void APlayerMovement::ZoomIn(float axis)
 			SetActorLocation(currLocation);
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().Z));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().Z));
 	}
 }
 
