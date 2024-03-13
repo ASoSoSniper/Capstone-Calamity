@@ -408,6 +408,7 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
 			Build(buildings.Key);
+			PlayUIBuildingSound(buildings.Key);
 			return;
 		}
 	}
@@ -422,6 +423,7 @@ void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 			if (outpost)
 			{
 				spawner->BuildAttachment(playerFaction, attachment.Key, outpost);
+				PlayUIAttachmentSound(attachment.Key);
 			}
 
 			return;
@@ -437,7 +439,13 @@ void ABasePlayerController::SelectTroop(FText troopName)
 		{
 			AOutpost* outpost = GetOutpost();
 
-			if (outpost) outpost->CueTroopBuild(troop.Key);
+			if (outpost)
+			{
+				outpost->CueTroopBuild(troop.Key);
+				PlayUITroopSound(troop.Key);
+			}
+
+			return;
 		}
 	}
 }
