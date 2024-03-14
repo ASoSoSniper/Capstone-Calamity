@@ -56,7 +56,7 @@ public:
 
 	TArray<TMap<UnitTypes, UnitComposition>> groupCompositions;
 
-	void Start();
+	virtual void Start();
 
 	void CreateFactions();
 	void AddUnitToFaction(AMovementAI* troop);
@@ -65,8 +65,8 @@ public:
 
 	void AssignGroups();
 
-	void Attack();
-	void EndBattle();
+	virtual void Attack();
+	virtual void EndBattle();
 	bool IsAlive(UnitActions::UnitData& group);
 	void FleeFromBattle(Factions faction);
 	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);

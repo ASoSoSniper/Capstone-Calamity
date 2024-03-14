@@ -16,6 +16,7 @@
 #include "AlienCity.h"
 #include "BuildingAttachment.h"
 #include "BattleObject.h"
+#include "SiegeObject.h"
 
 // Sets default values
 AGlobalSpawner::AGlobalSpawner()
@@ -188,7 +189,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Damage*/
 		2,
 		/*HP*/
-		5,
+		50,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -502,6 +503,7 @@ void AGlobalSpawner::BeginPlay()
 	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
 	if (!capitalPrefab) capitalPrefab = ACapitalHub::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
+	if (!siegePrefab) siegePrefab = ASiegeObject::StaticClass();
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 
 	ProceduralHexGen(200, ShapesOfMap::Square);
@@ -867,7 +869,7 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitDa
 ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 {
 	FActorSpawnParameters params;
-	ABattleObject* battle = GetWorld()->SpawnActor<ABattleObject>(battlePrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0.f, 0.f, 0.f), params);
+	ABattleObject* battle = GetWorld()->SpawnActor<ABattleObject>(hex->building ? siegePrefab : battlePrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0.f, 0.f, 0.f), params);
 	battle->hexNav->currentHex = hex;
 	battle->spawner = this;
 	hex->battleInProgress = true;

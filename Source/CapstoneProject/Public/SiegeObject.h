@@ -14,4 +14,14 @@ class CAPSTONEPROJECT_API ASiegeObject : public ABattleObject
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void Start() override;
+	virtual void Attack() override;
+	virtual void EndBattle() override;
+
+	ABuilding* building;
+
+	int attackerSiegeDamage;
+	void CalculateSiegeDamage();
+	bool BuildingIsAlive();
 };

@@ -86,4 +86,7 @@ public:
 	float destructionTime = 10.f;
 	float currDestructionTime = 0.f;
 	virtual void Destroyed() override;
+
+	bool disabled = false;
+
 };

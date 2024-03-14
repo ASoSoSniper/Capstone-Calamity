@@ -237,12 +237,13 @@ void ABattleObject::Attack()
 		currentTickTillRoll = 0;
 		RollDie(group1Die);
 		RollDie(group2Die); 
-		group2Die = FMath::Clamp(group2Die - hex->defenderBonus, 1, group2Die - hex->defenderBonus);
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
 	}
 
-	int group1DamageTotal = FMath::RoundToInt((float)group1Damage * GetRollModifier(group1Die));
+	int group1DieModded = FMath::Clamp(group1Die - hex->defenderBonus, 1, group1Die - hex->defenderBonus);
+
+	int group1DamageTotal = FMath::RoundToInt((float)group1Damage * GetRollModifier(group1DieModded));
 	int group2DamageTotal = FMath::RoundToInt((float)group2Damage * GetRollModifier(group2Die));
 
 	//Apply damage to each group

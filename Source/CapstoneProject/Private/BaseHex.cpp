@@ -154,6 +154,14 @@ TArray<AActor*> ABaseHex::GetObjectsInHex()
 
 void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 {	
+	if (building)
+	{
+		if (UnitActions::IsHostileTarget(refTroop, building) && !building->disabled)
+		{
+			BeginBattle();
+			return;
+		}
+	}
 	for (int i = 0; i < troopsInHex.Num(); ++i)
 	{
 		if (troopsInHex[i] != refTroop)
