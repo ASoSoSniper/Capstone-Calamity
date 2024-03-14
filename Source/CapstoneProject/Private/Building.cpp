@@ -28,33 +28,19 @@ ABuilding::ABuilding()
 	visibility->enableScan = false;
 
 	buildingType = SpawnableBuildings::None;
+
+	resourceYields.Add(StratResources::Energy, 0);
+	resourceYields.Add(StratResources::Food, 0);
+	resourceYields.Add(StratResources::Production, 0);
+	resourceYields.Add(StratResources::Wealth, 0);
 }
 
 // Called when the game starts or when spawned
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SphereCheck();
-	SetBuildState();
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Begun building"));
 
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
-
-	if (hexNav->currentHex)
-	{
-		if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
-		{
-			if (hex->maxWorkers != spawner->buildingCosts[buildingType].workerCost)
-			{
-				hex->maxWorkers = spawner->buildingCosts[buildingType].workerCost;
-			}
-		}
-	}
+	SetupBuilding(buildingType);
 }
 
 // Called every frame
@@ -62,29 +48,7 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
-
-	if (!hexNav->currentHex)
-	{
-		if (SphereCheck())
-		{
-			if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
-			{
-				if (hex->maxWorkers != spawner->buildingCosts[buildingType].workerCost)
-				{
-					hex->maxWorkers = spawner->buildingCosts[buildingType].workerCost;
-				}
-			}
-		}
-		else
-		{
-			return;
-		}
-	}
+	if (!SetupBuilding(buildingType)) return;
 
 	switch (buildState)
 	{
@@ -92,12 +56,70 @@ void ABuilding::Tick(float DeltaTime)
 		Constructing(DeltaTime);
 		break;
 	case Complete:
-		//Harvest(DeltaTime);
+		
 		break;
 	case Destroying:
 		DestroyingBuilding(DeltaTime);
 		break;
 	}
+}
+
+bool ABuilding::SetupBuilding(SpawnableBuildings type)
+{
+	//If both needed objects are found, then setup is complete and this function can be ignored
+	if (spawner && hexNav->currentHex) return true;
+
+	//If spawner is not set, search the world for one
+	if (!spawner)
+	{
+		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
+		spawner = Cast<AGlobalSpawner>(temp);
+	}
+	
+	//If the building's hex is not set, scan until a hex is found
+	if (!hexNav->currentHex)
+	{
+		SphereCheck();
+	}
+
+	//If either objects are missing, cancel the process
+	if (!spawner || !hexNav->currentHex) return false;
+
+	//If data for this building type does not exist, return
+	if (type == SpawnableBuildings::None || 
+		!spawner->buildingStats.Contains(type) || 
+		!spawner->buildingCosts.Contains(type)) return false;
+
+	//Get the building data
+	FBuildingStats stats = spawner->buildingStats[type];
+	FBuildingCost costs = spawner->buildingCosts[type];
+
+	unitStats->currentHP = stats.HP;
+	unitStats->maxHP = stats.HP;
+
+	unitStats->damage = stats.siegeDamage;
+
+	unitStats->energyUpkeep = stats.energyUpkeepCost;
+
+	resourceYields[StratResources::Energy] = stats.energyYield;
+	resourceYields[StratResources::Food] = stats.foodYield;
+	resourceYields[StratResources::Production] = stats.productionYield;
+	resourceYields[StratResources::Wealth] = stats.wealthYield;
+
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (hex->maxWorkers != costs.workerCost)
+	{
+		hex->maxWorkers = costs.workerCost;
+	}
+
+	resourceCapIncrease = stats.resourceCapIncrease;
+	UnitActions::UpdateResourceCapacity(unitStats->faction, resourceCapIncrease);
+
+	buildTime = costs.timeToBuild;
+	currBuildTime = costs.timeToBuild;
+
+	SetBuildState();
+	return true;
 }
 
 void ABuilding::Constructing(float& DeltaTime)
@@ -106,7 +128,7 @@ void ABuilding::Constructing(float& DeltaTime)
 	if (currBuildTime <= 0.f)
 	{
 		SetBuildState();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Build complete!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Build complete!"));
 	}
 }
 
@@ -115,8 +137,8 @@ void ABuilding::SetBuildState()
 	switch (buildState)
 	{
 	case None:
-		currBuildTime = buildTime;
 		buildState = Building;
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Begun building"));
 		break;
 	case Building:
 		buildState = Complete;
@@ -133,16 +155,26 @@ void ABuilding::SetBuildState()
 	}
 }
 
-void ABuilding::Harvest(ABaseHex* hex)
-{
-}
-
 void ABuilding::UpdateResources()
 {
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (!hex) return;
+
+	for (auto& resource : resourceYields)
+	{
+		hex->UpdateResourceYield(resource.Key, resource.Value);
+	}
 }
 
 void ABuilding::RevertResources()
 {
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (!hex) return;
+
+	for (auto& resource : resourceYields)
+	{
+		hex->UpdateResourceYield(resource.Key, -resource.Value);
+	}
 }
 
 void ABuilding::BuildingAction()
@@ -241,6 +273,8 @@ void ABuilding::Destroyed()
 {
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
 	if (!hex) return;
+
+	UnitActions::UpdateResourceCapacity(unitStats->faction, -resourceCapIncrease);
 
 	hex->maxWorkers = 10;
 	int totalWorkers = 0;

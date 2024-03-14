@@ -3,17 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Building.h"
-#include "MiningStation.generated.h"
+#include "BattleObject.h"
+#include "SiegeObject.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONEPROJECT_API AMiningStation : public ABuilding
+class CAPSTONEPROJECT_API ASiegeObject : public ABattleObject
 {
 	GENERATED_BODY()
 	
-public:
-	AMiningStation();
 };

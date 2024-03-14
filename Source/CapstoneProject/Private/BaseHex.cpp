@@ -210,61 +210,6 @@ bool ABaseHex::ActiveHarvesting()
 
 	return workersExist;
 }
-void ABaseHex::UpdateWealthYield(int value)
-{
-	resourceBonuses[StratResources::Wealth].yieldBonus += value;
-
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
-		return;
-	}
-
-	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Wealth].resourcePerTick += value;
-}
-
-void ABaseHex::UpdateFoodYield(int value)
-{
-	resourceBonuses[StratResources::Food].yieldBonus += value;
-
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
-		return;
-	}
-
-	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Food].resourcePerTick += value;
-}
-
-void ABaseHex::UpdateProductionYield(int value)
-{
-	resourceBonuses[StratResources::Production].yieldBonus += value;
-
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
-		return;
-	}
-
-	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Production].resourcePerTick += value;
-}
-
-void ABaseHex::UpdateEnergyYield(int value)
-{
-	resourceBonuses[StratResources::Energy].yieldBonus += value;
-
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
-		return;
-	}
-
-	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[StratResources::Energy].resourcePerTick += value;
-}
 
 void ABaseHex::ToggleResourceYield()
 {
@@ -409,6 +354,20 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	display.workerCount = FText::FromString(FString::Format(TEXT("{0}/{1}"), Args));
 
 	return display;
+}
+
+void ABaseHex::UpdateResourceYield(StratResources resource, int value)
+{
+	resourceBonuses[resource].yieldBonus += value;
+
+	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
+		return;
+	}
+
+	if (harvesting)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[resource].resourcePerTick += value;
 }
 
 void ABaseHex::SetFaction(Factions faction)

@@ -37,6 +37,8 @@ public:
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)SpawnableBuildings buildingType;
 
+	TMap<StratResources, int> resourceYields;
+
 	enum BuildStates
 	{
 		None,
@@ -48,13 +50,16 @@ public:
 	};
 	BuildStates buildState = None;
 
-	UPROPERTY(EditAnywhere) float buildTime = 5.f;
-	UPROPERTY(EditAnywhere) float upgradeTime = 10.f;
+	float buildTime = 5.f;
+	float upgradeTime = 10.f;
 	float currBuildTime;
 
+	int resourceCapIncrease = 0;
+
+	bool SetupBuilding(SpawnableBuildings type);
 	void Constructing(float& DeltaTime);
 	void SetBuildState();
-	virtual void Harvest(ABaseHex* hex);
+
 	virtual void UpdateResources();
 	virtual void RevertResources();
 	virtual void BuildingAction();

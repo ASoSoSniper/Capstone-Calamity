@@ -32,36 +32,3 @@ AMiningStation::AMiningStation()
 
 	buildingType = SpawnableBuildings::MiningStation;
 }
-
-void AMiningStation::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AMiningStation::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AMiningStation::Harvest(ABaseHex* hex)
-{
-	switch (buildState)
-	{
-	case Complete:
-		//UnitActions::HarvestResources(unitStats->faction, productionYield + hex->resourceBonuses[StratResources::Production], StratResources::Production);
-		break;
-	case Upgraded:
-		break;
-	}
-	
-}
-
-void AMiningStation::UpdateResources()
-{
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateProductionYield(productionYield);
-}
-
-void AMiningStation::RevertResources()
-{
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateProductionYield(-productionYield);
-}

@@ -11,7 +11,11 @@ void UManageHex::Select(AActor* selectedObject)
 	
 	//Set new hex to selected hex
 	ABaseHex* hex = Cast<ABaseHex>(selectedObject);
-	if (hex) controller->selectedHex = hex;
+	if (hex)
+	{
+		controller->selectedHex = hex;
+		controller->PlayUIHexSound(hex->hexTerrain);
+	}
 
 	//Highlight new hex
 	if (selectedObject) HighlightSelected(selectedObject, true);

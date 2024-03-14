@@ -153,11 +153,7 @@ public:
 
 	bool ActiveHarvesting();
 
-	void UpdateWealthYield(int value);
-	void UpdateFoodYield(int value);
-	void UpdateProductionYield(int value);
-	void UpdateEnergyYield(int value);
-
+	void UpdateResourceYield(StratResources resource, int value);
 	void ToggleResourceYield();
 
 	void RequestTerrainChange(bool modelOnly = false);

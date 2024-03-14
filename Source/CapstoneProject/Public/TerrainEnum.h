@@ -8,7 +8,7 @@
  * 
  */
 UENUM(BlueprintType)
-enum class TerrainType
+enum class TerrainType : uint8
 {
 	None,
 	Plains, 

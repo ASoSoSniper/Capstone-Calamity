@@ -31,41 +31,41 @@ AFarmland::AFarmland()
 	buildingType = SpawnableBuildings::Farmland;
 }
 
-void AFarmland::Harvest(ABaseHex* hex)
-{
-	switch (buildState)
-	{
-	case Complete:
-		//UnitActions::HarvestResources(unitStats->faction, foodYield + hex->resourceBonuses[StratResources::Food], StratResources::Food);
-		break;
-	case Upgraded:
-		break;
-	}
-}
-
 void AFarmland::UpdateResources()
 {
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (!hex) return;
+
 	if (producingFood)
-		Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(resourceYield);
+		hex->UpdateResourceYield(StratResources::Food, resourceYields[StratResources::Food]);
 	else
-		Cast<ABaseHex>(hexNav->currentHex)->UpdateWealthYield(resourceYield);
+		hex->UpdateResourceYield(StratResources::Wealth, resourceYields[StratResources::Wealth]);
 }
 
 void AFarmland::RevertResources()
 {
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	if (!hex) return;
+
 	if (producingFood)
-		Cast<ABaseHex>(hexNav->currentHex)->UpdateFoodYield(-resourceYield);
+		hex->UpdateResourceYield(StratResources::Food, -resourceYields[StratResources::Food]);
 	else
-		Cast<ABaseHex>(hexNav->currentHex)->UpdateWealthYield(-resourceYield);
+		hex->UpdateResourceYield(StratResources::Wealth, -resourceYields[StratResources::Wealth]);
 }
 
 bool AFarmland::ToggleResourcesProduced(bool produceFood)
 {
+	//If already set to desired value, do nothing
 	if (producingFood == produceFood) return producingFood;
 
-	producingFood = produceFood;
-
+	//Remove hex yield for the previous resource
 	RevertResources();
+
+	//Switch to the new resource
+	producingFood = produceFood;
+	
+	//Add hex yield for new resource
 	UpdateResources();
+
 	return producingFood;
 }

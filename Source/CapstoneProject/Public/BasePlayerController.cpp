@@ -102,6 +102,14 @@ void ABasePlayerController::PlayUIAttachmentSound(BuildingAttachments attachment
 	playerCamera->audioComponent->Play();
 }
 
+void ABasePlayerController::PlayUIHexSound(TerrainType hexType)
+{
+	if (!UIHexSounds.Contains(hexType)) return;
+
+	playerCamera->audioComponent->SetSound(UIHexSounds[hexType]);
+	playerCamera->audioComponent->Play();
+}
+
 
 void ABasePlayerController::SetHoveredWorldObject(AActor* object)
 {

@@ -15,9 +15,4 @@ class CAPSTONEPROJECT_API APowerPlant : public ABuilding
 	GENERATED_BODY()
 public:
 	APowerPlant();
-	
-	virtual void UpdateResources() override;
-	virtual void RevertResources() override;
-
-	UPROPERTY(EditAnywhere) int energyYield = 2;
 };

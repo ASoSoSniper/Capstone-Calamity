@@ -53,9 +53,11 @@ public:
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, USoundBase*> UITroopSounds;
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
+	UPROPERTY(EditAnywhere) TMap<TerrainType, USoundBase*> UIHexSounds;
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
 	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
+	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType);
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;

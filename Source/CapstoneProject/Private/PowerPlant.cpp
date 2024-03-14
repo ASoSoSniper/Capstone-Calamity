@@ -30,13 +30,3 @@ APowerPlant::APowerPlant()
 
 	buildingType = SpawnableBuildings::PowerPlant;
 }
-
-void APowerPlant::UpdateResources()
-{
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateEnergyYield(energyYield);
-}
-
-void APowerPlant::RevertResources()
-{
-	Cast<ABaseHex>(hexNav->currentHex)->UpdateEnergyYield(-energyYield);
-}
