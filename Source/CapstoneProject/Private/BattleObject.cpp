@@ -44,6 +44,9 @@ void ABattleObject::BeginPlay()
 
 	group1Mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
 	group2Mesh->SetRelativeRotation(FRotator(0, 90.f, 0));
+
+	groupCompositions.Add(TMap<UnitTypes, UnitComposition>());
+	groupCompositions.Add(TMap<UnitTypes, UnitComposition>());
 }
 
 void ABattleObject::Start()
@@ -234,6 +237,8 @@ void ABattleObject::Attack()
 		currentTickTillRoll = 0;
 		RollDie(group1Die);
 		RollDie(group2Die); 
+		group2Die = FMath::Clamp(group2Die - hex->defenderBonus, 1, group2Die - hex->defenderBonus);
+
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
 	}
 
@@ -420,19 +425,19 @@ float ABattleObject::DecayMorale(Factions faction, float percentReduction)
 
 void ABattleObject::CalculateGroupDamage()
 {
-	TMap<UnitTypes, UnitComposition> group1Units = GetArmyComposition(currentBattle.Group1);
-	TMap<UnitTypes, UnitComposition> group2Units = GetArmyComposition(currentBattle.Group2);
+	groupCompositions[0] = GetArmyComposition(currentBattle.Group1);
+	groupCompositions[1] = GetArmyComposition(currentBattle.Group2);
 
 	group1Damage = 0;
 	group2Damage = 0;
 
 	//For each unit type
-	for (auto& unit : group1Units)
+	for (auto& unit : groupCompositions[0])
 	{
 		float damage = 0;
 
 		//For each enemy type in the enemy army
-		for (auto& enemyUnit : group2Units)
+		for (auto& enemyUnit : groupCompositions[1])
 		{
 			float percent = 0;
 
@@ -476,12 +481,12 @@ void ABattleObject::CalculateGroupDamage()
 	}
 
 	//For each unit type
-	for (auto& unit : group2Units)
+	for (auto& unit : groupCompositions[1])
 	{
 		float damage = 0;
 
 		//For each enemy type in the enemy army
-		for (auto& enemyUnit : group1Units)
+		for (auto& enemyUnit : groupCompositions[0])
 		{
 			float percent = 0;
 

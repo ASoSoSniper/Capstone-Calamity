@@ -78,6 +78,29 @@ void ABasePlayerController::PlayUISound(USoundBase* sound)
 	playerCamera->audioComponent->Play();
 }
 
+TArray<FTroopArmyDisplay> ABasePlayerController::GetBattleUnits(int group)
+{
+	TArray<FTroopArmyDisplay> battleUnits = TArray<FTroopArmyDisplay>();
+
+	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
+	if (!battleObject) return battleUnits;
+
+	for (auto& unitType : battleObject->groupCompositions[group])
+	{
+		FTroopArmyDisplay unit;
+		unit.unitType = unitType.Key;
+		unit.name = spawner->troopCosts[unitType.Key].name;
+		unit.icon = spawner->troopCosts[unitType.Key].icon;
+		unit.quantity = FText::AsNumber(unitType.Value.quantity);
+		unit.dieRoll = group == 0 ? FText::AsNumber(battleObject->group1Die) : FText::AsNumber(battleObject->group2Die);
+		unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
+
+		battleUnits.Add(unit);
+	}
+	
+	return battleUnits;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

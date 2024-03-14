@@ -113,7 +113,6 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	}
 
 	resourceCapIncrease = stats.resourceCapIncrease;
-	UnitActions::UpdateResourceCapacity(unitStats->faction, resourceCapIncrease);
 
 	buildTime = costs.timeToBuild;
 	currBuildTime = costs.timeToBuild;
@@ -164,6 +163,8 @@ void ABuilding::UpdateResources()
 	{
 		hex->UpdateResourceYield(resource.Key, resource.Value);
 	}
+
+	UnitActions::UpdateResourceCapacity(unitStats->faction, resourceCapIncrease);
 }
 
 void ABuilding::RevertResources()
