@@ -196,6 +196,18 @@ struct FTroopTTInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsScout;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsSettler;
 };
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopArmyDisplay
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UnitTypes unitType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText quantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText dieRoll;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defenderBonus;
+};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FCuedTroop
@@ -265,6 +277,14 @@ struct FWorkersInHex
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robots = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers = 0;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopQuantity
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UnitTypes unitType = UnitTypes::None;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
 };
 
 UCLASS()

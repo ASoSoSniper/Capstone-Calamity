@@ -22,9 +22,6 @@
 #include "PlayerMovement.h"
 #include "BasePlayerController.generated.h"
 
-/**
- * 
- */
 
 UCLASS()
 class CAPSTONEPROJECT_API ABasePlayerController : public APlayerController
@@ -129,4 +126,6 @@ public:
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
 
 	UFUNCTION(BlueprintCallable) void PlayUISound(USoundBase* sound);
+
+	UFUNCTION(BlueprintCallable) TArray<FTroopArmyDisplay> GetBattleUnits(int group);
 };

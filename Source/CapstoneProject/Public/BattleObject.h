@@ -54,6 +54,8 @@ public:
 		float compPercent = 0.f;
 	};
 
+	TArray<TMap<UnitTypes, UnitComposition>> groupCompositions;
+
 	void Start();
 
 	void CreateFactions();
