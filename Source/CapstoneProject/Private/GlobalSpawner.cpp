@@ -46,20 +46,20 @@ AGlobalSpawner::AGlobalSpawner()
 	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
 
 	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Infantry.Infantry'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
 	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Cavalry.Cavalry'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Cavalry_Nail.Cavalry_Nail'")) });
 	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Ranged.Ranged'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Ranged_Nail.Ranged_Nail'")) });
 	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 100, 60, 0, FText::FromString("Shielder"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Shielder.Shielder'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Shielder_Nail.Shielder_Nail'")) });
 	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 20, 24, 0, FText::FromString("Scout"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Scout.Scout'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Scout_Nail.Scout_Nail'")) });
 	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 400, 60, 50, FText::FromString("Settler"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/ArmyUnitIcons/Settler.Settler'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Settler_Nail.Settler_Nail'")) });
 
 	//Infantry Unit Stats
-	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Goofy ahh"), UnitTypes::Infantry, 100, 60, 6, 10, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry, 100, 60, 6, 10, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 50,
@@ -77,7 +77,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Cavalry Unit Stats
-	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Goofy ahh"), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -95,7 +95,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Ranged Unit Stats
-	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Goofy ahh"), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1,
+	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 200,
 		/*Cavalry*/ 100,
@@ -113,7 +113,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Shielder Unit Stats
-	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Goofy ahh"), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -131,7 +131,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Scout Unit Stats
-	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Goofy ahh"), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1,
+	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -149,7 +149,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Settler Unit Stats
-	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("Goofy ahh"), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts."), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -168,7 +168,7 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 
 	//Mining Station Stats
-	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("Goofy ah Mining"),
+	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("A drilling station that extracts resources necessary for building troops and new facilities."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -197,7 +197,7 @@ AGlobalSpawner::AGlobalSpawner()
 		30
 		});
 	//Farm Stats
-	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Goofy ah Farm"),
+	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Plots of land dedicated to provided the colony with food or cash crops."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -226,7 +226,7 @@ AGlobalSpawner::AGlobalSpawner()
 		30
 		});
 	//Power Plant Stats
-	buildingStats.Add(SpawnableBuildings::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("Goofy ah"),
+	buildingStats.Add(SpawnableBuildings::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("A rudamentory fission reactor that produces energy to power troops and facilities."),
 		/*Energy Yield*/
 		2,
 		/*Food Yield*/
@@ -255,7 +255,7 @@ AGlobalSpawner::AGlobalSpawner()
 		30
 		});
 	//Outpost Stats
-	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("Goofy ah"),
+	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
 		2,
 		/*Food Yield*/
@@ -285,7 +285,7 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 
 	//Material Storage Stats
-	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -314,7 +314,7 @@ AGlobalSpawner::AGlobalSpawner()
 		15
 		});
 	//Defense Station Stats
-	attachmentStats.Add(BuildingAttachments::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("A fortress extension that greatly enhances defensive capabilities."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -343,7 +343,7 @@ AGlobalSpawner::AGlobalSpawner()
 		20
 		});
 	//Robot Factory Stats
-	attachmentStats.Add(BuildingAttachments::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("A highly industrialized factory capable of creating robotic armies."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -372,7 +372,7 @@ AGlobalSpawner::AGlobalSpawner()
 		30
 		});
 	//Robot Factory Stats
-	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An extension that allows for robot units to be stored safely without powering them."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -401,7 +401,7 @@ AGlobalSpawner::AGlobalSpawner()
 		15
 		});
 	//Trade Outpost Stats
-	attachmentStats.Add(BuildingAttachments::TradeOutpost, FBuildingStats{ FText::FromString("Trade Outpost"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::TradeOutpost, FBuildingStats{ FText::FromString("Trade Outpost"), FText::FromString("A trading entrepot that allows for more favorable trading terms."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -430,7 +430,7 @@ AGlobalSpawner::AGlobalSpawner()
 		5
 		});
 	//Embassy Stats
-	attachmentStats.Add(BuildingAttachments::Embassy, FBuildingStats{ FText::FromString("Embassy"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::Embassy, FBuildingStats{ FText::FromString("Embassy"), FText::FromString("An embassy helps establish more favorable diplomatic ties with alien civilizations."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -459,7 +459,7 @@ AGlobalSpawner::AGlobalSpawner()
 		5
 		});
 	//Police Station Stats
-	attachmentStats.Add(BuildingAttachments::PoliceStation, FBuildingStats{ FText::FromString("Police Station"), FText::FromString("Goofy ah"),
+	attachmentStats.Add(BuildingAttachments::PoliceStation, FBuildingStats{ FText::FromString("Police Station"), FText::FromString("The police station decreases alien unrest and prevents the need for robotic armies to remain in the city to suppress revolts."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
