@@ -105,10 +105,7 @@ void ASiegeObject::CalculateSiegeDamage()
 
 bool ASiegeObject::BuildingIsAlive()
 {
-	if (building->unitStats->currentHP > 0)
-	{
-		building->disabled = true;
-	}
+	building->IsDisabled();
 
-	return building->disabled;
+	return !building->disabled;
 }

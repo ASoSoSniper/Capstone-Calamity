@@ -88,5 +88,5 @@ public:
 	virtual void Destroyed() override;
 
 	bool disabled = false;
-
+	bool IsDisabled();
 };

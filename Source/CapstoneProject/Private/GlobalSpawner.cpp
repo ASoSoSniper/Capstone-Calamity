@@ -878,6 +878,16 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 	return battle;
 }
 
+AActor* AGlobalSpawner::SpawnSmoke(AActor* object)
+{
+	if (!smokePrefab) return nullptr;
+
+	FActorSpawnParameters params;
+	AActor* particleSystem = GetWorld()->SpawnActor<AActor>(smokePrefab, object->GetActorLocation(), FRotator(0.f, 0.f, 0.f), params);
+
+	return particleSystem;
+}
+
 bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost)
 {
 	bool canAfford = false;

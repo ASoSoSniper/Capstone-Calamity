@@ -316,3 +316,13 @@ void ABuilding::Destroyed()
 	Super::Destroyed();
 }
 
+bool ABuilding::IsDisabled()
+{
+	if (disabled) return true;
+	if (unitStats->currentHP > 0) return false;
+
+	disabled = true;
+	spawner->SpawnSmoke(this);
+	return true;
+}
+
