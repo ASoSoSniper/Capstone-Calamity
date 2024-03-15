@@ -22,6 +22,7 @@ public:
 	virtual void SwitchState() override;
 	virtual void Reset() override;
 	virtual void CheckSelection() override;
+	virtual AActor* GetSelectedObject() override;
 	
 	enum SubSelections
 	{

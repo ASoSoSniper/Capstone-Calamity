@@ -57,7 +57,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 		currentFaction.Value->FindActiveFactions();
 		currentFaction.Value->factionColor = factionColors[currentFaction.Key];
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("%d factions created!"), activeFactions.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("%d factions created!"), activeFactions.Num()));
 
 	//For debug purposes, Human and Alien1 hate each other, Human and Alien2 are chill, and Alien3+ literally couldn't give less of a fuck
 	activeFactions[Factions::Human]->factionRelationships[Factions::Alien1] = FactionRelationship::Enemy;
@@ -238,11 +238,14 @@ void ACapstoneProjectGameModeBase::FeedPop()
 		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
 		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
 
+		int workerRemainder = 0;
 		int workerFoodCost = 0;
 
 		for (auto &workers : faction.Value->availableWorkers)
 		{
-			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
+			workerRemainder = workers.Value.working % 5;
+			int cost = workers.Value.working / 5;
+			workerFoodCost += (workerFoodCost + (remainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
 		}
 
 		int totalCost = activeFactions[faction.Key]->resourceInventory[StratResources::Food].lossesPerDay;
@@ -271,7 +274,7 @@ void ACapstoneProjectGameModeBase::FeedPop()
 void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 {
 	int missingFood = foodCost - activeFactions[faction]->resourceInventory[StratResources::Food].currentResources;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food cost = %d"), missingFood));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food cost = %d"), missingFood));
 
 	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;	
 
@@ -284,7 +287,7 @@ void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
 	if (activeFactions[faction]->currStarveDays < activeFactions[faction]->daysTillStarve)
 	{
 		++activeFactions[faction]->currStarveDays;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till starve"), activeFactions[faction]->daysTillStarve - activeFactions[faction]->currStarveDays));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till starve"), activeFactions[faction]->daysTillStarve - activeFactions[faction]->currStarveDays));
 		return;
 	}
 
@@ -325,7 +328,7 @@ void ACapstoneProjectGameModeBase::PowerOutage(Factions faction, int energyCost)
 	if (activeFactions[faction]->currPowerDays < activeFactions[faction]->daysTillPowerOutage)
 	{
 		++activeFactions[faction]->currPowerDays;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till power outage"), activeFactions[faction]->daysTillPowerOutage - activeFactions[faction]->currPowerDays));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till power outage"), activeFactions[faction]->daysTillPowerOutage - activeFactions[faction]->currPowerDays));
 		return;
 	}
 
@@ -377,7 +380,7 @@ void ACapstoneProjectGameModeBase::KillPopulation(Factions faction, int cost, in
 		overloadStopper++;
 		if (overloadStopper == 100)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
 			return;
 		}
 	}

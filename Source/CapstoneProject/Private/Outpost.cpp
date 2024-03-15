@@ -19,13 +19,6 @@ AOutpost::AOutpost()
 	troopFactoryBuilding = CreateDefaultSubobject<UOutpostTroopFactory>(TEXT("Troop Factory"));
 	defenseBuilding = CreateDefaultSubobject<UOutpostDefenses>(TEXT("Defense Station"));
 
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
-	}
-
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/OutpostMat01"));
 	if (visibleMat)
 	{
@@ -74,7 +67,7 @@ TArray<ABaseHex*> AOutpost::ClaimLand()
 
 	if (unitStats->faction == Factions::None)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("No faction assigned, cannot claim land"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("No faction assigned, cannot claim land"));
 		return hexesToClaim;
 	}
 
@@ -103,7 +96,7 @@ TArray<ABaseHex*> AOutpost::ClaimLand()
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("%d hexes claimed"), hexesToClaim.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("%d hexes claimed"), hexesToClaim.Num()));
 
 	return hexesToClaim;
 }
@@ -150,6 +143,16 @@ void AOutpost::BuildingAction()
 	claimedHexes = ClaimLand();
 }
 
+void AOutpost::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingOutpost.BuildingOutpost'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
+	}
+}
+
 UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)
 {
 	switch (attachment)
@@ -192,7 +195,7 @@ void AOutpost::CueTroopBuild(UnitTypes unit)
 	if (!spawner) return;
 	if (!troopFactoryBuilding->AttachmentIsActive())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Robot factory not built"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Robot factory not built"));
 		return;
 	}
 

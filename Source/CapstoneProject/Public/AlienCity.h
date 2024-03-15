@@ -28,4 +28,6 @@ public:
 	UCityTradeOutpost* cityTradeOutpost;
 
 	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment) override;
+
+	virtual void SetToFinishedModel() override;
 };

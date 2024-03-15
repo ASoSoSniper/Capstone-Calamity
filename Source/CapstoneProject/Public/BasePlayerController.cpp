@@ -173,7 +173,7 @@ void ABasePlayerController::SetActionState()
 		{
 			actionStates[currentActionState]->SwitchState();
 		}
-		else (GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("State not found")));
+		//else (GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("State not found")));
 	}
 }
 
@@ -184,7 +184,7 @@ void ABasePlayerController::Deselect()
 	currentActionState = ActionStates::None;
 	selectedHex = nullptr;
 	selectedWorldObject = nullptr;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
 
 int ABasePlayerController::GetActionState()
@@ -227,7 +227,7 @@ void ABasePlayerController::ForceActionState(int state)
 		if (hex && hex->building)
 		{
 			actionStates[ActionStates(state)]->Select(hex->building);
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Action state forced"));
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Action state forced"));
 		}
 		break;
 	}
@@ -286,7 +286,7 @@ void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideC
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d, %d, %d"), numbers[0], numbers[1], numbers[2], numbers[3]));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d, %d, %d"), numbers[0], numbers[1], numbers[2], numbers[3]));
 	if (canAfford)
 		UnitActions::ConsumeSpentResources(playerFaction, numbers);
 }
@@ -762,7 +762,7 @@ void ABasePlayerController::CheckForActionStates()
 		if (state.Value != nullptr) actionStatesActive++;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.005f, FColor::Green, FString::Printf(TEXT("%d states active"), actionStatesActive));
 }
 
 void ABasePlayerController::ResourceCheats(int resourceToChange, int val)

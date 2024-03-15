@@ -18,6 +18,7 @@ public:
 
 	virtual void UpdateResources() override;
 	virtual void RevertResources() override;
+	virtual void SetToFinishedModel() override;
 	UFUNCTION(BlueprintCallable) bool ToggleResourcesProduced(bool produceFood);
 
 	bool producingFood = true;

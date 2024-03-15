@@ -263,7 +263,7 @@ void APlayerMovement::AdjustTimeScale(float axis)
 	ACapstoneProjectGameModeBase::timeScale += axis;
 	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
 }
 
 void APlayerMovement::SpeedUpTime()

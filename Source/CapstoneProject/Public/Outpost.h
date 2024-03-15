@@ -41,6 +41,7 @@ public:
 	UPROPERTY(VisibleAnywhere) TArray<ABaseHex*> claimedHexes;
 	
 	void BuildingAction() override;
+	virtual void SetToFinishedModel();
 
 	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
 	void BuildAttachment(BuildingAttachments attachment);

@@ -5,13 +5,6 @@
 
 ACapitalHub::ACapitalHub()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip2.BuildingCapitolShip2'"));
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
-	}
-
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/ShipMat01"));
 	if (visibleMat)
 	{
@@ -26,5 +19,17 @@ ACapitalHub::ACapitalHub()
 	if (selectedMat)
 	{
 		visibility->meshMaterials.selectedTexture = selectedMat;
+	}
+
+	builtAtStart = true;
+}
+
+void ACapitalHub::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip2.BuildingCapitolShip2'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
 	}
 }

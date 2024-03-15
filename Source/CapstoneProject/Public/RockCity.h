@@ -3,19 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Outpost.h"
-#include "CapitalHub.generated.h"
+#include "AlienCity.h"
+#include "RockCity.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONEPROJECT_API ACapitalHub : public AOutpost
+class CAPSTONEPROJECT_API ARockCity : public AAlienCity
 {
 	GENERATED_BODY()
 	
-public:
-	ACapitalHub();
 
+public:
+	ARockCity();
 	virtual void SetToFinishedModel() override;
+	virtual bool IsDisabled() override;
 };

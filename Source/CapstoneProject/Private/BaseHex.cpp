@@ -42,15 +42,15 @@ ABaseHex::ABaseHex()
 
 	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 
 		FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4, 3, 1.0f, 1.0f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Soup_TEMP.Landscape_Icon_Soup_TEMP'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Capital_Hub/Hills_Capital_Hub.Hills_Capital_Hub'")) });
 
 	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")), 
 		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1, 2, 1.f, 1.f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Soup_TEMP.Landscape_Icon_Soup_TEMP'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Siatus_City.Siatus_City'")) });
 
 	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")), 
 		FText::FromString(TEXT("The Rock, contains DST fuel.")), 2, 3, 4, 3, 1.f, 1.f, 1, 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Soup_TEMP.Landscape_Icon_Soup_TEMP'")) });
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Rock_City_Octagon.Rock_City_Octagon'")) });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
@@ -124,7 +124,7 @@ void ABaseHex::Tick(float DeltaTime)
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
-	if (building && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle))
+	if ((building || !troopsInHex.IsEmpty()) && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle))
 	{
 		terrainChange = TerrainType(FMath::RandRange(1, 4));
 	}
@@ -332,7 +332,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> igno
 		{
 			if (hex->troopsInHex[j]->unitStats->faction == faction) factionInHex = true;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 6.f, FColor::Orange, TEXT("WEEEEEEEEEEEEEE"));
+		//GEngine->AddOnScreenDebugMessage(-1, 6.f, FColor::Orange, TEXT("WEEEEEEEEEEEEEE"));
 		if (!factionInHex) return hex;
 	}
 	return this;
@@ -375,7 +375,7 @@ void ABaseHex::UpdateResourceYield(StratResources resource, int value)
 
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
 		return;
 	}
 

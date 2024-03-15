@@ -1,14 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MiningStation.h"
-#include "UnitActions.h"
+#include "RockCity.h"
 #include "CapstoneProjectGameModeBase.h"
-#include "GlobalSpawner.h"
 
-AMiningStation::AMiningStation()
+ARockCity::ARockCity()
 {
-	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/ProdStationMat01"));
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienRockCityMat01"));
 	if (visibleMat)
 	{
 		visibility->meshMaterials.visibleTexture = visibleMat;
@@ -24,14 +22,27 @@ AMiningStation::AMiningStation()
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
 
-	buildingType = SpawnableBuildings::MiningStation;
+	unitStats->currentHP = 100;
+	unitStats->maxHP = 100;
+	unitStats->damage = 10;
 }
 
-void AMiningStation::SetToFinishedModel()
+void ARockCity::SetToFinishedModel()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationModel.BuildingMiningStationModel'"));
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMeteorCity.BuildingMeteorCity'"));
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+}
+
+bool ARockCity::IsDisabled()
+{
+	if (Super::IsDisabled())
+	{
+		ACapstoneProjectGameModeBase::end = true;
+		return true;
+	}
+
+	return false;
 }

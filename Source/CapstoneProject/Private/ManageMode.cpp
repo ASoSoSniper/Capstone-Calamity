@@ -70,6 +70,11 @@ void UManageMode::HighlightSelected(AActor* object, bool enable)
 	if (visibility) visibility->SetSelected(enable);
 }
 
+AActor* UManageMode::GetSelectedObject()
+{
+	return nullptr;
+}
+
 void UManageMode::Action1()
 {
 }

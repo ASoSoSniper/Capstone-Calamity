@@ -63,6 +63,7 @@ public:
 	virtual void UpdateResources();
 	virtual void RevertResources();
 	virtual void BuildingAction();
+	virtual void SetToFinishedModel();
 
 	bool SphereCheck();
 	UPROPERTY(EditAnywhere) float hexSearchDistance = 100.f;
@@ -88,5 +89,6 @@ public:
 	virtual void Destroyed() override;
 
 	bool disabled = false;
-	bool IsDisabled();
+	virtual bool IsDisabled();
+	UPROPERTY(EditAnywhere) bool builtAtStart = false;
 };

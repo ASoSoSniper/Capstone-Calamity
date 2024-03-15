@@ -12,7 +12,7 @@ void UManageBattle::Select(AActor* selectedObject)
 
 	if (selectedBattle) HighlightSelected(selectedObject, true);
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Battle selected"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Battle selected"));
 }
 
 void UManageBattle::SwitchState()
@@ -58,5 +58,5 @@ void UManageBattle::CheckSelection()
 void UManageBattle::Action1()
 {
 	selectedBattle->FleeFromBattle(Factions::Human);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("ACTION 1 TRIGGERED"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("ACTION 1 TRIGGERED"));
 }

@@ -33,6 +33,7 @@ public:
 	virtual void CheckSelection();
 	virtual void CueActionState(ActionStates nextState, AActor* selectedObject = nullptr);
 	virtual void HighlightSelected(AActor* object, bool enable);
+	virtual AActor* GetSelectedObject();
 
 	//Commands
 	virtual void Upgrade(AActor* selectedObject);

@@ -101,7 +101,7 @@ void UManageTroop::SwitchState()
 		switch (engage)
 		{
 		case EngagementSelect::DoNotJoin:
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Cannot join this battle"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Cannot join this battle"));
 			return;
 		default:
 			if (hexNav)
@@ -115,7 +115,11 @@ void UManageTroop::SwitchState()
 	if (!selectedTroop) return;
 
 	if (selectedTroop->hexNav->targetHex)
+	{
 		selectedTroop->CreatePath();
+		controller->Deselect();
+	}
+		
 }
 
 void UManageTroop::Reset()
@@ -130,12 +134,18 @@ void UManageTroop::CheckSelection()
 	if (selectedTroop == nullptr)
 	{
 		CueActionState(ActionStates::None);
+		return;
 	}
 
 	if (selectedTroop->interact->canInteract == false)
 	{
 		CueActionState(ActionStates::None);
 	}
+}
+
+AActor* UManageTroop::GetSelectedObject()
+{
+	return selectedTroop;
 }
 
 void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)

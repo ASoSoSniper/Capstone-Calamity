@@ -6,12 +6,6 @@
 
 APowerPlant::APowerPlant()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingEnergyStationPlains.BuildingEnergyStationPlains'"));
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-	}
-
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/BuildingEnergyStation_Mat"));
 	if (visibleMat)
 	{
@@ -29,4 +23,13 @@ APowerPlant::APowerPlant()
 	}
 
 	buildingType = SpawnableBuildings::PowerPlant;
+}
+
+void APowerPlant::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingEnergyStationPlains.BuildingEnergyStationPlains'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+	}
 }

@@ -74,7 +74,7 @@ void AMovementAI::CreatePath()
 	if (hexNav->targetHex == hexNav->currentHex) return;
 	if (!HexIsTraversable(hexNav->targetHex))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot move here"));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot move here"));
 		return;
 	}
 
@@ -109,7 +109,7 @@ void AMovementAI::CreatePath()
 
 	//Begin moving along path
 	moveState = Move;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Path Created"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Path Created"));
 }
 
 void AMovementAI::SnapToHex(ABaseHex* hex)
@@ -176,7 +176,7 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 		}	
 
 		// **Debug things**
-		DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 1.f);
+		//DrawDebugLine(GetWorld(), traceStart, traceEnd, FColor::Red, false, 1.f);
 	}
 
 	ABaseHex* closestHexToTarget = nullptr;
@@ -210,7 +210,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance * rangeMulti && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance * rangeMulti)
 				{
 					SnapToHex(hexActor);
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
+					//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Snapped to target"));
 					break;
 				}
 			}
@@ -251,7 +251,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 {
 	if (!hexNav->currentHex)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("No current hex"));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("No current hex"));
 		return;
 	}
 
@@ -285,8 +285,11 @@ void AMovementAI::CancelPath()
 
 void AMovementAI::Destroyed()
 {
-	UnitActions::RemoveFromFaction(unitStats->faction, this);
-	Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
+	if (hexNav->currentHex)
+	{
+		UnitActions::RemoveFromFaction(unitStats->faction, this);
+		Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
+	}
 
 	Super::Destroyed();
 }

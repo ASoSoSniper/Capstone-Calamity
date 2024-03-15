@@ -16,4 +16,5 @@ class CAPSTONEPROJECT_API AMiningStation : public ABuilding
 	
 public:
 	AMiningStation();
+	virtual void SetToFinishedModel() override;
 };

@@ -19,6 +19,7 @@ class AMiningStation;
 class APowerPlant;
 class ACapitalHub;
 class AAlienCity;
+class ARockCity;
 class UBuildingAttachment;
 
 UENUM(BlueprintType)
@@ -326,6 +327,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
 	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> capitalPrefab;
 	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> alienCityPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> rockCityPrefab;
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;

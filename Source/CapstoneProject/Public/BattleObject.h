@@ -89,7 +89,7 @@ public:
 	int RollDie(int& groupDie);
 	float GetRollModifier(int& groupDie);
 
-	UPROPERTY(EditAnywhere) float moraleDecayRate = 0.1f;
+	UPROPERTY(EditAnywhere) float moraleDecayRate = 0.01f;
 	float GetMoralePercent(Factions faction);
 	float DecayMorale(Factions faction, float percentReduction);
 

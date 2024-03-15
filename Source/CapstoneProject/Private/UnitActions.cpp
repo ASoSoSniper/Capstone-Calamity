@@ -771,7 +771,7 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     ABaseHex* testForHex = Cast<ABaseHex>(object);
     if (testForHex)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("BaseHex found!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("BaseHex found!"));
 
         Results.type = ObjectTypes::Hex;
         Results.hex = testForHex;
@@ -781,7 +781,7 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     ATroop* testForAI = Cast<ATroop>(object);
     if (testForAI)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("MovementAI found!"));
 
         Results.type = ObjectTypes::MoveAI;
         Results.moveAI = testForAI;
@@ -791,7 +791,7 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     ABuilding* testForBuilding = Cast<ABuilding>(object);
     if (testForBuilding)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Building found!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Building found!"));
 
         Results.building = testForBuilding;
         Results.type = ObjectTypes::Building;
@@ -801,7 +801,7 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     ABattleObject* testForBattle = Cast<ABattleObject>(object);
     if (testForBattle)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Battle found!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Battle found!"));
 
         Results.battle = testForBattle;
         Results.type = ObjectTypes::Battle;

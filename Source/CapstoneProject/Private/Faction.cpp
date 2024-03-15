@@ -33,5 +33,5 @@ void Faction::FindActiveFactions()
 			factionRelationships.Add(currentFaction.Key, relationShip);
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Faction found %d other factions!"), factionRelationships.Num()));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Faction found %d other factions!"), factionRelationships.Num()));
 }

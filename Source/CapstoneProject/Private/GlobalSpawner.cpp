@@ -14,6 +14,7 @@
 #include "Outpost.h"
 #include "CapitalHub.h"
 #include "AlienCity.h"
+#include "RockCity.h"
 #include "BuildingAttachment.h"
 #include "BattleObject.h"
 #include "SiegeObject.h"
@@ -505,8 +506,9 @@ void AGlobalSpawner::BeginPlay()
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 	if (!siegePrefab) siegePrefab = ASiegeObject::StaticClass();
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
+	if (!rockCityPrefab) rockCityPrefab = ARockCity::StaticClass();
 
-	ProceduralHexGen(200, ShapesOfMap::Square);
+	ProceduralHexGen(400, ShapesOfMap::Square);
 }
 
 // Called every frame
@@ -535,7 +537,7 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 
 void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Armies merged!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Armies merged!"));
 	int armies = 0;
 
 	AMergedArmy* testSeeker = Cast<AMergedArmy>(seeker);
@@ -682,10 +684,19 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(alienCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat"));
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden"));
+		matAssetSelected = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL"));
 		break;
 	case TerrainType::TheRock:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
-		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingBigRockCity.BuildingBigRockCity'"));
+		newBuilding = GetWorld()->SpawnActor<ABuilding>(rockCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
+
+		matAssetVisible = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat"));
+		matAssetHidden = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden"));
+		matAssetSelected = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL"));
 		break;
 	default:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CyTheHexGuy.CyTheHexGuy'"));
@@ -773,6 +784,15 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		}
 
 		arrayOfHexColumns[3][4]->terrainChange = TerrainType::Ship;
+
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+
+		arrayOfHexColumns[FMath::RandRange(6, 19)][FMath::RandRange(1, 19)]->terrainChange = TerrainType::TheRock;
 
 		break;
 	case ShapesOfMap::Rectangle:

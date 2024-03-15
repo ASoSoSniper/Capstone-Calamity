@@ -14,10 +14,10 @@ ABuilding::ABuilding()
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));	
 	RootComponent = mesh;
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CysAwfulBuilding.CysAwfulBuilding'"));
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingInProgress.BuildingInProgress'"));
 	if (meshAsset)
 	{
-		//mesh->SetStaticMesh(meshAsset);
+		mesh->SetStaticMesh(meshAsset);
 	}
 	mesh->SetCollisionProfileName("BlockAllDynamic");
 
@@ -114,10 +114,17 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	resourceCapIncrease = stats.resourceCapIncrease;
 
-	buildTime = costs.timeToBuild;
-	currBuildTime = costs.timeToBuild;
+	if (!builtAtStart)
+	{
+		buildTime = costs.timeToBuild;
+		currBuildTime = costs.timeToBuild;
+		SetBuildState();
+	}
+	else
+	{
+		buildState = Building;
+	}
 
-	SetBuildState();
 	return true;
 }
 
@@ -143,6 +150,7 @@ void ABuilding::SetBuildState()
 		buildState = Complete;
 		UpdateResources();
 		BuildingAction();
+		SetToFinishedModel();
 		visibility->enableScan = true;
 		break;
 	case Complete:
@@ -180,6 +188,15 @@ void ABuilding::RevertResources()
 
 void ABuilding::BuildingAction()
 {
+}
+
+void ABuilding::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CysAwfulBuilding.CysAwfulBuilding'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+	}
 }
 
 bool ABuilding::SphereCheck()
@@ -273,45 +290,47 @@ void ABuilding::DestroyingBuilding(float& DeltaTime)
 void ABuilding::Destroyed()
 {
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-	if (!hex) return;
 
-	UnitActions::UpdateResourceCapacity(unitStats->faction, -resourceCapIncrease);
-
-	hex->maxWorkers = 10;
-	int totalWorkers = 0;
-	for (auto& worker : hex->workersInHex)
+	if (hex)
 	{
-		totalWorkers += worker.Value;
-	}
-	int workersToRemove = totalWorkers > 10 ? totalWorkers - 10 : 0;
+		UnitActions::UpdateResourceCapacity(unitStats->faction, -resourceCapIncrease);
 
-	int removedWorkers = 0;
-	while (removedWorkers < workersToRemove)
-	{
+		hex->maxWorkers = 10;
+		int totalWorkers = 0;
 		for (auto& worker : hex->workersInHex)
 		{
-			if (removedWorkers == workersToRemove) break;
+			totalWorkers += worker.Value;
+		}
+		int workersToRemove = totalWorkers > 10 ? totalWorkers - 10 : 0;
 
-			int remove = UnitActions::RemoveWorkers(unitStats->faction, worker.Key, 1, hex);
-			
-			if (remove > 0)
+		int removedWorkers = 0;
+		while (removedWorkers < workersToRemove)
+		{
+			for (auto& worker : hex->workersInHex)
 			{
-				removedWorkers++;
-				hex->workersInHex[worker.Key]--;
+				if (removedWorkers == workersToRemove) break;
+
+				int remove = UnitActions::RemoveWorkers(unitStats->faction, worker.Key, 1, hex);
+
+				if (remove > 0)
+				{
+					removedWorkers++;
+					hex->workersInHex[worker.Key]--;
+				}
 			}
 		}
+
+		UnitActions::RemoveFromFaction(unitStats->faction, this);
+
+		if (buildingType != SpawnableBuildings::None)
+		{
+			TMap<StratResources, int> addResources;
+			addResources.Add(StratResources::Production, spawner->buildingCosts[buildingType].productionCost * 0.25f);
+			UnitActions::AddResources(unitStats->faction, addResources);
+		}
+
+		hex->building = nullptr;
 	}
-
-	UnitActions::RemoveFromFaction(unitStats->faction, this);
-
-	if (buildingType != SpawnableBuildings::None)
-	{
-		TMap<StratResources, int> addResources;
-		addResources.Add(StratResources::Production, spawner->buildingCosts[buildingType].productionCost * 0.25f);
-		UnitActions::AddResources(unitStats->faction, addResources);
-	}
-
-	hex->building = nullptr;
 
 	Super::Destroyed();
 }

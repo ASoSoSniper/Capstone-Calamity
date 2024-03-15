@@ -6,12 +6,6 @@
 
 AFarmland::AFarmland()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationModel.BuildingFarmingStationModel'"));
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-	}
-
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/FoodStationMat02"));
 	if (visibleMat)
 	{
@@ -51,6 +45,15 @@ void AFarmland::RevertResources()
 		hex->UpdateResourceYield(StratResources::Food, -resourceYields[StratResources::Food]);
 	else
 		hex->UpdateResourceYield(StratResources::Wealth, -resourceYields[StratResources::Wealth]);
+}
+
+void AFarmland::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationModel.BuildingFarmingStationModel'"));
+	if (meshAsset)
+	{
+		mesh->SetStaticMesh(meshAsset);
+	}
 }
 
 bool AFarmland::ToggleResourcesProduced(bool produceFood)

@@ -60,7 +60,7 @@ void UInteractable::MouseHover(UPrimitiveComponent* item)
 
 	if (controller) controller->SetHoveredWorldObject(GetOwner());
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Hovering over Hex")));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Hovering over Hex")));
 }
 
 void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
@@ -69,7 +69,7 @@ void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
 
 	if (controller) controller->SetSelectedWorldObject(GetOwner());
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Selected Hex!")));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Selected Hex!")));
 }
 
 void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)
