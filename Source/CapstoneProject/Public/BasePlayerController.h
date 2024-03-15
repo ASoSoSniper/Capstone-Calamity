@@ -128,4 +128,5 @@ public:
 	UFUNCTION(BlueprintCallable) void PlayUISound(USoundBase* sound);
 
 	UFUNCTION(BlueprintCallable) TArray<FTroopArmyDisplay> GetBattleUnits(int group);
+	UFUNCTION(BlueprintCallable) FTroopArmyDisplay GetBattleUnit(int group, UnitTypes type);
 };

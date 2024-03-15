@@ -101,6 +101,25 @@ TArray<FTroopArmyDisplay> ABasePlayerController::GetBattleUnits(int group)
 	return battleUnits;
 }
 
+FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type)
+{
+	FTroopArmyDisplay unit;
+
+	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
+	if (!battleObject) return unit;
+
+	ABattleObject::UnitComposition composition = battleObject->groupCompositions[group][type];
+
+	unit.unitType = type;
+	unit.name = spawner->troopCosts[type].name;
+	unit.icon = spawner->troopCosts[type].icon;
+	unit.quantity = FText::AsNumber(composition.quantity);
+	unit.dieRoll = group == 0 ? FText::AsNumber(battleObject->group1Die) : FText::AsNumber(battleObject->group2Die);
+	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
+
+	return unit;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

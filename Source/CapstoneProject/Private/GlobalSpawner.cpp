@@ -764,11 +764,15 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
 
+				newHex->terrainChange = TerrainType(FMath::RandRange(1, 6));
+
 				column.Add(newHex);
 			}
 
 			arrayOfHexColumns.Add(column);
 		}
+
+		arrayOfHexColumns[3][4]->terrainChange = TerrainType::Ship;
 
 		break;
 	case ShapesOfMap::Rectangle:
