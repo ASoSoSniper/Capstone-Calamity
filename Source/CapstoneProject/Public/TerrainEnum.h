@@ -13,9 +13,10 @@ enum class TerrainType : uint8
 	None,
 	Plains, 
 	Hills, 
-	Jungle,
 	SporeField,
 	Forest,
+
+	Jungle,
 	Mountains,
 
 	Ship,

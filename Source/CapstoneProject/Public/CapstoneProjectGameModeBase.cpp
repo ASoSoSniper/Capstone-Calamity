@@ -25,6 +25,7 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	nonBuildableTerrains.Add(TerrainType::Ship);
 	nonBuildableTerrains.Add(TerrainType::TheRock);
 	nonBuildableTerrains.Add(TerrainType::Mountains);
+	nonBuildableTerrains.Add(TerrainType::Jungle);
 	nonBuildableTerrains.Add(TerrainType::None);
 
 	factionColors.Add(Factions::Human, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/HumanOwned.HumanOwned")));

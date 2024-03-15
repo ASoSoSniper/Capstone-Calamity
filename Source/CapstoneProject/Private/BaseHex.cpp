@@ -124,6 +124,11 @@ void ABaseHex::Tick(float DeltaTime)
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
+	if (building && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle))
+	{
+		terrainChange = TerrainType(FMath::RandRange(1, 4));
+	}
+
 	if (spawner && terrainChange != hexTerrain)
 	{
 		RequestTerrainChange();
