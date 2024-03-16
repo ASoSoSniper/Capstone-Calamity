@@ -44,6 +44,8 @@ void AMovementAI::BeginPlay()
 {
 	Super::BeginPlay();	
 
+	selectedByPlayer = false;
+
 	SphereCheck(20.f);
 }
 
@@ -289,6 +291,14 @@ void AMovementAI::Destroyed()
 	{
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 		Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
+
+		if (selectedByPlayer)
+		{
+			AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+			ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
+
+			if (controller) controller->Deselect();
+		}
 	}
 
 	Super::Destroyed();

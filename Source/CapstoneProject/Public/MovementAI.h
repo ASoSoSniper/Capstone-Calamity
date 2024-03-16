@@ -77,4 +77,6 @@ public:
 		UUnitStats* unitStats;
 	UPROPERTY(EditAnywhere)
 		UMeshVisibility* visibility;
+
+	bool selectedByPlayer;
 };

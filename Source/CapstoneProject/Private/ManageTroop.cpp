@@ -7,13 +7,21 @@
 
 void UManageTroop::Select(AActor* selectedObject)
 {
-	if (selectedTroop) HighlightSelected(selectedTroop, false);
+	if (selectedTroop)
+	{
+		HighlightSelected(selectedTroop, false);
+		selectedTroop->selectedByPlayer = false;
+	}
 
 	if (!selectedObject) return;
 
 	selectedTroop = Cast<ATroop>(selectedObject);
 
-	if (selectedObject) HighlightSelected(selectedObject, true);
+	if (selectedObject)
+	{
+		HighlightSelected(selectedObject, true);
+		selectedTroop->selectedByPlayer = true;
+	}
 }
 
 void UManageTroop::SwitchState()
@@ -125,7 +133,11 @@ void UManageTroop::SwitchState()
 void UManageTroop::Reset()
 {
 	subSelect = None;
-	if (selectedTroop) HighlightSelected(selectedTroop, false);
+	if (selectedTroop)
+	{
+		HighlightSelected(selectedTroop, false);
+		selectedTroop->selectedByPlayer = false;
+	}
 	selectedTroop = nullptr;
 }
 
