@@ -40,6 +40,8 @@ void ABasePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	currentActionState = ActionStates::None;
+
 	if (!spawner)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
@@ -187,29 +189,9 @@ void ABasePlayerController::Deselect()
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
 
-int ABasePlayerController::GetActionState()
+ActionStates ABasePlayerController::GetActionState()
 {
-	int state = 0;
-	switch (currentActionState)
-	{
-	case ActionStates::None:
-		state = 0;
-		break;
-	case ActionStates::HexManage:
-		state = 1;
-		break;
-	case ActionStates::BaseManage:
-		state = 2;
-		break;
-	case ActionStates::TroopManage:
-		state = 3;
-		break;
-	case ActionStates::BattleManage:
-		state = 4;
-		break;
-	}
-	
-	return state;
+	return currentActionState;
 }
 
 void ABasePlayerController::ForceActionState(int state)

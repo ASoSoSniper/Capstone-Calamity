@@ -21,7 +21,7 @@ enum class ObjectTypes
 	Battle
 };
 UENUM(BlueprintType)
-enum class ActionStates
+enum class ActionStates : uint8
 {
 	None,
 	HexManage,

@@ -55,18 +55,6 @@ void ABattleObject::Start()
 	//Find hex the object is placed on
 	hex = Cast<ABaseHex>(hexNav->currentHex);
 
-	/*AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
-	ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
-
-	for (int i = 0; i < hex->troopsInHex.Num(); i++)
-	{
-		if (Cast<AMovementAI>(controller->actionStates[controller->currentActionState]->GetSelectedObject()) == hex->troopsInHex[i])
-		{
-			controller->actionStates[controller->currentActionState]->CueActionState(ActionStates::None);
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, TEXT("Reset"));
-		}
-	}*/
-
 	//Once created, begin organizing armies into factions
 	CreateFactions();
 }
