@@ -196,7 +196,8 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30
+		30,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
 		});
 	//Farm Stats
 	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Plots of land dedicated to provided the colony with food or cash crops."),
@@ -225,7 +226,8 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30
+		30,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
 		});
 	//Power Plant Stats
 	buildingStats.Add(SpawnableBuildings::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("A rudamentory fission reactor that produces energy to power troops and facilities."),
@@ -254,7 +256,8 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30
+		30,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
 		});
 	//Outpost Stats
 	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
@@ -283,9 +286,97 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		50
+		50,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
-
+	//Capitol Hub
+	buildingStats.Add(SpawnableBuildings::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+		/*Energy Yield*/
+		2,
+		/*Food Yield*/
+		2,
+		/*Production Yield*/
+		2,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		100,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		7,
+		/*HP*/
+		15,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		50,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
+		});
+	buildingStats.Add(SpawnableBuildings::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+		/*Energy Yield*/
+		2,
+		/*Food Yield*/
+		2,
+		/*Production Yield*/
+		2,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		100,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		7,
+		/*HP*/
+		15,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		50,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
+		});
+	buildingStats.Add(SpawnableBuildings::RockCity, FBuildingStats{ FText::FromString("Rock City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+		/*Energy Yield*/
+		2,
+		/*Food Yield*/
+		2,
+		/*Production Yield*/
+		2,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		100,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		7,
+		/*HP*/
+		15,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		2,
+		/*Max Workers*/
+		50,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
+		});
 	//Material Storage Stats
 	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
 		/*Energy Yield*/

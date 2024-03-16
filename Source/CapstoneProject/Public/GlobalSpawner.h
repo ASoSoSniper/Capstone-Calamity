@@ -79,6 +79,7 @@ struct FBuildingStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float unrestMod;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FBuildingTTInfo

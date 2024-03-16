@@ -6,7 +6,7 @@
 
 APowerPlant::APowerPlant()
 {
-	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/BuildingEnergyStation_Mat"));
+	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/EnergyStationMat01"));
 	if (visibleMat)
 	{
 		visibility->meshMaterials.visibleTexture = visibleMat;

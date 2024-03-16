@@ -60,7 +60,7 @@ void ABasePlayerController::Tick(float DeltaTime)
 	actionStates[currentActionState]->CheckSelection();	
 	//CheckForActionStates();
 
-	if (spawner)
+	if (!spawner)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
@@ -341,12 +341,13 @@ FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
 	if (!hex->building) return attachmentDisplay;
 
 	SpawnableBuildings selectedBuilding = building->buildingType;
+	if (!spawner->buildingStats.Contains(selectedBuilding)) return attachmentDisplay;
 
-	attachmentDisplay.name = spawner->buildingCosts[selectedBuilding].name;	
+	attachmentDisplay.name = spawner->buildingCosts[selectedBuilding].name;
 	attachmentDisplay.productionCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].productionCost);
 	attachmentDisplay.workerCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].workerCost);
 	attachmentDisplay.buildTime = FText::AsNumber(spawner->buildingCosts[selectedBuilding].timeToBuild);
-	attachmentDisplay.buildingIcon = spawner->buildingCosts[selectedBuilding].buildingIcon;
+	attachmentDisplay.buildingIcon = spawner->buildingStats[selectedBuilding].buildingIcon;
 
 	return attachmentDisplay;
 }

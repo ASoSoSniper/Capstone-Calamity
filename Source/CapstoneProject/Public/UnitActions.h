@@ -37,7 +37,10 @@ enum class SpawnableBuildings : uint8
 	Farmland,
 	PowerPlant,
 	Road,
-	Outpost
+	Outpost,
+	Capitol,
+	AlienCity,
+	RockCity
 };
 
 UENUM(BlueprintType)

@@ -117,7 +117,7 @@ void UManageTroop::SwitchState()
 	if (selectedTroop->hexNav->targetHex)
 	{
 		selectedTroop->CreatePath();
-		controller->Deselect();
+		//controller->Deselect();
 	}
 		
 }
