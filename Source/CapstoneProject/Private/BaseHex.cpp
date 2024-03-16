@@ -124,7 +124,7 @@ void ABaseHex::Tick(float DeltaTime)
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
 		spawner = Cast<AGlobalSpawner>(temp);
 	}
-	if ((building || !troopsInHex.IsEmpty()) && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle))
+	if ((building && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle)) || (!troopsInHex.IsEmpty() && hexTerrain == TerrainType::Mountains))
 	{
 		terrainChange = TerrainType(FMath::RandRange(1, 4));
 	}

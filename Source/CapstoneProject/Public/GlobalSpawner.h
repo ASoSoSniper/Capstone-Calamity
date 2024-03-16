@@ -22,6 +22,20 @@ class AAlienCity;
 class ARockCity;
 class UBuildingAttachment;
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FVisibilityMaterials
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* hiddenTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelHiddenTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelVisibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelSelectedTexture;
+};
+
 UENUM(BlueprintType)
 enum class ShapesOfMap
 {
@@ -343,6 +357,7 @@ public:
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingStats> attachmentStats;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
+	UPROPERTY(EditAnywhere) TMap<TerrainType, FVisibilityMaterials> terrainTileMaterials;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;

@@ -30,13 +30,13 @@ void UMeshVisibility::BeginPlay()
 
 	for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		factionVisibility.Add(curFaction.Key, FVisibility{ Undiscovered, false, false });
+		factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
 
 	if (faction != Factions::None)
 	{
 		if (!factionVisibility.Contains(faction)) 
-			factionVisibility.Add(faction, FVisibility{ Undiscovered, false, false });
+			factionVisibility.Add(faction, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
 	
 }
@@ -54,7 +54,7 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
 		{
 			if (!factionVisibility.Contains(curFaction.Key))
-				factionVisibility.Add(curFaction.Key, FVisibility{ Undiscovered, false, false });
+				factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 		}
 		return;
 	}
@@ -92,7 +92,7 @@ void UMeshVisibility::InSight(Factions thisFaction)
 	//Add faction to object if it doesn't already exist
 	if (!factionVisibility.Contains(thisFaction))
 	{
-		factionVisibility.Add(thisFaction, FVisibility{ Undiscovered, false, false });
+		factionVisibility.Add(thisFaction, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
 
 	//Set object as "In Sight" for the faction and all its allies
@@ -139,12 +139,12 @@ void UMeshVisibility::SetVisibility()
 			if (selected)
 			{
 				material = meshMaterials.selectedTexture;
-				otherMaterial = otherMeshMaterials.selectedTexture;
+				otherMaterial = meshMaterials.modelSelectedTexture;
 			}
 			else
 			{
 				material = meshMaterials.visibleTexture;
-				otherMaterial = otherMeshMaterials.visibleTexture;
+				otherMaterial = meshMaterials.modelVisibleTexture;
 			}
 
 			if (otherMesh) otherMesh->SetVisibility(true);
@@ -189,7 +189,7 @@ void UMeshVisibility::SetVisibility()
 		{
 		case ObjectTypes::Hex:
 			material = meshMaterials.hiddenTexture;
-			otherMaterial = otherMeshMaterials.hiddenTexture;
+			otherMaterial = meshMaterials.modelHiddenTexture;
 			baseMaterial = hexBaseMaterials.hiddenTexture;
 
 			if (!factionVisibility[Factions::Human].discoveredByFaction)

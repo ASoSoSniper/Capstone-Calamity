@@ -50,7 +50,10 @@ void UManageHex::SwitchState()
 void UManageHex::Reset()
 {
 	subSelect = None;
-	HighlightSelected(controller->selectedHex, false);
+	if (controller->selectedHex)
+	{
+		HighlightSelected(controller->selectedHex, false);
+	}
 }
 
 

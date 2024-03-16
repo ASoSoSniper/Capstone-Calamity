@@ -6,7 +6,27 @@
 #include "Components/ActorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnitActions.h"
+#include "GlobalSpawner.h"
 #include "MeshVisibility.generated.h"
+
+UENUM()
+enum class VisibilityStatus
+{
+	Undiscovered,
+	Discovered,
+	Visible
+};
+
+USTRUCT()
+struct FVisibility
+{
+	GENERATED_BODY()
+
+	UPROPERTY() VisibilityStatus status = VisibilityStatus::Undiscovered;
+	UPROPERTY() bool inSight = false;
+	UPROPERTY() bool discoveredByFaction = false;
+};
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UMeshVisibility : public UActorComponent
@@ -25,37 +45,17 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	enum VisibilityStatus
-	{
-		Undiscovered,
-		Discovered,
-		Visible
-	};
-	struct FVisibility
-	{
-		VisibilityStatus status = Undiscovered;
-		bool inSight = false;
-		bool discoveredByFaction = false;
-	};
-	struct FVisibilityMaterials
-	{
-		UMaterialInterface* hiddenTexture;
-		UMaterialInterface* visibleTexture;
-		UMaterialInterface* selectedTexture;
-	};
-
 	UPROPERTY(VisibleAnywhere) Factions faction;
 	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
 	FVisibilityMaterials meshMaterials;
-	FVisibilityMaterials otherMeshMaterials;
 	FVisibilityMaterials hexBaseMaterials;
-	UStaticMeshComponent* mesh;
-	UStaticMeshComponent* otherMesh;
-	UStaticMeshComponent* hexBaseMesh;
+	UPROPERTY() UStaticMeshComponent* mesh;
+	UPROPERTY() UStaticMeshComponent* otherMesh;
+	UPROPERTY() UStaticMeshComponent* hexBaseMesh;
 	UPROPERTY(VisibleAnywhere) bool selected;
 	UPROPERTY(VisibleAnywhere) bool enableScan = true;
 	UPROPERTY(EditAnywhere) bool debug;
-	bool discoveredByPlayer;
+	UPROPERTY() bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) float visibilityRadius = 50.f;
 	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 	TMap<Factions, FVisibility> factionVisibility;
