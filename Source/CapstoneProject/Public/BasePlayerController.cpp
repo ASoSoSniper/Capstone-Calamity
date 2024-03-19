@@ -122,6 +122,36 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 	return unit;
 }
 
+FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
+{
+	FArmyDisplay display;
+	AActor* actor = GetActionStateSelection();
+
+	if (!actor) return display;
+	ATroop* troop = Cast<ATroop>(actor);
+
+	if (!troop || !spawner->troopStats.Contains(troop->unitStats->unitType) || !spawner->troopCosts.Contains(troop->unitStats->unitType)) return display;
+
+	FTroopStats stats = spawner->troopStats[troop->unitStats->unitType];
+	FTroopCost costs = spawner->troopCosts[troop->unitStats->unitType];
+
+	display.name = stats.title;
+	display.icon = costs.icon;
+
+	display.HP = FText::AsNumber(troop->unitStats->currentHP);
+	display.HPMax = FText::AsNumber(troop->unitStats->maxHP);
+	display.morale = FText::AsNumber(troop->unitStats->currentMorale);
+	display.moraleMax = FText::AsNumber(troop->unitStats->maxMorale);
+
+	display.damage = FText::AsNumber(troop->unitStats->damage);
+	display.buildingDamage = FText::AsNumber(troop->unitStats->siegePower);
+
+	display.speed = FText::AsNumber(troop->unitStats->speed);
+	display.energyCost = FText::AsNumber(troop->unitStats->energyUpkeep);
+
+	return display;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;
@@ -177,6 +207,11 @@ void ABasePlayerController::SetActionState()
 		}
 		//else (GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("State not found")));
 	}
+}
+
+AActor* ABasePlayerController::GetActionStateSelection()
+{
+	return actionStates[currentActionState]->GetSelectedObject();
 }
 
 

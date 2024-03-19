@@ -220,6 +220,7 @@ struct FArmyDisplay
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HPMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText morale;

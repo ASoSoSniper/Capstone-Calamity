@@ -73,6 +73,7 @@ public:
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
 	void SetActionState();
+	AActor* GetActionStateSelection();
 	UFUNCTION(BlueprintCallable) void Deselect();
 	UFUNCTION(BlueprintCallable) ActionStates GetActionState();
 	UFUNCTION(BlueprintCallable) void ForceActionState(int state);
@@ -129,4 +130,5 @@ public:
 
 	UFUNCTION(BlueprintCallable) TArray<FTroopArmyDisplay> GetBattleUnits(int group);
 	UFUNCTION(BlueprintCallable) FTroopArmyDisplay GetBattleUnit(int group, UnitTypes type);
+	UFUNCTION(BlueprintCallable) FArmyDisplay DisplaySelectedUnit();
 };
