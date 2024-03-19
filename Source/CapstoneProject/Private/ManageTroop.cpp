@@ -171,6 +171,7 @@ void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 
 void UManageTroop::Action1()
 {
+	selectedTroop->Action1();
 }
 
 //Army Merging Toggle
@@ -194,4 +195,5 @@ void UManageTroop::Action3()
 
 void UManageTroop::Action4()
 {
+	
 }

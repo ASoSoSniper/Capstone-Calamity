@@ -66,6 +66,9 @@ void AMovementAI::Tick(float DeltaTime)
 		break;
 	case Move:
 		SphereCheck(ACapstoneProjectGameModeBase::timeScale);
+
+		CountdownToMove(DeltaTime);
+		
 		MoveToTarget(DeltaTime);
 		break;
 	}
@@ -73,7 +76,7 @@ void AMovementAI::Tick(float DeltaTime)
 
 void AMovementAI::CreatePath()
 {
-	if (hexNav->targetHex == hexNav->currentHex) return;
+	if (hexNav->targetHex == hexNav->currentHex || (!hexPath.IsEmpty() && moveState == Move && hexNav->targetHex == hexPath[hexPath.Num() - 1])) return;
 	if (!HexIsTraversable(hexNav->targetHex))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot move here"));
@@ -82,7 +85,7 @@ void AMovementAI::CreatePath()
 
 	//Save last hex destination, if interrupted
 	AActor* temp = nullptr;
-	if (moveState == Move)
+	if (!hexPath.IsEmpty() && currTimeTillHexMove >= unitStats->speed)
 	{
 		temp = hexPath[hexPathIndex];
 	}
@@ -95,23 +98,31 @@ void AMovementAI::CreatePath()
 	if (temp != nullptr)
 		hexPath.Add(temp);
 
-	//Choose initial hex
-	AActor* hexToSearch = (temp == nullptr) ? hexNav->currentHex : temp;
-
-	//Scan for hexes leading to the target hex	
-	for (int i = 0; i < maxHexes; i++)
+	if (temp != hexNav->targetHex)
 	{
+		//Choose initial hex
+		AActor* hexToSearch = (temp == nullptr) ? hexNav->currentHex : temp;
 
-		hexPath.Add(HexSearch(hexToSearch));
-		
-		if (hexPath[i] == hexNav->targetHex) break;
+		//Scan for hexes leading to the target hex	
+		for (int i = 0; i < maxHexes; i++)
+		{
 
-		hexToSearch = hexPath[i];
+			hexPath.Add(HexSearch(hexToSearch));
+
+			if (hexPath[i] == hexNav->targetHex) break;
+
+			hexToSearch = hexPath[i];
+		}
 	}
 
 	//Begin moving along path
 	moveState = Move;
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, TEXT("Path Created"));
+
+	if (currTimeTillHexMove < unitStats->speed)
+	{
+		currTimeTillHexMove = 0.f;
+	}
+	
 }
 
 void AMovementAI::SnapToHex(ABaseHex* hex)
@@ -249,6 +260,14 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 	return targetDirection;
 }
 
+void AMovementAI::CountdownToMove(float& DeltaTime)
+{
+	ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
+
+	currTimeTillHexMove += DeltaTime * targetHex->moveMultiplier * ACapstoneProjectGameModeBase::timeScale;
+	currTimeTillHexMove = FMath::Clamp(currTimeTillHexMove, 0.f, unitStats->speed);
+}
+
 void AMovementAI::MoveToTarget(float& DeltaTime)
 {
 	if (!hexNav->currentHex)
@@ -257,16 +276,27 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 		return;
 	}
 
+	if (currTimeTillHexMove < unitStats->speed)
+	{
+		return;
+	}
+
 	if (hexPath.Num() > 0)
 	{
 		ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+		ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
 
-		FVector direction = hexPath[hexPathIndex]->GetActorLocation() - hex->GetActorLocation();
-		FVector newLocation = GetActorLocation() + (direction * unitStats->speed / 50.f) * hex->moveMultiplier * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
-		SetActorLocation(newLocation);
+		currentMoveAlpha += moveSpeed * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+		currentMoveAlpha = FMath::Clamp(currentMoveAlpha, 0.f, 1.f);
+
+		FVector step = FMath::Lerp(hex->troopAnchor->GetComponentLocation(), targetHex->troopAnchor->GetComponentLocation(), currentMoveAlpha);
+		SetActorLocation(step);
+
 		if (hex == hexPath[hexPathIndex])
 		{
 			hexPathIndex++;
+			currentMoveAlpha = 0.f;
+			currTimeTillHexMove = 0.f;
 			
 			if (hexPathIndex > hexPath.Num() - 1)
 			{
@@ -281,8 +311,16 @@ void AMovementAI::CancelPath()
 {
 	if (hexPath.IsEmpty() || hexNav->currentHex == hexNav->targetHex) return;
 
-	hexNav->targetHex = hexPath[hexPathIndex];
-	CreatePath();
+	if (currTimeTillHexMove >= unitStats->speed)
+	{
+		hexNav->targetHex = hexPath[hexPathIndex];
+		CreatePath();
+	}
+	else
+	{
+		moveState = Idle;
+		currTimeTillHexMove = 0.f;
+	}
 }
 
 void AMovementAI::Destroyed()

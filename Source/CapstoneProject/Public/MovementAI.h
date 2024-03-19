@@ -48,7 +48,11 @@ public:
 	UPROPERTY(EditAnywhere)
 		int maxHexes = 16;
 	UPROPERTY(EditAnywhere)
-		float moveSpeed = 2.f;
+		float moveSpeed = 1.f;
+		float currentMoveAlpha = 0.f;
+	UPROPERTY(VisibleAnywhere)
+		float currTimeTillHexMove = 0.f;
+
 	virtual void CreatePath();
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
@@ -67,6 +71,7 @@ public:
 		Attack
 	};
 	MoveStates moveState = Idle;
+	void CountdownToMove(float& DeltaTime);
 	virtual void MoveToTarget(float& DeltaTime);
 	virtual void CancelPath();
 	virtual void Destroyed() override;

@@ -213,6 +213,24 @@ struct FTroopTTInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsScout;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsSettler;
 };
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FArmyDisplay
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HPMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText moraleMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildingDamage;
+
+	TArray<UnitActions::UnitData> units;
+};
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopArmyDisplay
 {

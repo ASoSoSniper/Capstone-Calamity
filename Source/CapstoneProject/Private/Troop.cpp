@@ -107,6 +107,7 @@ void ATroop::MergeOnTile()
 
 void ATroop::Action1()
 {
+	CancelPath();
 }
 
 void ATroop::Action2()
@@ -134,16 +135,11 @@ void ATroop::RotateToFaceTarget(FVector direction, float& DeltaTime)
 
 void ATroop::MoveToTarget(float& DeltaTime)
 {
-	Super::MoveToTarget(DeltaTime);
-
 	if (!hexNav->currentHex) return;
 
 	if (hexPathIndex < hexPath.Num())
 		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation(), DeltaTime);
 
-	if (EndForVSlice && Cast<ABaseHex>(hexNav->currentHex)->hexTerrain == TerrainType::TheRock)
-	{
-		ACapstoneProjectGameModeBase::end = true;
-	}
+	Super::MoveToTarget(DeltaTime);
 }
 
