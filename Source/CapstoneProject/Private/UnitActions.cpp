@@ -714,7 +714,7 @@ void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
     
     if (faction == Factions::None)
     {
-        //hex->visibility->hexBaseMaterials.visibleTexture = 
+        hex->visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::factionColors[Factions::None];
         return;
     }
 

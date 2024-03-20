@@ -219,7 +219,7 @@ bool ABuilding::SphereCheck()
 					hexActor->building = this;
 					hexNav->currentHex = hexActor;
 
-					if (hexActor->hexOwner == Factions::None) hexActor->hexOwner = unitStats->faction;
+					if (hexActor->hexOwner == Factions::None) hexActor->SetFaction(unitStats->faction);
 
 					return true;
 				}

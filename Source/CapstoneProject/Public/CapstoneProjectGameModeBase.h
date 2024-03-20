@@ -36,7 +36,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	static inline TMap<Factions, Faction*> activeFactions;
-	TMap<Factions, UMaterialInterface*> factionColors;
+	static inline TMap<Factions, UMaterialInterface*> factionColors;
 
 	static inline float timeScale = 1.f;
 
@@ -53,7 +53,6 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 	static inline TArray<TerrainType> nonBuildableTerrains;
 	static inline bool end;
-
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
 	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);

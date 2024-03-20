@@ -134,7 +134,16 @@ void ABaseHex::Tick(float DeltaTime)
 		RequestTerrainChange();
 	}
 
-	if (hexTerrain != TerrainType::None) HasBuilding();
+	if (hexTerrain != TerrainType::None)
+	{
+		if (HasBuilding())
+		{
+			if (hexOwner == Factions::None)
+			{
+				SetFaction(building->unitStats->faction);
+			}
+		}
+	}
 
 	if (hexOwner != Factions::None) ActiveHarvesting();
 }
