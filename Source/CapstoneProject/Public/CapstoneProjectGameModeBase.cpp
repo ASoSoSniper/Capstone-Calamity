@@ -479,3 +479,13 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 		faction.Value->resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
 	}
 }
+
+void ACapstoneProjectGameModeBase::CheckHumanPop()
+{
+	Faction::WorkerStats workers = activeFactions[Factions::Human]->availableWorkers[WorkerType::Human];
+
+	if (workers.available <= 0 && workers.working <= 0)
+	{
+		end = true;
+	}
+}

@@ -712,7 +712,11 @@ void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
 
     hex->hexOwner = faction;
     
-    if (faction == Factions::None) return;
+    if (faction == Factions::None)
+    {
+        //hex->visibility->hexBaseMaterials.visibleTexture = 
+        return;
+    }
 
     hex->visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
 

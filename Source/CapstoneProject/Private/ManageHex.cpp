@@ -78,7 +78,7 @@ void UManageHex::Action2()
 	switch (subSelect)
 	{
 	case None:
-		
+		controller->selectedHex->building->BeginDestroying();
 		break;
 	case Build:
 		if (controller->selectedHex->hexOwner == controller->playerFaction)

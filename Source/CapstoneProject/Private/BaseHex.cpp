@@ -134,6 +134,8 @@ void ABaseHex::Tick(float DeltaTime)
 		RequestTerrainChange();
 	}
 
+	if (hexTerrain != TerrainType::None) HasBuilding();
+
 	if (hexOwner != Factions::None) ActiveHarvesting();
 }
 
@@ -249,7 +251,7 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	if (visibility->factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num()) return;
 
 	if (terrainChange != TerrainType::None) hexTerrain = terrainChange;
-	else (terrainChange = hexTerrain);
+	else terrainChange = hexTerrain;
 
 	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
 	{
@@ -271,6 +273,28 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	attritionMultiplier = info.attritionMultiplier;
 	defenderBonus = info.defenderBonus;
 	vision = info.visionModifier;
+}
+
+bool ABaseHex::HasBuilding()
+{
+	if (building != nullptr)
+	{
+		if (attachmentCanBeVisible)
+		{
+			hexMeshAttachment->SetVisibility(false);
+			hasBuilding = true;
+		}
+	}
+	else
+	{
+		if (attachmentCanBeVisible)
+		{
+			hexMeshAttachment->SetVisibility(true);
+			hasBuilding = false;
+		}
+	}
+
+	return building != nullptr;
 }
 
 int ABaseHex::GetNumberOfWorkers()

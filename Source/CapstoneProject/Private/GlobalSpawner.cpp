@@ -757,22 +757,18 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	switch (terrainType)
 	{
 	case TerrainType::None:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
 		
 		break;
 	case TerrainType::Plains:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
 
 		break;
 	case TerrainType::Hills:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
 		
 		break;
 	case TerrainType::Mountains:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileMountainModel.TileMountainModel'"));
 
 		break;
@@ -787,12 +783,10 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 		break;
 	case TerrainType::SporeField:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileSporefieldModel.TileSporefieldModel'"));
 
 		break;
 	case TerrainType::Border:
-		hex->hexMeshAttachment->SetVisibility(false);
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
 		break;
 	case TerrainType::Ship:
@@ -809,8 +803,9 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
 		break;
-	case TerrainType::TheRock:
+	case TerrainType::TheRock:		
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(rockCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
@@ -824,11 +819,14 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	{
 		hex->hexMesh->SetStaticMesh(meshAsset);
 	}
+
 	if (extraAsset)
 	{
 		hex->hexMeshAttachment->SetStaticMesh(extraAsset);
-		hex->hexMeshAttachment->SetVisibility(true);
 	}
+
+	hex->hexMeshAttachment->SetVisibility(extraAsset != nullptr);
+	hex->attachmentCanBeVisible = extraAsset != nullptr;
 }
 
 void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)

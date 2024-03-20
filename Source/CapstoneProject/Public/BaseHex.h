@@ -148,6 +148,8 @@ public:
 	float maxHarvestTime = 2.f;
 	bool harvesting;
 	float outputPercent;
+	bool hasBuilding;
+	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
 
 	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 
@@ -157,6 +159,7 @@ public:
 	void ToggleResourceYield();
 
 	void RequestTerrainChange(bool modelOnly = false);
+	bool HasBuilding();
 
 	FHexDisplay GetDisplayInfo();
 

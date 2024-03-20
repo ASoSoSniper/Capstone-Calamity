@@ -147,7 +147,7 @@ void UMeshVisibility::SetVisibility()
 				otherMaterial = meshMaterials.modelVisibleTexture;
 			}
 
-			if (otherMesh) otherMesh->SetVisibility(true);
+			//if (otherMesh) otherMesh->SetVisibility(true);
 			if (hexBaseMesh) baseMaterial = hexBaseMaterials.visibleTexture;
 
 			if (!discoveredByPlayer)

@@ -277,6 +277,9 @@ void AOutpost::Destroyed()
 			buildingAttachment->DisableAttachment();
 		}
 	}
-
+	for (int i = 0; i < claimedHexes.Num(); i++)
+	{
+		claimedHexes[i]->SetFaction(Factions::None);
+	}
 	Super::Destroyed();
 }

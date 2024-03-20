@@ -109,4 +109,6 @@ private:
 	void FindExistingBuildingsAndTroops();
 	void FindExistingHexes();
 	void UpdateResourceCosts();
+
+	void CheckHumanPop();
 };

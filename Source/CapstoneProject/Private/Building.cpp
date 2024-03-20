@@ -278,9 +278,9 @@ void ABuilding::BeginDestroying()
 
 void ABuilding::DestroyingBuilding(float& DeltaTime)
 {
-	if (currBuildTime > 0.f)
+	if (currDestructionTime > 0.f)
 	{
-		currBuildTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+		currDestructionTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		return;
 	}
 
