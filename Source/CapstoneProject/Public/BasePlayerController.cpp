@@ -138,16 +138,16 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 	display.name = stats.title;
 	display.icon = costs.icon;
 
-	display.HP = FText::AsNumber(troop->unitStats->currentHP);
-	display.HPMax = FText::AsNumber(troop->unitStats->maxHP);
-	display.morale = FText::AsNumber(troop->unitStats->currentMorale);
-	display.moraleMax = FText::AsNumber(troop->unitStats->maxMorale);
+	display.HP = troop->unitStats->currentHP;
+	display.HPMax = troop->unitStats->maxHP;
+	display.morale = troop->unitStats->currentMorale;
+	display.moraleMax = troop->unitStats->maxMorale;
 
-	display.damage = FText::AsNumber(troop->unitStats->damage);
-	display.buildingDamage = FText::AsNumber(troop->unitStats->siegePower);
+	display.damage = troop->unitStats->damage;
+	display.buildingDamage = troop->unitStats->siegePower;
 
-	display.speed = FText::AsNumber(troop->unitStats->speed);
-	display.energyCost = FText::AsNumber(troop->unitStats->energyUpkeep);
+	display.speed = troop->unitStats->speed;
+	display.energyCost = troop->unitStats->energyUpkeep;
 
 	return display;
 }

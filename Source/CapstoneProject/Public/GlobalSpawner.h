@@ -221,17 +221,26 @@ struct FArmyDisplay
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText HPMax;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText morale;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText moraleMax;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText speed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildingDamage;
-
-	TArray<UnitActions::UnitData> units;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HPMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int moraleMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildingDamage;
 };
+USTRUCT(BlueprintType, Blueprintable)
+struct FArmyMenuInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+
+
+};
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopArmyDisplay
 {
