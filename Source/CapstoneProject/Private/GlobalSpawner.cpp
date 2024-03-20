@@ -61,35 +61,35 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Settler_Nail.Settler_Nail'")) });
 
 	//Infantry Unit Stats
-	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry, 100, 60, 6, 10, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry, 240, 15, 16, 12, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
-		/*Cavalry*/ 50,
+		/*Cavalry*/ 100,
 		/*Ranged*/ 100,
-		/*Shielder*/ 200,
+		/*Shielder*/ 150,
 		/*Scout*/ 100, 
 		/*Settler*/ 100,
 
 		/*** Defending ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
-		/*Ranged*/ 200,
+		/*Ranged*/ 100,
 		/*Shielder*/ 100,
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
 	//Cavalry Unit Stats
-	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 120, 45, 8, 5, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 180, 11, 20, 8, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
-		/*Ranged*/ 200,
-		/*Shielder*/ 50,
+		/*Ranged*/ 150,
+		/*Shielder*/ 100,
 		/*Scout*/ 100,
 		/*Settler*/ 100,
 
 		/*** Defending ***/
-		/*Infantry*/ 50,
+		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
 		/*Ranged*/ 100,
 		/*Shielder*/ 100,
@@ -97,43 +97,43 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Ranged Unit Stats
-	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged, 80, 80, 4, 20, 2, 100, 1, 1,
+	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged, 160, 20, 12, 20, 2, 100, 1, 1,
 		/*** Attacking ***/
-		/*Infantry*/ 200,
+		/*Infantry*/ 150,
 		/*Cavalry*/ 100,
 		/*Ranged*/ 100,
-		/*Shielder*/ 50,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 200,
-		/*Ranged*/ 100,
-		/*Shielder*/ 50,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Shielder Unit Stats
-	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder, 150, 75, 3, 15, 1, 100, 1, 1,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 50,
 		/*Shielder*/ 100,
 		/*Scout*/ 100,
 		/*Settler*/ 100,
 
 		/*** Defending ***/
-		/*Infantry*/ 200,
-		/*Cavalry*/ 50,
-		/*Ranged*/ 50,
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Shielder Unit Stats
+	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder, 280, 19, 8, 16, 1, 100, 1, 1,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 150,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
 		/*Shielder*/ 100,
 		/*Scout*/ 100,
 		/*Settler*/ 100
 		});
 	//Scout Unit Stats
-	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout, 50, 30, 2, 1, 3, 100, 1, 1,
+	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout, 140, 7, 4, 4, 3, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -151,7 +151,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Settler Unit Stats
-	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts."), UnitTypes::Settler, 75, 60, 0, 0, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts."), UnitTypes::Settler, 200, 15, 0, 0, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -190,13 +190,13 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Damage*/
 		2,
 		/*HP*/
-		50,
+		400,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30,
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
 		});
 	//Farm Stats
@@ -220,13 +220,13 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Damage*/
 		2,
 		/*HP*/
-		5,
+		400,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30,
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
 		});
 	//Power Plant Stats
@@ -250,13 +250,13 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Damage*/
 		2,
 		/*HP*/
-		5,
+		400,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30,
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
 		});
 	//Outpost Stats
@@ -272,109 +272,109 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Resource Cap Increase*/
 		500,
 		/*Robot Storage*/
-		100,
+		0,
 		/*Diplomacy*/
 		0,
 		/*Trade*/
 		0,
 		/*Damage*/
-		7,
+		6,
 		/*HP*/
-		15,
+		400,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		50,
+		5,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	//Capitol Hub
 	buildingStats.Add(SpawnableBuildings::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
-		2,
+		4,
 		/*Food Yield*/
-		2,
+		3,
 		/*Production Yield*/
 		2,
 		/*Wealth Yield*/
 		0,
 		/*Resource Cap Increase*/
-		500,
+		1000,
 		/*Robot Storage*/
-		100,
+		0,
 		/*Diplomacy*/
 		0,
 		/*Trade*/
 		0,
 		/*Damage*/
-		7,
+		8,
 		/*HP*/
-		15,
+		600,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		7,
 		/*Max Workers*/
-		50,
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	buildingStats.Add(SpawnableBuildings::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
-		2,
+		1,
 		/*Food Yield*/
-		2,
+		3,
 		/*Production Yield*/
 		2,
 		/*Wealth Yield*/
 		0,
 		/*Resource Cap Increase*/
-		500,
+		1000,
 		/*Robot Storage*/
-		100,
+		0,
 		/*Diplomacy*/
 		0,
 		/*Trade*/
 		0,
 		/*Damage*/
-		7,
+		8,
 		/*HP*/
-		15,
+		600,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
-		50,
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	buildingStats.Add(SpawnableBuildings::RockCity, FBuildingStats{ FText::FromString("Rock City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
-		2,
+		3,
 		/*Food Yield*/
-		2,
+		3,
 		/*Production Yield*/
-		2,
+		3,
 		/*Wealth Yield*/
 		0,
 		/*Resource Cap Increase*/
-		500,
+		1500,
 		/*Robot Storage*/
-		100,
+		0,
 		/*Diplomacy*/
 		0,
 		/*Trade*/
 		0,
 		/*Damage*/
-		7,
+		10,
 		/*HP*/
-		15,
+		1000,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
-		50,
+		15,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	//Material Storage Stats
@@ -396,15 +396,15 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		5,
+		0,
 		/*HP*/
-		10,
+		0,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		15
+		5
 		});
 	//Defense Station Stats
 	attachmentStats.Add(BuildingAttachments::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("A fortress extension that greatly enhances defensive capabilities."),
@@ -425,15 +425,15 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		10,
+		2,
 		/*HP*/
-		20,
+		200,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		20
+		5
 		});
 	//Robot Factory Stats
 	attachmentStats.Add(BuildingAttachments::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("A highly industrialized factory capable of creating robotic armies."),
@@ -454,15 +454,15 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		5,
+		0,
 		/*HP*/
-		10,
+		0,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		30
+		5
 		});
 	//Robot Factory Stats
 	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An extension that allows for robot units to be stored safely without powering them."),
@@ -477,21 +477,21 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
-		1000,
+		100,
 		/*Diplomacy*/
 		0.f,
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		5,
+		0,
 		/*HP*/
-		20,
+		0,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		15
+		5
 		});
 	//Trade Outpost Stats
 	attachmentStats.Add(BuildingAttachments::TradeOutpost, FBuildingStats{ FText::FromString("Trade Outpost"), FText::FromString("A trading entrepot that allows for more favorable trading terms."),
@@ -512,9 +512,9 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		1.15f,
 		/*Damage*/
-		2,
+		0,
 		/*HP*/
-		5,
+		0,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -541,7 +541,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		2,
+		0,
 		/*HP*/
 		5,
 		/*Unrest*/
@@ -570,7 +570,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Trade*/
 		0.f,
 		/*Damage*/
-		5,
+		0,
 		/*HP*/
 		10,
 		/*Unrest*/
@@ -578,7 +578,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Energy Upkeep Cost*/
 		2,
 		/*Max Workers*/
-		40
+		10
 		});
 
 	terrainTileMaterials.Add(TerrainType::None, FVisibilityMaterials{
