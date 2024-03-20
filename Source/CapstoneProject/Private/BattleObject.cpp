@@ -46,8 +46,8 @@ void ABattleObject::BeginPlay()
 	group1Mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
 	group2Mesh->SetRelativeRotation(FRotator(0, 90.f, 0));
 
-	groupCompositions.Add(TMap<UnitTypes, UnitComposition>());
-	groupCompositions.Add(TMap<UnitTypes, UnitComposition>());
+	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
+	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
 }
 
 void ABattleObject::Start()
@@ -532,9 +532,9 @@ void ABattleObject::CalculateGroupDamage()
 	}
 }
 
-TMap<UnitTypes, ABattleObject::UnitComposition> ABattleObject::GetArmyComposition(TArray<Factions>& group)
+TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TArray<Factions>& group)
 {
-	TMap<UnitTypes, UnitComposition> unitsInArmy;
+	TMap<UnitTypes, FUnitComposition> unitsInArmy;
 
 	//For each faction in the group:
 	for (Factions& faction : group)
@@ -551,7 +551,7 @@ TMap<UnitTypes, ABattleObject::UnitComposition> ABattleObject::GetArmyCompositio
 					//If the TMap doesn't already have this unit type, add it with an initial value of zero
 					if (!unitsInArmy.Contains(factionsInBattle[faction][i].savedUnits[j].unitType))
 					{
-						unitsInArmy.Add(factionsInBattle[faction][i].savedUnits[j].unitType, UnitComposition{0, 0.f});
+						unitsInArmy.Add(factionsInBattle[faction][i].savedUnits[j].unitType, FUnitComposition{0, 0.f});
 					}
 
 					//Tally up this unit type in the total army composition
@@ -567,7 +567,7 @@ TMap<UnitTypes, ABattleObject::UnitComposition> ABattleObject::GetArmyCompositio
 			//If the TMap doesn't already have this unit type, add it with an initial value of zero
 			if (!unitsInArmy.Contains(factionsInBattle[faction][i].unitType))
 			{
-				unitsInArmy.Add(factionsInBattle[faction][i].unitType, UnitComposition{ 0, 0.f });
+				unitsInArmy.Add(factionsInBattle[faction][i].unitType, FUnitComposition{ 0, 0.f });
 			}
 
 			//Tally up this unit type in the total army composition

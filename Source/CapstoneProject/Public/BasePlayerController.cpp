@@ -4,6 +4,7 @@
 #include "BasePlayerController.h"
 #include "HexNav.h"
 #include "UnitActions.h"
+#include "MergedArmy.h"
 #include "Kismet/GameplayStatics.h"
 
 ABasePlayerController::ABasePlayerController()
@@ -110,7 +111,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
 	if (!battleObject) return unit;
 
-	ABattleObject::UnitComposition composition = battleObject->groupCompositions[group][type];
+	FUnitComposition composition = battleObject->groupCompositions[group][type];
 
 	unit.unitType = type;
 	unit.name = spawner->troopCosts[type].name;
@@ -149,6 +150,36 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 	display.speed = troop->unitStats->speed;
 	display.energyCost = troop->unitStats->energyUpkeep;
 
+	return display;
+}
+
+FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
+{
+	FArmyMenuInfo display;
+	AActor* actor = GetActionStateSelection();
+
+	if (!actor) return display;
+	AMergedArmy* army = Cast<AMergedArmy>(actor);
+	if (!army || !spawner->troopStats.Contains(army->unitStats->unitType) || !spawner->troopCosts.Contains(army->unitStats->unitType)) return display;
+
+	FTroopStats stats = spawner->troopStats[army->unitStats->unitType];
+	FTroopCost costs = spawner->troopCosts[army->unitStats->unitType];
+
+	display.HP = army->unitStats->currentHP;
+	display.HPMax = army->unitStats->maxHP;
+	display.morale = army->unitStats->currentMorale;
+	display.moraleMax = army->unitStats->maxMorale;
+
+	display.damage = army->unitStats->damage;
+	display.buildingDamage = army->unitStats->siegePower;
+
+	display.speed = army->unitStats->speed;
+	display.energyUpkeepCost = army->unitStats->energyUpkeep;
+
+	display.vision = 0;
+
+
+	
 	return display;
 }
 
@@ -729,7 +760,7 @@ bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 {
-	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, nullptr, nullptr, nullptr, nullptr, nullptr };
+	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, FText{}, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	if (!hex) return hexBuilding;
@@ -743,6 +774,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Farmland;
 		hexBuilding.farmland = farmland;
+		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Farmland].name;
 		return hexBuilding;
 	}
 
@@ -750,6 +782,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::PowerPlant;
 		hexBuilding.powerplant = powerplant;
+		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::PowerPlant].name;
 		return hexBuilding;
 	}
 
@@ -757,6 +790,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::MiningStation;
 		hexBuilding.miningStation = miningStation;
+		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::MiningStation].name;
 		return hexBuilding;
 	}
 
@@ -764,6 +798,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Outpost;
 		hexBuilding.outpost = outpost;
+		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Outpost].name;
 		return hexBuilding;
 	}
 

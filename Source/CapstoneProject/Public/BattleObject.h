@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.h"
 #include "HexNav.h"
+#include "GlobalSpawner.h"
 #include "UnitActions.h"
 #include "BattleObject.generated.h"
 
@@ -48,13 +49,7 @@ public:
 	};
 	Battle currentBattle;
 
-	struct UnitComposition
-	{
-		int quantity = 0;
-		float compPercent = 0.f;
-	};
-
-	TArray<TMap<UnitTypes, UnitComposition>> groupCompositions;
+	TArray<TMap<UnitTypes, FUnitComposition>> groupCompositions;
 
 	virtual void Start();
 
@@ -95,5 +90,5 @@ public:
 
 	Factions attackingFaction = Factions::None;
 	void CalculateGroupDamage();
-	TMap<UnitTypes, UnitComposition> GetArmyComposition(TArray<Factions>& group);
+	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
 };

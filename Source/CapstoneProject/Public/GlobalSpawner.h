@@ -23,6 +23,15 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FUnitComposition
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float compPercent = 0.f;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FVisibilityMaterials
 {
 	GENERATED_BODY()
@@ -122,7 +131,8 @@ struct FBuildingOnHex
 {
 	GENERATED_BODY()
 
-	SpawnableBuildings buildingType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AFarmland* farmland;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) APowerPlant* powerplant;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AMiningStation* miningStation;
@@ -238,7 +248,30 @@ struct FArmyMenuInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HPMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int moraleMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildingDamage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int vision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int reinforceRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsSettler;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsSettler;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
