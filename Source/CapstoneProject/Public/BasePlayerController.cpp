@@ -133,11 +133,11 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 	if (!troop || !spawner->troopStats.Contains(troop->unitStats->unitType) || !spawner->troopCosts.Contains(troop->unitStats->unitType)) return display;
 
-	FTroopStats stats = spawner->troopStats[troop->unitStats->unitType];
-	FTroopCost costs = spawner->troopCosts[troop->unitStats->unitType];
+	//FTroopStats stats = spawner->troopStats[troop->unitStats->unitType];
+	//FTroopCost costs = spawner->troopCosts[troop->unitStats->unitType];
 
-	display.name = stats.title;
-	display.icon = costs.icon;
+	//display.name = stats.title;
+	//display.icon = costs.icon;
 
 	display.HP = troop->unitStats->currentHP;
 	display.HPMax = troop->unitStats->maxHP;
@@ -155,7 +155,7 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 {
-	FArmyMenuInfo display;
+	FArmyMenuInfo display{ FText(), nullptr, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	AActor* actor = GetActionStateSelection();
 
 	if (!actor) return display;
