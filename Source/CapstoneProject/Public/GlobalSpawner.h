@@ -272,6 +272,13 @@ struct FArmyMenuInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsShielder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsScout;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsSettler;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int infantryNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int cavalryNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int rangedNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int shielderNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int scoutNum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerNum;
 };
 
 USTRUCT(BlueprintType, Blueprintable)

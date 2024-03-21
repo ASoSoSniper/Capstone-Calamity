@@ -212,6 +212,13 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	display.defendvsRanged /= totalUnits;
 	display.defendvsShielder /= totalUnits;
 	display.defendvsSettler /= totalUnits;
+
+	display.infantryNum = units[UnitTypes::Infantry].quantity;
+	display.cavalryNum = units[UnitTypes::Cavalry].quantity;
+	display.scoutNum = units[UnitTypes::Scout].quantity;
+	display.rangedNum = units[UnitTypes::Ranged].quantity;
+	display.shielderNum = units[UnitTypes::Shielder].quantity;
+	display.settlerNum = units[UnitTypes::Settler].quantity;
 	
 	return display;
 }

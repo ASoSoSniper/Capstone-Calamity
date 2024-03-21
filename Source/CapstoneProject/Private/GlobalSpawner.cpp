@@ -917,6 +917,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 
 	//Declare TMaps for resources and workers to spend on this building
 	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	AMovementAI* settlerOnHex = nullptr;
 
 	//If the desired building exists in the 
 	if (buildingCosts.Contains(building))
@@ -931,7 +932,11 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 				{
 					if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Settler)
 					{
-						if (hex->troopsInHex[i]->unitStats->faction == faction) canAfford = true;
+						if (hex->troopsInHex[i]->unitStats->faction == faction)
+						{
+							canAfford = true;
+							settlerOnHex = hex->troopsInHex[i];
+						}
 					}
 				}
 			}
@@ -952,7 +957,8 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 
 		if (building == SpawnableBuildings::Outpost)
 		{
-			UnitActions::SetWorkers(faction, WorkerType::Human, buildingCosts[building].workerCost);
+			UnitActions::SetWorkers(faction, WorkerType::Human, troopCosts[UnitTypes::Settler].populationCost);
+			if (settlerOnHex) settlerOnHex->Destroy();
 		}
 	}
 	else
@@ -1031,7 +1037,7 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 		{
 			if (unit == UnitTypes::Settler)
 			{
-				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[unit].populationCost))
+				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[UnitTypes::Settler].populationCost))
 				{
 					canAfford = true;
 				}

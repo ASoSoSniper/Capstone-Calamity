@@ -394,7 +394,7 @@ int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredW
 
 bool UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers)
 {
-    if (desiredWorkers < 0 && FMath::Abs(desiredWorkers) < ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available) return false;
+    if (desiredWorkers < 0 && FMath::Abs(desiredWorkers) > ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available) return false;
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += desiredWorkers;
 
