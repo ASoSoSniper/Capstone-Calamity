@@ -31,6 +31,7 @@ public:
 
 	UPROPERTY(EditAnywhere) Factions faction;
 	UPROPERTY(EditAnywhere) UnitTypes unitType;
+	UPROPERTY(EditAnywhere) FString name;
 	UPROPERTY(VisibleAnywhere) bool upgraded;
 	//Exclusive property for armies
 	TArray<UnitActions::UnitData> savedUnits;

@@ -131,13 +131,20 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 	if (!actor) return display;
 	ATroop* troop = Cast<ATroop>(actor);
 
-	if (!troop || !spawner->troopStats.Contains(troop->unitStats->unitType) || !spawner->troopCosts.Contains(troop->unitStats->unitType)) return display;
+	if (!troop) return display;
 
-	//FTroopStats stats = spawner->troopStats[troop->unitStats->unitType];
-	//FTroopCost costs = spawner->troopCosts[troop->unitStats->unitType];
+	if (troop->unitStats->unitType != UnitTypes::Army)
+	{
+		display.name = spawner->troopStats[troop->unitStats->unitType].title;
+		display.icon = spawner->troopCosts[troop->unitStats->unitType].icon;
+	}	
+	else
+	{
+		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(troop);
 
-	//display.name = stats.title;
-	//display.icon = costs.icon;
+		display.name = spawner->troopStats[chosenType].title;
+		display.icon = spawner->troopCosts[chosenType].icon;
+	}
 
 	display.HP = troop->unitStats->currentHP;
 	display.HPMax = troop->unitStats->maxHP;
@@ -155,15 +162,25 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 {
-	FArmyMenuInfo display{ FText(), nullptr, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	FArmyMenuInfo display{ FText::FromString("Army Name"), nullptr, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	AActor* actor = GetActionStateSelection();
 
 	if (!actor) return display;
 	ATroop* army = Cast<ATroop>(actor);
-	if (!army || !spawner->troopStats.Contains(army->unitStats->unitType) || !spawner->troopCosts.Contains(army->unitStats->unitType)) return display;
+	if (!army) return display;
 
-	//FTroopStats stats = spawner->troopStats[army->unitStats->unitType];
-	//FTroopCost costs = spawner->troopCosts[army->unitStats->unitType];
+	if (army->unitStats->unitType != UnitTypes::Army)
+	{
+		display.name = spawner->troopStats[army->unitStats->unitType].title;
+		display.icon = spawner->troopCosts[army->unitStats->unitType].icon;
+	}
+	else
+	{
+		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(army);
+
+		display.name = spawner->troopStats[chosenType].title;
+		display.icon = spawner->troopCosts[chosenType].icon;
+	}
 
 	display.HP = army->unitStats->currentHP;
 	display.HPMax = army->unitStats->maxHP;

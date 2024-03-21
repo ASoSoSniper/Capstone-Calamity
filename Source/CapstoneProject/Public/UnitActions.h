@@ -195,6 +195,7 @@ public:
 	static void AddResources(Factions faction, TMap<StratResources, int> resources);
 
 	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(ATroop* army);
+	static UnitTypes GetLargestUnitQuantity(ATroop* army);
 };
 
 

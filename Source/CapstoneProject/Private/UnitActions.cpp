@@ -698,6 +698,25 @@ TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(ATroop* army)
     return units;
 }
 
+UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
+{
+    TMap<UnitTypes, FUnitComposition> composition = GetArmyComposition(army);
+
+    UnitTypes highestType = UnitTypes::None;
+    int best = 0;
+
+    for (auto& unit : composition)
+    {
+        if (unit.Value.quantity > best)
+        {
+            best = unit.Value.quantity;
+            highestType = unit.Key;
+        }
+    }
+
+    return highestType;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
