@@ -244,7 +244,7 @@ USTRUCT(BlueprintType, Blueprintable)
 struct FArmyMenuInfo
 {
 	GENERATED_USTRUCT_BODY()
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 
@@ -389,7 +389,7 @@ public:
 	AActor* SpawnSmoke(AActor* object);
 
 	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
-	void BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex, AOutpost* outpost = nullptr);
+	void BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);

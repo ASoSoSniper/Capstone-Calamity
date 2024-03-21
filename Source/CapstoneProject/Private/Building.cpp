@@ -66,6 +66,8 @@ void ABuilding::Tick(float DeltaTime)
 
 bool ABuilding::SetupBuilding(SpawnableBuildings type)
 {
+	if (unitStats->faction == Factions::None) return false;
+
 	//If both needed objects are found, then setup is complete and this function can be ignored
 	if (spawner && hexNav->currentHex) return true;
 
@@ -110,6 +112,32 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	if (hex->maxWorkers != costs.workerCost)
 	{
 		hex->maxWorkers = costs.workerCost;
+	}
+
+	int hexWorkers = 0;
+	int availableWorkers = 0;
+	TMap<WorkerType, int> factionWorkers = UnitActions::GetFactionWorkers(unitStats->faction);
+	for (auto& worker : hex->workersInHex)
+	{
+		hexWorkers += worker.Value;
+	}
+	for (auto& worker : factionWorkers)
+	{
+		availableWorkers += worker.Value;
+	}
+
+	while (hexWorkers < hex->maxWorkers && availableWorkers > 0)
+	{
+		for (auto& worker : factionWorkers)
+		{
+			int addedWorker = UnitActions::AddWorkers(unitStats->faction, worker.Key, 1, hex);
+
+			hex->workersInHex[worker.Key] += addedWorker;
+			hexWorkers += addedWorker;
+			availableWorkers -= addedWorker;
+
+			if (hexWorkers >= hex->maxWorkers || availableWorkers <= 0) break;
+		}
 	}
 
 	resourceCapIncrease = stats.resourceCapIncrease;

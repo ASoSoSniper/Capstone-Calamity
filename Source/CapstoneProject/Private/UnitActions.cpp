@@ -392,6 +392,15 @@ int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredW
     return workersToRemove;
 }
 
+bool UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers)
+{
+    if (desiredWorkers < 0 && FMath::Abs(desiredWorkers) < ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available) return false;
+
+    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += desiredWorkers;
+
+    return true;
+}
+
 int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
     if (desiredWorkers > hex->workersInHex[worker])
@@ -510,34 +519,17 @@ TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
     return workers;
 }
 
-void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex, AOutpost* outpost)
+void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, ABaseHex* hex)
 {
-    for (auto resource : resources)
+    for (auto& resource : resources)
     {
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
-    }
-
-    if (hex)
-    {
-        for (auto worker : workers)
-        {
-            hex->workersInHex[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, hex);
-        }
-    }
-    
-    if (outpost)
-    {
-        for (auto worker : workers)
-        {
-            //ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker.Key].available -= workers[worker.Key];
-            //outpost->popInStorage += workers[worker.Key];
-        }
     }
 }
 
 void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, AOutpost* outpost, BuildingAttachments attachment)
 {
-    for (auto resource : resources)
+    for (auto& resource : resources)
     {
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
     }
@@ -545,7 +537,7 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     if (outpost)
     {
         UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
-        for (auto worker : workers)
+        for (auto& worker : workers)
         {
             selectedAttachment->workersInAttachment[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, outpost, attachment);
         }
@@ -676,6 +668,33 @@ void UnitActions::AddResources(Factions faction, TMap<StratResources, int> resou
         if (!resources.Contains(resource.Key)) continue;
         resource.Value.currentResources += resources[resource.Key];
     }
+}
+
+TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(AMergedArmy* army)
+{
+    TMap<UnitTypes, FUnitComposition> units;
+
+    units.Add(UnitTypes::Infantry, FUnitComposition{});
+    units.Add(UnitTypes::Cavalry, FUnitComposition{});
+    units.Add(UnitTypes::Scout, FUnitComposition{});
+    units.Add(UnitTypes::Ranged, FUnitComposition{});
+    units.Add(UnitTypes::Shielder, FUnitComposition{});
+    units.Add(UnitTypes::Settler, FUnitComposition{});
+
+    int totalUnits = 0;
+
+    for (int i = 0; i < army->unitStats->savedUnits.Num(); i++)
+    {
+        ++units[army->unitStats->savedUnits[i].unitType].quantity;
+        ++totalUnits;
+    }
+
+    for (auto& unit : units)
+    {
+        unit.Value.compPercent = (float)unit.Value.quantity / (float)totalUnits;
+    }
+
+    return units;
 }
 
 void UnitActions::AssignFaction(Factions faction, AActor* target)

@@ -85,6 +85,7 @@ enum class EngagementSelect
 
 class ABaseHex;
 class ATroop;
+class AMergedArmy;
 class ASettler;
 class AMovementAI;
 class ABuilding;
@@ -94,6 +95,7 @@ class AOutpost;
 class UBuildingAttachment;
 class AGlobalSpawner;
 struct FTroopStats;
+struct FUnitComposition;
 
 class CAPSTONEPROJECT_API UnitActions
 {
@@ -164,6 +166,7 @@ public:
 	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
+	static bool SetWorkers(Factions faction, WorkerType worker, int desiredWorkers);
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 
@@ -176,7 +179,7 @@ public:
 	static TMap<StratResources, int> GetResourceLosses(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
-	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, ABaseHex* hex = nullptr, AOutpost* outpost = nullptr);
+	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, ABaseHex* hex = nullptr);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, AOutpost* outpost, BuildingAttachments attachment);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
@@ -190,6 +193,8 @@ public:
 	static void EnableRobots(Factions faction, bool enable);
 	static void RobotIsActive(Factions faction, ATroop* robot);
 	static void AddResources(Factions faction, TMap<StratResources, int> resources);
+
+	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(AMergedArmy* army);
 };
 
 

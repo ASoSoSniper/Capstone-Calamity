@@ -162,8 +162,8 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	AMergedArmy* army = Cast<AMergedArmy>(actor);
 	if (!army || !spawner->troopStats.Contains(army->unitStats->unitType) || !spawner->troopCosts.Contains(army->unitStats->unitType)) return display;
 
-	FTroopStats stats = spawner->troopStats[army->unitStats->unitType];
-	FTroopCost costs = spawner->troopCosts[army->unitStats->unitType];
+	//FTroopStats stats = spawner->troopStats[army->unitStats->unitType];
+	//FTroopCost costs = spawner->troopCosts[army->unitStats->unitType];
 
 	display.HP = army->unitStats->currentHP;
 	display.HPMax = army->unitStats->maxHP;
@@ -178,7 +178,40 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 
 	display.vision = 0;
 
+	TMap<UnitTypes, FUnitComposition> units = UnitActions::GetArmyComposition(army);
+	int totalUnits = 0;
+	for (auto& unit : units)
+	{
+		totalUnits += unit.Value.quantity;
 
+		display.attackvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsInfantry;
+		display.attackvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsCavalry;
+		display.attackvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsScout;
+		display.attackvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsRanged;
+		display.attackvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsShielder;
+		display.attackvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsSettler;
+
+		display.defendvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsInfantry;
+		display.defendvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsCavalry;
+		display.defendvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsScout;
+		display.defendvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsRanged;
+		display.defendvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsShielder;
+		display.defendvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsSettler;
+	}
+
+	display.attackvsInfantry /= totalUnits;
+	display.attackvsCavalry /= totalUnits;
+	display.attackvsScout /= totalUnits;
+	display.attackvsRanged /= totalUnits;
+	display.attackvsShielder /= totalUnits;
+	display.attackvsSettler /= totalUnits;
+
+	display.defendvsInfantry /= totalUnits;
+	display.defendvsCavalry /= totalUnits;
+	display.defendvsScout /= totalUnits;
+	display.defendvsRanged /= totalUnits;
+	display.defendvsShielder /= totalUnits;
+	display.defendvsSettler /= totalUnits;
 	
 	return display;
 }

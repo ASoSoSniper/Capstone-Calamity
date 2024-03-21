@@ -917,28 +917,43 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 
 	//Declare TMaps for resources and workers to spend on this building
 	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
-	TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
 
 	//If the desired building exists in the 
 	if (buildingCosts.Contains(building))
 	{
 		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
-		TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
 
-		if (resources[StratResources::Production] >= buildingCosts[building].productionCost && workers[WorkerType::Human] > buildingCosts[building].workerCost)
+		if (resources[StratResources::Production] >= buildingCosts[building].productionCost)
 		{
-			canAfford = true;
+			if (building == SpawnableBuildings::Outpost)
+			{
+				for (int i = 0; i < hex->troopsInHex.Num(); i++)
+				{
+					if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Settler)
+					{
+						if (hex->troopsInHex[i]->unitStats->faction == faction) canAfford = true;
+					}
+				}
+			}
+			else
+			{
+				canAfford = true;
+			}
 		}
 
 		resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
-		workerCosts.Add(WorkerType::Human, buildingCosts[building].workerCost - hex->GetNumberOfWorkers());
 	}
 
 	if (canAfford)
 	{
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, hex);
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, hex);
 		UnitActions::AssignFaction(faction, newBuilding);
+
+		if (building == SpawnableBuildings::Outpost)
+		{
+			UnitActions::SetWorkers(faction, WorkerType::Human, buildingCosts[building].workerCost);
+		}
 	}
 	else
 	{
@@ -1008,40 +1023,42 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 	bool canAfford = false;
 
 	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
-	TMap<WorkerType, int> popCosts = TMap<WorkerType, int>();
 	if (troopCosts.Contains(unit))
 	{
 		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
-		TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
 
-		if (resources[StratResources::Production] >= troopCosts[unit].productionCost && workers[WorkerType::Human] > troopCosts[unit].populationCost)
+		if (resources[StratResources::Production] >= troopCosts[unit].productionCost)
 		{
-			canAfford = true;
+			if (unit == UnitTypes::Settler)
+			{
+				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[unit].populationCost))
+				{
+					canAfford = true;
+				}
+			}
+			else
+			{
+				canAfford = true;
+			}
+			
 		}
 
 		resourceCosts.Add(StratResources::Production, troopCosts[unit].productionCost);
-		popCosts.Add(WorkerType::Human, troopCosts[unit].populationCost);
 	}
 
-	if (canAfford) UnitActions::ConsumeSpentResources(faction, resourceCosts, popCosts, nullptr);
+	if (canAfford) UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
+	
 
 	return canAfford;
 }
 
-void AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex, AOutpost* outpost)
+void AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
 {
 	FTroopStats unitData = troopStats[unit];	
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(faction, newTroop);
 	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, unitData);
-
-
-	if (outpost && unit == UnitTypes::Settler)
-	{
-		Cast<ASettler>(newTroop)->popInStorage += troopCosts[unit].populationCost;
-		//outpost->popInStorage -= troopCosts[unit].populationCost;
-	}
 }
 
 void AGlobalSpawner::BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost)
