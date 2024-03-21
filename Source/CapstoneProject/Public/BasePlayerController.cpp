@@ -119,6 +119,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 	unit.quantity = FText::AsNumber(composition.quantity);
 	unit.dieRoll = group == 0 ? FText::AsNumber(battleObject->group1Die) : FText::AsNumber(battleObject->group2Die);
 	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
+	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
 
 	return unit;
 }

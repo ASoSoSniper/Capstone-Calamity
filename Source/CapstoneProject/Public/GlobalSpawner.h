@@ -292,6 +292,7 @@ struct FTroopArmyDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText quantity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText dieRoll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defenderBonus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* hexIcon;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
