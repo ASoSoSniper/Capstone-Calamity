@@ -670,9 +670,10 @@ void UnitActions::AddResources(Factions faction, TMap<StratResources, int> resou
     }
 }
 
-TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(AMergedArmy* army)
+TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(ATroop* army)
 {
     TMap<UnitTypes, FUnitComposition> units;
+    if (!army) return units;
 
     units.Add(UnitTypes::Infantry, FUnitComposition{});
     units.Add(UnitTypes::Cavalry, FUnitComposition{});

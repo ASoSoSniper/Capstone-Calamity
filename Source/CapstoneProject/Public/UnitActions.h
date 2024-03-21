@@ -194,7 +194,7 @@ public:
 	static void RobotIsActive(Factions faction, ATroop* robot);
 	static void AddResources(Factions faction, TMap<StratResources, int> resources);
 
-	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(AMergedArmy* army);
+	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(ATroop* army);
 };
 
 

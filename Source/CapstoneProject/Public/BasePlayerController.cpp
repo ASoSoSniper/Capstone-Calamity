@@ -159,7 +159,7 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	AActor* actor = GetActionStateSelection();
 
 	if (!actor) return display;
-	AMergedArmy* army = Cast<AMergedArmy>(actor);
+	ATroop* army = Cast<ATroop>(actor);
 	if (!army || !spawner->troopStats.Contains(army->unitStats->unitType) || !spawner->troopCosts.Contains(army->unitStats->unitType)) return display;
 
 	//FTroopStats stats = spawner->troopStats[army->unitStats->unitType];
