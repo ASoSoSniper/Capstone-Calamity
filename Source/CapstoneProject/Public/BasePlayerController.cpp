@@ -95,7 +95,7 @@ TArray<FTroopArmyDisplay> ABasePlayerController::GetBattleUnits(int group)
 		unit.name = spawner->troopCosts[unitType.Key].name;
 		unit.icon = spawner->troopCosts[unitType.Key].icon;
 		unit.quantity = FText::AsNumber(unitType.Value.quantity);
-		unit.dieRoll = group == 0 ? FText::AsNumber(battleObject->group1Die) : FText::AsNumber(battleObject->group2Die);
+		unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
 		unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
 
 		battleUnits.Add(unit);
@@ -117,7 +117,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 	unit.name = spawner->troopCosts[type].name;
 	unit.icon = spawner->troopCosts[type].icon;
 	unit.quantity = FText::AsNumber(composition.quantity);
-	unit.dieRoll = group == 0 ? FText::AsNumber(battleObject->group1Die) : FText::AsNumber(battleObject->group2Die);
+	unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
 	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
 	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
 
