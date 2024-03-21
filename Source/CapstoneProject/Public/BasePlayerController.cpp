@@ -179,46 +179,89 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	display.vision = 0;
 
 	TMap<UnitTypes, FUnitComposition> units = UnitActions::GetArmyComposition(army);
-	int totalUnits = 0;
-	for (auto& unit : units)
+
+	if (army->unitStats->unitType == UnitTypes::Army)
 	{
-		totalUnits += unit.Value.quantity;
+		int totalUnits = 0;
+		for (auto& unit : units)
+		{
+			totalUnits += unit.Value.quantity;
 
-		display.attackvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsInfantry;
-		display.attackvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsCavalry;
-		display.attackvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsScout;
-		display.attackvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsRanged;
-		display.attackvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsShielder;
-		display.attackvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsSettler;
+			display.attackvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsInfantry;
+			display.attackvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsCavalry;
+			display.attackvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsScout;
+			display.attackvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsRanged;
+			display.attackvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsShielder;
+			display.attackvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsSettler;
 
-		display.defendvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsInfantry;
-		display.defendvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsCavalry;
-		display.defendvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsScout;
-		display.defendvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsRanged;
-		display.defendvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsShielder;
-		display.defendvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsSettler;
+			display.defendvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsInfantry;
+			display.defendvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsCavalry;
+			display.defendvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsScout;
+			display.defendvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsRanged;
+			display.defendvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsShielder;
+			display.defendvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsSettler;
+		}
+
+		display.attackvsInfantry /= totalUnits;
+		display.attackvsCavalry /= totalUnits;
+		display.attackvsScout /= totalUnits;
+		display.attackvsRanged /= totalUnits;
+		display.attackvsShielder /= totalUnits;
+		display.attackvsSettler /= totalUnits;
+
+		display.defendvsInfantry /= totalUnits;
+		display.defendvsCavalry /= totalUnits;
+		display.defendvsScout /= totalUnits;
+		display.defendvsRanged /= totalUnits;
+		display.defendvsShielder /= totalUnits;
+		display.defendvsSettler /= totalUnits;
+
+		display.infantryNum = units[UnitTypes::Infantry].quantity;
+		display.cavalryNum = units[UnitTypes::Cavalry].quantity;
+		display.scoutNum = units[UnitTypes::Scout].quantity;
+		display.rangedNum = units[UnitTypes::Ranged].quantity;
+		display.shielderNum = units[UnitTypes::Shielder].quantity;
+		display.settlerNum = units[UnitTypes::Settler].quantity;
 	}
+	else
+	{
+		display.attackvsInfantry = spawner->troopStats[army->unitStats->unitType].attackvsInfantry;
+		display.attackvsCavalry = spawner->troopStats[army->unitStats->unitType].attackvsCavalry;
+		display.attackvsScout = spawner->troopStats[army->unitStats->unitType].attackvsScout;
+		display.attackvsRanged = spawner->troopStats[army->unitStats->unitType].attackvsRanged;
+		display.attackvsShielder = spawner->troopStats[army->unitStats->unitType].attackvsShielder;
+		display.attackvsSettler = spawner->troopStats[army->unitStats->unitType].attackvsSettler;
 
-	display.attackvsInfantry /= totalUnits;
-	display.attackvsCavalry /= totalUnits;
-	display.attackvsScout /= totalUnits;
-	display.attackvsRanged /= totalUnits;
-	display.attackvsShielder /= totalUnits;
-	display.attackvsSettler /= totalUnits;
+		display.defendvsInfantry = spawner->troopStats[army->unitStats->unitType].defendvsInfantry;
+		display.defendvsCavalry = spawner->troopStats[army->unitStats->unitType].defendvsCavalry;
+		display.defendvsScout = spawner->troopStats[army->unitStats->unitType].defendvsScout;
+		display.defendvsRanged = spawner->troopStats[army->unitStats->unitType].defendvsRanged;
+		display.defendvsShielder = spawner->troopStats[army->unitStats->unitType].defendvsShielder;
+		display.defendvsSettler = spawner->troopStats[army->unitStats->unitType].defendvsSettler;
 
-	display.defendvsInfantry /= totalUnits;
-	display.defendvsCavalry /= totalUnits;
-	display.defendvsScout /= totalUnits;
-	display.defendvsRanged /= totalUnits;
-	display.defendvsShielder /= totalUnits;
-	display.defendvsSettler /= totalUnits;
-
-	display.infantryNum = units[UnitTypes::Infantry].quantity;
-	display.cavalryNum = units[UnitTypes::Cavalry].quantity;
-	display.scoutNum = units[UnitTypes::Scout].quantity;
-	display.rangedNum = units[UnitTypes::Ranged].quantity;
-	display.shielderNum = units[UnitTypes::Shielder].quantity;
-	display.settlerNum = units[UnitTypes::Settler].quantity;
+		switch (army->unitStats->unitType)
+		{
+		case UnitTypes::Infantry:
+			display.infantryNum = 1;
+			break;
+		case UnitTypes::Cavalry:
+			display.cavalryNum = 1;
+			break;
+		case UnitTypes::Scout:
+			display.scoutNum = 1;
+			break;
+		case UnitTypes::Ranged:
+			display.rangedNum = 1;
+			break;
+		case UnitTypes::Shielder:
+			display.shielderNum = 1;
+			break;
+		case UnitTypes::Settler:
+			display.settlerNum = 1;
+			break;
+		}
+	}
+	
 	
 	return display;
 }
