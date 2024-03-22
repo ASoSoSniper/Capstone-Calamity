@@ -25,39 +25,39 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 200, 30, 5, FText::FromString("Mining Station"),
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 5, FText::FromString("Mining Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 100, 30, 5, FText::FromString("Farmland"),
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 5, FText::FromString("Farmland"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 200, 30, 5, FText::FromString("Power Plant"),
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 5, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 0, 10, FText::FromString("Outpost"),
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 10, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 100, 15, 120, FText::FromString("Storage"),
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, FText::FromString("Storage"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 100, 20, 120, FText::FromString("Defense Station"),
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, FText::FromString("Defense Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 100, 30, 150, FText::FromString("Robot Factory"),
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, FText::FromString("Robot Factory"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 100, 15, 120, FText::FromString("Robot Barracks"),
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, FText::FromString("Robot Barracks"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
 
-	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 80 });
-	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 100 });
-	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 40, 120 });
+	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
+	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
+	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 96 });
 
-	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 100, 48, 0, FText::FromString("Infantry"), 
+	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 25, 24, 0, FText::FromString("Infantry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
-	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 100, 60, 0, FText::FromString("Cavalry"), 
+	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 25, 24, 0, FText::FromString("Cavalry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Cavalry_Nail.Cavalry_Nail'")) });
-	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 100, 48, 0, FText::FromString("Ranged"), 
+	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 25, 24, 0, FText::FromString("Ranged"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Ranged_Nail.Ranged_Nail'")) });
-	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 100, 60, 0, FText::FromString("Shielder"), 
+	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 25, 24, 0, FText::FromString("Shielder"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Shielder_Nail.Shielder_Nail'")) });
-	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 20, 24, 0, FText::FromString("Scout"), 
+	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 25, 12, 0, FText::FromString("Scout"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Scout_Nail.Scout_Nail'")) });
-	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 400, 60, 50, FText::FromString("Settler"), 
+	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 200, 48, 10, FText::FromString("Settler"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Settler_Nail.Settler_Nail'")) });
 
 	//Infantry Unit Stats
