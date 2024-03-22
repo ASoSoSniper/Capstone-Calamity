@@ -232,10 +232,10 @@ void ABattleObject::Attack()
 
 	CalculateGroupDamage();
 
-	++currentTickTillRoll;
-	if (currentTickTillRoll >= ticksTillRoll)
+	--currentTickTillRoll;
+	if (currentTickTillRoll <= 0)
 	{
-		currentTickTillRoll = 0;
+		currentTickTillRoll = ticksTillRoll;
 		RollDie(group1Die);
 		RollDie(group2Die); 
 
