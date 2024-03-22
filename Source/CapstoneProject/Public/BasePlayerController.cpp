@@ -113,27 +113,47 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 
 	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
 	unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
-	Factions selectedFaction = group == 0 ? battleObject->currentBattle.Group1[0] : battleObject->currentBattle.Group2[0];
-
 	unit.name = FText::FromString(TEXT("Goofy ah"));
 	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
+
+	if (battleObject->currentBattle.Group1.IsEmpty() || battleObject->currentBattle.Group2.IsEmpty()) return unit;
+
+	Factions selectedFaction = group == 0 ? battleObject->currentBattle.Group1[0] : battleObject->currentBattle.Group2[0];
+
 	unit.HP = battleObject->armies[selectedFaction].currentHP;
 	unit.maxHP = battleObject->armies[selectedFaction].maxHP;
 	unit.morale = battleObject->armies[selectedFaction].currentMorale;
 	unit.maxMorale = battleObject->armies[selectedFaction].maxMorale;
 
-	if (battleObject->groupCompositions[group].Contains(UnitTypes::Infantry)) 
+	if (battleObject->groupCompositions[group].Contains(UnitTypes::Infantry))
 		unit.infantryQuantity = battleObject->groupCompositions[group][UnitTypes::Infantry].quantity;
+	else
+		unit.infantryQuantity = 0;
+
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Cavalry))
 		unit.cavalryQuantity = battleObject->groupCompositions[group][UnitTypes::Cavalry].quantity;
+	else
+		unit.cavalryQuantity = 0;
+
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Scout))
 		unit.scoutQuantity = battleObject->groupCompositions[group][UnitTypes::Scout].quantity;
+	else
+		unit.scoutQuantity = 0;
+
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Ranged))
 		unit.rangedQuantity = battleObject->groupCompositions[group][UnitTypes::Ranged].quantity;
+	else
+		unit.rangedQuantity = 0;
+
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Shielder))
 		unit.shielderQuantity = battleObject->groupCompositions[group][UnitTypes::Shielder].quantity;
+	else
+		unit.shielderQuantity = 0;
+
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Settler))
 		unit.settlerQuantity = battleObject->groupCompositions[group][UnitTypes::Settler].quantity;
+	else
+		unit.settlerQuantity = 0;
 	
 	return unit;
 }
