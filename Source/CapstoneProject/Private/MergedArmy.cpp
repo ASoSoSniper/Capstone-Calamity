@@ -70,6 +70,7 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	TArray<ABaseHex*> ignoredHexes;
 
 	hex->troopsInHex.Remove(this);
 
@@ -77,12 +78,12 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = spawner->SpawnArmy(Cast<ABaseHex>(hexNav->currentHex), groupData, hpPercent);
+		spawnArmy = spawner->SpawnArmy(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), groupData, hpPercent);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = spawner->SpawnTroop(Cast<ABaseHex>(hexNav->currentHex), groupData[0], hpPercent);
+		spawnTroop = spawner->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), groupData[0], hpPercent);
 
 		return spawnTroop;
 	}

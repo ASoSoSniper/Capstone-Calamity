@@ -42,7 +42,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	end = false;
+	gameState = GameStates::None;
 
 	//Create initial player faction and assign it to the player controller
 	CreateNewFaction();
@@ -81,6 +81,8 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 	Harvest(DeltaTime);
 	Scan(DeltaTime);
 	Date(DeltaTime);
+	CheckHumanPop();
+	CheckDate();
 }
 
 
@@ -136,6 +138,8 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				else
 				{
 					dayStruct.day = 1;
+					FeedPop();
+					ConsumeEnergy();
 					
 					if (dayStruct.currentMonth < 12)
 					{
@@ -168,9 +172,9 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 	return FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
 }
 
-bool ACapstoneProjectGameModeBase::HasEnded()
+GameStates  ACapstoneProjectGameModeBase::GetGameState()
 {
-	return end;
+	return gameState;
 }
 
 FDayStruct ACapstoneProjectGameModeBase::GetDateInfo()
@@ -487,6 +491,15 @@ void ACapstoneProjectGameModeBase::CheckHumanPop()
 
 	if (workers.available <= 0 && workers.working <= 0)
 	{
-		end = true;
+		gameState = GameStates::Defeat;
 	}
+}
+
+void ACapstoneProjectGameModeBase::CheckDate()
+{
+	if (dayStruct.currentMonth != 11) return;
+
+	if (dayStruct.day != 31) return;
+
+	gameState = GameStates::Defeat;
 }

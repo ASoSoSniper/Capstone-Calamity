@@ -40,7 +40,7 @@ bool ARockCity::IsDisabled()
 {
 	if (Super::IsDisabled())
 	{
-		ACapstoneProjectGameModeBase::end = true;
+		ACapstoneProjectGameModeBase::gameState = GameStates::Victory;
 		return true;
 	}
 

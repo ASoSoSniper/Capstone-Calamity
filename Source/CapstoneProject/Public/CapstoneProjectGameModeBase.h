@@ -9,9 +9,13 @@
 #include "BasePlayerController.h"
 #include "CapstoneProjectGameModeBase.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class GameStates : uint8
+{
+	None,
+	Victory,
+	Defeat
+};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FDayStruct
@@ -52,7 +56,7 @@ public:
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 	static inline TArray<TerrainType> nonBuildableTerrains;
-	static inline bool end;
+	static inline GameStates gameState;
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
 	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);
@@ -85,7 +89,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FDayStruct dayStruct = FDayStruct{};
 	float currSeconds = 0;
 
-	UFUNCTION(BlueprintCallable) bool HasEnded();
+	UFUNCTION(BlueprintCallable) GameStates GetGameState();
 
 	UFUNCTION(BlueprintCallable) FDayStruct GetDateInfo();
 
@@ -110,4 +114,5 @@ private:
 	void UpdateResourceCosts();
 
 	void CheckHumanPop();
+	void CheckDate();
 };

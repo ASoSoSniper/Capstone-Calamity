@@ -132,4 +132,5 @@ public:
 	UFUNCTION(BlueprintCallable) FTroopArmyDisplay GetBattleUnit(int group, UnitTypes type);
 	UFUNCTION(BlueprintCallable) FArmyDisplay DisplaySelectedUnit();
 	UFUNCTION(BlueprintCallable) FArmyMenuInfo DisplayArmyMenu();
+	UFUNCTION(BlueprintCallable) void SplitArmyInHalf();
 };

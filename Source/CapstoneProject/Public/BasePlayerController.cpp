@@ -284,6 +284,20 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	return display;
 }
 
+void ABasePlayerController::SplitArmyInHalf()
+{
+	AActor* actor = GetActionStateSelection();
+	if (!actor) return;
+
+	ATroop* troop = Cast<ATroop>(actor);
+	if (!troop) return;
+
+	if (troop->unitStats->unitType != UnitTypes::Army) return;
+	AMergedArmy* army = Cast<AMergedArmy>(troop);
+
+	if (army) army->SplitInHalf();
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;
@@ -567,6 +581,11 @@ FBuildingDisplay ABasePlayerController::GetAttachmentDisplay(FText attachmentNam
 void ABasePlayerController::EnterSelectionMode(bool active)
 {
 	if (active && IsInBuildMode()) return;
+	if (!active)
+	{
+		actionStates[currentActionState]->Reset();
+		return;
+	}
 
 	switch (currentActionState)
 	{
@@ -576,10 +595,6 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 			//For HexManage, Action1 transitions to the building construction mode
 			actionStates[currentActionState]->Action1();
 		}
-		else
-		{
-			actionStates[currentActionState]->Reset();
-		}
 		break;
 	case ActionStates::BaseManage:
 		if (active)
@@ -587,9 +602,12 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 			//For BaseManage, Action1 transitions to the troop construction mode
 			actionStates[currentActionState]->Action1();
 		}
-		else
+		break;
+	case ActionStates::TroopManage:
+		if (active)
 		{
-			actionStates[currentActionState]->Reset();
+			//For TroopManage, Action2 transitions to troop merging mode
+			actionStates[currentActionState]->Action2();
 		}
 		break;
 	}
