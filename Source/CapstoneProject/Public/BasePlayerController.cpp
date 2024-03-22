@@ -110,18 +110,18 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 
 	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
 	if (!battleObject) return unit;
+	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
+	unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
+	unit.unitType = type;
+	unit.name = spawner->troopCosts[type].name;
+	unit.icon = spawner->troopCosts[type].icon;
+	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
 
 	if (!battleObject->groupCompositions[group].Contains(type)) return unit;
 	FUnitComposition composition = battleObject->groupCompositions[group][type];
 
-	unit.unitType = type;
-	unit.name = spawner->troopCosts[type].name;
-	unit.icon = spawner->troopCosts[type].icon;
 	unit.quantity = FText::AsNumber(composition.quantity);
-	unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
-	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
-	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
-
+	
 	return unit;
 }
 
