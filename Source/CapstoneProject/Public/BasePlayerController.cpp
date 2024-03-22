@@ -106,7 +106,7 @@ TArray<FTroopArmyDisplay> ABasePlayerController::GetBattleUnits(int group)
 
 FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 {
-	FTroopArmyDisplay unit;
+	FTroopArmyDisplay unit = FTroopArmyDisplay{ FText::FromString(TEXT("Goofy ah")), 0, 0, 0, 0, 0, FText::FromString(TEXT("0")), nullptr, 0,0,0,0,0,0 };
 
 	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
 	if (!battleObject) return unit;
