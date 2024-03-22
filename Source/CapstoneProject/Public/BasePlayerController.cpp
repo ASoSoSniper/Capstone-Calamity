@@ -111,6 +111,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group, UnitTypes type
 	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
 	if (!battleObject) return unit;
 
+	if (!battleObject->groupCompositions[group].Contains(type)) return unit;
 	FUnitComposition composition = battleObject->groupCompositions[group][type];
 
 	unit.unitType = type;
