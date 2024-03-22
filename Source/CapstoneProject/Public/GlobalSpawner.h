@@ -286,13 +286,21 @@ struct FTroopArmyDisplay
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UnitTypes unitType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText quantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxMorale;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int dieRoll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defenderBonus;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* hexIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int infantryQuantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int cavalryQuantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int scoutQuantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int rangedQuantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int shielderQuantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerQuantity;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
