@@ -5,7 +5,6 @@
 #include "CapstoneProjectGameModeBase.h"
 #include "BasePlayerController.h"
 
-
 // Sets default values
 APlayerMovement::APlayerMovement()
 {
@@ -28,6 +27,8 @@ void APlayerMovement::BeginPlay()
 	
 	AController* tempController = GetController();
 	controller = Cast<ABasePlayerController>(tempController);
+
+	if (!soundBoxPrefab) soundBoxPrefab = ASoundBox::StaticClass();
 }
 
 // Called every frame
@@ -35,6 +36,7 @@ void APlayerMovement::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	HexCast();
 }
 
 // Called to bind functionality to input
@@ -274,5 +276,37 @@ void APlayerMovement::SpeedUpTime()
 void APlayerMovement::SlowDownTime()
 {
 	AdjustTimeScale(-timeScaleIncrement);
+}
+
+void APlayerMovement::HexCast()
+{
+	TArray<FHitResult> results;
+	FVector start = GetActorLocation();
+	FVector end = start + camera->GetForwardVector() * 10000.f;
+
+	bool hit = GetWorld()->LineTraceMultiByChannel(results, start, end, ECC_Visibility);
+	if (!hit) return;
+
+	ABaseHex* foundHex = nullptr;
+	int32 index = 0;
+	for (int i = 0; i < results.Num(); i++)
+	{
+		foundHex = Cast<ABaseHex>(results[i].GetActor());
+		if (foundHex)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	if (!foundHex) return;
+
+	if (!soundBox)
+	{
+		soundBox = Cast<ASoundBox>(GetWorld()->SpawnActor(soundBoxPrefab));
+	}
+
+	FVector boxLocation = FVector(results[index].ImpactPoint.X, results[index].ImpactPoint.Y, foundHex->GetActorLocation().Z);
+	soundBox->SetActorLocation(boxLocation);
 }
 

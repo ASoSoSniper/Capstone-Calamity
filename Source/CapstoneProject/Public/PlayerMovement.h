@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
+#include "SoundBox.h"
 #include "PlayerMovement.generated.h"
 
 class ABasePlayerController;
@@ -65,4 +66,8 @@ public:
 	void SlowDownTime();
 
 	UPROPERTY(EditAnywhere) float timeScaleIncrement = 0.5f;
+
+	void HexCast();
+	UPROPERTY(EditAnywhere) TSubclassOf<ASoundBox> soundBoxPrefab;
+	UPROPERTY(EditAnywhere) ASoundBox* soundBox;
 };

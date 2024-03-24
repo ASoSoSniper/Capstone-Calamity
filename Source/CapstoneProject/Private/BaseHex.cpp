@@ -86,6 +86,9 @@ ABaseHex::ABaseHex()
 	visibility->enableScan = false;
 	visibility->hexBaseMesh = hexBase;
 
+	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	audioComponent->SetupAttachment(RootComponent);
+
 	//Initialize worker types
 	workersInHex.Add(WorkerType::Human, 0);
 	workersInHex.Add(WorkerType::Robot, 0);

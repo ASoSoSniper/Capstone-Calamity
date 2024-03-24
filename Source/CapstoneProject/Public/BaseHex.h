@@ -86,6 +86,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexBase;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UAudioComponent* audioComponent;
 
 #pragma endregion
 
