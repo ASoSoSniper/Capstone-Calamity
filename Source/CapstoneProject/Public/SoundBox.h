@@ -26,11 +26,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere) TArray<ABaseHex*> foundHexes;
-	UPROPERTY(EditAnywhere) TMap<TerrainType, USoundBase*> terrainSounds;
+	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
+	UPROPERTY(VisibleAnywhere, Category = "Environment") TArray<ABaseHex*> foundHexes;
+	UPROPERTY(EditAnywhere, Category = "Sounds") TMap<TerrainType, USoundBase*> terrainSounds;
+	UPROPERTY(EditAnywhere, Category = "Sounds") float minVolume = 0.1f;
+	UPROPERTY(EditAnywhere, Category = "Sounds") float maxVolume = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Sounds") float fadeInSpeed = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Sounds") float fadeOutSpeed = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Sounds") float cameraZoomToTrigger = 200.f;
+	bool soundsActive = false;
 
-	UPROPERTY(EditAnywhere) USphereComponent* collider;
 	void AssignHexes();
+	void AdjustHexVolumes();
+	void ToggleSoundsActive(bool active);
 
 	UFUNCTION()
 	void OnOverlapBegin(

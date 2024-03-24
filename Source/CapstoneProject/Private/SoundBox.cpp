@@ -25,7 +25,7 @@ void ASoundBox::BeginPlay()
 void ASoundBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	AdjustHexVolumes();
 }
 
 void ASoundBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -43,7 +43,7 @@ void ASoundBox::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if (ABaseHex* hex = Cast<ABaseHex>(OtherActor))
 	{
 		foundHexes.Remove(hex);
-		hex->audioComponent->FadeOut(0.5f, 0.f);
+		hex->audioComponent->FadeOut(fadeOutSpeed, 0.f);
 	}
 
 	AssignHexes();
@@ -51,6 +51,8 @@ void ASoundBox::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 void ASoundBox::AssignHexes()
 {
+	if (!soundsActive) return;
+
 	for (int i = 0; i < foundHexes.Num(); i++)
 	{
 		if (foundHexes[i]->audioComponent->IsPlaying()) continue;
@@ -58,7 +60,48 @@ void ASoundBox::AssignHexes()
 		if (terrainSounds.Contains(foundHexes[i]->hexTerrain))
 		{
 			foundHexes[i]->audioComponent->SetSound(terrainSounds[foundHexes[i]->hexTerrain]);
-			foundHexes[i]->audioComponent->FadeIn(0.5f);
+			foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
+		}
+	}
+}
+
+void ASoundBox::AdjustHexVolumes()
+{
+	if (!soundsActive) return;
+
+	FVector center = GetActorLocation();
+	for (int i = 0; i < foundHexes.Num(); i++)
+	{
+		FVector hexPos = foundHexes[i]->GetActorLocation();
+		FVector flatPos = FVector(hexPos.X, hexPos.Y, center.Z);
+
+		float distanceToCenter = FVector::Distance(center, flatPos);
+
+		float radius = collider->GetUnscaledSphereRadius();
+
+		float volume = FMath::Clamp(((minVolume - maxVolume) / radius) * distanceToCenter + maxVolume, minVolume, maxVolume);
+
+		foundHexes[i]->audioComponent->VolumeMultiplier = volume;
+	}
+}
+
+void ASoundBox::ToggleSoundsActive(bool active)
+{
+	if (soundsActive == active) return;
+
+	soundsActive = active;
+
+	if (soundsActive)
+	{
+		AssignHexes();
+	}
+	else
+	{
+		for (int i = 0; i < foundHexes.Num(); i++)
+		{
+			if (!foundHexes[i]->audioComponent->IsPlaying()) continue;
+
+			foundHexes[i]->audioComponent->FadeOut(fadeOutSpeed, 0.f);
 		}
 	}
 }

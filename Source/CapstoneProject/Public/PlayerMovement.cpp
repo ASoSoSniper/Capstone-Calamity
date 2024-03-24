@@ -308,5 +308,8 @@ void APlayerMovement::HexCast()
 
 	FVector boxLocation = FVector(results[index].ImpactPoint.X, results[index].ImpactPoint.Y, foundHex->GetActorLocation().Z);
 	soundBox->SetActorLocation(boxLocation);
+
+	bool canPlayEnvSounds = GetActorLocation().Z <= soundBox->cameraZoomToTrigger;
+	soundBox->ToggleSoundsActive(canPlayEnvSounds);
 }
 
