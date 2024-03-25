@@ -356,8 +356,17 @@ void ABasePlayerController::PlayUIAttachmentSound(BuildingAttachments attachment
 	playerCamera->audioComponent->Play();
 }
 
-void ABasePlayerController::PlayUIHexSound(TerrainType hexType)
+void ABasePlayerController::PlayUIHexSound(TerrainType hexType, ABaseHex* hex)
 {
+	if (hex)
+	{
+		if (hex->building)
+		{
+			PlayUIBuildingSound(hex->building->buildingType);
+			return;
+		}
+	}
+
 	if (!UIHexSounds.Contains(hexType)) return;
 
 	playerCamera->audioComponent->SetSound(UIHexSounds[hexType]);
@@ -538,12 +547,20 @@ FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
 	if (!hex->building) return attachmentDisplay;
 
 	SpawnableBuildings selectedBuilding = building->buildingType;
+
+	FBuildingCost costs;
+	FBuildingStats stats;
+	if (spawner->buildingCosts.Contains(selectedBuilding))
+	{
+		costs = spawner->buildingCosts[selectedBuilding];
+	}
+
 	if (!spawner->buildingStats.Contains(selectedBuilding)) return attachmentDisplay;
 
-	attachmentDisplay.name = spawner->buildingCosts[selectedBuilding].name;
-	attachmentDisplay.productionCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].productionCost);
-	attachmentDisplay.workerCost = FText::AsNumber(spawner->buildingCosts[selectedBuilding].workerCost);
-	attachmentDisplay.buildTime = FText::AsNumber(spawner->buildingCosts[selectedBuilding].timeToBuild);
+	attachmentDisplay.name = spawner->buildingStats[selectedBuilding].name;
+	attachmentDisplay.productionCost = FText::AsNumber(costs.productionCost);
+	attachmentDisplay.workerCost = FText::AsNumber(costs.workerCost);
+	attachmentDisplay.buildTime = FText::AsNumber(costs.timeToBuild);
 	attachmentDisplay.buildingIcon = spawner->buildingStats[selectedBuilding].buildingIcon;
 
 	return attachmentDisplay;

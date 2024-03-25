@@ -29,6 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Components") USphereComponent* collider;
 	UPROPERTY(VisibleAnywhere, Category = "Environment") TArray<ABaseHex*> foundHexes;
 	UPROPERTY(EditAnywhere, Category = "Sounds") TMap<TerrainType, USoundBase*> terrainSounds;
+	UPROPERTY(EditAnywhere, Category = "Sounds") TMap<SpawnableBuildings, USoundBase*> buildingSounds;
 	UPROPERTY(EditAnywhere, Category = "Sounds") float minVolume = 0.1f;
 	UPROPERTY(EditAnywhere, Category = "Sounds") float maxVolume = 1.f;
 	UPROPERTY(EditAnywhere, Category = "Sounds") float fadeInSpeed = 1.f;

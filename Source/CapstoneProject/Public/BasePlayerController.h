@@ -54,7 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
 	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
-	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType);
+	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType, ABaseHex* hex = nullptr);
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;

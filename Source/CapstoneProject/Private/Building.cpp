@@ -89,12 +89,10 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	//If data for this building type does not exist, return
 	if (type == SpawnableBuildings::None || 
-		!spawner->buildingStats.Contains(type) || 
-		!spawner->buildingCosts.Contains(type)) return false;
+		!spawner->buildingStats.Contains(type)) return false;
 
 	//Get the building data
-	FBuildingStats stats = spawner->buildingStats[type];
-	FBuildingCost costs = spawner->buildingCosts[type];
+	FBuildingStats stats = spawner->buildingStats[type];	
 
 	unitStats->currentHP = stats.HP;
 	unitStats->maxHP = stats.HP;
@@ -108,10 +106,16 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	resourceYields[StratResources::Production] = stats.productionYield;
 	resourceYields[StratResources::Wealth] = stats.wealthYield;
 
+	FBuildingCost costs;
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-	if (hex->maxWorkers != costs.workerCost)
+	if (spawner->buildingCosts.Contains(type))
 	{
-		hex->maxWorkers = costs.workerCost;
+		costs = spawner->buildingCosts[type];
+
+		if (hex->maxWorkers != costs.workerCost)
+		{
+			hex->maxWorkers = costs.workerCost;
+		}
 	}
 
 	int hexWorkers = 0;

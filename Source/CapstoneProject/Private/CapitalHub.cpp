@@ -22,6 +22,7 @@ ACapitalHub::ACapitalHub()
 	}
 
 	builtAtStart = true;
+	buildingType = SpawnableBuildings::Capitol;
 }
 
 void ACapitalHub::SetToFinishedModel()

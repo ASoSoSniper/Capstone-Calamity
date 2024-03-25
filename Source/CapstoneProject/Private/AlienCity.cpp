@@ -34,6 +34,8 @@ AAlienCity::AAlienCity()
 	{
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
+
+	buildingType = SpawnableBuildings::AlienCity;
 }
 
 UBuildingAttachment* AAlienCity::GetAttachment(BuildingAttachments attachment)

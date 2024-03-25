@@ -25,6 +25,8 @@ ARockCity::ARockCity()
 	unitStats->currentHP = 100;
 	unitStats->maxHP = 100;
 	unitStats->damage = 10;
+
+	buildingType = SpawnableBuildings::RockCity;
 }
 
 void ARockCity::SetToFinishedModel()

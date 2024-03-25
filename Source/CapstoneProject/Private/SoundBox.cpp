@@ -2,6 +2,8 @@
 
 
 #include "SoundBox.h"
+#include "Building.h"
+#include "MeshVisibility.h"
 
 // Sets default values
 ASoundBox::ASoundBox()
@@ -56,6 +58,17 @@ void ASoundBox::AssignHexes()
 	for (int i = 0; i < foundHexes.Num(); i++)
 	{
 		if (foundHexes[i]->audioComponent->IsPlaying()) continue;
+		if (!foundHexes[i]->visibility->factionVisibility[Factions::Human].discoveredByFaction) continue;
+
+		if (foundHexes[i]->building)
+		{
+			if (buildingSounds.Contains(foundHexes[i]->building->buildingType))
+			{
+				foundHexes[i]->audioComponent->SetSound(buildingSounds[foundHexes[i]->building->buildingType]);
+				foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
+				continue;
+			}
+		}
 
 		if (terrainSounds.Contains(foundHexes[i]->hexTerrain))
 		{
