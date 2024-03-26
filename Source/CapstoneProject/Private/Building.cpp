@@ -56,7 +56,7 @@ void ABuilding::Tick(float DeltaTime)
 		Constructing(DeltaTime);
 		break;
 	case Complete:
-		if (sieged) SetSiegeState(TroopOccupation());
+		
 		break;
 	case Destroying:
 		DestroyingBuilding(DeltaTime);
