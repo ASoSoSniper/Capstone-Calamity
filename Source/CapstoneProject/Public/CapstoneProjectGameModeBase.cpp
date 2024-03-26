@@ -132,12 +132,14 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 				{
 					dayStruct.day += 1;
+					UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
 				}
 				else
 				{
 					dayStruct.day = 1;
+					UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
 					
@@ -233,6 +235,18 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 		return;
 	}
 	currentScanTime = visibilityScanRate;
+}
+
+void ACapstoneProjectGameModeBase::UpdateBuildingOccupations()
+{
+	for (auto& faction : activeFactions)
+	{
+		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
+		{
+			if (faction.Value->allBuildings[i]->sieged) 
+				faction.Value->allBuildings[i]->SetSiegeState(faction.Value->allBuildings[i]->TroopOccupation());
+		}
+	}
 }
 
 void ACapstoneProjectGameModeBase::FeedPop()
@@ -447,7 +461,7 @@ void ACapstoneProjectGameModeBase::FindExistingHexes()
 
 void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 {
-	for (auto faction : activeFactions)
+	for (auto& faction : activeFactions)
 	{
 		//Food
 		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
