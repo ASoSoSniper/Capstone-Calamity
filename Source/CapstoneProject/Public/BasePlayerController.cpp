@@ -168,10 +168,21 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 	if (!troop) return display;
 
+	FTroopStats stats;
+	FTroopCost costs;
+	if (spawner->troopStats.Contains(troop->unitStats->unitType))
+	{
+		stats = spawner->troopStats[troop->unitStats->unitType];
+	}
+	if (spawner->troopCosts.Contains(troop->unitStats->unitType))
+	{
+		costs = spawner->troopCosts[troop->unitStats->unitType];
+	}
+
 	if (troop->unitStats->unitType != UnitTypes::Army)
 	{
-		display.name = spawner->troopStats[troop->unitStats->unitType].title;
-		display.icon = spawner->troopCosts[troop->unitStats->unitType].icon;
+		display.name = stats.title;
+		display.icon = costs.icon;
 	}	
 	else
 	{

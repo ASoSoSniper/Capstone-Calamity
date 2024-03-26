@@ -56,7 +56,7 @@ void ABuilding::Tick(float DeltaTime)
 		Constructing(DeltaTime);
 		break;
 	case Complete:
-		
+		if (sieged) SetSiegeState(TroopOccupation());
 		break;
 	case Destroying:
 		DestroyingBuilding(DeltaTime);
@@ -201,7 +201,18 @@ void ABuilding::UpdateResources()
 
 	for (auto& resource : resourceYields)
 	{
-		hex->UpdateResourceYield(resource.Key, resource.Value);
+		int value = resource.Value;
+		if (siegingFaction != Factions::None)
+		{
+			int ownerPortion = FMath::RoundToInt((float)value - (float)value * siegeResourcePercent);
+			int siegePortion = FMath::RoundToInt((float)value * siegeResourcePercent);
+			hex->UpdateResourceYield(resource.Key, ownerPortion);
+			hex->UpdateResourceYield(resource.Key, siegePortion);
+		}
+		else
+		{
+			hex->UpdateResourceYield(resource.Key, value);
+		}
 	}
 
 	UnitActions::UpdateResourceCapacity(unitStats->faction, resourceCapIncrease);
@@ -369,11 +380,58 @@ void ABuilding::Destroyed()
 
 bool ABuilding::IsDisabled()
 {
-	if (disabled) return true;
+	if (sieged) return true;
 	if (unitStats->currentHP > 0) return false;
 
-	disabled = true;
-	spawner->SpawnSmoke(this);
+	SetSiegeState(true);
+	smokeEffect = spawner->SpawnSmoke(this);
+
 	return true;
+}
+
+bool ABuilding::SetSiegeState(bool sieging)
+{
+	if (sieged == sieging) return false;
+
+	sieged = sieging;
+
+	if (!sieged)
+	{
+		siegingFaction = Factions::None;
+		if (smokeEffect)
+		{
+			smokeEffect->Destroy();
+			smokeEffect = nullptr;
+		}
+	}
+
+	RevertResources();
+	UpdateResources();
+
+	return true;
+}
+
+bool ABuilding::TroopOccupation()
+{
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+
+	int occupyingTroops = 0;
+
+	for (int i = 0; i < hex->troopsInHex.Num(); i++)
+	{
+		if (hex->troopsInHex[i]->unitStats->faction == siegingFaction)
+		{
+			if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Army)
+			{
+				occupyingTroops += hex->troopsInHex[i]->unitStats->savedUnits.Num();
+			}
+			else
+			{
+				occupyingTroops++;
+			}
+		}
+	}
+
+	return occupyingTroops >= 3;
 }
 

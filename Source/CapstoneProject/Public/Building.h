@@ -36,6 +36,8 @@ public:
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)SpawnableBuildings buildingType;
+	UPROPERTY(VisibleAnywhere) Factions siegingFaction = Factions::None;
+
 
 	TMap<StratResources, int> resourceYields;
 
@@ -88,7 +90,12 @@ public:
 	float currDestructionTime = 0.f;
 	virtual void Destroyed() override;
 
-	bool disabled = false;
+	bool sieged = false;
 	virtual bool IsDisabled();
 	UPROPERTY(EditAnywhere) bool builtAtStart = false;
+
+	bool SetSiegeState(bool sieging);
+	bool TroopOccupation();
+	UPROPERTY(VisibleAnywhere) AActor* smokeEffect;
+	UPROPERTY(EditAnywhere) float siegeResourcePercent = 0.25f;
 };

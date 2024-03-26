@@ -156,7 +156,7 @@ public:
 
 	bool ActiveHarvesting();
 
-	void UpdateResourceYield(StratResources resource, int value);
+	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
 	void ToggleResourceYield();
 
 	void RequestTerrainChange(bool modelOnly = false);

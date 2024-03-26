@@ -105,7 +105,11 @@ void ASiegeObject::CalculateSiegeDamage()
 
 bool ASiegeObject::BuildingIsAlive()
 {
-	building->IsDisabled();
+	bool alive = building->IsDisabled();
+	if (alive)
+	{
+		building->siegingFaction = currentBattle.Group1[0];
+	}
 
-	return !building->disabled;
+	return !building->sieged;
 }

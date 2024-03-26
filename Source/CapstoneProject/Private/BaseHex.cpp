@@ -175,7 +175,7 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 {	
 	if (building)
 	{
-		if (UnitActions::IsHostileTarget(refTroop, building) && !building->disabled)
+		if (UnitActions::IsHostileTarget(refTroop, building) && !building->sieged)
 		{
 			BeginBattle();
 			return;
@@ -405,18 +405,20 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	return display;
 }
 
-void ABaseHex::UpdateResourceYield(StratResources resource, int value)
+void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions faction)
 {
+	Factions selectedFaction = faction != Factions::None ? faction : hexOwner;
+
 	resourceBonuses[resource].yieldBonus += value;
 
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(hexOwner))
+	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(selectedFaction))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
 		return;
 	}
 
 	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory[resource].resourcePerTick += value;
+		ACapstoneProjectGameModeBase::activeFactions[selectedFaction]->resourceInventory[resource].resourcePerTick += value;
 }
 
 void ABaseHex::SetFaction(Factions faction)
