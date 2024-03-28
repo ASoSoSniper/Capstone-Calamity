@@ -343,6 +343,20 @@ void ABasePlayerController::SplitArmyInHalf()
 	if (army) army->SplitInHalf();
 }
 
+FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(BuildingAttachments attachment)
+{
+	FAttachmentBuildProgress buildProgress;
+	AOutpost* outpost = GetOutpost();
+	if (!outpost) return buildProgress;
+
+	UBuildingAttachment* component = outpost->GetAttachment(attachment);
+	
+	buildProgress.currentProgress = component->currBuildTime;
+	buildProgress.buildTime = component->buildTime;
+
+	return buildProgress;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

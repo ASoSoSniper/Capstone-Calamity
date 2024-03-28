@@ -381,6 +381,15 @@ struct FTroopQuantity
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FAttachmentBuildProgress
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentProgress;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {
