@@ -375,6 +375,69 @@ FAttachmentTTBuildInfo ABasePlayerController::GetAttachmentBuildInfo(BuildingAtt
 	return info;
 }
 
+FMaterialStorageStats ABasePlayerController::GetMaterialStorageStats()
+{
+	FMaterialStorageStats storage;
+	if (!spawner->attachmentStats.Contains(BuildingAttachments::Storage)) return storage;
+
+	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::Storage];
+
+	storage.title = stats.name;
+	storage.description = stats.description;
+	storage.energyCost = stats.energyUpkeepCost;
+
+	storage.resourceIncrease = stats.resourceCapIncrease;
+
+	return storage;
+}
+
+FRobotFactoryStats ABasePlayerController::GetRobotFactoryStats()
+{
+	FRobotFactoryStats factory;
+	if (!spawner->attachmentStats.Contains(BuildingAttachments::RobotFactory)) return factory;
+
+	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::RobotFactory];
+
+	factory.title = stats.name;
+	factory.description = stats.description;
+	factory.energyCost = stats.energyUpkeepCost;
+
+	return factory;
+}
+
+FRobotStorageStats ABasePlayerController::GetRobotStorageStats()
+{
+	FRobotStorageStats robotStorage;
+	if (!spawner->attachmentStats.Contains(BuildingAttachments::RobotBarracks)) return robotStorage;
+
+	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::RobotBarracks];
+
+	robotStorage.title = stats.name;
+	robotStorage.description = stats.description;
+	robotStorage.energyCost = stats.energyUpkeepCost;
+
+	robotStorage.maxRobotStorage = stats.robotStorage;
+
+	return robotStorage;
+}
+
+FDefenseStationStats ABasePlayerController::GetDefenseStationStats()
+{
+	FDefenseStationStats defense;
+	if (!spawner->attachmentStats.Contains(BuildingAttachments::DefenseStation)) return defense;
+
+	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::DefenseStation];
+
+	defense.title = stats.name;
+	defense.description = stats.description;
+	defense.energyCost = stats.energyUpkeepCost;
+
+	defense.HP = stats.HP;
+	defense.damage = stats.siegeDamage;
+
+	return defense;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

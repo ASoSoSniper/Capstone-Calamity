@@ -136,4 +136,9 @@ public:
 
 	UFUNCTION(BlueprintCallable) FAttachmentBuildProgress GetAttachmentBuildProgress(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) FAttachmentTTBuildInfo GetAttachmentBuildInfo(BuildingAttachments attachment);
+
+	UFUNCTION(BlueprintCallable) FMaterialStorageStats GetMaterialStorageStats();
+	UFUNCTION(BlueprintCallable) FRobotFactoryStats GetRobotFactoryStats();
+	UFUNCTION(BlueprintCallable) FRobotStorageStats GetRobotStorageStats();
+	UFUNCTION(BlueprintCallable) FDefenseStationStats GetDefenseStationStats();
 };

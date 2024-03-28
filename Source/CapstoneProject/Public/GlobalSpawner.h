@@ -403,6 +403,53 @@ struct FAttachmentTTBuildInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildTime;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FRobotFactoryStats
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FRobotStorageStats
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxRobotStorage;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FMaterialStorageStats
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceIncrease;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FDefenseStationStats
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {
