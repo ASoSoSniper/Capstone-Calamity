@@ -357,6 +357,24 @@ FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(Build
 	return buildProgress;
 }
 
+FAttachmentTTBuildInfo ABasePlayerController::GetAttachmentBuildInfo(BuildingAttachments attachment)
+{
+	FAttachmentTTBuildInfo info;
+	if (!spawner->attachmentCosts.Contains(attachment) || !spawner->attachmentStats.Contains(attachment)) return info;
+
+	FBuildingCost cost = spawner->attachmentCosts[attachment];
+	FBuildingStats stat = spawner->attachmentStats[attachment];
+
+	info.title = cost.name;
+	info.description = stat.description;
+
+	info.productionCost = cost.productionCost;
+	info.workerCost = cost.workerCost;
+	info.buildTime = cost.timeToBuild;
+
+	return info;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

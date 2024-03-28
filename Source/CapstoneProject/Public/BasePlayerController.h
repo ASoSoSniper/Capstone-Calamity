@@ -135,4 +135,5 @@ public:
 	UFUNCTION(BlueprintCallable) void SplitArmyInHalf();
 
 	UFUNCTION(BlueprintCallable) FAttachmentBuildProgress GetAttachmentBuildProgress(BuildingAttachments attachment);
+	UFUNCTION(BlueprintCallable) FAttachmentTTBuildInfo GetAttachmentBuildInfo(BuildingAttachments attachment);
 };

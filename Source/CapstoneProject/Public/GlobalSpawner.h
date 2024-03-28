@@ -390,6 +390,19 @@ struct FAttachmentBuildProgress
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FAttachmentTTBuildInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildTime;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {

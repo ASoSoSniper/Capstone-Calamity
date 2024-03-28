@@ -80,6 +80,11 @@ void UBuildingAttachment::Constructing(float& DeltaTime)
 	SetBuildState();
 }
 
+bool UBuildingAttachment::SetUpAttachment(BuildingAttachments attachment)
+{
+	
+}
+
 void UBuildingAttachment::UpdateResources()
 {
 	

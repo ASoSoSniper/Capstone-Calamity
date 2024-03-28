@@ -45,6 +45,7 @@ public:
 
 	void SetBuildState();
 	void Constructing(float& DeltaTime);
+	bool SetUpAttachment(BuildingAttachments attachment);
 
 
 	virtual void UpdateResources();
