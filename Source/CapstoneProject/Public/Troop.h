@@ -5,12 +5,15 @@
 #include "CoreMinimal.h"
 #include "MovementAI.h"
 #include "GlobalSpawner.h"
+#include "AITroopComponent.h"
 #include "Troop.generated.h"
 
 /**
  * 
  */
 class AMergedArmy;
+class UAITroopComponent;
+
 UCLASS()
 class CAPSTONEPROJECT_API ATroop : public AMovementAI
 {
@@ -18,6 +21,9 @@ class CAPSTONEPROJECT_API ATroop : public AMovementAI
 	
 public:
 	ATroop();
+
+	UAITroopComponent* AITroopComponent;
+
 	UPROPERTY(VisibleAnywhere) bool attacking;
 	UPROPERTY(VisibleAnywhere) bool merging;
 	AActor* targetToMerge;

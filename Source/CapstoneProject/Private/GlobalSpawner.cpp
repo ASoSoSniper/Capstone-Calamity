@@ -895,6 +895,8 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	default:
 		break;
 	}
+
+	hexArray = arrayOfHexColumns;
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)

@@ -7,6 +7,13 @@
 #include "Outpost.h"
 #include "BuildingAttachment.generated.h"
 
+UENUM()
+enum BuildStates
+{
+	Inactive,
+	Building,
+	Complete
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UBuildingAttachment : public UActorComponent
@@ -30,13 +37,7 @@ public:
 	
 	UPROPERTY(VisibleAnywhere) AOutpost* outpost;
 	UPROPERTY(VisibleAnywhere) BuildingAttachments type;
-
-	enum BuildStates
-	{
-		Inactive,
-		Building,
-		Complete
-	};
+	
 	BuildStates buildState = Inactive;
 
 	TMap<WorkerType, int> workersInAttachment;

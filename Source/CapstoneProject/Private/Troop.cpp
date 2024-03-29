@@ -9,12 +9,17 @@
 
 ATroop::ATroop()
 {
-	
+	AITroopComponent = CreateDefaultSubobject<UAITroopComponent>(TEXT("AI Component"));
 }
 
 void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (unitStats->faction != Factions::Human)
+	{
+		AITroopComponent->isEnemy = true;
+	}
 
 	if (!spawner)
 	{
@@ -42,6 +47,11 @@ void ATroop::Tick(float DeltaTime)
 			UnitActions::RobotIsActive(unitStats->faction, this);
 			spawnCheck = true;
 		}
+	}
+
+	if (unitStats->faction != Factions::Human)
+	{
+		AITroopComponent->isEnemy = true;
 	}
 
 	if (!spawner)

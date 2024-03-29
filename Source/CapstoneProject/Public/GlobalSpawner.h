@@ -388,6 +388,7 @@ struct FAttachmentBuildProgress
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentProgress;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool isBuilding;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -510,6 +511,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> hillsModel;
 	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
 
+	TArray<TArray<ABaseHex*>> hexArray;
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
 };

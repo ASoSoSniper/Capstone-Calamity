@@ -345,7 +345,7 @@ void ABasePlayerController::SplitArmyInHalf()
 
 FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(BuildingAttachments attachment)
 {
-	FAttachmentBuildProgress buildProgress;
+	FAttachmentBuildProgress buildProgress = FAttachmentBuildProgress();
 	AOutpost* outpost = GetOutpost();
 	if (!outpost) return buildProgress;
 
@@ -353,6 +353,7 @@ FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(Build
 	
 	buildProgress.currentProgress = component->currBuildTime;
 	buildProgress.buildTime = component->buildTime;
+	buildProgress.isBuilding = component->buildState == BuildStates::Building;
 
 	return buildProgress;
 }
