@@ -315,6 +315,10 @@ void ABuilding::Action10()
 
 void ABuilding::BeginDestroying()
 {
+	if (buildingType == SpawnableBuildings::Capitol || 
+		buildingType == SpawnableBuildings::AlienCity || 
+		buildingType == SpawnableBuildings::RockCity) return;
+
 	currDestructionTime = destructionTime;
 	buildState = Destroying;
 }
@@ -365,7 +369,7 @@ void ABuilding::Destroyed()
 
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 
-		if (buildingType != SpawnableBuildings::None)
+		if (spawner->buildingCosts.Contains(buildingType))
 		{
 			TMap<StratResources, int> addResources;
 			addResources.Add(StratResources::Production, spawner->buildingCosts[buildingType].productionCost * 0.25f);
