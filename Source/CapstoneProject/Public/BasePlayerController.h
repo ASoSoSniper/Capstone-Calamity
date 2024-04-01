@@ -75,6 +75,7 @@ public:
 	void SetActionState();
 	UFUNCTION(BlueprintCallable) AActor* GetActionStateSelection();
 	UFUNCTION(BlueprintCallable) void Deselect();
+	UFUNCTION(BlueprintCallable) void CommandAction();
 	UFUNCTION(BlueprintCallable) ActionStates GetActionState();
 	UFUNCTION(BlueprintCallable) void ForceActionState(int state);
 

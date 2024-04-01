@@ -36,21 +36,7 @@ void UManageTroop::SwitchState()
 	{
 		//If hex, set troop's destination to the hex
 	case ObjectTypes::Hex:
-		switch (subSelect)
-		{
-		case None:
-			selectedTroop->hexNav->targetHex = objectType.actor;
-			break;
-			//If hex contains outpost that store troops, move to merge
-		case Merge:
-			if (controller->OutpostCanStoreTroops())
-			{
-				selectedTroop->hexNav->targetHex = objectType.actor;
-
-				if (selectedTroop) CommandToMerge(selectedTroop, controller->GetOutpost());
-				return;
-			}
-		}
+		CueActionState(ActionStates::HexManage, objectType.actor);
 		break;
 
 		//If troop (and hostile), set troop's destination to that troop's current hex
@@ -196,4 +182,23 @@ void UManageTroop::Action3()
 void UManageTroop::Action4()
 {
 	
+}
+
+void UManageTroop::CommandAction()
+{
+	if (!controller->hoveredWorldObject || !selectedTroop) return;
+
+	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
+
+	switch (objectType.type)
+	{
+	case ObjectTypes::Hex:
+		selectedTroop->hexNav->targetHex = objectType.actor;
+		break;
+	}
+
+	if (selectedTroop->hexNav->targetHex)
+	{
+		selectedTroop->CreatePath();
+	}
 }

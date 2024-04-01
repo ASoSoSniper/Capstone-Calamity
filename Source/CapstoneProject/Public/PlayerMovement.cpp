@@ -61,7 +61,8 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
 	PlayerInputComponent->BindAxis("ZoomIn", this, &APlayerMovement::ZoomIn);
 
-	PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
+	//PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
+	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
 
 	PlayerInputComponent->BindAction("TimeScaleIncrease", IE_Pressed, this, &APlayerMovement::SpeedUpTime);
 	PlayerInputComponent->BindAction("TimeScaleDecrease", IE_Pressed, this, &APlayerMovement::SlowDownTime);
@@ -166,6 +167,11 @@ void APlayerMovement::Action12Input()
 void APlayerMovement::DeselectInput()
 {
 	if (controller) controller->Deselect();
+}
+
+void APlayerMovement::StartCommand()
+{
+	if (controller) controller->CommandAction();
 }
 
 void APlayerMovement::PanRight(float axis)

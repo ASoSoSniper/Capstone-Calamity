@@ -520,6 +520,11 @@ void ABasePlayerController::Deselect()
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("Deselected!"));
 }
 
+void ABasePlayerController::CommandAction()
+{
+	actionStates[currentActionState]->CommandAction();
+}
+
 ActionStates ABasePlayerController::GetActionState()
 {
 	return currentActionState;

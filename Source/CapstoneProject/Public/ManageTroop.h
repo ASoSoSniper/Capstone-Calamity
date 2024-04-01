@@ -37,4 +37,5 @@ public:
 	virtual void Action2() override;
 	virtual void Action3() override;
 	virtual void Action4() override;
+	virtual void CommandAction() override;
 };

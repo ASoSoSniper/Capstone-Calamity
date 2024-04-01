@@ -49,6 +49,7 @@ public:
 	void Action12Input();
 
 	void DeselectInput();
+	void StartCommand();
 
 	void PanRight(float axis);
 	void PanUp(float axis);

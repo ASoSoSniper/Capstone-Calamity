@@ -75,6 +75,10 @@ AActor* UManageMode::GetSelectedObject()
 	return nullptr;
 }
 
+void UManageMode::CommandAction()
+{
+}
+
 void UManageMode::Action1()
 {
 }
