@@ -818,6 +818,18 @@ void UnitActions::RemoveFromFaction(Factions faction, AActor* target)
     }
 }
 
+Faction* UnitActions::GetFaction(Factions faction)
+{
+    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return nullptr;
+
+    return ACapstoneProjectGameModeBase::activeFactions[faction];
+}
+
+TMap<Factions, Faction*> UnitActions::GetFactions()
+{
+    return ACapstoneProjectGameModeBase::activeFactions;
+}
+
 UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
 {
     SelectionIdentity Results{nullptr, nullptr, nullptr, nullptr, nullptr, ObjectTypes::NoType };

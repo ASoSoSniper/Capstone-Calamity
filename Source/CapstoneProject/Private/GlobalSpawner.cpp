@@ -633,6 +633,11 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
+
+	for (auto& faction : UnitActions::GetFactions())
+	{
+		troopFactionMaterials.Add(faction.Key, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HumanTroopMat01")) ,LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
+	}
 }
 
 // Called when the game starts or when spawned

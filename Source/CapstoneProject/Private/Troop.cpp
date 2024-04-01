@@ -31,6 +31,9 @@ void ATroop::BeginPlay()
 			if (spawner->troopStats.Contains(unitStats->unitType))
 			{
 				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
+
+				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
+				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 			}
 		}
 	}
@@ -64,6 +67,9 @@ void ATroop::Tick(float DeltaTime)
 			if (spawner->troopStats.Contains(unitStats->unitType))
 			{
 				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
+
+				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
+				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 			}
 		}
 	}

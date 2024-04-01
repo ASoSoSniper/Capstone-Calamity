@@ -26,17 +26,6 @@ AMovementAI::AMovementAI()
 	mesh->SetCollisionProfileName("BlockAllDynamic");
 
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
-
-	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HumanTroopMat01"));
-	if (visibleMat)
-	{
-		visibility->meshMaterials.visibleTexture = visibleMat;
-	}
-	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat"));
-	if (selectedMat)
-	{
-		visibility->meshMaterials.selectedTexture = selectedMat;
-	}
 }
 
 // Called when the game starts or when spawned

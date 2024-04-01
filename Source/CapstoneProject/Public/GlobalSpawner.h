@@ -45,6 +45,15 @@ struct FVisibilityMaterials
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelSelectedTexture;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopMaterials
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
+};
+
 UENUM(BlueprintType)
 enum class ShapesOfMap
 {
@@ -505,6 +514,7 @@ public:
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
 	UPROPERTY(EditAnywhere) TMap<TerrainType, FVisibilityMaterials> terrainTileMaterials;
+	UPROPERTY(EditAnywhere) TMap<Factions, FTroopMaterials> troopFactionMaterials;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;

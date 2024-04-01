@@ -83,6 +83,7 @@ enum class EngagementSelect
 	JoinGroup2
 };
 
+class Faction;
 class ABaseHex;
 class ATroop;
 class AMergedArmy;
@@ -118,6 +119,8 @@ public:
 	static void AssignFaction(Factions faction, ABaseHex* hex);
 	static void RemoveFromFaction(Factions faction, AActor* target);
 
+	static Faction* GetFaction(Factions faction);
+	static TMap<Factions, Faction*> GetFactions();
 	
 	struct SelectionIdentity
 	{
