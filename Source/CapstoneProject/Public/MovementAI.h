@@ -77,7 +77,7 @@ public:
 	virtual void Destroyed() override;
 	
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* mesh;
+		USkeletalMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)
 		UUnitStats* unitStats;
 	UPROPERTY(EditAnywhere)

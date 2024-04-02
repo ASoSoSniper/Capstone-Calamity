@@ -52,6 +52,7 @@ public:
 	UPROPERTY() UStaticMeshComponent* mesh;
 	UPROPERTY() UStaticMeshComponent* otherMesh;
 	UPROPERTY() UStaticMeshComponent* hexBaseMesh;
+	UPROPERTY() USkeletalMeshComponent* skeletalMesh;
 	UPROPERTY(VisibleAnywhere) bool selected;
 	UPROPERTY(VisibleAnywhere) bool enableScan = true;
 	UPROPERTY(EditAnywhere) bool debug;

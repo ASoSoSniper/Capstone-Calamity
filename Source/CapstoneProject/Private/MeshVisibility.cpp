@@ -25,6 +25,10 @@ void UMeshVisibility::BeginPlay()
 
 	objectType = UnitActions::DetermineObjectType(GetOwner()).type;
 	mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
+	if (!mesh)
+	{
+		skeletalMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
+	}
 
 	FindFactionOfOwner();
 
@@ -158,7 +162,7 @@ void UMeshVisibility::SetVisibility()
 			break;
 
 		case ObjectTypes::MoveAI:
-			mesh->SetVisibility(true);
+			skeletalMesh->SetVisibility(true);
 
 			if (selected)
 			{
@@ -217,10 +221,21 @@ void UMeshVisibility::SetVisibility()
 		return;
 	}
 
-	if (mesh->GetMaterial(0) != material)
+	if (mesh)
 	{
-		mesh->SetMaterial(0, material);
-		if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
+		if (mesh->GetMaterial(0) != material)
+		{
+			mesh->SetMaterial(0, material);
+			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
+		}
+	}
+	if (skeletalMesh)
+	{
+		if (skeletalMesh->GetMaterial(0) != material)
+		{
+			skeletalMesh->SetMaterial(0, material);
+			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
+		}
 	}
 	if (otherMesh)
 	{

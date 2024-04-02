@@ -16,12 +16,12 @@ AMovementAI::AMovementAI()
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	unitStats = CreateDefaultSubobject<UUnitStats>("Faction Stats");
 	visibility = CreateDefaultSubobject<UMeshVisibility>("Mesh Visibility");
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
-	UStaticMesh* meshComponent = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
+	USkeletalMesh* meshComponent = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 	if (meshComponent)
 	{
-		mesh->SetStaticMesh(meshComponent);
+		mesh->SetSkeletalMesh(meshComponent);
 	}
 	mesh->SetCollisionProfileName("BlockAllDynamic");
 

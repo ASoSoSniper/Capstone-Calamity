@@ -35,6 +35,15 @@ void UInteractable::BeginPlay()
 	{
 		collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
 		collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		return;
+	}
+
+	skeletalMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
+	if (skeletalMesh)
+	{
+		skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+		skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		return;
 	}
 }
 
