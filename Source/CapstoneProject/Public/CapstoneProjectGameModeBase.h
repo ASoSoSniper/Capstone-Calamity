@@ -43,6 +43,7 @@ public:
 	static inline TMap<Factions, UMaterialInterface*> factionColors;
 
 	static inline float timeScale = 1.f;
+	float prevTime = 1.f;
 
 	static inline float currentHarvestTime = 0;
 	UPROPERTY(EditAnywhere) float harvestTickLength = 2.f;
@@ -60,6 +61,8 @@ public:
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
 	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);
+	UFUNCTION(BlueprintCallable) void SetToPreviousTime();
+	UFUNCTION(BlueprintCallable) bool TimeScaleIsZero();
 
 	UFUNCTION(BlueprintCallable) FString Date(float& deltaTime);
 	struct MonthStruct 

@@ -44,28 +44,12 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Action1", IE_Pressed, this, &APlayerMovement::Action1Input);
-	PlayerInputComponent->BindAction("Action2", IE_Pressed, this, &APlayerMovement::Action2Input);
-	PlayerInputComponent->BindAction("Action3", IE_Pressed, this, &APlayerMovement::Action3Input);
-	PlayerInputComponent->BindAction("Action4", IE_Pressed, this, &APlayerMovement::Action4Input);
-	PlayerInputComponent->BindAction("Action5", IE_Pressed, this, &APlayerMovement::Action5Input);
-	PlayerInputComponent->BindAction("Action6", IE_Pressed, this, &APlayerMovement::Action6Input);
-	PlayerInputComponent->BindAction("Action7", IE_Pressed, this, &APlayerMovement::Action7Input);
-	PlayerInputComponent->BindAction("Action8", IE_Pressed, this, &APlayerMovement::Action8Input);
-	PlayerInputComponent->BindAction("Action9", IE_Pressed, this, &APlayerMovement::Action9Input);
-	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
-	PlayerInputComponent->BindAction("Action11", IE_Pressed, this, &APlayerMovement::Action11Input);
-	PlayerInputComponent->BindAction("Action12", IE_Pressed, this, &APlayerMovement::Action12Input);
-
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerMovement::PanRight);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
 	PlayerInputComponent->BindAxis("ZoomIn", this, &APlayerMovement::ZoomIn);
 
 	//PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
 	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
-
-	PlayerInputComponent->BindAction("TimeScaleIncrease", IE_Pressed, this, &APlayerMovement::SpeedUpTime);
-	PlayerInputComponent->BindAction("TimeScaleDecrease", IE_Pressed, this, &APlayerMovement::SlowDownTime);
 }
 
 void APlayerMovement::Action1Input()
@@ -272,16 +256,6 @@ void APlayerMovement::AdjustTimeScale(float axis)
 	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
-}
-
-void APlayerMovement::SpeedUpTime()
-{
-	AdjustTimeScale(timeScaleIncrement);
-}
-
-void APlayerMovement::SlowDownTime()
-{
-	AdjustTimeScale(-timeScaleIncrement);
 }
 
 void APlayerMovement::HexCast()

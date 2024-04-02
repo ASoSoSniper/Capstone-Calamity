@@ -63,8 +63,6 @@ public:
 	float camMaxZ = 600;
 
 	void AdjustTimeScale(float axis);
-	void SpeedUpTime();
-	void SlowDownTime();
 
 	UPROPERTY(EditAnywhere) float timeScaleIncrement = 0.5f;
 

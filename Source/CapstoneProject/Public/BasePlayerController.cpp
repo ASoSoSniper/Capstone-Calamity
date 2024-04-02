@@ -480,7 +480,6 @@ void ABasePlayerController::PlayUIHexSound(TerrainType hexType, ABaseHex* hex)
 	playerCamera->audioComponent->Play();
 }
 
-
 void ABasePlayerController::SetHoveredWorldObject(AActor* object)
 {
 	hoveredWorldObject = object;

@@ -94,7 +94,19 @@ float ACapstoneProjectGameModeBase::GetDeltaTime()
 
 void ACapstoneProjectGameModeBase::SetDeltaTime(float deltaTime)
 {
+	if (deltaTime == 0.f) prevTime = timeScale;
+
 	timeScale = deltaTime;
+}
+
+void ACapstoneProjectGameModeBase::SetToPreviousTime()
+{
+	timeScale = prevTime;
+}
+
+bool ACapstoneProjectGameModeBase::TimeScaleIsZero()
+{
+	return timeScale == 0.f;
 }
 
 FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
