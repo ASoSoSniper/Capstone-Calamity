@@ -70,7 +70,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	FActorSpawnParameters params;
 	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 
-	timeScale = 0.f;
+	timeScale = 1.f;
 	FindExistingBuildingsAndTroops();
 	FindExistingHexes();
 
