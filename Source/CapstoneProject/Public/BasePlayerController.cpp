@@ -770,6 +770,7 @@ void ABasePlayerController::EnterSelectionMode(bool active)
 		{
 			//For TroopManage, Action2 transitions to troop merging mode
 			actionStates[currentActionState]->Action2();
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Merge mode active"));
 		}
 		break;
 	}

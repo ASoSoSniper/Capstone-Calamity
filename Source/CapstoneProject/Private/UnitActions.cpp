@@ -585,6 +585,19 @@ TArray<TerrainType> UnitActions::GetNonBuildableTerrain()
     return ACapstoneProjectGameModeBase::nonBuildableTerrains;
 }
 
+bool UnitActions::HexIsTraversable(AActor* hex)
+{
+    ABaseHex* hexActor = Cast<ABaseHex>(hex);
+    if (!hexActor) return false;
+
+    for (int i = 0; i < ACapstoneProjectGameModeBase::nonBuildableTerrains.Num(); i++)
+    {
+        if (hexActor->hexTerrain == ACapstoneProjectGameModeBase::nonBuildableTerrains[i]) return false;
+    }
+
+    return true;
+}
+
 int UnitActions::GetResourceCap(Factions faction)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].maxResources;
@@ -619,6 +632,22 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
     }
 
     return Cast<ABaseHex>(referencePoint);
+}
+
+bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex)
+{
+    ABaseHex* hexActor = Cast<ABaseHex>(hex);
+    if (!hexActor) return false;
+
+    for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
+    {
+        if (hexActor->troopsInHex[i]->unitStats->faction == faction)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 int UnitActions::GetFactionStarveLevel(Factions faction)

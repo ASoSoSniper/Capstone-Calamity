@@ -50,14 +50,12 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	//PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
 	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
+	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
 }
 
 void APlayerMovement::Action1Input()
 {
-	if (controller)
-	{
-		controller->actionStates[controller->currentActionState]->Action1();
-	}
+	
 }
 
 void APlayerMovement::Action2Input()
@@ -128,7 +126,7 @@ void APlayerMovement::Action10Input()
 {
 	if (controller)
 	{
-		controller->actionStates[controller->currentActionState]->Action10();
+		controller->EnterSelectionMode(true);
 	}
 }
 

@@ -36,6 +36,14 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		SetDestination();
 	}
+	else
+	{
+		if (!UnitActions::HexIsTraversable(parentTroop->hexNav->targetHex))
+		{
+			parentTroop->hexNav->targetHex = nullptr;
+		}
+	}
+
 }
 
 void UAITroopComponent::SetDestination()

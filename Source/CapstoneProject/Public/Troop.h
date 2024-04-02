@@ -22,10 +22,11 @@ class CAPSTONEPROJECT_API ATroop : public AMovementAI
 public:
 	ATroop();
 
-	UAITroopComponent* AITroopComponent;
+	UPROPERTY(EditAnywhere) UAITroopComponent* AITroopComponent;
 
 	UPROPERTY(VisibleAnywhere) bool attacking;
 	UPROPERTY(VisibleAnywhere) bool merging;
+	UPROPERTY(EditAnywhere) int armyCap = 5;
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

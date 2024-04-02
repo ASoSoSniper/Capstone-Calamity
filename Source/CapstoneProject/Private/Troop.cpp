@@ -18,7 +18,7 @@ void ATroop::BeginPlay()
 
 	if (unitStats->faction != Factions::Human)
 	{
-		AITroopComponent->isEnemy = true;
+		//AITroopComponent->isEnemy = true;
 	}
 
 	if (!spawner)
@@ -31,10 +31,16 @@ void ATroop::BeginPlay()
 			if (spawner->troopStats.Contains(unitStats->unitType))
 			{
 				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
-
-				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
-				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 			}
+		}
+	}
+
+	if (!visibility->meshMaterials.visibleTexture || !visibility->meshMaterials.selectedTexture)
+	{
+		if (spawner && spawner->troopFactionMaterials.Contains(unitStats->faction))
+		{
+			visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
+			visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 		}
 	}
 }
@@ -67,10 +73,16 @@ void ATroop::Tick(float DeltaTime)
 			if (spawner->troopStats.Contains(unitStats->unitType))
 			{
 				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
-
-				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
-				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 			}
+		}
+	}
+
+	if (!visibility->meshMaterials.visibleTexture || !visibility->meshMaterials.selectedTexture)
+	{
+		if (spawner && spawner->troopFactionMaterials.Contains(unitStats->faction))
+		{
+			visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
+			visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
 		}
 	}
 	

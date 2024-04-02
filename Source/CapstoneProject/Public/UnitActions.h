@@ -188,8 +188,10 @@ public:
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
 	static TArray<TerrainType> GetNonBuildableTerrain();
+	static bool HexIsTraversable(AActor* hex);
 	static int GetResourceCap(Factions faction);
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
+	static bool HexHasFriendlyTroop(Factions faction, AActor* hex);
 	static int GetFactionStarveLevel(Factions faction);
 	static int GetFactionPowerOutageLevel(Factions faction);
 

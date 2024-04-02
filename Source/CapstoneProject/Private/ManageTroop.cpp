@@ -41,37 +41,7 @@ void UManageTroop::SwitchState()
 
 		//If troop (and hostile), set troop's destination to that troop's current hex
 	case ObjectTypes::MoveAI:
-		if (hostileTarget)
-		{			
-			if (hexNav)
-				selectedTroop->hexNav->targetHex = hexNav->currentHex;
-		}
-		else
-		{
-			//Check subselection mode
-			switch (subSelect)
-			{
-			case None:
-				//Set selected troop to that (friendly) troop
-				Select(objectType.actor);
-				return;
-			case Merge:
-				//Move toward friendly troop with the intent to merge
-				if (hexNav && selectedTroop != objectType.actor)
-				{
-					selectedTroop->hexNav->targetHex = hexNav->currentHex;
-
-					if (selectedTroop) CommandToMerge(selectedTroop, objectType.moveAI);
-					return;
-				}
-				else
-				{
-					return;
-				}
-				break;
-			}
-			
-		}
+		CueActionState(ActionStates::TroopManage, objectType.actor);
 		break;
 
 		//If building (and hostile), set troop's destination to that building's current hex
@@ -148,10 +118,18 @@ AActor* UManageTroop::GetSelectedObject()
 
 void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 {
+	UHexNav* hexNav = target->GetComponentByClass<UHexNav>();
+	UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
+
+	if (troop->unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > troop->armyCap) return;
+
+	troop->hexNav->targetHex = hexNav->currentHex;
+
 	troop->merging = true;
 	troop->targetToMerge = target;
-	if (selectedTroop->hexNav->targetHex)
-		selectedTroop->CreatePath();
+
+	if (troop->hexNav->targetHex)
+		troop->CreatePath();
 	CueActionState(ActionStates::None);
 }
 
@@ -189,12 +167,47 @@ void UManageTroop::CommandAction()
 	if (!controller->hoveredWorldObject || !selectedTroop) return;
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
+	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, objectType.actor);
+	UHexNav* hexNav = objectType.actor->GetComponentByClass<UHexNav>();
 
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Command Action Triggered"));
 	switch (objectType.type)
 	{
 	case ObjectTypes::Hex:
-		selectedTroop->hexNav->targetHex = objectType.actor;
+		if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
+			selectedTroop->hexNav->targetHex = objectType.actor;
 		break;
+	case ObjectTypes::MoveAI:
+		if (hostileTarget)
+		{
+			if (hexNav)
+				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+		}
+		else
+		{
+			//Check subselection mode
+			switch (subSelect)
+			{
+			case None:
+				//Set selected troop to that (friendly) troop
+				//Select(objectType.actor);
+				return;
+			case Merge:
+				//Move toward friendly troop with the intent to merge
+				if (hexNav && selectedTroop != objectType.actor)
+				{
+					CommandToMerge(selectedTroop, objectType.moveAI);
+					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Merging"));
+					return;
+				}
+				else
+				{
+					return;
+				}
+				break;
+			}
+
+		}
 	}
 
 	if (selectedTroop->hexNav->targetHex)
