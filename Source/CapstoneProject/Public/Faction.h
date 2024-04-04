@@ -35,22 +35,24 @@ public:
 
 	Factions faction;
 	UPROPERTY(BlueprintReadWrite) TMap<StratResources, InventoryStat> resourceInventory;
-	TMap<WorkerType, WorkerStats> availableWorkers;
-	TArray<ATroop*> allUnits;
-	TArray<ABuilding*> allBuildings;
-	TArray<ABaseHex*> ownedHexes;
+	UPROPERTY() TMap<WorkerType, WorkerStats> availableWorkers;
+	UPROPERTY() TArray<ATroop*> allUnits;
+	UPROPERTY()TArray<ABuilding*> allBuildings;
+	UPROPERTY() TArray<ABaseHex*> ownedHexes;
 
-	TMap<Factions, FactionRelationship> factionRelationships;
+	UPROPERTY() TArray<AActor*> targetList;
+
+	UPROPERTY() TMap<Factions, FactionRelationship> factionRelationships;
 
 	void FindActiveFactions();
 
-	int daysTillStarve = 3;
-	int currStarveDays = 0;
-	bool starving = false;
+	UPROPERTY() int daysTillStarve = 3;
+	UPROPERTY() int currStarveDays = 0;
+	UPROPERTY() bool starving = false;
 
-	int daysTillPowerOutage = 3;
-	int currPowerDays = 0;
-	bool powerOutage = false;
+	UPROPERTY() int daysTillPowerOutage = 3;
+	UPROPERTY() int currPowerDays = 0;
+	UPROPERTY() bool powerOutage = false;
 
-	UMaterialInterface* factionColor;
+	UPROPERTY() UMaterialInterface* factionColor;
 };

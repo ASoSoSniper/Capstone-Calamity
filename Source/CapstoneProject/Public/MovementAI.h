@@ -46,7 +46,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float hexSnapDistance = 2.f;
 	UPROPERTY(EditAnywhere)
-		int maxHexes = 16;
+		int maxHexes = 200;
 	UPROPERTY(EditAnywhere)
 		float moveSpeed = 1.f;
 		float currentMoveAlpha = 0.f;
