@@ -533,5 +533,6 @@ public:
 
 	TArray<TArray<ABaseHex*>> hexArray;
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
+	void SpawnBuildingsAroundCity(AActor* centerHex);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
 };

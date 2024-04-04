@@ -110,7 +110,7 @@ public:
 	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
 
 	UFUNCTION(BlueprintCallable) FWorkerSliders SetWorkerCount(FWorkerSliders sliders);
-	UFUNCTION(BlueprintCallable) FWorkerSliders SetAttachmentWorkerCount(FWorkerSliders sliders, FText attachmentName);
+	UFUNCTION(BlueprintCallable) FWorkerSliders SetAttachmentWorkerCount(FWorkerSliders sliders, BuildingAttachments attachmentType);
 
 	AOutpost* GetOutpost();
 	UFUNCTION(BlueprintCallable) FBuildingOnHex GetBuildingOnHex();

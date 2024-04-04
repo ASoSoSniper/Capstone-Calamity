@@ -939,19 +939,9 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 	return sliders;
 }
 
-FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sliders, FText attachmentName)
+FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sliders, BuildingAttachments attachmentType)
 {
 	if (!selectedHex) return sliders;
-
-	BuildingAttachments attachmentType = BuildingAttachments::Storage;
-	for (auto& attachment : spawner->attachmentCosts)
-	{
-		if (attachmentName.EqualTo(attachment.Value.name))
-		{
-			attachmentType = attachment.Key;
-			break;
-		}
-	}
 
 	if (AOutpost* outpost = GetOutpost())
 	{

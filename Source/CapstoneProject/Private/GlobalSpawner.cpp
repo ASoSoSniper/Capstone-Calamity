@@ -464,8 +464,8 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Max Workers*/
 		5
 		});
-	//Robot Factory Stats
-	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An extension that allows for robot units to be stored safely without powering them."),
+	//Robot Barracks Stats
+	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An extension that allows for robot units to be repaired when on the tile."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -902,6 +902,10 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	}
 
 	hexArray = arrayOfHexColumns;
+}
+
+void AGlobalSpawner::SpawnBuildingsAroundCity(AActor* centerHex)
+{
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
