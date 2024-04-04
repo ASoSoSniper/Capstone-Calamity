@@ -60,7 +60,7 @@ void ATroop::Tick(float DeltaTime)
 
 	if (unitStats->faction != Factions::Human)
 	{
-		AITroopComponent->isEnemy = true;
+		if (!debug) AITroopComponent->isEnemy = true;
 	}
 
 	if (!spawner)

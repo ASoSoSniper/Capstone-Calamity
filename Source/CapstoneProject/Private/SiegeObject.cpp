@@ -62,23 +62,34 @@ void ASiegeObject::Attack()
 	building->unitStats->currentHP = FMath::Clamp(building->unitStats->currentHP, 0, building->unitStats->maxHP);
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Building took %d damage! %d health remaining!"), attackerSiegeDamage, building->unitStats->currentHP));
 
-	//Remove armies as they are killed
-	for (auto army : armies)
+	//Created array of armies to remove this combat tick
+	TArray<Factions> armiesToRemove;
+
+	//Add armies to the remove list as they are killed or their morale is depleted
+	for (auto& army : armies)
 	{
 		if (!IsAlive(army.Value))
 		{
-			RemoveArmy(army.Key);
+			armiesToRemove.Add(army.Key);
+			continue;
 		}
-	}
-	for (auto army : armies)
-	{
+
 		if (DecayMorale(army.Key, moraleDecayRate) <= 0.f)
 		{
-			FleeFromBattle(army.Key);
+			armiesToRemove.Add(FleeFromBattle(army.Key));
 		}
 	}
 
-	//End the battle if one group is completely wiped out
+	//Remove armies that satisfy removal requirements
+	if (!armiesToRemove.IsEmpty())
+	{
+		for (int i = 0; i < armiesToRemove.Num(); i++)
+		{
+			RemoveArmy(armiesToRemove[i]);
+		}
+	}
+
+	//End the battle if Group 1 is completely wiped out or Group 2 AND its building are wiped out
 	if (currentBattle.Group1.IsEmpty() || (currentBattle.Group2.IsEmpty() && !BuildingIsAlive()))
 	{
 		EndBattle();

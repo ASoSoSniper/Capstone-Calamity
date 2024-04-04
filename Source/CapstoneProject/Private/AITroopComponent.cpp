@@ -30,7 +30,7 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!isEnemy) return;
+	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
 
 	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
 	{

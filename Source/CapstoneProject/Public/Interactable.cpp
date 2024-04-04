@@ -91,6 +91,16 @@ void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)
 	}
 }
 
+void UInteractable::CreateExtraCollision(USkeletalMeshComponent* mesh)
+{
+	otherSkeletalMesh = mesh;
+	if (otherSkeletalMesh)
+	{
+		otherSkeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+		otherSkeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+	}
+}
+
 bool UInteractable::SetInteract(bool active)
 {
 	canInteract = active;

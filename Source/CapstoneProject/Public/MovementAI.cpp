@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "ExploreAnims.h"
 
 // Sets default values
 AMovementAI::AMovementAI()
@@ -18,6 +19,7 @@ AMovementAI::AMovementAI()
 	visibility = CreateDefaultSubobject<UMeshVisibility>("Mesh Visibility");
 	mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
+
 	USkeletalMesh* meshComponent = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 	if (meshComponent)
 	{
@@ -26,6 +28,13 @@ AMovementAI::AMovementAI()
 	mesh->SetCollisionProfileName("BlockAllDynamic");
 
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+
+	mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Exploration_BP.Robot_Beta_Exploration_BP"));
+	if (animBP)
+	{
+		mesh->SetAnimInstanceClass(animBP->GeneratedClass);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -106,6 +115,11 @@ void AMovementAI::CreatePath()
 
 	//Begin moving along path
 	moveState = Move;
+	UExploreAnims* anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
+	if (anims)
+	{
+		anims->isWalking = true;
+	}
 
 	if (currTimeTillHexMove < unitStats->speed)
 	{
@@ -290,6 +304,9 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 			if (hexPathIndex > hexPath.Num() - 1)
 			{
 				moveState = Idle;
+
+				UExploreAnims* anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
+				if (anims) anims->isWalking = false;
 				return;
 			}
 		}

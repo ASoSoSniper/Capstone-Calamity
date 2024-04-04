@@ -175,7 +175,9 @@ void UMeshVisibility::SetVisibility()
 			break;
 
 		case ObjectTypes::Building:
-			mesh->SetVisibility(true);
+			if (mesh) mesh->SetVisibility(true);
+			if (skeletalMesh) skeletalMesh->SetVisibility(true);
+
 			if (selected)
 			{
 				material = meshMaterials.selectedTexture;
@@ -203,7 +205,8 @@ void UMeshVisibility::SetVisibility()
 			break;
 
 		case ObjectTypes::MoveAI:
-			mesh->SetVisibility(false);
+			if (mesh) mesh->SetVisibility(false);
+			if (skeletalMesh) skeletalMesh->SetVisibility(false);
 			break;
 
 		case ObjectTypes::Building:
@@ -229,14 +232,6 @@ void UMeshVisibility::SetVisibility()
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
 		}
 	}
-	if (skeletalMesh)
-	{
-		if (skeletalMesh->GetMaterial(0) != material)
-		{
-			skeletalMesh->SetMaterial(0, material);
-			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
-		}
-	}
 	if (otherMesh)
 	{
 		if (otherMesh->GetMaterial(0) != otherMaterial)
@@ -251,6 +246,22 @@ void UMeshVisibility::SetVisibility()
 		{
 			hexBaseMesh->SetMaterial(0, baseMaterial);
 			hexBaseMaterials.hiddenTexture = baseMaterial;
+		}
+	}
+	if (skeletalMesh)
+	{
+		if (skeletalMesh->GetMaterial(0) != material)
+		{
+			skeletalMesh->SetMaterial(0, material);
+			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
+		}
+	}
+	if (otherSkeletalMesh)
+	{
+		if (otherSkeletalMesh->GetMaterial(0) != material)
+		{
+			otherSkeletalMesh->SetMaterial(0, material);
+			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
 		}
 	}
 }

@@ -76,7 +76,7 @@ public:
 	virtual void CancelPath();
 	virtual void Destroyed() override;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMeshComponent* mesh;
 	UPROPERTY(EditAnywhere)
 		UUnitStats* unitStats;

@@ -46,4 +46,5 @@ public:
 	bool spawnCheck;
 
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
+	UPROPERTY(EditAnywhere) bool debug = false;
 };

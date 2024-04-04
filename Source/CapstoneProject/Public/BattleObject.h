@@ -32,8 +32,8 @@ public:
 	UMeshVisibility* visibility;
 	ABaseHex* hex;
 
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* group1Mesh;
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* group2Mesh;
+	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;
+	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
 	//Every troop participating in this battle, sorted into their factions
@@ -62,14 +62,17 @@ public:
 
 	virtual void Attack();
 	virtual void EndBattle();
+	virtual void DestroyBattle();
 	bool IsAlive(UnitActions::UnitData& group);
-	void FleeFromBattle(Factions faction);
+	Factions FleeFromBattle(Factions faction);
 	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
 	void RemoveArmy(Factions faction);
 
 	UPROPERTY(EditAnywhere) float attackRate = 2.f;
 	float currentAttackTime;
 	bool attacking;
+	bool ending;
+	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
 
 	AGlobalSpawner* spawner;
 

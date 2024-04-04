@@ -6,6 +6,7 @@
 #include "MergedArmy.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
+#include "CombatAnims.h"
 
 // Sets default values
 ABattleObject::ABattleObject()
@@ -21,18 +22,21 @@ ABattleObject::ABattleObject()
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
 
-	group1Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 1 Mesh"));
+	group1Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Group 1 Mesh"));
 	group1Mesh->SetupAttachment(RootComponent);
 	group1Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	group1Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-	group2Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Group 2 Mesh"));
+	group2Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Group 2 Mesh"));
 	group2Mesh->SetupAttachment(RootComponent);
 	group2Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	group2Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	group1Mesh->SetCollisionProfileName("BlockAllDynamic");
 	group2Mesh->SetCollisionProfileName("BlockAllDynamic");
 
 	interact->CreateExtraCollision(group2Mesh);
+	visibility->otherSkeletalMesh = group2Mesh;
 }
 
 // Called when the game starts or when spawned
@@ -76,6 +80,16 @@ void ABattleObject::Tick(float DeltaTime)
 		{
 			Attack();
 			currentAttackTime = attackRate;
+		}
+	}
+
+	if (ending)
+	{
+		timeTillEnd -= DeltaTime;
+		if (timeTillEnd <= 0.f)
+		{
+			DestroyBattle();
+			ending = false;
 		}
 	}
 }
@@ -197,25 +211,34 @@ void ABattleObject::AssignGroups()
 			break;
 		}
 	}
-	UStaticMesh* robotMesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
-	UStaticMesh* alienMesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Robot_Token_02.Robot_Token_02'"));
+	USkeletalMesh* robotMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
+	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
-		group1Mesh->SetStaticMesh(robotMesh);
+		group1Mesh->SetSkeletalMesh(robotMesh);
 	}
 	else
 	{
-		group1Mesh->SetStaticMesh(alienMesh);
+		group1Mesh->SetSkeletalMesh(alienMesh);
 	}
 
 	if (currentBattle.Group2.Contains(Factions::Human))
 	{
-		group2Mesh->SetStaticMesh(robotMesh);
+		group2Mesh->SetSkeletalMesh(robotMesh);
 	}
 	else
 	{
-		group2Mesh->SetStaticMesh(alienMesh);
+		group2Mesh->SetSkeletalMesh(alienMesh);
+	}
+
+	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Combat_BP.Robot_Beta_Combat_BP"));
+	if (animBP)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Combat BP Found!"));
+
+		group1Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
+		group2Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
 	}
 	
 	attacking = true;
@@ -223,6 +246,8 @@ void ABattleObject::AssignGroups()
 
 void ABattleObject::Attack()
 {
+	if (!attacking) return;
+
 	//End the battle if one group is completely wiped out
 	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty())
 	{
@@ -263,22 +288,33 @@ void ABattleObject::Attack()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
 	}
 
-	//Remove armies as they are killed
-	for (auto army : armies)
+	//Created array of armies to remove this combat tick
+	TArray<Factions> armiesToRemove;
+
+	//Add armies to the remove list as they are killed or their morale is depleted
+	for (auto& army : armies)
 	{
 		if (!IsAlive(army.Value))
 		{
-			RemoveArmy(army.Key);
+			armiesToRemove.Add(army.Key);
+			continue;
 		}
-	}
-	for (auto army : armies)
-	{
+
 		if (DecayMorale(army.Key, moraleDecayRate) <= 0.f)
 		{
-			FleeFromBattle(army.Key);
+			armiesToRemove.Add(FleeFromBattle(army.Key));
 		}
 	}
 	
+	//Remove armies that satisfy removal requirements
+	if (!armiesToRemove.IsEmpty())
+	{
+		for (int i = 0; i < armiesToRemove.Num(); i++)
+		{
+			RemoveArmy(armiesToRemove[i]);
+		}
+	}
+
 	//End the battle if one group is completely wiped out
 	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty())
 	{
@@ -288,13 +324,41 @@ void ABattleObject::Attack()
 
 void ABattleObject::EndBattle()
 {
+	if (ending) return;
+
+	UCombatAnims* group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
+	UCombatAnims* group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
+	
+	if (currentBattle.Group1.IsEmpty())
+	{
+		group1Anims->isFightLost = true;
+	}
+	else
+	{
+		group1Anims->isFightWon = true;
+	}
+
+	if (currentBattle.Group2.IsEmpty())
+	{
+		group2Anims->isFightLost = true;
+	}
+	else
+	{
+		group2Anims->isFightWon = true;
+	}
+
+	attacking = false;
+	ending = true;
+}
+
+void ABattleObject::DestroyBattle()
+{
 	for (auto faction : factionsInBattle)
 	{
 		if (faction.Value.IsEmpty()) continue;
 		ExtractFactionUnits(faction.Key);
 	}
 
-	attacking = false;
 	hex->battleInProgress = false;
 	Destroy();
 }
@@ -309,9 +373,9 @@ bool ABattleObject::IsAlive(UnitActions::UnitData& group)
 	return true;
 }
 
-void ABattleObject::FleeFromBattle(Factions faction)
+Factions ABattleObject::FleeFromBattle(Factions faction)
 {
-	if (!factionsInBattle.Contains(faction)) return;
+	if (!factionsInBattle.Contains(faction)) return Factions::None;
 
 	TArray<ATroop*> fleeingTroops = ExtractFactionUnits(faction, true);
 
@@ -324,11 +388,7 @@ void ABattleObject::FleeFromBattle(Factions faction)
 		fleeingTroops[i]->unitStats->currentHP = troopHP;
 	}
 
-	RemoveArmy(faction);
-	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty())
-	{
-		EndBattle();
-	}
+	return faction;
 }
 
 TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnAtOutpost)
