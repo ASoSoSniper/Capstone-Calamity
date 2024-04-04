@@ -759,6 +759,49 @@ UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
     return highestType;
 }
 
+void UnitActions::SetTargetListElement(Factions faction, AActor* target, bool addToList)
+{
+    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return;
+
+    if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(target))
+    {
+        if (addToList)
+        {
+            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Add(target);
+        }
+    }
+    else
+    {
+        if (!addToList)
+        {
+            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(target);
+        }
+    }
+}
+
+void UnitActions::RemoveFromAllTargetLists(AActor* target)
+{
+    for (auto& faction : ACapstoneProjectGameModeBase::activeFactions)
+    {
+        if (faction.Value->targetList.Contains(target))
+        {
+            faction.Value->targetList.Remove(target);
+        }
+    }
+}
+
+TArray<AActor*> UnitActions::GetTargetList(Factions faction)
+{
+    TArray<AActor*> targetList = TArray<AActor*>();
+
+    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
+    {
+        targetList = ACapstoneProjectGameModeBase::activeFactions[faction]->targetList;
+    }
+
+    return targetList;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))

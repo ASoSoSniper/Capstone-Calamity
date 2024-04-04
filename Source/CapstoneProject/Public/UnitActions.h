@@ -201,6 +201,10 @@ public:
 
 	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(ATroop* army);
 	static UnitTypes GetLargestUnitQuantity(ATroop* army);
+
+	static void SetTargetListElement(Factions faction, AActor* target, bool addToList);
+	static void RemoveFromAllTargetLists(AActor* target);
+	static TArray<AActor*> GetTargetList(Factions faction);
 };
 
 

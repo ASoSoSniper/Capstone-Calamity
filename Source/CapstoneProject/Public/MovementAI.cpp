@@ -336,6 +336,8 @@ void AMovementAI::Destroyed()
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 		Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
 
+		UnitActions::RemoveFromAllTargetLists(this);
+
 		if (selectedByPlayer)
 		{
 			AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());

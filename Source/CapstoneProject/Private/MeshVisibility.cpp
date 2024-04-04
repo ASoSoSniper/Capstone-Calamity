@@ -100,7 +100,7 @@ void UMeshVisibility::InSight(Factions thisFaction)
 	}
 
 	//Set object as "In Sight" for the faction and all its allies
-	for (auto ally : ACapstoneProjectGameModeBase::activeFactions)
+	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
 	{
 		if (UnitActions::GetFactionRelationship(thisFaction, ally.Key) == FactionRelationship::Ally)
 		{
@@ -113,7 +113,7 @@ void UMeshVisibility::SetVisibility()
 {
 	bool visibleToPlayer = false;
 
-	for (auto curfaction : factionVisibility)
+	for (auto& curfaction : factionVisibility)
 	{
 		if (curfaction.Value.inSight)
 		{
@@ -121,11 +121,16 @@ void UMeshVisibility::SetVisibility()
 			factionVisibility[curfaction.Key].status = VisibilityStatus::Visible;
 			factionVisibility[curfaction.Key].inSight = false;
 
+			if (objectType != ObjectTypes::Hex) 
+				UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), true);
+
 			if (UnitActions::GetFactionRelationship(Factions::Human, curfaction.Key) == FactionRelationship::Ally) visibleToPlayer = true;
 		}
 		else
 		{
 			factionVisibility[curfaction.Key].status = factionVisibility[curfaction.Key].discoveredByFaction ? VisibilityStatus::Discovered : VisibilityStatus::Undiscovered;
+			if (objectType != ObjectTypes::Building)
+				UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), false);
 		}
 	}
 

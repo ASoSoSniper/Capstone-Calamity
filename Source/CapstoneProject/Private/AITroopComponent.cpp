@@ -36,25 +36,26 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		SetDestination();
 	}
-	else
-	{
-		if (!UnitActions::HexIsTraversable(parentTroop->hexNav->targetHex))
-		{
-			parentTroop->hexNav->targetHex = nullptr;
-		}
-	}
-
 }
 
 void UAITroopComponent::SetDestination()
 {
-	int randX = FMath::RandRange(0, parentTroop->spawner->hexArray.Num() - 1);
-	int randY = FMath::RandRange(0, parentTroop->spawner->hexArray[randX].Num() - 1);
-	ABaseHex* randomHex = FindHex(randX, randY);
+	AActor* targetHex = nullptr;
 
-	if (randomHex)
+	targetHex = SelectClosestHostileTarget();
+
+	/*int giveUp = 50;
+	while (!targetHex)
 	{
-		parentTroop->hexNav->targetHex = randomHex;
+		targetHex = FindRandomHex();
+
+		--giveUp;
+		if (giveUp <= 0) break;
+	}*/
+
+	if (targetHex)
+	{
+		parentTroop->hexNav->targetHex = targetHex;
 		parentTroop->CreatePath();
 	}
 }
@@ -71,4 +72,53 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 
 	return nullptr;
 }
+
+AActor* UAITroopComponent::SelectClosestHostileTarget()
+{
+	TArray<AActor*> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
+
+	if (targetList.IsEmpty()) return nullptr;
+
+	int closestIndex = 0;
+	float closestDistance = INFINITY;
+	for (int i = 0; i < targetList.Num(); i++)
+	{
+		float distance = FVector::Distance(GetOwner()->GetActorLocation(), targetList[i]->GetActorLocation());
+
+		if (distance < closestDistance)
+		{
+			closestDistance = distance;
+			closestIndex = i;
+		}
+	}
+
+	if (targetList[closestIndex])
+	{
+		UHexNav* hexNav = targetList[closestIndex]->GetComponentByClass<UHexNav>();
+		if (hexNav) 
+			return hexNav->currentHex;
+	}
+
+	return nullptr;
+}
+
+AActor* UAITroopComponent::FindRandomHex()
+{
+	int randX = FMath::RandRange(0, parentTroop->spawner->hexArray.Num() - 1);
+	int randY = FMath::RandRange(0, parentTroop->spawner->hexArray[randX].Num() - 1);
+	ABaseHex* randomHex = FindHex(randX, randY);
+
+	if (randomHex)
+	{
+		if (!UnitActions::HexIsTraversable(randomHex))
+		{
+			return nullptr;
+		}
+
+		return randomHex;
+	}
+	return nullptr;
+}
+
+
 

@@ -33,5 +33,8 @@ public:
 
 	ABaseHex* FindHex(int X, int Y);
 
+	AActor* SelectClosestHostileTarget();
+	AActor* FindRandomHex();
+
 	UPROPERTY(VisibleAnywhere) bool isEnemy = false;
 };
