@@ -88,7 +88,6 @@ public:
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
-	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInAttachment(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(ABuilding* building);
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();

@@ -904,16 +904,8 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	hexArray = arrayOfHexColumns;
 }
 
-void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
+void AGlobalSpawner::SpawnBuildingsAroundCity(AActor* centerHex)
 {
-	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, miningStation);
-
-	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, farmland);
-
-	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, powerPlant);
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)

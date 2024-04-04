@@ -628,24 +628,6 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 	return workers;
 }
 
-FWorkersInHex ABasePlayerController::GetWorkersInAttachment(BuildingAttachments attachment)
-{
-	FWorkersInHex workers = FWorkersInHex{ 0,0,0 };
-
-	if (AOutpost* outpost = GetOutpost())
-	{
-		UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
-		if (!selectedAttachment) return workers;
-
-		workers.humans = selectedAttachment->workersInAttachment[WorkerType::Human];
-		workers.robots = selectedAttachment->workersInAttachment[WorkerType::Robot];
-		workers.aliens = selectedAttachment->workersInAttachment[WorkerType::Alien];
-		workers.maxWorkers = selectedAttachment->maxWorkers;
-	}
-
-	return workers;
-}
-
 TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 {
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
