@@ -27,7 +27,23 @@ APowerPlant::APowerPlant()
 
 void APowerPlant::SetToFinishedModel()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingEnergyStationPlains.BuildingEnergyStationPlains'"));
+	UStaticMesh* meshAsset = nullptr;
+
+	if (unitStats->faction == Factions::Human)
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingEnergyStationPlains.BuildingEnergyStationPlains'"));
+	}
+	else
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingPowerPlantAlien.BuildingPowerPlantAlien'"));
+
+		UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienEnergyStationMat01"));
+		if (visibleMat)
+		{
+			visibility->meshMaterials.visibleTexture = visibleMat;
+		}
+	}
+
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);

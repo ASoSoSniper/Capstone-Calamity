@@ -29,7 +29,22 @@ AMiningStation::AMiningStation()
 
 void AMiningStation::SetToFinishedModel()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationModel.BuildingMiningStationModel'"));
+	UStaticMesh* meshAsset = nullptr;
+
+	if (unitStats->faction == Factions::Human)
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationModel.BuildingMiningStationModel'"));
+	}
+	else
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationAlien.BuildingMiningStationAlien'"));
+		UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienMiningStationMat01"));
+		if (visibleMat)
+		{
+			visibility->meshMaterials.visibleTexture = visibleMat;
+		}
+	}
+
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);

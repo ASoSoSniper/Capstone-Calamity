@@ -49,7 +49,21 @@ void AFarmland::RevertResources()
 
 void AFarmland::SetToFinishedModel()
 {
-	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationModel.BuildingFarmingStationModel'"));
+	UStaticMesh* meshAsset = nullptr;
+	if (unitStats->faction == Factions::Human)
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmingStationModel.BuildingFarmingStationModel'"));
+	}
+	else
+	{
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmhouseAlien.BuildingFarmhouseAlien'"));
+		UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienFarmingStationMat01"));
+		if (visibleMat)
+		{
+			visibility->meshMaterials.visibleTexture = visibleMat;
+		}
+	}
+	
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);
