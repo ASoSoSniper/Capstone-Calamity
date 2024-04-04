@@ -23,16 +23,6 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
-struct FTroopUIData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float progressToMove;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float healthPercent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float moralePercent;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
 struct FUnitComposition
 {
 	GENERATED_BODY()

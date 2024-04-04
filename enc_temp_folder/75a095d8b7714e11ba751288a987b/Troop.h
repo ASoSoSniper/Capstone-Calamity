@@ -47,6 +47,4 @@ public:
 
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
 	UPROPERTY(EditAnywhere) bool debug = false;
-
-	UFUNCTION(BlueprintCallable) FTroopUIData GetUIData();
 };

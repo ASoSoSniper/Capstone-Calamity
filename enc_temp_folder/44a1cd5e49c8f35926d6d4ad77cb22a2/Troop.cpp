@@ -171,15 +171,3 @@ void ATroop::MoveToTarget(float& DeltaTime)
 	Super::MoveToTarget(DeltaTime);
 }
 
-FTroopUIData ATroop::GetUIData()
-{
-	FTroopUIData data;
-
-	data.healthPercent = (float)unitStats->currentHP / (float)unitStats->maxHP;
-	data.moralePercent = (float)unitStats->currentMorale / (float)unitStats->maxMorale;
-
-	data.progressToMove = (float)currTimeTillHexMove / (float)unitStats->speed;
-
-	return data;
-}
-
