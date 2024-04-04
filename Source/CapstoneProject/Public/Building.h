@@ -98,4 +98,6 @@ public:
 	bool TroopOccupation();
 	UPROPERTY(VisibleAnywhere) AActor* smokeEffect;
 	UPROPERTY(EditAnywhere) float siegeResourcePercent = 0.25f;
+
+	UFUNCTION(BlueprintCallable) float GetBuildPercent();
 };

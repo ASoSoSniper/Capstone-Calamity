@@ -439,3 +439,10 @@ bool ABuilding::TroopOccupation()
 	return occupyingTroops >= 3;
 }
 
+float ABuilding::GetBuildPercent()
+{
+	if (buildTime <= 0) return 0.f;
+
+	return currBuildTime / buildTime;
+}
+
