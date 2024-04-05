@@ -26,7 +26,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere) bool attacking;
 	UPROPERTY(VisibleAnywhere) bool merging;
-	UPROPERTY(EditAnywhere) int armyCap = 5;
+	UPROPERTY(EditAnywhere) int armyCap = 20;
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

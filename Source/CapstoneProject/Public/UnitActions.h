@@ -205,6 +205,8 @@ public:
 	static void SetTargetListElement(Factions faction, AActor* target, bool addToList);
 	static void RemoveFromAllTargetLists(AActor* target);
 	static TArray<AActor*> GetTargetList(Factions faction);
+
+	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
 };
 
 

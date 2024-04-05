@@ -494,7 +494,7 @@ public:
 	AActor* SpawnSmoke(AActor* object);
 
 	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
-	void BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
+	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);

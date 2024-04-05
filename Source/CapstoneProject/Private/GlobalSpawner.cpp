@@ -1197,13 +1197,15 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 	return canAfford;
 }
 
-void AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
+ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
 {
 	FTroopStats unitData = troopStats[unit];	
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(faction, newTroop);
 	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, unitData);
+
+	return newTroop;
 }
 
 void AGlobalSpawner::BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost)

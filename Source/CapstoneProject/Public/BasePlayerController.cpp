@@ -439,6 +439,38 @@ FDefenseStationStats ABasePlayerController::GetDefenseStationStats()
 	return defense;
 }
 
+bool ABasePlayerController::CanBuildOnHex()
+{
+	if (!selectedHex) return false;
+
+	if (selectedHex->hexTerrain == TerrainType::Mountains || 
+		selectedHex->hexTerrain == TerrainType::Border || 
+		selectedHex->hexTerrain == TerrainType::Jungle) return false;
+
+	return true;
+}
+
+bool ABasePlayerController::CanPutWorkersOnHex()
+{
+	if (!selectedHex) return false;
+
+	if (selectedHex->hexTerrain == TerrainType::Mountains ||
+		selectedHex->hexTerrain == TerrainType::Border || 
+		selectedHex->hexTerrain == TerrainType::AlienCity ||
+		selectedHex->hexTerrain == TerrainType::TheRock) return false;
+
+	return true;
+}
+
+bool ABasePlayerController::HexIsDiscovered()
+{
+	if (!selectedHex) return false;
+
+	if (!selectedHex->visibility->discoveredByPlayer) return false;
+
+	return true;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

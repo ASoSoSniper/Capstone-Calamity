@@ -118,18 +118,8 @@ AActor* UManageTroop::GetSelectedObject()
 
 void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 {
-	UHexNav* hexNav = target->GetComponentByClass<UHexNav>();
-	UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
+	UnitActions::CommandTroopToMerge(troop, target);
 
-	if (troop->unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > troop->armyCap) return;
-
-	troop->hexNav->targetHex = hexNav->currentHex;
-
-	troop->merging = true;
-	troop->targetToMerge = target;
-
-	if (troop->hexNav->targetHex)
-		troop->CreatePath();
 	CueActionState(ActionStates::None);
 }
 

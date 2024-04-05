@@ -813,6 +813,27 @@ TArray<AActor*> UnitActions::GetTargetList(Factions faction)
     return targetList;
 }
 
+bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
+{
+    UHexNav* hexNav = target->GetComponentByClass<UHexNav>();
+    UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
+
+    if (troop->unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > troop->armyCap) return false;
+
+    troop->hexNav->targetHex = hexNav->currentHex;
+
+    if (troop->hexNav->targetHex)
+    {
+        troop->merging = true;
+        troop->targetToMerge = target;
+        troop->CreatePath();
+
+        return true;
+    }
+    
+    return false;
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))

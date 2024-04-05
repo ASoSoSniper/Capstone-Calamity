@@ -143,4 +143,8 @@ public:
 	UFUNCTION(BlueprintCallable) FRobotFactoryStats GetRobotFactoryStats();
 	UFUNCTION(BlueprintCallable) FRobotStorageStats GetRobotStorageStats();
 	UFUNCTION(BlueprintCallable) FDefenseStationStats GetDefenseStationStats();
+
+	UFUNCTION(BlueprintCallable) bool CanBuildOnHex();
+	UFUNCTION(BlueprintCallable) bool CanPutWorkersOnHex();
+	UFUNCTION(BlueprintCallable) bool HexIsDiscovered();
 };
