@@ -46,7 +46,7 @@ public:
 	float prevTime = 1.f;
 
 	static inline float currentHarvestTime = 0;
-	UPROPERTY(EditAnywhere) float harvestTickLength = 8.f;
+	UPROPERTY(EditAnywhere) float harvestTickLength = 2.f;
 	static inline float currentScanTime = 0;
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 
