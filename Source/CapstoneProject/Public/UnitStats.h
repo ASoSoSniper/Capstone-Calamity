@@ -27,7 +27,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool IsAlive();
-	void Heal();
+	void Heal(int amount);
+	void RecoverMorale();
 
 	UPROPERTY(EditAnywhere) Factions faction;
 	UPROPERTY(EditAnywhere) UnitTypes unitType;
@@ -58,5 +59,4 @@ public:
 	float currhealTime = 5.f;
 
 	float moraleRecovery = 0.1f;
-	void RecoverMorale();
 };

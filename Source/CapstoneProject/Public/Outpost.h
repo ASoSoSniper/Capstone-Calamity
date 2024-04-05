@@ -56,10 +56,16 @@ public:
 	TArray<UnitTypes> cuedUnits;
 	float currentTroopBuildTime;
 	void CueTroopBuild(UnitTypes unit);
+	void BuildTroop();
 	
 	TArray<UnitActions::UnitData> troopsInStorage;
 	void StoreTroop(ATroop* troop);
 	TArray<ATroop*> ReleaseTroops();
+
+	void HealTroops(float& DeltaTime);
+	UPROPERTY(EditAnywhere) float healRate = 1.f;
+	float currentHealRate = 0;
+	UPROPERTY(EditAnywhere) int healAmount = 5;
 
 	virtual void Action1() override;
 	virtual void Action2() override;

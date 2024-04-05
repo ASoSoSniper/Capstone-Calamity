@@ -51,18 +51,18 @@ bool UUnitStats::IsAlive()
 	return true;
 }
 
-void UUnitStats::Heal()
+void UUnitStats::Heal(int amount)
 {
-	currentHP += reinforceRate;
+	currentHP += amount;
 	currentHP = FMath::Clamp(currentHP, 0, maxHP);
 
-	if (!savedUnits.IsEmpty()) return;
+	/*if (!savedUnits.IsEmpty()) return;
 
 	for (int i = 0; i < savedUnits.Num(); ++i)
 	{
-		savedUnits[i].currentHP += reinforceRate;
+		savedUnits[i].currentHP += amount;
 		savedUnits[i].currentHP = FMath::Clamp(savedUnits[i].currentHP, 0, savedUnits[i].maxHP);
-	}
+	}*/
 }
 
 void UUnitStats::RecoverMorale()

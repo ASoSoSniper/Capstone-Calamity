@@ -51,33 +51,7 @@ void AOutpost::Tick(float DeltaTime)
 	{
 		if (!cuedUnits.IsEmpty() && spawner)
 		{
-			ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-
-			ATroop* troop = spawner->BuildTroop(unitStats->faction, cuedUnits[0], hex);
-
-			if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex))
-			{
-				for (int i = 0; i < hex->troopsInHex.Num(); i++)
-				{
-					if (hex->troopsInHex[i]->unitStats->faction == unitStats->faction)
-					{
-						if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->armyCap)
-						{
-							troop->SphereCheck(20.f);
-							UnitActions::CommandTroopToMerge(troop, hex->troopsInHex[i]);
-						}
-						else
-						{
-							TArray<ABaseHex*> ignoredHexes;
-							ABaseHex* freeHex = hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes);
-
-							troop->SetActorLocation(freeHex->troopAnchor->GetComponentLocation());
-						}
-
-						break;
-					}
-				}
-			}
+			BuildTroop();
 
 			cuedUnits.RemoveAt(0);
 			if (!cuedUnits.IsEmpty())
@@ -85,6 +59,11 @@ void AOutpost::Tick(float DeltaTime)
 				currentTroopBuildTime = spawner->troopCosts[cuedUnits[0]].timeToBuild;
 			}
 		}
+	}
+
+	if (BuildingAttachmentIsActive(BuildingAttachments::RobotBarracks))
+	{
+		HealTroops(DeltaTime);
 	}
 }
 
@@ -189,7 +168,7 @@ UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)
 	case BuildingAttachments::RobotFactory:
 		return troopFactoryBuilding;
 	case BuildingAttachments::RobotBarracks:
-		return storageBuilding;
+		return barracksBuilding;
 	case BuildingAttachments::DefenseStation:
 		return defenseBuilding;
 	default:
@@ -212,7 +191,7 @@ void AOutpost::AddWorkersToAttachment(BuildingAttachments attachment, WorkerType
 bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 {
 	UBuildingAttachment* attachmentType = GetAttachment(attachment);
-	if (attachmentType) attachmentType->AttachmentIsActive();
+	if (attachmentType) return attachmentType->AttachmentIsActive();
 
 	return false;
 }
@@ -233,6 +212,37 @@ void AOutpost::CueTroopBuild(UnitTypes unit)
 		{
 			cuedUnits.Add(unit);
 			if (cuedUnits.Num() == 1) currentTroopBuildTime = spawner->troopCosts[unit].timeToBuild;
+		}
+	}
+}
+
+void AOutpost::BuildTroop()
+{
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+
+	ATroop* troop = spawner->BuildTroop(unitStats->faction, cuedUnits[0], hex);
+
+	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex))
+	{
+		for (int i = 0; i < hex->troopsInHex.Num(); i++)
+		{
+			if (hex->troopsInHex[i]->unitStats->faction == unitStats->faction)
+			{
+				if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->armyCap)
+				{
+					troop->SphereCheck(20.f);
+					UnitActions::CommandTroopToMerge(troop, hex->troopsInHex[i]);
+				}
+				else
+				{
+					TArray<ABaseHex*> ignoredHexes;
+					ABaseHex* freeHex = hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes);
+
+					troop->SetActorLocation(freeHex->troopAnchor->GetComponentLocation());
+				}
+
+				break;
+			}
 		}
 	}
 }
@@ -272,6 +282,25 @@ TArray<ATroop*> AOutpost::ReleaseTroops()
 	}
 	troopsInStorage.Empty();
 	return spawnedTroops;
+}
+
+void AOutpost::HealTroops(float& DeltaTime)
+{
+	if (currentHealRate > 0)
+	{
+		currentHealRate -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+		return;
+	}
+
+	currentHealRate = healRate;
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+
+	if (hex->troopsInHex.IsEmpty()) return;
+
+	for (int i = 0; i < hex->troopsInHex.Num(); i++)
+	{
+		hex->troopsInHex[i]->unitStats->Heal(healAmount);
+	}
 }
 
 void AOutpost::Action1()
