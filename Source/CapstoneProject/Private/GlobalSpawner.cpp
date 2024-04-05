@@ -901,7 +901,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 					if (hexTest->terrainChange != TerrainType::AlienCity &&
 						hexTest->terrainChange != TerrainType::TheRock &&
 						hexTest->terrainChange != TerrainType::Ship &&
-						!hexTest->building)
+						!BuildingOnHex(hexTest))
 					{
 						usedCoordinates.Add(randomXY);
 						hex = hexTest;
@@ -959,6 +959,29 @@ ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
 	return nullptr;
 }
 
+bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
+{
+	if (!hex) return false;
+
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(hex);
+
+	FVector start = hex->GetActorLocation();
+	FVector end = start + FVector::UpVector * 10.f;
+
+	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params);
+
+	if (hit)
+	{
+		ABuilding* building = Cast<ABuilding>(hitResult.GetActor());
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Building on hex, skipping"));
+		if (building) return true;
+	}
+
+	return false;
+}
+
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
 	FVector2D center = GetHexCoordinates(centerHex);
@@ -977,8 +1000,8 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 
 		while (!hex)
 		{
-			randX = FMath::RandRange(center.X - 5, center.X + 5);
-			randY = FMath::RandRange(center.Y - 5, center.Y + 5);
+			randX = FMath::RandRange(center.X - buildingDistanceFromCity, center.X + buildingDistanceFromCity);
+			randY = FMath::RandRange(center.Y - buildingDistanceFromCity, center.Y + buildingDistanceFromCity);
 
 			if (!claimedCoordinates.Contains(FVector2D(randX, randY)))
 			{
@@ -988,7 +1011,7 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 				if (hexTest->terrainChange != TerrainType::AlienCity && 
 					hexTest->terrainChange != TerrainType::TheRock && 
 					hexTest->terrainChange != TerrainType::Ship &&
-					!hexTest->building)
+					!BuildingOnHex(hexTest))
 				{
 					hex = hexTest;
 				}
