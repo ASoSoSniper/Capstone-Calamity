@@ -968,7 +968,7 @@ bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
 	params.AddIgnoredActor(hex);
 
 	FVector start = hex->GetActorLocation();
-	FVector end = start + FVector::UpVector * 10.f;
+	FVector end = start + FVector::UpVector * 50.f;
 
 	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params);
 
@@ -1025,12 +1025,15 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 
 	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, randomHexes[0]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, miningStation);
+	miningStation->builtAtStart = true;
 
 	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, randomHexes[1]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, farmland);
+	farmland->builtAtStart = true;
 
 	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, randomHexes[2]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, powerPlant);
+	powerPlant->builtAtStart = true;
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
