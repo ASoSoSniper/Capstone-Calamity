@@ -129,7 +129,7 @@ void UMeshVisibility::SetVisibility()
 		{
 			factionVisibility[curfaction.Key].status = factionVisibility[curfaction.Key].discoveredByFaction ? VisibilityStatus::Discovered : VisibilityStatus::Undiscovered;
 
-				UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), false);
+			UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), false);
 		}
 	}
 

@@ -265,8 +265,8 @@ void ACapstoneProjectGameModeBase::FeedPop()
 {
 	for (auto &faction : activeFactions)
 	{
-		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
-		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
+		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 20;
+		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 20;
 		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
 
 		int workerRemainder = 0;
