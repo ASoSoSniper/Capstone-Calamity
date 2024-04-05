@@ -846,6 +846,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	ABaseHex* newHex;
 
 	TArray<TArray<ABaseHex*>> arrayOfHexColumns;
+	TArray<FVector2D> usedCoordinates;
 
 	switch (shape)
 	{
@@ -879,16 +880,38 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 			arrayOfHexColumns.Add(column);
 		}
 
-		arrayOfHexColumns[3][4]->terrainChange = TerrainType::Ship;
+		hexArray = arrayOfHexColumns;
 
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
-		arrayOfHexColumns[FMath::RandRange(5, 19)][FMath::RandRange(5, 19)]->terrainChange = TerrainType::AlienCity;
+		hexArray[3][4]->terrainChange = TerrainType::Ship;
 
-		arrayOfHexColumns[FMath::RandRange(6, 19)][FMath::RandRange(1, 19)]->terrainChange = TerrainType::TheRock;
+		hexArray[FMath::RandRange(1, 19)][FMath::RandRange(6, 19)]->terrainChange = TerrainType::TheRock;
+
+		
+		for (int i = 0; i < 6; i++)
+		{
+			ABaseHex* hex = nullptr;
+			FVector2D randomXY = FVector2D::Zero();
+
+			while (!hex)
+			{
+				randomXY = FVector2D(FMath::RandRange(1, 19), FMath::RandRange(5, 19));
+				if (!usedCoordinates.Contains(randomXY))
+				{
+					ABaseHex* hexTest = hexArray[randomXY.X][randomXY.Y];
+					if (hexTest->terrainChange != TerrainType::AlienCity &&
+						hexTest->terrainChange != TerrainType::TheRock &&
+						hexTest->terrainChange != TerrainType::Ship &&
+						!hexTest->building)
+					{
+						usedCoordinates.Add(randomXY);
+						hex = hexTest;
+					}
+				}
+			}
+
+			hex->terrainChange = TerrainType::AlienCity;
+			SpawnBuildingsAroundCity(hex);
+		}
 
 		break;
 	case ShapesOfMap::Rectangle:
@@ -900,19 +923,90 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	default:
 		break;
 	}
+}
 
-	hexArray = arrayOfHexColumns;
+FVector2D AGlobalSpawner::GetHexCoordinates(ABaseHex* hex)
+{
+	int hexesSearched = 0;
+	for (int x = 0; x < hexArray.Num(); x++)
+	{
+		for (int y = 0; y < hexArray[x].Num(); y++)
+		{
+			hexesSearched++;
+			if (hex == hexArray[x][y])
+			{
+				return FVector2D(x, y);
+			}
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%d hexes searched"), hexesSearched));
+
+	return FVector2D::Zero();
+}
+
+ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
+{
+	if (x < 0 || y < 0) return nullptr;
+
+	if (hexArray.Num() - 1 > x)
+	{
+		if (hexArray[x].Num() - 1 > y)
+		{
+			return hexArray[x][y];
+		}
+	}
+
+	return nullptr;
 }
 
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
-	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	FVector2D center = GetHexCoordinates(centerHex);
+	if (center == FVector2D::Zero())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Could not get coordinates"));
+		return;
+	}
+	TArray<ABaseHex*> randomHexes;
+	TArray<FVector2D> claimedCoordinates;
+	for (int i = 0; i < 3; i++)
+	{
+		ABaseHex* hex = nullptr;
+		int randX = 0;
+		int randY = 0;
+
+		while (!hex)
+		{
+			randX = FMath::RandRange(center.X - 5, center.X + 5);
+			randY = FMath::RandRange(center.Y - 5, center.Y + 5);
+
+			if (!claimedCoordinates.Contains(FVector2D(randX, randY)))
+			{
+				ABaseHex* hexTest = GetHexFromCoordinates(randX, randY);
+				if (!hexTest) continue;
+
+				if (hexTest->terrainChange != TerrainType::AlienCity && 
+					hexTest->terrainChange != TerrainType::TheRock && 
+					hexTest->terrainChange != TerrainType::Ship &&
+					!hexTest->building)
+				{
+					hex = hexTest;
+				}
+				
+			}
+		}
+
+		randomHexes.Add(hex);
+		claimedCoordinates.Add(FVector2D(randX, randY));
+	}
+
+	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, randomHexes[0]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, miningStation);
 
-	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, randomHexes[1]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, farmland);
 
-	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, centerHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, randomHexes[2]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, powerPlant);
 }
 
