@@ -217,19 +217,23 @@ void ABattleObject::AssignGroups()
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
+		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
+		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
 	if (currentBattle.Group2.Contains(Factions::Human))
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
+		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
+		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
 	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Combat_BP.Robot_Beta_Combat_BP"));

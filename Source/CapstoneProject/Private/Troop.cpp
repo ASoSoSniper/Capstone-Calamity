@@ -51,9 +51,20 @@ void ATroop::Tick(float DeltaTime)
 
 	if (!spawnCheck)
 	{
-		if (unitStats->faction != Factions::None)
+		if (unitStats->faction != Factions::None && spawner)
 		{
 			UnitActions::RobotIsActive(unitStats->faction, this);
+
+			if (spawner->troopFactionMaterials.Contains(unitStats->faction))
+			{
+				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
+				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, TEXT("No materials found"));
+			}
+			
 			spawnCheck = true;
 		}
 	}
