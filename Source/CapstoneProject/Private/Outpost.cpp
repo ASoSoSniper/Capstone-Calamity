@@ -35,8 +35,9 @@ AOutpost::AOutpost()
 		visibility->meshMaterials.selectedTexture = selectedMat;
 	}
 
-	visibility->visibilityRadius *= range;
 	buildingType = SpawnableBuildings::Outpost;
+
+	unitStats->vision = range;
 }
 
 void AOutpost::Tick(float DeltaTime)

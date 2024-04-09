@@ -471,6 +471,26 @@ bool ABasePlayerController::HexIsDiscovered()
 	return true;
 }
 
+bool ABasePlayerController::IsHumanControlled(AActor* object)
+{
+	UnitActions::SelectionIdentity identity = UnitActions::DetermineObjectType(object);
+
+	switch (identity.type)
+	{
+	case ObjectTypes::MoveAI:
+		return identity.moveAI->unitStats->faction == Factions::Human;
+
+	case ObjectTypes::Building:
+		return (identity.building->unitStats->faction == Factions::Human && identity.building->siegingFaction == Factions::None) ||
+			(identity.building->unitStats->faction != Factions::Human && identity.building->siegingFaction == Factions::Human);
+
+	case ObjectTypes::Hex:
+		return identity.hex->hexOwner == Factions::Human;
+	}
+
+	return false;
+}
+
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {
 	if (!UITroopSounds.Contains(unitType)) return;

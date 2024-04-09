@@ -154,7 +154,7 @@ void UManageTroop::Action4()
 
 void UManageTroop::CommandAction()
 {
-	if (!controller->hoveredWorldObject || !selectedTroop) return;
+	if (!controller->hoveredWorldObject || !selectedTroop || !controller->IsHumanControlled(selectedTroop)) return;
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
 	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, objectType.actor);

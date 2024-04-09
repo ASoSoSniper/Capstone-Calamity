@@ -29,7 +29,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere) int range = 4;
+	UPROPERTY(EditAnywhere) int range = 2;
 	TArray<ABaseHex*> ClaimLand();
 
 	TArray<ABaseHex*> ScanHex(ABaseHex* hex);

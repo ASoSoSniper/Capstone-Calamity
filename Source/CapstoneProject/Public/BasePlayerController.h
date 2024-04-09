@@ -147,4 +147,6 @@ public:
 	UFUNCTION(BlueprintCallable) bool CanBuildOnHex();
 	UFUNCTION(BlueprintCallable) bool CanPutWorkersOnHex();
 	UFUNCTION(BlueprintCallable) bool HexIsDiscovered();
+
+	UFUNCTION(BlueprintCallable) bool IsHumanControlled(AActor* object);
 };
