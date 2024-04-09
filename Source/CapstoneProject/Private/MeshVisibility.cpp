@@ -2,7 +2,7 @@
 
 
 #include "MeshVisibility.h"
-
+#include "HexNav.h"
 #include "CapstoneProjectGameModeBase.h"
 
 // Sets default values for this component's properties
@@ -24,6 +24,12 @@ void UMeshVisibility::BeginPlay()
 	Super::BeginPlay();
 
 	objectType = UnitActions::DetermineObjectType(GetOwner()).type;
+	if (objectType == ObjectTypes::MoveAI || objectType == ObjectTypes::Building)
+	{
+		unitStats = GetOwner()->GetComponentByClass<UUnitStats>();
+		hexNav = GetOwner()->GetComponentByClass<UHexNav>();
+	}
+
 	mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 	if (!mesh)
 	{
@@ -79,14 +85,32 @@ void UMeshVisibility::Scan(float radius)
 	actorsToIgnore.Add(GetOwner());
 	TArray<FHitResult> results;
 
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), radius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, showDebugSphere ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, results, true);
+	int visionMulti = unitStats ? unitStats->vision : 1;
+	float hexVisionMod = (hexNav && hexNav->currentHex) ? Cast<ABaseHex>(hexNav->currentHex)->vision : 0;
+
+	bool zeroVision = ((radius * visionMulti) + (radius * hexVisionMod) == 0);
+	float hexMod = zeroVision ? -0.5f : hexVisionMod;
+
+	float searchRadius = (radius * (float)visionMulti) + 
+		(radius * hexMod);
+	float detectionRadius = (detectionDistanceInRadius * (float)visionMulti) + 
+		(radius * hexMod);
+
+	if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("SearchRadius = %f, visionMod = %f, hexMod = %f"), searchRadius, hexVisionMod, hexMod));
+
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), searchRadius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, showDebugSphere ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, results, true);
 
 	if (bHit)
 	{
 		for (int i = 0; i < results.Num(); ++i)
 		{
 			UMeshVisibility* found = results[i].GetActor()->GetComponentByClass<UMeshVisibility>();
-			if (found && faction != Factions::None) found->InSight(faction);
+			if (found && faction != Factions::None)
+			{
+				if (FVector::Distance(results[i].GetActor()->GetActorLocation(), GetOwner()->GetActorLocation()) > detectionRadius) continue;
+
+				found->InSight(faction);
+			}
 		}
 	}
 }

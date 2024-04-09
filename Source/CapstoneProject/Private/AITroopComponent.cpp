@@ -32,6 +32,17 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
 
+	if (currentTarget != ToEnemy)
+	{
+		if (AActor* hex = SelectClosestHostileTarget())
+		{
+			parentTroop->hexNav->targetHex = hex;
+			parentTroop->CreatePath();
+			currentTarget = ToEnemy;
+			return;
+		}
+	}
+
 	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
 	{
 		SetDestination();
@@ -42,29 +53,28 @@ void UAITroopComponent::SetDestination()
 {
 	AActor* targetHex = nullptr;
 
-	targetHex = SelectClosestHostileTarget();
-
-	/*int giveUp = 50;
+	int giveUp = 50;
 	while (!targetHex)
 	{
 		targetHex = FindRandomHex();
 
 		--giveUp;
 		if (giveUp <= 0) break;
-	}*/
+	}
 
 	if (targetHex)
 	{
 		parentTroop->hexNav->targetHex = targetHex;
 		parentTroop->CreatePath();
+		currentTarget = ToHex;
 	}
 }
 
 ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 {
-	if (parentTroop->spawner->hexArray.Num() - 1 > X)
+	if (parentTroop->spawner->hexArray.IsValidIndex(X))
 	{
-		if (parentTroop->spawner->hexArray[X].Num() - 1 > Y)
+		if (parentTroop->spawner->hexArray[X].IsValidIndex(Y))
 		{
 			return parentTroop->spawner->hexArray[X][Y];
 		}
@@ -94,6 +104,15 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 
 	if (targetList[closestIndex])
 	{
+		FVector2D target = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(targetList[closestIndex]));
+		FVector2D origin = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+
+		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
+			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
+		{
+			return nullptr;
+		}
+
 		UHexNav* hexNav = targetList[closestIndex]->GetComponentByClass<UHexNav>();
 		if (hexNav) 
 			return hexNav->currentHex;
@@ -104,9 +123,17 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 
 AActor* UAITroopComponent::FindRandomHex()
 {
-	int randX = FMath::RandRange(0, parentTroop->spawner->hexArray.Num() - 1);
-	int randY = FMath::RandRange(0, parentTroop->spawner->hexArray[randX].Num() - 1);
-	ABaseHex* randomHex = FindHex(randX, randY);
+	FVector2D coordinates = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+
+	FVector2D hexCoords = coordinates;
+
+	ABaseHex* randomHex = nullptr;
+	while (hexCoords == coordinates && !randomHex)
+	{
+		hexCoords.X = FMath::RandRange(coordinates.X - randomHexInterval, coordinates.X + randomHexInterval);
+		hexCoords.Y = FMath::RandRange(coordinates.Y - randomHexInterval, coordinates.Y + randomHexInterval);
+		randomHex = FindHex(hexCoords.X, hexCoords.Y);
+	}	
 
 	if (randomHex)
 	{

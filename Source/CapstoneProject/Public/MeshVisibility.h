@@ -27,7 +27,7 @@ struct FVisibility
 	UPROPERTY() bool discoveredByFaction = false;
 };
 
-
+class UHexNav;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UMeshVisibility : public UActorComponent
 {
@@ -47,6 +47,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere) Factions faction;
 	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
+	UPROPERTY() UUnitStats* unitStats;
+	UPROPERTY() UHexNav* hexNav;
+
 	FVisibilityMaterials meshMaterials;
 	FVisibilityMaterials hexBaseMaterials;
 	UPROPERTY() UStaticMeshComponent* mesh;
@@ -58,7 +61,8 @@ public:
 	UPROPERTY(VisibleAnywhere) bool enableScan = true;
 	UPROPERTY(EditAnywhere) bool debug;
 	UPROPERTY() bool discoveredByPlayer;
-	UPROPERTY(EditAnywhere) float visibilityRadius = 50.f;
+	UPROPERTY(EditAnywhere) float visibilityRadius = 100.f;
+	UPROPERTY(EditAnywhere) float detectionDistanceInRadius = 90.f;
 	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 	TMap<Factions, FVisibility> factionVisibility;
 

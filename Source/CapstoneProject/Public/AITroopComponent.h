@@ -27,7 +27,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere) ATroop* parentTroop = nullptr;
 
-	AActor* objectToOrbit;
+	enum MoveTarget
+	{
+		ToHex,
+		ToEnemy
+	};
+	MoveTarget currentTarget;
 
 	void SetDestination();
 
@@ -37,4 +42,7 @@ public:
 	AActor* FindRandomHex();
 
 	UPROPERTY(VisibleAnywhere) bool isEnemy = false;
+
+	UPROPERTY(EditAnywhere) int randomHexInterval = 5;
+	UPROPERTY(EditAnywhere) int targetAttackDistance = 15;
 };
