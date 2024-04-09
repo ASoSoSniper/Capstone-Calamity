@@ -85,6 +85,8 @@ ABaseHex::ABaseHex()
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
 	visibility->enableScan = false;
 	visibility->hexBaseMesh = hexBase;
+	visibility->visibilityRadius = 50.f;
+	visibility->detectionDistanceInRadius = 40.f;
 
 	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	audioComponent->SetupAttachment(RootComponent);
@@ -285,6 +287,12 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	attritionMultiplier = info.attritionMultiplier;
 	defenderBonus = info.defenderBonus;
 	vision = info.visionModifier;
+
+	if (hexTerrain == TerrainType::Ship)
+	{
+		visibility->enableScan = true;
+		hexOwner = Factions::Human;
+	}
 }
 
 bool ABaseHex::HasBuilding()

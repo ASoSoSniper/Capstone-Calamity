@@ -22,7 +22,7 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	currSeconds = 1;
 
 	nonBuildableTerrains.Add(TerrainType::AlienCity);
-	nonBuildableTerrains.Add(TerrainType::Ship);
+	//nonBuildableTerrains.Add(TerrainType::Ship);
 	nonBuildableTerrains.Add(TerrainType::TheRock);
 	nonBuildableTerrains.Add(TerrainType::Mountains);
 	nonBuildableTerrains.Add(TerrainType::Jungle);

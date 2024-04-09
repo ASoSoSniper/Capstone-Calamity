@@ -90,6 +90,7 @@ public:
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInAttachment(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
+	UPROPERTY(VisibleAnywhere) bool firstBuildPerformed = false;
 	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(ABuilding* building);
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();

@@ -29,6 +29,10 @@ void UMeshVisibility::BeginPlay()
 		unitStats = GetOwner()->GetComponentByClass<UUnitStats>();
 		hexNav = GetOwner()->GetComponentByClass<UHexNav>();
 	}
+	else if (objectType == ObjectTypes::Hex)
+	{
+		enableScan = false;
+	}
 
 	mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 	if (!mesh)
@@ -38,7 +42,7 @@ void UMeshVisibility::BeginPlay()
 
 	FindFactionOfOwner();
 
-	for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
+	for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
 		factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
@@ -61,7 +65,7 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	if (factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num())
 	{
-		for (auto curFaction : ACapstoneProjectGameModeBase::activeFactions)
+		for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
 		{
 			if (!factionVisibility.Contains(curFaction.Key))
 				factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
@@ -71,10 +75,7 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	if (ACapstoneProjectGameModeBase::currentScanTime <= 0.f)
 	{
-		if (objectType != ObjectTypes::Hex)
-		{
-			if (enableScan) Scan(visibilityRadius);
-		}
+		if (enableScan) Scan(visibilityRadius);
 		SetVisibility();
 	}
 }
@@ -82,7 +83,7 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 void UMeshVisibility::Scan(float radius)
 {
 	TArray<AActor*> actorsToIgnore;
-	actorsToIgnore.Add(GetOwner());
+	if (objectType != ObjectTypes::Hex) actorsToIgnore.Add(GetOwner());
 	TArray<FHitResult> results;
 
 	int visionMulti = unitStats ? unitStats->vision : 1;

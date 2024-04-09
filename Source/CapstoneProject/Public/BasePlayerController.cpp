@@ -704,11 +704,14 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	TArray<FBuildingDisplay> buildings;
 	if (!hex) return buildings;
 
-	TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
-	if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
+	//TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
+	//if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
 
-	for (auto building : spawner->buildingCosts)
+	for (auto& building : spawner->buildingCosts)
 	{
+		if (building.Key == SpawnableBuildings::Capitol && firstBuildPerformed) continue;
+		if (building.Key != SpawnableBuildings::Capitol && !firstBuildPerformed) continue;
+
 		FText name = building.Value.name;
 		FText production = FText::AsNumber(building.Value.productionCost);
 		FText workers = FText::AsNumber(building.Value.workerCost);
@@ -854,12 +857,19 @@ bool ABasePlayerController::IsInBuildMode()
 //FOR BLUEPRINT: Triggered when a building is selected from the UI, identifies which building was selected and builds it accordingly
 void ABasePlayerController::SelectBuilding(FText buildingName)
 {
-	for (auto buildings : spawner->buildingCosts)
+	for (auto& buildings : spawner->buildingCosts)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
+			if (buildings.Key == SpawnableBuildings::Capitol)
+			{
+				if (selectedHex->hexTerrain == TerrainType::Ship) firstBuildPerformed = true;
+				else return;
+			}
+
 			Build(buildings.Key);
 			PlayUIBuildingSound(buildings.Key);
+
 			return;
 		}
 	}

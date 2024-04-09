@@ -33,6 +33,8 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
 	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 10, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
+	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 0, 0, FText::FromString("Capitol Hub"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
 
 	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, FText::FromString("Storage"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
@@ -679,6 +681,8 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 		return powerPlantPrefab;
 	case SpawnableBuildings::Outpost:
 		return outpostPrefab;
+	case SpawnableBuildings::Capitol:
+		return capitalPrefab;
 	default:
 		return nullptr;
 	}
@@ -796,9 +800,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		break;
 	case TerrainType::Ship:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_HexagonPlains.TileForestModel_HexagonPlains'"));
-
-		newBuilding = GetWorld()->SpawnActor<ABuilding>(capitalPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-		UnitActions::AssignFaction(Factions::Human, newBuilding);
+		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip2.BuildingCapitolShip2'"));
 
 		break;
 	case TerrainType::AlienCity:
@@ -828,6 +830,14 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	if (extraAsset)
 	{
 		hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+		if (terrainType == TerrainType::Ship)
+		{
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, -45.f, 0));
+		}
+		else
+		{
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 0, 0));
+		}
 	}
 
 	hex->hexMeshAttachment->SetVisibility(extraAsset != nullptr);

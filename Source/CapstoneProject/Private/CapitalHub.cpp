@@ -31,6 +31,6 @@ void ACapitalHub::SetToFinishedModel()
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);
-		mesh->SetRelativeRotation(FRotator(0, -90.f, 0));
+		mesh->SetRelativeRotation(FRotator(0, -45.f, 0));
 	}
 }
