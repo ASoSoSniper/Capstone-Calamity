@@ -32,6 +32,11 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
 
+	if (parentTroop->unitStats->unitType == UnitTypes::Army)
+	{
+		if (parentTroop->unitStats->savedUnits.IsEmpty()) GenerateArmy();
+	}
+
 	if (currentTarget != ToEnemy)
 	{
 		if (AActor* hex = SelectClosestHostileTarget())
@@ -145,6 +150,19 @@ AActor* UAITroopComponent::FindRandomHex()
 		return randomHex;
 	}
 	return nullptr;
+}
+
+void UAITroopComponent::GenerateArmy()
+{
+	for (int i = 0; i < troopsInArmy; i++)
+	{
+		UnitTypes randomType = UnitTypes(FMath::RandRange(1, 5));
+
+		UnitActions::UnitData troop = parentTroop->spawner->CreateTroopUnitData(parentTroop->unitStats->faction, randomType);
+
+		UnitActions::AddUnitData(parentTroop->unitStats, troop);
+		parentTroop->unitStats->savedUnits.Add(troop);
+	}
 }
 
 

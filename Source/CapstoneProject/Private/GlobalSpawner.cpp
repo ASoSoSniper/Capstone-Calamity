@@ -992,6 +992,29 @@ bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
 	return false;
 }
 
+UnitActions::UnitData AGlobalSpawner::CreateTroopUnitData(Factions faction, UnitTypes unitType)
+{
+	UnitActions::UnitData data;
+	FTroopStats troop = troopStats[unitType];
+
+	data.unitType = unitType;
+	data.faction = faction;
+
+	data.currentHP = troop.HP;
+	data.maxHP = troop.HP;
+	data.currentMorale = troop.morale;
+	data.maxMorale = troop.morale;
+
+	data.damage = troop.damage;
+	data.siegePower = troop.siegePower;
+	data.energyUpkeep = troop.energyUpkeepCost;
+
+	data.speed = troop.speed;
+	data.vision = troop.vision;
+
+	return data;
+}
+
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
 	FVector2D center = GetHexCoordinates(centerHex);

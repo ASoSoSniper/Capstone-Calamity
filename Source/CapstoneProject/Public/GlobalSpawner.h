@@ -539,4 +539,6 @@ public:
 	ABaseHex* GetHexFromCoordinates(int x, int y);
 	bool BuildingOnHex(ABaseHex* hex);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
+
+	UnitActions::UnitData CreateTroopUnitData(Factions faction, UnitTypes unitType);
 };
