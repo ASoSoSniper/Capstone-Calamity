@@ -301,15 +301,19 @@ void UnitActions::AddUnitData(UUnitStats* unit, UnitData& data)
     unit->currentMorale += data.currentMorale;
     unit->maxMorale += data.maxMorale;
 
-    unit->vision += data.vision;
-    //unit->speed += data.speed;
     int speed = 0;
+    int bestVision = 0;
     for (int i = 0; i < unit->savedUnits.Num(); i++)
     {
         speed += unit->savedUnits[i].speed;
+
+        if (unit->savedUnits[i].vision > bestVision)
+            bestVision = unit->savedUnits[i].vision;
     }
     speed = FMath::RoundToInt((float)speed / (float)unit->savedUnits.Num());
+
     unit->speed = speed;
+    unit->vision = bestVision;
 
     unit->damage += data.damage;
     unit->siegePower += data.siegePower;
@@ -325,14 +329,19 @@ UnitActions::UnitData UnitActions::AddUnitData(UnitData& unit, UnitData& data)
     unit.currentMorale += data.currentMorale;
     unit.maxMorale += data.maxMorale;
 
-    unit.vision += data.vision;
     int speed = 0;
+    int bestVision = 0;
     for (int i = 0; i < unit.savedUnits.Num(); i++)
     {
         speed += unit.savedUnits[i].speed;
+
+        if (unit.savedUnits[i].vision > bestVision)
+            bestVision = unit.savedUnits[i].vision;
     }
     speed = FMath::RoundToInt((float)speed / (float)unit.savedUnits.Num());
+
     unit.speed = speed;
+    unit.vision = bestVision;
 
     unit.damage += data.damage;
     unit.siegePower += data.siegePower;

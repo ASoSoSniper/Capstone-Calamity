@@ -37,7 +37,8 @@ AOutpost::AOutpost()
 
 	buildingType = SpawnableBuildings::Outpost;
 
-	unitStats->vision = range;
+	unitStats->vision = 2;
+	range = 2;
 }
 
 void AOutpost::Tick(float DeltaTime)

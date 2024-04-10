@@ -160,8 +160,8 @@ void UAITroopComponent::GenerateArmy()
 
 		UnitActions::UnitData troop = parentTroop->spawner->CreateTroopUnitData(parentTroop->unitStats->faction, randomType);
 
-		UnitActions::AddUnitData(parentTroop->unitStats, troop);
 		parentTroop->unitStats->savedUnits.Add(troop);
+		UnitActions::AddUnitData(parentTroop->unitStats, troop);
 	}
 }
 

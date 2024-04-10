@@ -23,6 +23,12 @@ ACapitalHub::ACapitalHub()
 
 	builtAtStart = true;
 	buildingType = SpawnableBuildings::Capitol;
+
+	range = 3;
+	visibility->visibilityRadius = 80.f;
+	visibility->detectionDistanceInRadius = 75.f;
+
+	unitStats->vision = 3;
 }
 
 void ACapitalHub::SetToFinishedModel()

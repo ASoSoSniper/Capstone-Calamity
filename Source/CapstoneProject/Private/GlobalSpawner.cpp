@@ -949,7 +949,7 @@ FVector2D AGlobalSpawner::GetHexCoordinates(ABaseHex* hex)
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%d hexes searched"), hexesSearched));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%d hexes searched"), hexesSearched));
 
 	return FVector2D::Zero();
 }
