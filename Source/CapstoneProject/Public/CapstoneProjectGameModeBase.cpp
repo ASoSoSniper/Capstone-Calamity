@@ -68,7 +68,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	activeFactions[Factions::Alien2]->factionRelationships[Factions::Human] = FactionRelationship::Ally;
 
 	FActorSpawnParameters params;
-	GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
+	spawnedSpawner = GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 
 	timeScale = 1.f;
 	FindExistingBuildingsAndTroops();
@@ -147,6 +147,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 					UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
+					SpawnEnemies();
 				}
 				else
 				{
@@ -154,6 +155,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 					UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
+					SpawnEnemies();
 					
 					if (dayStruct.currentMonth < 12)
 					{
@@ -528,4 +530,62 @@ void ACapstoneProjectGameModeBase::CheckDate()
 	if (dayStruct.day != 31) return;
 
 	gameState = GameStates::Defeat;
+}
+
+void ACapstoneProjectGameModeBase::SpawnEnemies()
+{
+	--currentDaysTillArmySpawn;
+	--currentDaysTillArmyGrowth;
+
+	if (currentDaysTillArmyGrowth <= 0)
+	{
+		troopsInArmy = FMath::Clamp(troopsInArmy + 1, 1, maxTroopsInArmy);
+		currentDaysTillArmyGrowth = daysTillArmyGrowth;
+	}
+
+	if (currentDaysTillArmySpawn > 0) return;
+
+	TArray<AActor*> troopsFound;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATroop::StaticClass(), troopsFound);
+
+	TArray<ATroop*> enemyTroops;
+	for (int i = 0; i < troopsFound.Num(); i++)
+	{
+		if (ATroop* troop = Cast<ATroop>(troopsFound[i]))
+		{
+			if (troop->unitStats->faction != Factions::Human)
+			{
+				enemyTroops.Add(troop);
+			}
+			else
+			{
+				playerBuiltTroop = true;
+			}
+		}
+	}
+
+	if (!playerBuiltTroop) return;
+
+	TArray<ABaseHex*> spawnableHexes;
+	for (int i = 0; i < spawnedSpawner->alienHexes.Num(); i++)
+	{
+		ABuilding* building = spawnedSpawner->alienHexes[i]->building;
+		if (building)
+		{
+			if (spawnedSpawner->alienHexes[i]->battleInProgress) continue;
+			if (building->siegingFaction != Factions::None) continue;
+		}
+
+		spawnableHexes.Add(spawnedSpawner->alienHexes[i]);
+	}
+
+	if (!spawnableHexes.IsEmpty() && enemyTroops.Num() < spawnableHexes.Num())
+	{
+		ABaseHex* randHex = spawnedSpawner->alienHexes[FMath::RandRange(0, spawnableHexes.Num() - 1)];
+
+		ATroop* army = spawnedSpawner->BuildArmy(Factions::Alien1, randHex);
+		army->AITroopComponent->troopsInArmy = troopsInArmy;
+
+		currentDaysTillArmySpawn = daysTillArmySpawn;
+	}
 }

@@ -844,6 +844,14 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	hex->attachmentCanBeVisible = extraAsset != nullptr;
 }
 
+ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
+{
+	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	UnitActions::AssignFaction(faction, newTroop);
+
+	return newTroop;
+}
+
 void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 {
 	bool shipExists = false;
@@ -920,6 +928,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 			}
 
 			hex->terrainChange = TerrainType::AlienCity;
+			alienHexes.Add(hex);
 			SpawnBuildingsAroundCity(hex);
 		}
 
@@ -1232,7 +1241,7 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 
 ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
 {
-	FTroopStats unitData = troopStats[unit];	
+	FTroopStats unitData = troopStats[unit];
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(faction, newTroop);

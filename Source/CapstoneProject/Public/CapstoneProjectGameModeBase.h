@@ -56,6 +56,7 @@ public:
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
+	UPROPERTY() AGlobalSpawner* spawnedSpawner;
 	static inline TArray<TerrainType> nonBuildableTerrains;
 	static inline GameStates gameState;
 
@@ -120,4 +121,14 @@ private:
 
 	void CheckHumanPop();
 	void CheckDate();
+
+	void SpawnEnemies();
+	UPROPERTY(EditAnywhere) int daysTillArmySpawn = 1;
+	int currentDaysTillArmySpawn = 0;
+	UPROPERTY(VisibleAnywhere) bool playerBuiltTroop = false;
+
+	UPROPERTY(EditAnywhere) int daysTillArmyGrowth = 10;
+	int currentDaysTillArmyGrowth = 0;
+	UPROPERTY(EditAnywhere) int maxTroopsInArmy = 20;
+	int troopsInArmy = 0;
 };

@@ -45,7 +45,7 @@ public:
 
 	UPROPERTY(EditAnywhere) int randomHexInterval = 5;
 	UPROPERTY(EditAnywhere) int targetAttackDistance = 15;
-	UPROPERTY(EditAnywhere) int troopsInArmy = 20;
+	UPROPERTY(EditAnywhere) int troopsInArmy = 1;
 
 	void GenerateArmy();
 };

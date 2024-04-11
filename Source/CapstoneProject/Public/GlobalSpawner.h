@@ -495,6 +495,7 @@ public:
 
 	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
 	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
+	ATroop* BuildArmy(Factions faction, ABaseHex* hex);
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);
@@ -532,6 +533,7 @@ public:
 	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
 
 	TArray<TArray<ABaseHex*>> hexArray;
+	TArray<ABaseHex*> alienHexes;
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
 	void SpawnBuildingsAroundCity(ABaseHex* centerHex);
 	UPROPERTY(EditAnywhere) int buildingDistanceFromCity = 3;
