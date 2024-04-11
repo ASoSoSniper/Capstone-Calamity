@@ -21,5 +21,7 @@ public:
 	virtual void ActivateAttachment() override;
 	virtual void DisableAttachment() override;
 
+	virtual bool SetUpAttachment(BuildingAttachments attachment) override;
+
 	UPROPERTY(EditAnywhere) int storageIncrease = 200;
 };

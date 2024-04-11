@@ -15,4 +15,6 @@ class CAPSTONEPROJECT_API UOutpostTroopFactory : public UBuildingAttachment
 	GENERATED_BODY()
 public:
 	UOutpostTroopFactory();
+
+	virtual bool SetUpAttachment(BuildingAttachments attachment) override;
 };

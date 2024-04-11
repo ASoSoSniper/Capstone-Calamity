@@ -82,7 +82,7 @@ void UBuildingAttachment::Constructing(float& DeltaTime)
 
 bool UBuildingAttachment::SetUpAttachment(BuildingAttachments attachment)
 {
-	return true;
+	return false;
 }
 
 void UBuildingAttachment::UpdateResources()
@@ -92,7 +92,12 @@ void UBuildingAttachment::UpdateResources()
 
 void UBuildingAttachment::ActivateAttachment()
 {
+	SetUpAttachment(type);
 	buildState = Building;
+}
+
+void UBuildingAttachment::EnableAttachment()
+{
 }
 
 void UBuildingAttachment::DisableAttachment()

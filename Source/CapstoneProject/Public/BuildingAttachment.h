@@ -46,12 +46,14 @@ public:
 
 	void SetBuildState();
 	void Constructing(float& DeltaTime);
-	bool SetUpAttachment(BuildingAttachments attachment);
+	virtual bool SetUpAttachment(BuildingAttachments attachment);
 
 
 	virtual void UpdateResources();
 
 	virtual void ActivateAttachment();
+
+	virtual void EnableAttachment();
 
 	virtual void DisableAttachment();
 

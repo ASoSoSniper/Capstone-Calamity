@@ -18,4 +18,6 @@ public:
 
 	UOutpostBarracks();
 	TArray<ATroop*> storedTroops;
+
+	virtual bool SetUpAttachment(BuildingAttachments attachment) override;
 };

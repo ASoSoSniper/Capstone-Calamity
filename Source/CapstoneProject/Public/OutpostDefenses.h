@@ -19,6 +19,8 @@ public:
 	virtual void UpdateResources() override;
 	virtual void DisableAttachment() override;
 
-	UPROPERTY(EditAnywhere) int HPInrease = 20;
+	virtual bool SetUpAttachment(BuildingAttachments attachment) override;
+
+	UPROPERTY(EditAnywhere) int HPIncrease = 20;
 	UPROPERTY(EditAnywhere) int siegeIncrease = 10;
 };

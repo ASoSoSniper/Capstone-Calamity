@@ -24,3 +24,19 @@ void UOutpostStorage::DisableAttachment()
 	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, -storageIncrease);
 	Super::DisableAttachment();
 }
+
+bool UOutpostStorage::SetUpAttachment(BuildingAttachments attachment)
+{
+	if (!outpost->spawner->attachmentStats.Contains(attachment)) return false;
+
+	FBuildingStats stats = outpost->spawner->attachmentStats[attachment];
+	FBuildingCost costs = outpost->spawner->attachmentCosts[attachment];
+
+	maxWorkers = stats.maxWorkers;
+	buildTime = costs.timeToBuild;
+	currBuildTime = costs.timeToBuild;
+
+	storageIncrease = stats.resourceCapIncrease;
+
+	return true;
+}

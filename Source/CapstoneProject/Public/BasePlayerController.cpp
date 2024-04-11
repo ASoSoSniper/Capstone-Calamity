@@ -1158,6 +1158,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Capitol;
 		hexBuilding.hub = hub;
+		hexBuilding.outpost = hub;
 		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Capitol].name;
 		return hexBuilding;
 	}
