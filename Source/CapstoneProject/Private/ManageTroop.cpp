@@ -16,6 +16,7 @@ void UManageTroop::Select(AActor* selectedObject)
 	if (!selectedObject) return;
 
 	selectedTroop = Cast<ATroop>(selectedObject);
+	controller->PlayUITroopSelectionSound(selectedTroop->unitStats->faction);
 
 	if (selectedObject)
 	{

@@ -499,6 +499,14 @@ void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 	playerCamera->audioComponent->Play();
 }
 
+void ABasePlayerController::PlayUITroopSelectionSound(Factions faction)
+{
+	if (!UITroopSelectionSounds.Contains(faction)) return;
+
+	playerCamera->audioComponent->SetSound(UITroopSelectionSounds[faction]);
+	playerCamera->audioComponent->Play();
+}
+
 void ABasePlayerController::PlayUIBuildingSound(SpawnableBuildings buildingType)
 {
 	if (!UIBuildingSounds.Contains(buildingType)) return;
@@ -894,7 +902,7 @@ void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 //FOR BLUEPRINT: Triggered when a troop is selected from the UI, identifies which troop was selected and builds it accordingly
 void ABasePlayerController::SelectTroop(FText troopName)
 {
-	for (auto troop : spawner->troopCosts)
+	for (auto& troop : spawner->troopCosts)
 	{
 		if (troopName.EqualTo(troop.Value.name))
 		{
@@ -1146,6 +1154,14 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 		return hexBuilding;
 	}
 
+	if (ACapitalHub* hub = Cast<ACapitalHub>(hex->building))
+	{
+		hexBuilding.buildingType = SpawnableBuildings::Capitol;
+		hexBuilding.hub = hub;
+		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Capitol].name;
+		return hexBuilding;
+	}
+
 	if (AOutpost* outpost = Cast<AOutpost>(hex->building))
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Outpost;
@@ -1238,7 +1254,7 @@ FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
 	FTroopTTInfo info = FTroopTTInfo{};
 	FTroopStats troopStats;
 
-	for (auto troop : spawner->troopStats)
+	for (auto& troop : spawner->troopStats)
 	{
 		if (troopName.EqualTo(troop.Value.title))
 		{

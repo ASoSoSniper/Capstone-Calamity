@@ -156,6 +156,7 @@ struct FBuildingOnHex
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) APowerPlant* powerplant;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AMiningStation* miningStation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AOutpost* outpost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) ACapitalHub* hub;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) ABuilding* baseBuilding;
 };
 USTRUCT(BlueprintType, Blueprintable)

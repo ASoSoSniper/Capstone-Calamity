@@ -11,6 +11,7 @@
 #include "PowerPlant.h"
 #include "Outpost.h"
 #include "Building.h"
+#include "CapitalHub.h"
 #include "Faction.h"
 #include "ManageMode.h"
 #include "ManageHex.h"
@@ -48,10 +49,12 @@ public:
 	//Sound Things
 	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, USoundBase*> UITroopSounds;
+	UPROPERTY(EditAnywhere) TMap<Factions, USoundBase*> UITroopSelectionSounds;
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
 	UPROPERTY(EditAnywhere) TMap<TerrainType, USoundBase*> UIHexSounds;
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
+	UFUNCTION(BlueprintCallable) void PlayUITroopSelectionSound(Factions faction);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
 	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
 	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType, ABaseHex* hex = nullptr);
