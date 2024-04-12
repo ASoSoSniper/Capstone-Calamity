@@ -37,6 +37,9 @@ ABattleObject::ABattleObject()
 
 	interact->CreateExtraCollision(group2Mesh);
 	visibility->otherSkeletalMesh = group2Mesh;
+
+	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	audioComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +55,12 @@ void ABattleObject::BeginPlay()
 
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
+
+	if (combatSound)
+	{
+		audioComponent->SetSound(combatSound);
+		audioComponent->Play();
+	}
 }
 
 void ABattleObject::Start()
@@ -356,6 +365,8 @@ void ABattleObject::EndBattle()
 	{
 		group2Anims->isFightWon = true;
 	}
+
+	audioComponent->Stop();
 
 	attacking = false;
 	ending = true;

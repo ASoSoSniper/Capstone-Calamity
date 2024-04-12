@@ -15,7 +15,7 @@ Faction::Faction()
 
 	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,1000, 0,1,0 });
 	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,10, 1,0,0 });
-	availableWorkers.Add(WorkerType::Alien, WorkerStats{ 0,10, 0,1,0 });
+	availableWorkers.Add(WorkerType::Alien, WorkerStats{ 0,0, 0,1,0 });
 }
 
 Faction::~Faction()
