@@ -48,11 +48,12 @@ public:
 
 	//Sound Things
 	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
-	UPROPERTY(EditAnywhere) TMap<UnitTypes, USoundBase*> UITroopSounds;
-	UPROPERTY(EditAnywhere) TMap<Factions, USoundBase*> UITroopSelectionSounds;
-	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
-	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
-	UPROPERTY(EditAnywhere) TMap<TerrainType, USoundBase*> UIHexSounds;
+	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;
+	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<Factions, USoundBase*> UITroopSelectionSounds;
+	UPROPERTY(EditAnywhere, Category = "Building Sounds") USoundBase* buildingCompleteSound;
+	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
+	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
+	UPROPERTY(EditAnywhere, Category = "Hex Sounds") TMap<TerrainType, USoundBase*> UIHexSounds;
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
 	UFUNCTION(BlueprintCallable) void PlayUITroopSelectionSound(Factions faction);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
@@ -62,6 +63,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleStartSound;
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleVictorySound;
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleDefeatSound;
+
+	
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;

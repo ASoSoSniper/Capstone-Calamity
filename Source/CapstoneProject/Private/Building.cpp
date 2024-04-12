@@ -184,6 +184,7 @@ void ABuilding::SetBuildState()
 		BuildingAction();
 		SetToFinishedModel();
 		visibility->enableScan = true;
+		if (unitStats->faction == Factions::Human) spawner->controller->PlayUISound(spawner->controller->buildingCompleteSound);
 		break;
 	case Complete:
 		currBuildTime = upgradeTime;
