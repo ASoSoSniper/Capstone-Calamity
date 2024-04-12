@@ -830,13 +830,21 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	if (extraAsset)
 	{
 		hex->hexMeshAttachment->SetStaticMesh(extraAsset);
-		if (terrainType == TerrainType::Ship)
+		float randomRot = FMath::RandRange(0.f, 360.f);
+
+		switch (terrainType)
 		{
+		case TerrainType::Ship:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, -45.f, 0));
-		}
-		else
-		{
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Jungle:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			break;
+		default:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 0, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
 		}
 	}
 
