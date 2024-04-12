@@ -172,6 +172,43 @@ void ABattleObject::GenerateArmies()
 	AssignGroups();
 }
 
+void ABattleObject::GenerateModels()
+{
+	USkeletalMesh* robotMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
+	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
+
+	if (currentBattle.Group1.Contains(Factions::Human))
+	{
+		group1Mesh->SetSkeletalMesh(robotMesh);
+		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+	}
+	else
+	{
+		group1Mesh->SetSkeletalMesh(alienMesh);
+		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+	}
+
+	if (currentBattle.Group2.Contains(Factions::Human))
+	{
+		group2Mesh->SetSkeletalMesh(robotMesh);
+		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+	}
+	else
+	{
+		group2Mesh->SetSkeletalMesh(alienMesh);
+		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+	}
+
+	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Combat_BP.Robot_Beta_Combat_BP"));
+	if (animBP)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Combat BP Found!"));
+
+		group1Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
+		group2Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
+	}
+}
+
 //After adding the unit to the faction, add its stats to the existing army unit
 void ABattleObject::AddUnitToArmy(UnitActions::UnitData data)
 {
@@ -211,39 +248,8 @@ void ABattleObject::AssignGroups()
 			break;
 		}
 	}
-	USkeletalMesh* robotMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
-	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 
-	if (currentBattle.Group1.Contains(Factions::Human))
-	{
-		group1Mesh->SetSkeletalMesh(robotMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
-	}
-	else
-	{
-		group1Mesh->SetSkeletalMesh(alienMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
-	}
-
-	if (currentBattle.Group2.Contains(Factions::Human))
-	{
-		group2Mesh->SetSkeletalMesh(robotMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
-	}
-	else
-	{
-		group2Mesh->SetSkeletalMesh(alienMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
-	}
-
-	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Combat_BP.Robot_Beta_Combat_BP"));
-	if (animBP)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Combat BP Found!"));
-
-		group1Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-		group2Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-	}
+	GenerateModels();
 	
 	attacking = true;
 }

@@ -19,6 +19,8 @@ public:
 	virtual void Attack() override;
 	virtual void EndBattle() override;
 
+	virtual void GenerateModels() override;
+
 	ABuilding* building;
 
 	int attackerSiegeDamage;

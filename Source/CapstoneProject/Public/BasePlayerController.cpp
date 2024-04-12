@@ -566,6 +566,8 @@ void ABasePlayerController::SetActionState()
 
 AActor* ABasePlayerController::GetActionStateSelection()
 {
+	if (currentActionState == ActionStates::None) return nullptr;
+
 	return actionStates[currentActionState]->GetSelectedObject();
 }
 

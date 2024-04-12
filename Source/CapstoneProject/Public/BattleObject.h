@@ -56,6 +56,7 @@ public:
 	void CreateFactions();
 	void AddUnitToFaction(AMovementAI* troop);
 	void GenerateArmies();
+	virtual void GenerateModels();
 	void AddUnitToArmy(UnitActions::UnitData data);
 
 	void AssignGroups();
