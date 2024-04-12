@@ -55,6 +55,11 @@ void UManageBattle::CheckSelection()
 	}
 }
 
+AActor* UManageBattle::GetSelectedObject()
+{
+	return selectedBattle;
+}
+
 void UManageBattle::Action1()
 {
 	selectedBattle->FleeFromBattle(Factions::Human);
