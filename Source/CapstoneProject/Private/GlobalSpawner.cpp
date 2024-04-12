@@ -862,6 +862,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	float sqroot;
 	int roundedSQRoot;
 	ABaseHex* newHex;
+	ABaseHex* rockHex;
 
 	TArray<TArray<ABaseHex*>> arrayOfHexColumns;
 	TArray<FVector2D> usedCoordinates;
@@ -902,8 +903,9 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 		hexArray[3][4]->terrainChange = TerrainType::Ship;
 
-		hexArray[FMath::RandRange(1, 19)][FMath::RandRange(6, 19)]->terrainChange = TerrainType::TheRock;
-
+		rockHex = hexArray[FMath::RandRange(12, 17)][FMath::RandRange(12, 17)];
+		rockHex->terrainChange = TerrainType::TheRock;
+		SpawnBuildingsAroundCity(rockHex);
 		
 		for (int i = 0; i < 6; i++)
 		{
@@ -912,7 +914,9 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 			while (!hex)
 			{
-				randomXY = FVector2D(FMath::RandRange(1, 19), FMath::RandRange(5, 19));
+				randomXY = FVector2D(FMath::RandRange(1, 19), FMath::RandRange(1, 19));
+				if (randomXY.X < 10 && randomXY.Y < 10) continue;
+
 				if (!usedCoordinates.Contains(randomXY))
 				{
 					ABaseHex* hexTest = hexArray[randomXY.X][randomXY.Y];

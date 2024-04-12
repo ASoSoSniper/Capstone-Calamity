@@ -537,7 +537,7 @@ public:
 	TArray<ABaseHex*> alienHexes;
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
 	void SpawnBuildingsAroundCity(ABaseHex* centerHex);
-	UPROPERTY(EditAnywhere) int buildingDistanceFromCity = 3;
+	UPROPERTY(EditAnywhere) int buildingDistanceFromCity = 2;
 	FVector2D GetHexCoordinates(ABaseHex* hex);
 	ABaseHex* GetHexFromCoordinates(int x, int y);
 	bool BuildingOnHex(ABaseHex* hex);

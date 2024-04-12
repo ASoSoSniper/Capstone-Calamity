@@ -92,9 +92,9 @@ void UMeshVisibility::Scan(float radius)
 	bool zeroVision = ((radius * visionMulti) + (radius * hexVisionMod) == 0);
 	float hexMod = zeroVision ? -0.5f : hexVisionMod;
 
-	float searchRadius = (radius * (float)visionMulti) + 
+	float searchRadius = infiniteRange ? 10000.f : (radius * (float)visionMulti) + 
 		(radius * hexMod);
-	float detectionRadius = (detectionDistanceInRadius * (float)visionMulti) + 
+	float detectionRadius = infiniteRange ? 10000.f : (detectionDistanceInRadius * (float)visionMulti) +
 		(radius * hexMod);
 
 	if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("SearchRadius = %f, visionMod = %f, hexMod = %f"), searchRadius, hexVisionMod, hexMod));

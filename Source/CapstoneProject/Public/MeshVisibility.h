@@ -63,6 +63,7 @@ public:
 	UPROPERTY() bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) float visibilityRadius = 100.f;
 	UPROPERTY(EditAnywhere) float detectionDistanceInRadius = 90.f;
+	UPROPERTY(EditAnywhere) bool infiniteRange;
 	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 	TMap<Factions, FVisibility> factionVisibility;
 
