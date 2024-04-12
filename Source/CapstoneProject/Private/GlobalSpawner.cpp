@@ -834,12 +834,34 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 		switch (terrainType)
 		{
-		case TerrainType::Ship:
-			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, -45.f, 0));
-			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
-			break;
+		
 		case TerrainType::Jungle:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Mountains:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Forest:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::SporeField:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Hills:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Plains:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			break;
+		case TerrainType::Ship:
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 90.f, 0));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 			break;
 		default:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 0, 0));
