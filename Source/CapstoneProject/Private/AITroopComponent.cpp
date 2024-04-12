@@ -98,6 +98,8 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	float closestDistance = INFINITY;
 	for (int i = 0; i < targetList.Num() - 1; i++)
 	{
+		if (!targetList[i]) continue;
+
 		float distance = FVector::Distance(GetOwner()->GetActorLocation(), targetList[i]->GetActorLocation());
 
 		if (distance < closestDistance)

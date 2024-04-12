@@ -18,11 +18,12 @@ void UOutpostStorage::ActivateAttachment()
 	Super::ActivateAttachment();
 }
 
-void UOutpostStorage::DisableAttachment()
+bool UOutpostStorage::DisableAttachment()
 {
-	if (!outpost) return;
+	if (!Super::DisableAttachment()) return false;
+
 	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, -storageIncrease);
-	Super::DisableAttachment();
+	return true;
 }
 
 bool UOutpostStorage::SetUpAttachment(BuildingAttachments attachment)

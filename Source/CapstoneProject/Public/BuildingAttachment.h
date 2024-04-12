@@ -55,7 +55,9 @@ public:
 
 	virtual void EnableAttachment();
 
-	virtual void DisableAttachment();
+	virtual bool DisableAttachment();
 
 	virtual bool AttachmentIsActive();
+
+	bool WorkersAtCap();
 };

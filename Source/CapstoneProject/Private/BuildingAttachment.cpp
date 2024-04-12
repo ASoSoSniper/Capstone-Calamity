@@ -39,8 +39,19 @@ void UBuildingAttachment::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		Constructing(DeltaTime);
 		break;
 	case Complete:
+		if (!WorkersAtCap())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("disabling"));
+			DisableAttachment();
+		}
 		break;
-
+	case Inactive:
+		if (WorkersAtCap())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("enabling"));
+			EnableAttachment();
+		}
+		break;
 	}
 }
 
@@ -98,15 +109,35 @@ void UBuildingAttachment::ActivateAttachment()
 
 void UBuildingAttachment::EnableAttachment()
 {
+	if (buildState == Complete) return;
+
+	UpdateResources();
+	buildState = Complete;
 }
 
-void UBuildingAttachment::DisableAttachment()
+bool UBuildingAttachment::DisableAttachment()
 {
+	if (buildState == Inactive) return false;
+
 	buildState = Inactive;
+	return true;
 }
 
 bool UBuildingAttachment::AttachmentIsActive()
 {
 	return buildState == Complete;
+}
+
+bool UBuildingAttachment::WorkersAtCap()
+{
+	int totalWorkers = 0;
+
+	for (auto& worker : workersInAttachment)
+	{
+		totalWorkers += worker.Value;
+	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("workers = %d"), totalWorkers));
+	return totalWorkers >= maxWorkers;
 }
 

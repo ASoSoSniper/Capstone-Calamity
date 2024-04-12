@@ -191,7 +191,8 @@ public:
 	static bool HexIsTraversable(AActor* hex);
 	static int GetResourceCap(Factions faction);
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
-	static bool HexHasFriendlyTroop(Factions faction, AActor* hex);
+	static bool HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* referenceTroop = nullptr);
+	static bool HexHasEnemyTroop(Factions faction, AActor* hex);
 	static int GetFactionStarveLevel(Factions faction);
 	static int GetFactionPowerOutageLevel(Factions faction);
 
@@ -202,7 +203,7 @@ public:
 	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(ATroop* army);
 	static UnitTypes GetLargestUnitQuantity(ATroop* army);
 
-	static void SetTargetListElement(Factions faction, AActor* target, bool addToList);
+	static void SetTargetListElement(Factions faction, AActor* target);
 	static void RemoveFromAllTargetLists(AActor* target);
 	static TArray<AActor*> GetTargetList(Factions faction);
 

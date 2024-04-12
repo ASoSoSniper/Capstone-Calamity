@@ -146,7 +146,7 @@ void UMeshVisibility::SetVisibility()
 			factionVisibility[curfaction.Key].status = VisibilityStatus::Visible;
 			factionVisibility[curfaction.Key].inSight = false;
 
-			UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), true);
+			UnitActions::SetTargetListElement(curfaction.Key, GetOwner());
 
 			if (UnitActions::GetFactionRelationship(Factions::Human, curfaction.Key) == FactionRelationship::Ally) visibleToPlayer = true;
 		}
@@ -154,7 +154,7 @@ void UMeshVisibility::SetVisibility()
 		{
 			factionVisibility[curfaction.Key].status = factionVisibility[curfaction.Key].discoveredByFaction ? VisibilityStatus::Discovered : VisibilityStatus::Undiscovered;
 
-			UnitActions::SetTargetListElement(curfaction.Key, GetOwner(), false);
+			//UnitActions::SetTargetListElement(curfaction.Key, GetOwner());
 		}
 	}
 

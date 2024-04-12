@@ -17,7 +17,7 @@ class CAPSTONEPROJECT_API UOutpostDefenses : public UBuildingAttachment
 public:
 	UOutpostDefenses();
 	virtual void UpdateResources() override;
-	virtual void DisableAttachment() override;
+	virtual bool DisableAttachment() override;
 
 	virtual bool SetUpAttachment(BuildingAttachments attachment) override;
 

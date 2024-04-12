@@ -15,15 +15,15 @@ void UOutpostDefenses::UpdateResources()
 	outpost->unitStats->siegePower += siegeIncrease;
 }
 
-void UOutpostDefenses::DisableAttachment()
+bool UOutpostDefenses::DisableAttachment()
 {
-	if (!outpost) return;
+	if (!Super::DisableAttachment()) return false;
 
 	outpost->unitStats->currentHP -= HPIncrease;
 	outpost->unitStats->maxHP -= HPIncrease;
 	outpost->unitStats->siegePower -= siegeIncrease;
 
-	Super::DisableAttachment();
+	return true;
 }
 
 bool UOutpostDefenses::SetUpAttachment(BuildingAttachments attachment)

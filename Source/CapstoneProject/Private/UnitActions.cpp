@@ -643,7 +643,7 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
     return Cast<ABaseHex>(referencePoint);
 }
 
-bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex)
+bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* referenceTroop)
 {
     ABaseHex* hexActor = Cast<ABaseHex>(hex);
     if (!hexActor) return false;
@@ -651,6 +651,27 @@ bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex)
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
         if (hexActor->troopsInHex[i]->unitStats->faction == faction)
+        {
+            if (referenceTroop)
+            {
+                if (hexActor->troopsInHex[i] == referenceTroop) continue;
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
+{
+    ABaseHex* hexActor = Cast<ABaseHex>(hex);
+    if (!hexActor) return false;
+
+    for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
+    {
+        if (UnitActions::GetFactionRelationship(faction, hexActor->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -768,13 +789,46 @@ UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
     return highestType;
 }
 
-void UnitActions::SetTargetListElement(Factions faction, AActor* target, bool addToList)
+void UnitActions::SetTargetListElement(Factions faction, AActor* target)
 {
     if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction) || !target) return;
 
     UnitActions::SelectionIdentity objectType = DetermineObjectType(target);
+    if (objectType.type != ObjectTypes::Hex) return;
 
-    if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(target))
+    bool addToList = false;
+
+    if (UnitActions::HexHasEnemyTroop(faction, objectType.hex) || objectType.hex->battleInProgress)
+    {
+        addToList = true;
+    }
+
+    if (ABuilding* building = objectType.hex->building)
+    {
+        if (GetFactionRelationship(faction, building->FindComponentByClass<UUnitStats>()->faction) != FactionRelationship::Enemy) return;
+        if (building->siegingFaction == faction) return;
+
+        addToList = true;
+    }
+
+    if (addToList)
+    {
+        if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex added to target list!"));
+            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Add(objectType.hex);
+        }
+
+        return;
+    }
+
+    if (ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex remove from target list!"));
+        ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(objectType.hex);
+    }
+
+    /*if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(target))
     {
         if (addToList)
         {
@@ -796,7 +850,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target, bool ad
 
             ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(target);
         }
-    }
+    }*/
 }
 
 void UnitActions::RemoveFromAllTargetLists(AActor* target)

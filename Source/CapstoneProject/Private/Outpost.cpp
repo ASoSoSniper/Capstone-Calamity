@@ -224,7 +224,7 @@ void AOutpost::BuildTroop()
 
 	ATroop* troop = spawner->BuildTroop(unitStats->faction, cuedUnits[0], hex);
 
-	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex))
+	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex, troop))
 	{
 		for (int i = 0; i < hex->troopsInHex.Num(); i++)
 		{
