@@ -6,9 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "UnitActions.h"
 #include "TerrainEnum.h"
-
 #include "GlobalSpawner.generated.h"
 
+class ABasePlayerController;
 class AMergedArmy;
 class ABattleObject;
 class ASiegeObject;
@@ -542,6 +542,7 @@ public:
 	ABaseHex* GetHexFromCoordinates(int x, int y);
 	bool BuildingOnHex(ABaseHex* hex);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
+	ABasePlayerController* controller;
 
 	UnitActions::UnitData CreateTroopUnitData(Factions faction, UnitTypes unitType);
 };

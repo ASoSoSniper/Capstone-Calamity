@@ -3,6 +3,8 @@
 
 #include "SiegeObject.h"
 #include "Building.h"
+#include "CombatAnims.h"
+#include "BasePlayerController.h"
 
 void ASiegeObject::Start()
 {
@@ -98,9 +100,42 @@ void ASiegeObject::Attack()
 
 void ASiegeObject::EndBattle()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Siege ended!")));
+	if (ending) return;
 
-	Super::EndBattle();
+	UCombatAnims* group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
+	UCombatAnims* group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
+
+	if (currentBattle.Group1.IsEmpty())
+	{
+		group1Anims->isFightLost = true;
+	}
+	else
+	{
+		group1Anims->isFightWon = true;
+	}
+
+	if (currentBattle.Group2.IsEmpty() && !BuildingIsAlive())
+	{
+		group2Anims->isFightLost = true;
+	}
+	else
+	{
+		group2Anims->isFightWon = true;
+	}
+
+	if (currentBattle.Group1.Contains(Factions::Human) || 
+		(currentBattle.Group2.Contains(Factions::Human) || 
+			(building->unitStats->faction == Factions::Human && BuildingIsAlive())))
+	{
+		spawner->controller->PlayUISound(spawner->controller->battleVictorySound);
+	}
+	else
+	{
+		spawner->controller->PlayUISound(spawner->controller->battleDefeatSound);
+	}
+
+	attacking = false;
+	ending = true;
 }
 
 void ASiegeObject::GenerateModels()

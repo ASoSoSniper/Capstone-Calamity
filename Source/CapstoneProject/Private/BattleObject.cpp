@@ -37,9 +37,6 @@ ABattleObject::ABattleObject()
 
 	interact->CreateExtraCollision(group2Mesh);
 	visibility->otherSkeletalMesh = group2Mesh;
-
-	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-	audioComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -55,18 +52,13 @@ void ABattleObject::BeginPlay()
 
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
-
-	if (combatSound)
-	{
-		audioComponent->SetSound(combatSound);
-		audioComponent->Play();
-	}
 }
 
 void ABattleObject::Start()
 {
 	//Find hex the object is placed on
 	hex = Cast<ABaseHex>(hexNav->currentHex);
+	spawner->controller->PlayUISound(spawner->controller->battleStartSound);
 
 	//Once created, begin organizing armies into factions
 	CreateFactions();
@@ -366,7 +358,14 @@ void ABattleObject::EndBattle()
 		group2Anims->isFightWon = true;
 	}
 
-	audioComponent->Stop();
+	if (currentBattle.Group1.Contains(Factions::Human) || currentBattle.Group2.Contains(Factions::Human))
+	{
+		spawner->controller->PlayUISound(spawner->controller->battleVictorySound);
+	}
+	else
+	{
+		spawner->controller->PlayUISound(spawner->controller->battleDefeatSound);
+	}
 
 	attacking = false;
 	ending = true;

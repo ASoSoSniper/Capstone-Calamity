@@ -36,8 +36,6 @@ public:
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
-	UPROPERTY(EditAnywhere) UAudioComponent* audioComponent;
-	UPROPERTY(EditAnywhere) USoundBase* combatSound;
 
 	//Every troop participating in this battle, sorted into their factions
 	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;

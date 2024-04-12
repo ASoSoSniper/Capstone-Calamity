@@ -59,6 +59,10 @@ public:
 	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
 	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType, ABaseHex* hex = nullptr);
 
+	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleStartSound;
+	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleVictorySound;
+	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleDefeatSound;
+
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
 

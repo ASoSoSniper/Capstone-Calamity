@@ -2,6 +2,7 @@
 
 
 #include "GlobalSpawner.h"
+#include "BasePlayerController.h"
 #include "BaseHex.h"
 #include "HexNav.h"
 #include "Building.h"
@@ -659,6 +660,9 @@ void AGlobalSpawner::BeginPlay()
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 	if (!rockCityPrefab) rockCityPrefab = ARockCity::StaticClass();
 
+	AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+	controller = Cast<ABasePlayerController>(controllerTemp);
+
 	ProceduralHexGen(400, ShapesOfMap::Square);
 }
 
@@ -667,6 +671,11 @@ void AGlobalSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!controller)
+	{
+		AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+		controller = Cast<ABasePlayerController>(controllerTemp);
+	}
 }
 
 UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)

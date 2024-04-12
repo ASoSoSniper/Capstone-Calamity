@@ -60,6 +60,13 @@ void ASoundBox::AssignHexes()
 		if (foundHexes[i]->audioComponent->IsPlaying()) continue;
 		if (!foundHexes[i]->visibility->factionVisibility[Factions::Human].discoveredByFaction) continue;
 
+		if (foundHexes[i]->battleInProgress)
+		{
+			foundHexes[i]->audioComponent->SetSound(battleSound);
+			foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
+			continue;
+		}
+
 		if (foundHexes[i]->building)
 		{
 			if (buildingSounds.Contains(foundHexes[i]->building->buildingType))

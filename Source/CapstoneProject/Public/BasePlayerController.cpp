@@ -77,6 +77,8 @@ void ABasePlayerController::Tick(float DeltaTime)
 }
 void ABasePlayerController::PlayUISound(USoundBase* sound)
 {
+	if (!sound) return;
+
 	playerCamera->audioComponent->SetSound(sound);
 	playerCamera->audioComponent->Play();
 }

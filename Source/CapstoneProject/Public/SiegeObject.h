@@ -9,6 +9,8 @@
 /**
  * 
  */
+
+class ABasePlayerController;
 UCLASS()
 class CAPSTONEPROJECT_API ASiegeObject : public ABattleObject
 {
