@@ -815,7 +815,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     {
         if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
         {
-            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex added to target list!"));
+            //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex added to target list!"));
             ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Add(objectType.hex);
         }
 
@@ -824,33 +824,9 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
 
     if (ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex remove from target list!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex remove from target list!"));
         ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(objectType.hex);
     }
-
-    /*if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(target))
-    {
-        if (addToList)
-        {
-            if (objectType.type == ObjectTypes::Hex) return;
-
-            if (objectType.type != ObjectTypes::Battle)
-            {
-                if (GetFactionRelationship(faction, target->FindComponentByClass<UUnitStats>()->faction) != FactionRelationship::Enemy) return;
-            }
-
-            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Add(target);
-        }
-    }
-    else
-    {
-        if (!addToList)
-        {
-            if (objectType.type == ObjectTypes::Building || objectType.type == ObjectTypes::Battle) return;
-
-            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(target);
-        }
-    }*/
 }
 
 void UnitActions::RemoveFromAllTargetLists(AActor* target)

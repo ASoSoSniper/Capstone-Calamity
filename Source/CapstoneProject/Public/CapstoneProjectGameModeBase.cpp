@@ -83,6 +83,8 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 	Date(DeltaTime);
 	CheckHumanPop();
 	CheckDate();
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, FString::Printf(TEXT("Enemy has %d targets"), activeFactions[Factions::Alien1]->targetList.Num()));
 }
 
 

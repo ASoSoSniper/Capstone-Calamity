@@ -41,11 +41,16 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		if (AActor* hex = SelectClosestHostileTarget())
 		{
+			
 			parentTroop->hexNav->targetHex = hex;
 			parentTroop->CreatePath();
 			currentTarget = ToEnemy;
 			return;
 		}
+	}
+	else
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Orange, TEXT("Attacking hostile target!"));
 	}
 
 	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
@@ -100,7 +105,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	{
 		if (!targetList[i]) continue;
 
-		float distance = FVector::Distance(GetOwner()->GetActorLocation(), targetList[i]->GetActorLocation());
+		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), targetList[i]->GetActorLocation());
 
 		if (distance < closestDistance)
 		{
@@ -120,9 +125,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 			return nullptr;
 		}
 
-		UHexNav* hexNav = targetList[closestIndex]->GetComponentByClass<UHexNav>();
-		if (hexNav) 
-			return hexNav->currentHex;
+		return targetList[closestIndex];
 	}
 
 	return nullptr;
