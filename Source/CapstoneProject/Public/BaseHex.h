@@ -167,4 +167,7 @@ public:
 	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
 
 	void SetFaction(Factions faction);
+
+	void CountdownSoundFadeOut(float& DeltaTime);
+	float currFadeoutTime = 0;
 };

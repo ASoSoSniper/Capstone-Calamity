@@ -5,6 +5,7 @@
 #include "HexNav.h"
 #include "UnitActions.h"
 #include "MergedArmy.h"
+#include "SiegeObject.h"
 #include "Kismet/GameplayStatics.h"
 
 ABasePlayerController::ABasePlayerController()
@@ -491,6 +492,46 @@ bool ABasePlayerController::IsHumanControlled(AActor* object)
 	}
 
 	return false;
+}
+
+bool ABasePlayerController::BattleIsSiege()
+{
+	if (currentActionState != ActionStates::BattleManage) return false;
+
+	AActor* actor = actionStates[currentActionState]->GetSelectedObject();
+	if (ASiegeObject* siege = Cast<ASiegeObject>(actor))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
+{
+	FSiegeBuildingInfo info = FSiegeBuildingInfo{0,0,1,0};
+
+	if (currentActionState != ActionStates::BattleManage) return info;
+
+	AActor* actor = actionStates[currentActionState]->GetSelectedObject();
+	if (!actor) return info;
+
+	ASiegeObject* siege = Cast<ASiegeObject>(actor);
+	if (!siege) return info;
+
+	FBuildingStats stats = spawner->buildingStats[siege->building->buildingType];
+	info.buildingName = stats.name;
+	info.buildingType = siege->building->buildingType;
+	info.buildingIcon = stats.buildingIcon;
+
+	info.currentHealth = siege->building->unitStats->currentHP;
+	info.maxHealth = siege->building->unitStats->maxHP;
+
+	info.buildingHealthPercent = (float)info.currentHealth / (float)info.maxHealth;
+
+	info.buildingDamage = siege->building->unitStats->damage;
+
+	return info;
 }
 
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)

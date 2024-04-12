@@ -151,6 +151,8 @@ void ABaseHex::Tick(float DeltaTime)
 	}
 
 	if (hexOwner != Factions::None) ActiveHarvesting();
+
+	CountdownSoundFadeOut(DeltaTime);
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -432,4 +434,10 @@ void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions 
 void ABaseHex::SetFaction(Factions faction)
 {
 	UnitActions::AssignFaction(faction, this);
+}
+
+void ABaseHex::CountdownSoundFadeOut(float& DeltaTime)
+{
+	currFadeoutTime -= DeltaTime;
+	currFadeoutTime = FMath::Clamp(currFadeoutTime, 0, currFadeoutTime);
 }

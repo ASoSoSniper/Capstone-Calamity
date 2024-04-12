@@ -23,6 +23,20 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FSiegeBuildingInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingHealthPercent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildingName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FTroopUIData
 {
 	GENERATED_BODY()

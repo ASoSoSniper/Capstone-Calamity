@@ -157,4 +157,7 @@ public:
 	UFUNCTION(BlueprintCallable) bool HexIsDiscovered();
 
 	UFUNCTION(BlueprintCallable) bool IsHumanControlled(AActor* object);
+
+	UFUNCTION(BlueprintCallable) bool BattleIsSiege();
+	UFUNCTION(BlueprintCallable) FSiegeBuildingInfo GetSiegeBuildingInfo();
 };
