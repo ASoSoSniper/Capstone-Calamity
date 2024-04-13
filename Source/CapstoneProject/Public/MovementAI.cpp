@@ -41,11 +41,6 @@ void AMovementAI::BeginPlay()
 
 	selectedByPlayer = false;
 
-	if (animBP)
-	{
-		mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-	}
-
 	SphereCheck(20.f);
 }
 

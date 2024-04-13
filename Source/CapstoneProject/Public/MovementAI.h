@@ -82,8 +82,6 @@ public:
 		UUnitStats* unitStats;
 	UPROPERTY(EditAnywhere)
 		UMeshVisibility* visibility;
-	UPROPERTY(EditAnywhere)
-		UAnimBlueprint* animBP;
 
 	bool selectedByPlayer;
 };
