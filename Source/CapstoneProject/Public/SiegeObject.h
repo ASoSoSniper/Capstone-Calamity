@@ -11,7 +11,7 @@
  */
 
 class ABasePlayerController;
-UCLASS()
+UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API ASiegeObject : public ABattleObject
 {
 	GENERATED_BODY()

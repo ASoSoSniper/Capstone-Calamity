@@ -11,7 +11,7 @@
 #include "Components/AudioComponent.h"
 #include "BattleObject.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API ABattleObject : public AActor
 {
 	GENERATED_BODY()
@@ -36,6 +36,8 @@ public:
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
+
+	UPROPERTY(EditAnywhere) UAnimBlueprint* animBP;
 
 	//Every troop participating in this battle, sorted into their factions
 	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;

@@ -30,11 +30,8 @@ AMovementAI::AMovementAI()
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 
 	mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Exploration_BP.Robot_Beta_Exploration_BP"));
-	if (animBP)
-	{
-		mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-	}
+	//UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Exploration_BP.Robot_Beta_Exploration_BP"));
+	
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +40,11 @@ void AMovementAI::BeginPlay()
 	Super::BeginPlay();	
 
 	selectedByPlayer = false;
+
+	if (animBP)
+	{
+		mesh->SetAnimInstanceClass(animBP->GeneratedClass);
+	}
 
 	SphereCheck(20.f);
 }
