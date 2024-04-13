@@ -119,7 +119,8 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 	unit.name = FText::FromString(TEXT("Goofy ah"));
 	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
 
-	if (battleObject->currentBattle.Group1.IsEmpty() || battleObject->currentBattle.Group2.IsEmpty()) return unit;
+	if (battleObject->currentBattle.Group1.IsEmpty() && group == 0) return unit;
+	if (battleObject->currentBattle.Group2.IsEmpty() && group == 1) return unit;
 
 	Factions selectedFaction = group == 0 ? battleObject->currentBattle.Group1[0] : battleObject->currentBattle.Group2[0];
 
