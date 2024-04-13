@@ -37,8 +37,6 @@ public:
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
-	UPROPERTY(EditAnywhere) UAnimBlueprint* animBP;
-
 	//Every troop participating in this battle, sorted into their factions
 	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;
 

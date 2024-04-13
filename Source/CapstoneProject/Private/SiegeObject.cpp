@@ -164,15 +164,6 @@ void ASiegeObject::GenerateModels()
 		group2Mesh->SetSkeletalMesh(alienMesh);
 		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
-
-	//UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Combat_BP.Robot_Beta_Combat_BP"));
-	if (animBP)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Combat BP Found!"));
-
-		group1Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-		group2Mesh->SetAnimInstanceClass(animBP->GeneratedClass);
-	}
 }
 
 void ASiegeObject::CalculateSiegeDamage()
