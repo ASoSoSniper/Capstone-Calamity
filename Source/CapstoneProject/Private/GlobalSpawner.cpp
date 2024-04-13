@@ -26,13 +26,13 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 5, FText::FromString("Mining Station"),
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 60, FText::FromString("Mining Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 5, FText::FromString("Farmland"),
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 60, FText::FromString("Farmland"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 5, FText::FromString("Power Plant"),
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 60, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 10, FText::FromString("Outpost"),
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 60, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 10, 0, FText::FromString("Capitol Hub"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
@@ -48,7 +48,7 @@ AGlobalSpawner::AGlobalSpawner()
 
 	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
 	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
-	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 96 });
+	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 90 });
 
 	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 25, 24, 0, FText::FromString("Infantry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
@@ -197,7 +197,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		10,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
@@ -227,7 +227,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		10,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
@@ -257,7 +257,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		10,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
@@ -287,7 +287,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		2,
+		10,
 		/*Max Workers*/
 		5,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
@@ -295,7 +295,7 @@ AGlobalSpawner::AGlobalSpawner()
 	//Capitol Hub
 	buildingStats.Add(SpawnableBuildings::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
-		4,
+		2,
 		/*Food Yield*/
 		3,
 		/*Production Yield*/
@@ -317,7 +317,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		7,
+		15,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'"))
@@ -869,7 +869,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 			break;
 		case TerrainType::Ship:
-			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 90.f, 0));
+			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, -45.f, 0));
 			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 			break;
 		default:
