@@ -168,6 +168,16 @@ void UManageTroop::CommandAction()
 		if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
 			selectedTroop->hexNav->targetHex = objectType.actor;
 		break;
+	case ObjectTypes::Building:
+		if (hexNav)
+		{
+			if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, hexNav->currentHex))
+				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+		}
+		break;
+	case ObjectTypes::Battle:
+		if (hexNav)
+			selectedTroop->hexNav->targetHex = hexNav->currentHex;
 	case ObjectTypes::MoveAI:
 		if (hostileTarget)
 		{

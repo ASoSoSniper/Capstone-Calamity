@@ -30,20 +30,26 @@ void UInteractable::BeginPlay()
 		controller = Cast<ABasePlayerController>(tempController);
 	}
 
-	collider = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
-	if (collider)
+	if (!collider)
 	{
-		collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
-		return;
+		collider = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
+		if (collider)
+		{
+			collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+			collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+			return;
+		}
 	}
 
-	skeletalMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
-	if (skeletalMesh)
+	if (!skeletalMesh)
 	{
-		skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
-		return;
+		skeletalMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
+		if (skeletalMesh)
+		{
+			skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+			skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+			return;
+		}
 	}
 }
 
@@ -79,6 +85,26 @@ void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
 	if (controller) controller->SetSelectedWorldObject(GetOwner());
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Selected Hex!")));
+}
+
+void UInteractable::CreateCollision(UStaticMeshComponent* mesh)
+{
+	collider = mesh;
+	if (otherCollider)
+	{
+		collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+		collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+	}
+}
+
+void UInteractable::CreateCollision(USkeletalMeshComponent* mesh)
+{
+	skeletalMesh = mesh;
+	if (skeletalMesh)
+	{
+		skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
+		skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+	}
 }
 
 void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)

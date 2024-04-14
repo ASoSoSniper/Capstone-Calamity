@@ -1169,6 +1169,17 @@ bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 	return produceFood;
 }
 
+bool ABasePlayerController::FarmlandYieldsFood()
+{
+	FBuildingOnHex buildingOnHex = GetBuildingOnHex();
+	if (buildingOnHex.farmland)
+	{
+		return buildingOnHex.farmland->producingFood;
+	}
+
+	return false;
+}
+
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 {
 	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, FText{}, nullptr, nullptr, nullptr, nullptr, nullptr};

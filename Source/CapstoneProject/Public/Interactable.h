@@ -43,6 +43,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool canInteract = true;
 
+	void CreateCollision(UStaticMeshComponent* mesh);
+	void CreateCollision(USkeletalMeshComponent* mesh);
 	void CreateExtraCollision(UStaticMeshComponent* mesh);
 	void CreateExtraCollision(USkeletalMeshComponent* mesh);
 	bool SetInteract(bool active);

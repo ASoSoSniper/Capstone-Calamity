@@ -28,9 +28,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UInteractable* interact;
-	UHexNav* hexNav;
-	UMeshVisibility* visibility;
+	UPROPERTY(EditAnywhere) UInteractable* interact;
+	UPROPERTY(EditAnywhere) UHexNav* hexNav;
+	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 	ABaseHex* hex;
 
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;

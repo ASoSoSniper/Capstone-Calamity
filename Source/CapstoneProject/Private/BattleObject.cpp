@@ -35,6 +35,7 @@ ABattleObject::ABattleObject()
 	group1Mesh->SetCollisionProfileName("BlockAllDynamic");
 	group2Mesh->SetCollisionProfileName("BlockAllDynamic");
 
+	interact->CreateCollision(group1Mesh);
 	interact->CreateExtraCollision(group2Mesh);
 	visibility->otherSkeletalMesh = group2Mesh;
 }

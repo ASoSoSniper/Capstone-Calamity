@@ -134,6 +134,7 @@ public:
 	UFUNCTION(BlueprintCallable) bool AttachmentIsActive(FText attachmentName);
 
 	UFUNCTION(BlueprintCallable) bool ToggleFarmlandYield(bool produceFood);
+	UFUNCTION(BlueprintCallable) bool FarmlandYieldsFood();
 
 	void CheckForActionStates();
 
