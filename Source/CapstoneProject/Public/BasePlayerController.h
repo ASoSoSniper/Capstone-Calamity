@@ -50,6 +50,7 @@ public:
 	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<Factions, USoundBase*> UITroopSelectionSounds;
+	UPROPERTY(EditAnywhere, Category = "Troop Sounds") USoundBase* troopCompleteSound;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") USoundBase* buildingCompleteSound;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
