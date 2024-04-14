@@ -197,7 +197,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		10,
+		4,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
@@ -227,7 +227,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		10,
+		4,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
@@ -257,7 +257,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		10,
+		4,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
@@ -287,7 +287,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		10,
+		6,
 		/*Max Workers*/
 		5,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
@@ -295,7 +295,7 @@ AGlobalSpawner::AGlobalSpawner()
 	//Capitol Hub
 	buildingStats.Add(SpawnableBuildings::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
-		2,
+		1,
 		/*Food Yield*/
 		3,
 		/*Production Yield*/
@@ -317,7 +317,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		15,
+		10,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'"))
@@ -346,7 +346,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		5,
+		0,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
