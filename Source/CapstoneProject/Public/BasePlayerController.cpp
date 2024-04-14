@@ -658,6 +658,11 @@ void ABasePlayerController::ForceActionState(int state)
 	currentActionState = ActionStates(state);
 }
 
+bool ABasePlayerController::IsActionState(ActionStates state)
+{
+	return currentActionState == state;
+}
+
 void ABasePlayerController::Build(SpawnableBuildings building)
 {
 	if (selectedHex)
@@ -808,7 +813,7 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 {
 	TArray<FTroopDisplay> troops;
 
-	for (auto troop : spawner->troopCosts)
+	for (auto& troop : spawner->troopCosts)
 	{
 		FText name = troop.Value.name;
 		UTexture2D* icon = troop.Value.icon;

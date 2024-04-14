@@ -88,6 +88,7 @@ public:
 	UFUNCTION(BlueprintCallable) void CommandAction();
 	UFUNCTION(BlueprintCallable) ActionStates GetActionState();
 	UFUNCTION(BlueprintCallable) void ForceActionState(int state);
+	UFUNCTION(BlueprintCallable) bool IsActionState(ActionStates state);
 
 	void Build(SpawnableBuildings building);
 
