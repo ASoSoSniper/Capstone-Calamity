@@ -201,11 +201,10 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 void AOutpost::CueTroopBuild(UnitTypes unit)
 {
 	if (!spawner) return;
-	if (!troopFactoryBuilding->AttachmentIsActive())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Robot factory not built"));
-		return;
-	}
+	if (!troopFactoryBuilding->AttachmentIsActive()) return;
+
+	//Temp line to remove troop cueing
+	if (!cuedUnits.IsEmpty()) return;
 
 	if (spawner->troopCosts.Contains(unit))
 	{
@@ -223,6 +222,8 @@ void AOutpost::BuildTroop()
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
 
 	ATroop* troop = spawner->BuildTroop(unitStats->faction, cuedUnits[0], hex);
+
+	spawner->controller->PlayUISound(spawner->controller->troopCompleteSound);
 
 	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex, troop))
 	{
