@@ -50,6 +50,8 @@ AGlobalSpawner::AGlobalSpawner()
 	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
 	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 90 });
 
+	troopCosts.Add(UnitTypes::None, FTroopCost{ 0, 0, 0, FText::FromString("No Troops Building"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Troop_Icon_None.Troop_Icon_None'")) });
 	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 25, 24, 0, FText::FromString("Infantry"), 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
 	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 25, 24, 0, FText::FromString("Cavalry"), 

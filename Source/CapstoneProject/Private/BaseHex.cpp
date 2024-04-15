@@ -37,7 +37,7 @@ ABaseHex::ABaseHex()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Mountain.Landscape_Icon_Mountain'")) });
 
 	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")), 
-		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 1, 4, 0, 1.2f, 1.0f, 0, 
+		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 1, 3, 0, 1.2f, 1.0f, 0, 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Toxic.Landscape_Icon_Toxic'")) });
 
 	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 

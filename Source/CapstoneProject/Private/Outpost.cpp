@@ -204,7 +204,7 @@ void AOutpost::CueTroopBuild(UnitTypes unit)
 	if (!troopFactoryBuilding->AttachmentIsActive()) return;
 
 	//Temp line to remove troop cueing
-	if (!cuedUnits.IsEmpty()) return;
+	//if (!cuedUnits.IsEmpty()) return;
 
 	if (spawner->troopCosts.Contains(unit))
 	{

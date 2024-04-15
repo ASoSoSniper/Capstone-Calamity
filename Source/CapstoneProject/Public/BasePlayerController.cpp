@@ -815,6 +815,8 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 
 	for (auto& troop : spawner->troopCosts)
 	{
+		if (troop.Key == UnitTypes::None) continue;
+
 		FText name = troop.Value.name;
 		UTexture2D* icon = troop.Value.icon;
 		FText production = FText::AsNumber(troop.Value.productionCost);
@@ -1014,12 +1016,16 @@ bool ABasePlayerController::HexHasBuilding()
 //FOR BLUEPRINT: Gets info and build time for the next troop to be produced from this building
 FCuedTroop ABasePlayerController::GetCuedTroop()
 {
-	FCuedTroop troop;
+	FCuedTroop troop = FCuedTroop{ FTroopCost{0,0,0}, 0 };
 
 	AOutpost* outpost = GetOutpost();
 	if (!outpost) return troop;
 
-	if (outpost->cuedUnits.IsEmpty()) return troop;
+	if (outpost->cuedUnits.IsEmpty())
+	{
+		troop.troopInfo = spawner->troopCosts[UnitTypes::None];
+		return troop;
+	}
 
 	troop.troopInfo = spawner->troopCosts[outpost->cuedUnits[0]];
 	troop.currentTime = outpost->currentTroopBuildTime;

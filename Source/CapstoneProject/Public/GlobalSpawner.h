@@ -179,7 +179,7 @@ struct FTroopCost
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
