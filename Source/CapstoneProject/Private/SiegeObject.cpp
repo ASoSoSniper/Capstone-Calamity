@@ -166,6 +166,12 @@ void ASiegeObject::GenerateModels()
 	}
 }
 
+void ASiegeObject::DestroyBattle()
+{
+	if (building->unitStats->faction == Factions::Human && !BuildingIsAlive()) building->Destroy();
+	Super::DestroyBattle();
+}
+
 void ASiegeObject::CalculateSiegeDamage()
 {
 	group2Damage += building->unitStats->damage;

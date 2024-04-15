@@ -2,6 +2,7 @@
 
 
 #include "CapitalHub.h"
+#include "CapstoneProjectGameModeBase.h"
 
 ACapitalHub::ACapitalHub()
 {
@@ -39,4 +40,11 @@ void ACapitalHub::SetToFinishedModel()
 		mesh->SetStaticMesh(meshAsset);
 		mesh->SetRelativeRotation(FRotator(0, -45.f, 0));
 	}
+}
+
+void ACapitalHub::Destroyed()
+{
+	ACapstoneProjectGameModeBase::gameState = GameStates::Defeat;
+
+	Super::Destroyed();
 }

@@ -806,9 +806,10 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     if (ABuilding* building = objectType.hex->building)
     {
         if (GetFactionRelationship(faction, building->FindComponentByClass<UUnitStats>()->faction) != FactionRelationship::Enemy) return;
-        if (building->siegingFaction == faction) return;
-
-        addToList = true;
+        if (building->siegingFaction != faction && building->unitStats->currentHP > 0.f)
+        {
+            addToList = true;
+        }
     }
 
     if (addToList)

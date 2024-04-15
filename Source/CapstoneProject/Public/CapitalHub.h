@@ -18,4 +18,6 @@ public:
 	ACapitalHub();
 
 	virtual void SetToFinishedModel() override;
+
+	virtual void Destroyed() override;
 };

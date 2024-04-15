@@ -70,7 +70,7 @@ void ABattleObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!hex->troopsInHex.IsEmpty())
+	if (!hex->troopsInHex.IsEmpty() && !ending)
 	{
 		AddUnitToFaction(hex->troopsInHex[0]);
 	}

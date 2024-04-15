@@ -216,6 +216,8 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 
 void ABaseHex::BeginBattle()
 {
+	if (battleInProgress) return;
+
 	spawner->SpawnBattle(this);
 }
 

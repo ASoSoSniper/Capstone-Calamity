@@ -22,6 +22,7 @@ public:
 	virtual void EndBattle() override;
 
 	virtual void GenerateModels() override;
+	virtual void DestroyBattle() override;
 
 	ABuilding* building;
 

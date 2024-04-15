@@ -340,5 +340,6 @@ void AOutpost::Destroyed()
 	{
 		claimedHexes[i]->SetFaction(Factions::None);
 	}
+
 	Super::Destroyed();
 }

@@ -922,6 +922,8 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
+			if (selectedHex->hexOwner != Factions::Human) return;
+
 			if (buildings.Key == SpawnableBuildings::Capitol)
 			{
 				if (selectedHex->hexTerrain == TerrainType::Ship) firstBuildPerformed = true;
