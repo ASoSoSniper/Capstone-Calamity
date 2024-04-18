@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API UUI_BuildingProgressBar : public UWidgetComponent
 {
 	GENERATED_BODY()

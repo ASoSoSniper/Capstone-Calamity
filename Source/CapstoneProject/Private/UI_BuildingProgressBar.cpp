@@ -10,9 +10,9 @@ void UUI_BuildingProgressBar::BeginPlay()
 
 void UUI_BuildingProgressBar::SetProgressBar()
 {
-	if (!IsBuilding() && progressBar->Visibility == ESlateVisibility::Hidden) return;
+	if (!IsBuilding() && progressBar->GetVisibility() == ESlateVisibility::Hidden) return;
 
-	if (progressBar->Visibility != ESlateVisibility::HitTestInvisible) 
+	if (progressBar->GetVisibility() != ESlateVisibility::HitTestInvisible)
 		progressBar->SetVisibility(ESlateVisibility::HitTestInvisible);
 
 	float percent = (parentBuilding->buildTime - parentBuilding->currBuildTime) / parentBuilding->buildTime;
