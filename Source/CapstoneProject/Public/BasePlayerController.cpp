@@ -922,7 +922,7 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
-			if (selectedHex->hexOwner != Factions::Human) return;
+			if (selectedHex->hexOwner != Factions::Human && buildings.Key != SpawnableBuildings::Outpost) return;
 
 			if (buildings.Key == SpawnableBuildings::Capitol)
 			{
