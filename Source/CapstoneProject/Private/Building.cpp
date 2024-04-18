@@ -445,6 +445,6 @@ float ABuilding::GetBuildPercent()
 {
 	if (buildTime <= 0) return 0.f;
 
-	return currBuildTime / buildTime;
+	return (buildTime - currBuildTime) / buildTime;
 }
 
