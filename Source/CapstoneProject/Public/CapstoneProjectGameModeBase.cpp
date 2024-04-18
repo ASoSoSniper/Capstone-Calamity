@@ -269,19 +269,10 @@ void ACapstoneProjectGameModeBase::FeedPop()
 {
 	for (auto &faction : activeFactions)
 	{
-		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 20;
-		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 20;
-		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
-
-		int workerRemainder = 0;
+		int workerAvailableCost = 0;
 		int workerFoodCost = 0;
 
-		for (auto &workers : faction.Value->availableWorkers)
-		{
-			workerRemainder = workers.Value.working % 5;
-			int cost = workers.Value.working / 5;
-			workerFoodCost += (workerFoodCost + (remainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
-		}
+		CalculateFoodCosts(faction.Key, workerAvailableCost, workerFoodCost);
 
 		int totalCost = activeFactions[faction.Key]->resourceInventory[StratResources::Food].lossesPerDay;
 		
@@ -480,39 +471,56 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 	for (auto& faction : activeFactions)
 	{
 		//Food
-		int remainder = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available % 50;
-		int workerAvailableCost = activeFactions[faction.Key]->availableWorkers[WorkerType::Human].available / 50;
-		workerAvailableCost = (workerAvailableCost + (remainder == 0 ? 0 : 1));
-
+		int workerAvailableCost = 0;
 		int workerFoodCost = 0;
 
-		for (auto& workers : faction.Value->availableWorkers)
-		{
-			workerFoodCost += workers.Value.workingFoodCost * workers.Value.working;
-		}
-
+		CalculateFoodCosts(faction.Key, workerAvailableCost, workerFoodCost);
 		faction.Value->resourceInventory[StratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
 
 		//Energy
-		int energyCost = 0;
-		if (!faction.Value->powerOutage)
-		{
-			for (int i = 0; i < faction.Value->allUnits.Num(); i++)
-			{
-				energyCost += faction.Value->allUnits[i]->unitStats->energyUpkeep;
-			}
-		}
-		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
-		{
-			energyCost += faction.Value->allBuildings[i]->unitStats->energyUpkeep;
-		}
-		for (int i = 0; i < faction.Value->ownedHexes.Num(); i++)
-		{
-			energyCost += faction.Value->ownedHexes[i]->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction.Key)[WorkerType::Robot];
-		}
-
+		int energyCost = CalculateEnergyCosts(faction.Key);
+		
 		faction.Value->resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
 	}
+}
+
+void ACapstoneProjectGameModeBase::CalculateFoodCosts(Factions faction, int& availableWorkerCost, int& workingWorkerCost)
+{
+	int remainder = activeFactions[faction]->availableWorkers[WorkerType::Human].available % foodPerNonWorkers;
+	availableWorkerCost = activeFactions[faction]->availableWorkers[WorkerType::Human].available / foodPerNonWorkers;
+	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
+
+	int workerRemainder = 0;
+
+	for (auto& workers : activeFactions[faction]->availableWorkers)
+	{
+		workerRemainder = workers.Value.working % foodPerWorkers;
+		int cost = workers.Value.working / foodPerWorkers;
+		workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
+	}
+}
+
+int ACapstoneProjectGameModeBase::CalculateEnergyCosts(Factions faction)
+{
+	int energyCost = 0;
+
+	if (!activeFactions[faction]->powerOutage)
+	{
+		for (int i = 0; i < activeFactions[faction]->allUnits.Num(); i++)
+		{
+			energyCost += activeFactions[faction]->allUnits[i]->unitStats->energyUpkeep;
+		}
+	}
+	for (int i = 0; i < activeFactions[faction]->allBuildings.Num(); i++)
+	{
+		energyCost += activeFactions[faction]->allBuildings[i]->unitStats->energyUpkeep;
+	}
+	for (int i = 0; i < activeFactions[faction]->ownedHexes.Num(); i++)
+	{
+		energyCost += activeFactions[faction]->ownedHexes[i]->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction)[WorkerType::Robot];
+	}
+
+	return energyCost;
 }
 
 void ACapstoneProjectGameModeBase::CheckHumanPop()

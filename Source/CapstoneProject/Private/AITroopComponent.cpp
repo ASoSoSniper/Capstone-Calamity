@@ -118,7 +118,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	{
 		FVector2D target = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(targetList[closestIndex]));
 		FVector2D origin = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
-
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("X Dist: %f, Y Dist: %f"), FMath::Abs(target.X - origin.X), FMath::Abs(target.Y - origin.Y)));
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
 			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
 		{

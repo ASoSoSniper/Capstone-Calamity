@@ -101,7 +101,6 @@ void AMovementAI::CreatePath()
 		//Scan for hexes leading to the target hex	
 		for (int i = 0; i < maxHexes; i++)
 		{
-
 			hexPath.Add(HexSearch(hexToSearch));
 
 			if (hexPath[i] == hexNav->targetHex) break;
@@ -169,6 +168,11 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 
 		//Check for hex actor class
 		ABaseHex* foundHex = found ? Cast<ABaseHex>(hit.GetActor()) : nullptr;
+
+		if (hexPath.Contains(foundHex))
+		{
+			foundHex = nullptr;
+		}
 
 		//Identify found hex
 		hexesFound.Add(foundHex ? foundHex : nullptr);

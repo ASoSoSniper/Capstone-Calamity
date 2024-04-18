@@ -119,6 +119,9 @@ private:
 	void FindExistingHexes();
 	void UpdateResourceCosts();
 
+	void CalculateFoodCosts(Factions faction, int& availableWorkerCost, int& workingWorkerCost);
+	int CalculateEnergyCosts(Factions faction);
+
 	void CheckHumanPop();
 	void CheckDate();
 
@@ -131,4 +134,7 @@ private:
 	int currentDaysTillArmyGrowth = 0;
 	UPROPERTY(EditAnywhere) int maxTroopsInArmy = 20;
 	int troopsInArmy = 0;
+
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 20;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 };
