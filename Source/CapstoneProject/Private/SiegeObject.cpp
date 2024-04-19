@@ -3,7 +3,6 @@
 
 #include "SiegeObject.h"
 #include "Building.h"
-#include "CombatAnims.h"
 #include "BasePlayerController.h"
 
 void ASiegeObject::Start()
@@ -101,9 +100,6 @@ void ASiegeObject::Attack()
 void ASiegeObject::EndBattle()
 {
 	if (ending) return;
-
-	UCombatAnims* group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
-	UCombatAnims* group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
 
 	if (currentBattle.Group1.IsEmpty())
 	{

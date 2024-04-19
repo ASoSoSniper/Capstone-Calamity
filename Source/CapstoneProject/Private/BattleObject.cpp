@@ -6,7 +6,6 @@
 #include "MergedArmy.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
-#include "CombatAnims.h"
 
 // Sets default values
 ABattleObject::ABattleObject()
@@ -53,6 +52,9 @@ void ABattleObject::BeginPlay()
 
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
 	groupCompositions.Add(TMap<UnitTypes, FUnitComposition>());
+
+	group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
+	group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
 }
 
 void ABattleObject::Start()
@@ -69,6 +71,15 @@ void ABattleObject::Start()
 void ABattleObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!group1Anims || !group2Anims)
+	{
+		group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
+		group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
+	}
+
+	if (group1Anims) group1Anims->timeScale = ACapstoneProjectGameModeBase::timeScale;
+	if (group2Anims) group2Anims->timeScale = ACapstoneProjectGameModeBase::timeScale;
 
 	if (!hex->troopsInHex.IsEmpty() && !ending)
 	{
@@ -87,7 +98,7 @@ void ABattleObject::Tick(float DeltaTime)
 
 	if (ending)
 	{
-		timeTillEnd -= DeltaTime;
+		timeTillEnd -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		if (timeTillEnd <= 0.f)
 		{
 			DestroyBattle();
@@ -328,26 +339,23 @@ void ABattleObject::Attack()
 void ABattleObject::EndBattle()
 {
 	if (ending) return;
-
-	UCombatAnims* group1Anims = Cast<UCombatAnims>(group1Mesh->GetAnimInstance());
-	UCombatAnims* group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
 	
 	if (currentBattle.Group1.IsEmpty())
 	{
-		group1Anims->isFightLost = true;
+		if (group1Anims) group1Anims->isFightLost = true;
 	}
 	else
 	{
-		group1Anims->isFightWon = true;
+		if (group1Anims) group1Anims->isFightWon = true;
 	}
 
 	if (currentBattle.Group2.IsEmpty())
 	{
-		group2Anims->isFightLost = true;
+		if (group2Anims) group2Anims->isFightLost = true;
 	}
 	else
 	{
-		group2Anims->isFightWon = true;
+		if (group2Anims) group2Anims->isFightWon = true;
 	}
 
 	if (currentBattle.Group1.Contains(Factions::Human) || currentBattle.Group2.Contains(Factions::Human))

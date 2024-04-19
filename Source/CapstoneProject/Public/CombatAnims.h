@@ -15,6 +15,7 @@ class CAPSTONEPROJECT_API UCombatAnims : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool isFightWon;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool isFightLost;
+	UPROPERTY(BlueprintReadWrite, Category = "Animation") bool isFightWon;
+	UPROPERTY(BlueprintReadWrite, Category = "Animation") bool isFightLost;
+	UPROPERTY(BlueprintReadWrite, Category = "Animation") float timeScale;
 };

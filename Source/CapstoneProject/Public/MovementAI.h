@@ -10,6 +10,7 @@
 #include "UnitStats.h"
 #include "MeshVisibility.h"
 #include "Components/SphereComponent.h"
+#include "ExploreAnims.h"
 #include "MovementAI.generated.h"
 
 UCLASS()
@@ -82,6 +83,8 @@ public:
 		UUnitStats* unitStats;
 	UPROPERTY(EditAnywhere)
 		UMeshVisibility* visibility;
+	UPROPERTY(EditAnywhere)
+		UExploreAnims* anims;
 
 	bool selectedByPlayer;
 };

@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CapstoneProjectGameModeBase.h"
-#include "ExploreAnims.h"
 
 // Sets default values
 AMovementAI::AMovementAI()
@@ -30,7 +29,6 @@ AMovementAI::AMovementAI()
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 
 	mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	//UAnimBlueprint* animBP = LoadObject<UAnimBlueprint>(nullptr, TEXT("/Game/3DModels/Animations/Robot_Beta_Exploration_BP.Robot_Beta_Exploration_BP"));
 	
 }
 
@@ -41,6 +39,8 @@ void AMovementAI::BeginPlay()
 
 	selectedByPlayer = false;
 
+	anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
+
 	SphereCheck(20.f);
 }
 
@@ -48,6 +48,8 @@ void AMovementAI::BeginPlay()
 void AMovementAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (anims) anims->timeScale = ACapstoneProjectGameModeBase::timeScale;
 	
 	if (!hexNav->currentHex)
 	{
@@ -111,7 +113,7 @@ void AMovementAI::CreatePath()
 
 	//Begin moving along path
 	moveState = Move;
-	UExploreAnims* anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
+
 	if (anims)
 	{
 		anims->isWalking = true;
@@ -306,7 +308,6 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 			{
 				moveState = Idle;
 
-				UExploreAnims* anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
 				if (anims) anims->isWalking = false;
 				return;
 			}

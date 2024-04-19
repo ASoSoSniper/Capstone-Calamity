@@ -16,4 +16,5 @@ class CAPSTONEPROJECT_API UExploreAnims : public UAnimInstance
 	
 public:
 	UPROPERTY(BlueprintReadWrite, Category = "Animation") bool isWalking;
+	UPROPERTY(BlueprintReadWrite, Category = "Animation") float timeScale;
 };

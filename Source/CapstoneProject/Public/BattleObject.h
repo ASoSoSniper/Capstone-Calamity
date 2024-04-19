@@ -9,6 +9,7 @@
 #include "GlobalSpawner.h"
 #include "UnitActions.h"
 #include "Components/AudioComponent.h"
+#include "CombatAnims.h"
 #include "BattleObject.generated.h"
 
 UCLASS(BlueprintType)
@@ -35,6 +36,10 @@ public:
 
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;
 	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
+
+	UPROPERTY(EditAnywhere) UCombatAnims* group1Anims;
+	UPROPERTY(EditAnywhere) UCombatAnims* group2Anims;
+
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
 	//Every troop participating in this battle, sorted into their factions
