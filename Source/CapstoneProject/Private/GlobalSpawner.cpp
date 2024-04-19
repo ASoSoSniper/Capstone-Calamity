@@ -641,7 +641,7 @@ AGlobalSpawner::AGlobalSpawner()
 
 	troopFactionMaterials.Add(Factions::Human, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HumanTroopMat01")), 
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
-	troopFactionMaterials.Add(Factions::Alien1, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/BuildingInDevMat01")), 
+	troopFactionMaterials.Add(Factions::Alien1, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienTroopMat01")), 
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
 }
 
