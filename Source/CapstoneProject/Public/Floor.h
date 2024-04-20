@@ -27,6 +27,6 @@ public:
 	UPROPERTY(EditAnywhere) UMaterialInterface* material;
 	UPROPERTY(EditAnywhere) UMaterialInstanceDynamic* floorMaterial;
 	UPROPERTY(EditAnywhere) UStaticMeshComponent* mesh;
-	UPROPERTY(EditAnywhere) float timeScale;
+	UPROPERTY(EditAnywhere) float worldTime;
 	UPROPERTY(EditAnywhere) bool disableSpeedChange;
 };

@@ -1156,7 +1156,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			{
 				for (int i = 0; i < hex->troopsInHex.Num(); i++)
 				{
-					if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Settler)
+					if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler))
 					{
 						if (hex->troopsInHex[i]->unitStats->faction == faction)
 						{

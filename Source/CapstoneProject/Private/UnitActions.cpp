@@ -853,6 +853,18 @@ TArray<AActor*> UnitActions::GetTargetList(Factions faction)
     return targetList;
 }
 
+bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type)
+{
+    if (troop->unitStats->unitType == type) return true;
+
+    for (int i = 0; i < troop->unitStats->savedUnits.Num(); i++)
+    {
+        if (troop->unitStats->savedUnits[i].unitType == type) return true;
+    }
+
+    return false;
+}
+
 bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
 {
     UHexNav* hexNav = target->GetComponentByClass<UHexNav>();

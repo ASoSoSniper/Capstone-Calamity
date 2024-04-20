@@ -21,8 +21,10 @@ void AFloor::BeginPlay()
 	if (!material) material = mesh->GetMaterial(0);
 	
 	floorMaterial = UMaterialInstanceDynamic::Create(material, this);
-	floorMaterial->SetScalarParameterValue(FName("TimeScale"), timeScale);
+	
 	mesh->SetMaterial(0, floorMaterial);
+
+	floorMaterial->SetScalarParameterValue(FName("WorldTime"), worldTime);
 }
 
 // Called every frame
@@ -30,10 +32,10 @@ void AFloor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!disableSpeedChange) return;
+	if (disableSpeedChange) return;
 
-	timeScale = ACapstoneProjectGameModeBase::timeScale;
-	floorMaterial->SetScalarParameterValue(FName("TimeScale"), timeScale);
-	//mesh->SetMaterial(0, floorMaterial);
+	worldTime += DeltaTime * ACapstoneProjectGameModeBase::timeScale;
+
+	floorMaterial->SetScalarParameterValue(FName("WorldTime"), worldTime);
 }
 

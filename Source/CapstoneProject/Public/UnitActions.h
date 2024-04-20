@@ -207,6 +207,8 @@ public:
 	static void RemoveFromAllTargetLists(AActor* target);
 	static TArray<AActor*> GetTargetList(Factions faction);
 
+	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type);
+
 	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
 };
 
