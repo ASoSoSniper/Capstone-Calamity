@@ -24,6 +24,7 @@ public:
 	ATroop* SpawnUnit(TArray<UnitActions::UnitData>& groupData);
 
 	void SplitInHalf();
+	void ExtractOneUnit(UnitTypes type);
 	virtual void Action1() override;
 	virtual void Action3() override;
 	virtual void Action4() override;

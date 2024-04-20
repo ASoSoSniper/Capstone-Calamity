@@ -129,6 +129,7 @@ private:
 	UPROPERTY(EditAnywhere) int daysTillArmySpawn = 1;
 	int currentDaysTillArmySpawn = 0;
 	UPROPERTY(VisibleAnywhere) bool playerBuiltTroop = false;
+	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
 
 	UPROPERTY(EditAnywhere) int daysTillArmyGrowth = 10;
 	int currentDaysTillArmyGrowth = 0;

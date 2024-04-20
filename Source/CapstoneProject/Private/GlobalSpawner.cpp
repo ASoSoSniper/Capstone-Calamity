@@ -1144,6 +1144,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	//Declare TMaps for resources and workers to spend on this building
 	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
 	AMovementAI* settlerOnHex = nullptr;
+	int settlerIndex = -1;
 
 	//If the desired building exists in the 
 	if (buildingCosts.Contains(building))
@@ -1156,7 +1157,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			{
 				for (int i = 0; i < hex->troopsInHex.Num(); i++)
 				{
-					if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler))
+					if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler, settlerIndex))
 					{
 						if (hex->troopsInHex[i]->unitStats->faction == faction)
 						{
@@ -1184,7 +1185,17 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		if (building == SpawnableBuildings::Outpost)
 		{
 			UnitActions::SetWorkers(faction, WorkerType::Human, troopCosts[UnitTypes::Settler].populationCost);
-			if (settlerOnHex) settlerOnHex->Destroy();
+			if (settlerOnHex)
+			{
+				if (settlerOnHex->unitStats->unitType == UnitTypes::Settler)
+				{
+					settlerOnHex->Destroy();
+				}
+				else
+				{
+					UnitActions::ExtractUnit(settlerOnHex->unitStats, settlerIndex);
+				}
+			}
 		}
 	}
 	else

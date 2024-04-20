@@ -122,6 +122,27 @@ void AMergedArmy::SplitInHalf()
 	this->Destroy();
 }
 
+void AMergedArmy::ExtractOneUnit(UnitTypes type)
+{
+	int32 unitIndex = -1;
+
+	if (unitStats->savedUnits.Num() <= 2)
+	{
+		SplitInHalf();
+		return;
+	}
+
+	if (!UnitActions::ArmyContainsUnit(this, type, unitIndex)) return;
+
+	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	TArray<ABaseHex*> ignoredHexes;
+
+	UnitActions::UnitData unit = UnitActions::ExtractUnit(unitStats, unitIndex);
+	if (unit.unitType == UnitTypes::None) return;
+
+	spawner->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), unit);
+}
+
 void AMergedArmy::Action1()
 {
 

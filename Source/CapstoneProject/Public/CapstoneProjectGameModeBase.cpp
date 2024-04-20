@@ -544,7 +544,8 @@ void ACapstoneProjectGameModeBase::CheckDate()
 
 void ACapstoneProjectGameModeBase::SpawnEnemies()
 {
-	//return;
+	if (blockEnemySpawning) return;
+
 	--currentDaysTillArmySpawn;
 	--currentDaysTillArmyGrowth;
 

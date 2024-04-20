@@ -162,6 +162,7 @@ public:
 	static void ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data);
 	static void AddUnitData(UUnitStats* unit, UnitData& data);
 	static UnitData AddUnitData(UnitData& unit, UnitData& data);
+	static UnitData ExtractUnit(UUnitStats* army, int32 unitIndex);
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
@@ -207,7 +208,7 @@ public:
 	static void RemoveFromAllTargetLists(AActor* target);
 	static TArray<AActor*> GetTargetList(Factions faction);
 
-	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type);
+	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
 
 	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
 };

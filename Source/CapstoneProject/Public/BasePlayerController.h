@@ -149,6 +149,7 @@ public:
 	UFUNCTION(BlueprintCallable) FArmyDisplay DisplaySelectedUnit();
 	UFUNCTION(BlueprintCallable) FArmyMenuInfo DisplayArmyMenu();
 	UFUNCTION(BlueprintCallable) void SplitArmyInHalf();
+	UFUNCTION(BlueprintCallable) void ExtractUnitFromArmy(UnitTypes unitType);
 
 	UFUNCTION(BlueprintCallable) FAttachmentBuildProgress GetAttachmentBuildProgress(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) FAttachmentTTBuildInfo GetAttachmentBuildInfo(BuildingAttachments attachment);

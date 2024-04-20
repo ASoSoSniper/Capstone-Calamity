@@ -347,6 +347,20 @@ void ABasePlayerController::SplitArmyInHalf()
 	if (army) army->SplitInHalf();
 }
 
+void ABasePlayerController::ExtractUnitFromArmy(UnitTypes unitType)
+{
+	AActor* actor = GetActionStateSelection();
+	if (!actor) return;
+
+	ATroop* troop = Cast<ATroop>(actor);
+	if (!troop) return;
+
+	if (troop->unitStats->unitType != UnitTypes::Army) return;
+	AMergedArmy* army = Cast<AMergedArmy>(troop);
+
+	if (army) army->ExtractOneUnit(unitType);
+}
+
 FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(BuildingAttachments attachment)
 {
 	FAttachmentBuildProgress buildProgress = FAttachmentBuildProgress();

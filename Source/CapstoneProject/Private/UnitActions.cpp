@@ -352,6 +352,46 @@ UnitActions::UnitData UnitActions::AddUnitData(UnitData& unit, UnitData& data)
     return unit;
 }
 
+UnitActions::UnitData UnitActions::ExtractUnit(UUnitStats* army, int32 unitIndex)
+{
+    UnitData unit;
+
+    if (!army->savedUnits.IsValidIndex(unitIndex)) return unit;
+
+    unit = army->savedUnits[unitIndex];
+    army->savedUnits.RemoveAt(unitIndex);
+
+    float hpPercent = (float)army->currentHP / (float)army->maxHP;
+    float moralePercent = (float)army->currentMorale / (float)army->maxMorale;
+
+    army->maxHP -= unit.maxHP;
+    army->currentHP = FMath::RoundToInt((float)army->maxHP * hpPercent);
+    army->maxMorale -= unit.maxMorale;
+    army->currentMorale = FMath::RoundToInt((float)army->maxMorale * moralePercent);
+
+    int speed = 0;
+    int bestVision = 0;
+    for (int i = 0; i < army->savedUnits.Num(); i++)
+    {
+        speed += army->savedUnits[i].speed;
+
+        if (army->savedUnits[i].vision > bestVision)
+            bestVision = army->savedUnits[i].vision;
+    }
+    speed = FMath::RoundToInt((float)speed / (float)army->savedUnits.Num());
+
+    army->damage -= unit.damage;
+    army->siegePower -= unit.siegePower;
+
+    army->reinforceRate -= unit.reinforceRate;
+    army->energyUpkeep -= unit.energyUpkeep;
+
+    unit.currentHP = FMath::RoundToInt((float)unit.maxHP * hpPercent);
+    unit.currentMorale = FMath::RoundToInt((float)unit.maxMorale * hpPercent);
+
+    return unit;
+}
+
 int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
@@ -853,13 +893,17 @@ TArray<AActor*> UnitActions::GetTargetList(Factions faction)
     return targetList;
 }
 
-bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type)
+bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex)
 {
     if (troop->unitStats->unitType == type) return true;
 
     for (int i = 0; i < troop->unitStats->savedUnits.Num(); i++)
     {
-        if (troop->unitStats->savedUnits[i].unitType == type) return true;
+        if (troop->unitStats->savedUnits[i].unitType == type)
+        {
+            unitIndex = i;
+            return true;
+        }
     }
 
     return false;
