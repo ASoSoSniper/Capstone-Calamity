@@ -259,7 +259,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		4,
+		0,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
