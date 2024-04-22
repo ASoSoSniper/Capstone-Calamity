@@ -100,6 +100,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
+	UPROPERTY(VisibleAnywhere) ABattleObject* battle;
+
 #pragma endregion
 
 //Variables that change depending on the hex's identity

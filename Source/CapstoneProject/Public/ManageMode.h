@@ -36,6 +36,8 @@ public:
 	virtual AActor* GetSelectedObject();
 	virtual void CommandAction();
 
+	virtual void AdvanceSelectCycle(ABaseHex* hex);
+
 	//Commands
 	virtual void Upgrade(AActor* selectedObject);
 	virtual void Action1();

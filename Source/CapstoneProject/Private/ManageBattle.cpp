@@ -24,7 +24,11 @@ void UManageBattle::SwitchState()
 	{
 		//If hex, switch to None state
 	case ObjectTypes::Hex:
-		CueActionState(ActionStates::None, objectType.actor);
+		if (objectType.hex != Cast<ABaseHex>(selectedBattle->hexNav->currentHex)) CueActionState(ActionStates::HexManage, objectType.actor);
+		else
+		{
+			AdvanceSelectCycle(objectType.hex);
+		}
 		break;
 		//If troop, set to TroopManage state
 	case ObjectTypes::MoveAI:

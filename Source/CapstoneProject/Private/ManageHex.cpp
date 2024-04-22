@@ -30,7 +30,11 @@ void UManageHex::SwitchState()
 	{
 		//If hex, save in hex pointer
 	case ObjectTypes::Hex:
-		Select(objectType.actor);
+		if (objectType.hex != controller->selectedHex) Select(objectType.actor);
+		else
+		{
+			AdvanceSelectCycle(objectType.hex);
+		}
 		break;
 		//If troop, save in troop pointer and switch to TroopManage state
 	case ObjectTypes::MoveAI:

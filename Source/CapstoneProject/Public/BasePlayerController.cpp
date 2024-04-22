@@ -111,7 +111,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 {
 	FTroopArmyDisplay unit = FTroopArmyDisplay{ FText::FromString(TEXT("Goofy ah")), 0, 0, 0, 0, 0, FText::FromString(TEXT("0")), nullptr, 0,0,0,0,0,0 };
 
-	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
+	ABattleObject* battleObject = Cast<ABattleObject>(GetActionStateSelection());
 	if (!battleObject) return unit;
 
 	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
@@ -548,6 +548,17 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 
 	return info;
 }
+
+/*bool ABasePlayerController::ToggleBuildingUI()
+{
+	if (toggleBuildingUI)
+	{
+		toggleBuildingUI = false;
+		return true;
+	}
+
+	return false;
+}*/
 
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {

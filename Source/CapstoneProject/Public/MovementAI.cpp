@@ -80,7 +80,9 @@ void AMovementAI::CreatePath()
 		return;
 	}
 
-	//Save last hex destination, if interrupted
+	AActor* prevDestination = (!hexPath.IsEmpty() && moveState == Move) ? hexPath[hexPathIndex] : nullptr;
+
+	//Continue moving toward destination if new hex path is created while moving toward previous destination
 	AActor* temp = nullptr;
 	if (!hexPath.IsEmpty() && currTimeTillHexMove >= unitStats->speed)
 	{
@@ -119,11 +121,10 @@ void AMovementAI::CreatePath()
 		anims->isWalking = true;
 	}
 
-	if (currTimeTillHexMove < unitStats->speed)
+	if ((currTimeTillHexMove < unitStats->speed) && (hexPath[0] != prevDestination))
 	{
 		currTimeTillHexMove = 0.f;
 	}
-	
 }
 
 void AMovementAI::SnapToHex(ABaseHex* hex)

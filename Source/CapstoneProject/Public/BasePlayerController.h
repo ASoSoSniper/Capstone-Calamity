@@ -46,6 +46,11 @@ public:
 	UPROPERTY() UManageBuilding* buildingMode;
 	UPROPERTY() UManageBattle* battleMode;
 
+	//Selection Order
+	UPROPERTY(VisibleAnywhere, Category = "Selection Cycling") bool selectionCycle;
+	//bool toggleBuildingUI = false;
+	//UFUNCTION(Blueprintable) bool ToggleBuildingUI();
+
 	//Sound Things
 	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;

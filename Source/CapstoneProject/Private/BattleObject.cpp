@@ -61,6 +61,7 @@ void ABattleObject::Start()
 {
 	//Find hex the object is placed on
 	hex = Cast<ABaseHex>(hexNav->currentHex);
+	hex->battle = this;
 	spawner->controller->PlayUISound(spawner->controller->battleStartSound);
 
 	//Once created, begin organizing armies into factions
@@ -380,6 +381,7 @@ void ABattleObject::DestroyBattle()
 	}
 
 	hex->battleInProgress = false;
+	hex->battle = nullptr;
 	Destroy();
 }
 

@@ -79,6 +79,56 @@ void UManageMode::CommandAction()
 {
 }
 
+void UManageMode::AdvanceSelectCycle(ABaseHex* hex)
+{
+	ABattleObject* battleOnHex = hex->battle;
+	ABuilding* buildingOnHex = hex->building;
+	AMovementAI* troopOnHex = nullptr;
+
+	for (int i = 0; i < hex->troopsInHex.Num(); i++)
+	{
+		if (hex->troopsInHex[i]->unitStats->faction == Factions::Human)
+		{
+			troopOnHex = hex->troopsInHex[i];
+		}
+	}
+
+	if (!troopOnHex && !hex->troopsInHex.IsEmpty())
+	{
+		troopOnHex = hex->troopsInHex[0];
+	}
+
+	switch (controller->currentActionState)
+	{
+	case ActionStates::HexManage:
+		controller->selectionCycle = true;
+		if (battleOnHex)
+		{			
+			CueActionState(ActionStates::BattleManage, battleOnHex);
+			return;
+		}
+		if (troopOnHex)
+		{
+			CueActionState(ActionStates::TroopManage, troopOnHex);
+			return;
+		}
+		break;
+	case ActionStates::BattleManage:
+		if (troopOnHex && controller->selectionCycle)
+		{
+			CueActionState(ActionStates::TroopManage, troopOnHex);
+			return;
+		}
+		controller->selectionCycle = false;
+		CueActionState(ActionStates::HexManage, hex);
+		break;
+	case ActionStates::TroopManage:
+		controller->selectionCycle = false;
+		CueActionState(ActionStates::HexManage, hex);
+		break;
+	}
+}
+
 void UManageMode::Action1()
 {
 }

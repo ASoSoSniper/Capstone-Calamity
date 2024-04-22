@@ -37,7 +37,11 @@ void UManageTroop::SwitchState()
 	{
 		//If hex, set troop's destination to the hex
 	case ObjectTypes::Hex:
-		CueActionState(ActionStates::HexManage, objectType.actor);
+		if (objectType.hex != Cast<ABaseHex>(selectedTroop->hexNav->currentHex)) CueActionState(ActionStates::HexManage, objectType.actor);
+		else
+		{
+			AdvanceSelectCycle(objectType.hex);
+		}
 		break;
 
 		//If troop (and hostile), set troop's destination to that troop's current hex
