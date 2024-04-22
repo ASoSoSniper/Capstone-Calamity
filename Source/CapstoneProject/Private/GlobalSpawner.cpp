@@ -156,7 +156,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Settler*/ 100
 		});
 	//Settler Unit Stats
-	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts."), UnitTypes::Settler, 200, 15, 0, 0, 1, 100, 1, 1,
+	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts. Outposts can be created on any tile a building can be built on OUTSIDE of your zone of control."), UnitTypes::Settler, 200, 15, 0, 0, 1, 100, 1, 1,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -265,7 +265,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
 		});
 	//Outpost Stats
-	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
 		/*Energy Yield*/
 		2,
 		/*Food Yield*/
