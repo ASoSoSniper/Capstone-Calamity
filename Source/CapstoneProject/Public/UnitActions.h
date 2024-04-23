@@ -11,12 +11,12 @@
  * 
  */
 
-UENUM()
-enum class CinemaState : uint8
+UENUM(BlueprintType)
+enum class GameStates : uint8
 {
-	Neutral,
-	Win,
-	Loss
+	None,
+	Victory,
+	Defeat
 };
 
 UENUM()

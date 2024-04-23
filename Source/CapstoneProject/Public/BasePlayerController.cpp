@@ -610,7 +610,7 @@ void ABasePlayerController::PlayUIHexSound(TerrainType hexType, ABaseHex* hex)
 	playerCamera->audioComponent->Play();
 }
 
-void ABasePlayerController::SetCinematicObject(AActor* object, CinemaState state)
+void ABasePlayerController::SetCinematicObject(AActor* object, GameStates gameState)
 {
 	if (!ACapstoneProjectGameModeBase::cinematicObjects.Contains(object)) return;
 
@@ -618,6 +618,7 @@ void ABasePlayerController::SetCinematicObject(AActor* object, CinemaState state
 	playerCamera->controlState = APlayerMovement::Cinematic;
 	playerCamera->currCinemaTime = 0;
 	playerCamera->currLingerTime = 0;
+	playerCamera->gameState = gameState;
 	playerCamera->startPos = playerCamera->GetActorLocation();
 }
 

@@ -7,15 +7,8 @@
 #include "Faction.h"
 #include "FactionEnum.h"
 #include "BasePlayerController.h"
+#include "UnitActions.h"
 #include "CapstoneProjectGameModeBase.generated.h"
-
-UENUM(BlueprintType)
-enum class GameStates : uint8
-{
-	None,
-	Victory,
-	Defeat
-};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FDayStruct

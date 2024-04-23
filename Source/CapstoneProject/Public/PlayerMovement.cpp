@@ -75,6 +75,8 @@ void APlayerMovement::MoveToCinematicPos(float& DeltaTime)
 		return;
 	}
 
+	ACapstoneProjectGameModeBase::gameState = gameState;
+
 	controlState = Free;
 }
 

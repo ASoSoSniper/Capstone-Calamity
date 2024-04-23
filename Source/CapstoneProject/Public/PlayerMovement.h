@@ -41,6 +41,7 @@ public:
 	FVector startPos;
 	float currCinemaTime;
 	float currLingerTime;
+	GameStates gameState = GameStates::None;
 
 	void MoveToCinematicPos(float& DeltaTime);
 

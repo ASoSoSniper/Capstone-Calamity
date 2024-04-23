@@ -38,14 +38,14 @@ void ARockCity::SetToFinishedModel()
 	}
 
 	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
-	spawner->controller->SetCinematicObject(this);
+	if (spawner) spawner->controller->SetCinematicObject(this);
 }
 
 bool ARockCity::IsDisabled()
 {
 	if (Super::IsDisabled())
 	{
-		ACapstoneProjectGameModeBase::gameState = GameStates::Victory;
+		if (spawner) spawner->controller->SetCinematicObject(this, GameStates::Victory);
 		return true;
 	}
 

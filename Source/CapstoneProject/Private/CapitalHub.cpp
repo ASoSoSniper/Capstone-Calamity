@@ -47,7 +47,7 @@ void ACapitalHub::SetToFinishedModel()
 
 void ACapitalHub::Destroyed()
 {
-	ACapstoneProjectGameModeBase::gameState = GameStates::Defeat;
+	if (spawner) spawner->controller->SetCinematicObject(this, GameStates::Defeat);
 
 	Super::Destroyed();
 }

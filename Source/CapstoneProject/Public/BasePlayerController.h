@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleVictorySound;
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleDefeatSound;
 
-	void SetCinematicObject(AActor* object, CinemaState state = CinemaState::Neutral);
+	void SetCinematicObject(AActor* object, GameStates gameState = GameStates::None);
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;
