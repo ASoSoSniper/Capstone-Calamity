@@ -27,6 +27,7 @@ struct FHexInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int production;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defenderBonus;
 
@@ -46,6 +47,7 @@ struct FHexDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText food;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText production;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText wealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCount;
 
