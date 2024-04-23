@@ -18,7 +18,7 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	MonthDic.Add(Oct, MonthStruct{ TEXT("OCT"), 31, 10 });
 	MonthDic.Add(Nov, MonthStruct{ TEXT("NOV"), 30, 11 });
 	MonthDic.Add(Dec, MonthStruct{ TEXT("DEC"), 31, 12 });
-	dayStruct.currentMonth = 9;
+	dayStruct.currentMonth = 8;
 	dayStruct.day = 26;
 	currSeconds = 1;
 
@@ -536,9 +536,9 @@ void ACapstoneProjectGameModeBase::CheckHumanPop()
 
 void ACapstoneProjectGameModeBase::CheckDate()
 {
-	if (dayStruct.currentMonth != 11) return;
+	if (dayStruct.currentMonth != 8) return;
 
-	if (dayStruct.day != 31) return;
+	if (dayStruct.day != 25) return;
 
 	gameState = GameStates::Defeat;
 }
