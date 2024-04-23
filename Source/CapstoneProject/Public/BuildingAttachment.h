@@ -11,6 +11,7 @@ UENUM()
 enum BuildStates
 {
 	Inactive,
+	Disabled,
 	Building,
 	Complete
 };
@@ -58,6 +59,7 @@ public:
 	virtual bool DisableAttachment();
 
 	virtual bool AttachmentIsActive();
+	virtual bool AttachmentIsBuilt();
 
 	bool WorkersAtCap();
 };

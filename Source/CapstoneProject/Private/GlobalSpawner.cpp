@@ -1310,7 +1310,11 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 		resourceCosts.Add(StratResources::Production, troopCosts[unit].productionCost);
 	}
 
-	if (canAfford) UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
+	if (canAfford)
+	{
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
+		controller->PlayUITroopSound(unit);
+	}
 	else
 	{
 		controller->PlayUISound(controller->selectFailSound);

@@ -1005,7 +1005,6 @@ void ABasePlayerController::SelectTroop(FText troopName)
 			if (outpost)
 			{
 				outpost->CueTroopBuild(troop.Key);
-				PlayUITroopSound(troop.Key);
 			}
 
 			return;
@@ -1190,7 +1189,7 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 
 bool ABasePlayerController::AttachmentIsActive(FText attachmentName)
 {
-	for (auto attachment : spawner->attachmentCosts)
+	for (auto& attachment : spawner->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
@@ -1222,6 +1221,17 @@ bool ABasePlayerController::FarmlandYieldsFood()
 	if (buildingOnHex.farmland)
 	{
 		return buildingOnHex.farmland->producingFood;
+	}
+
+	return false;
+}
+
+bool ABasePlayerController::AttachmentIsBuilt(BuildingAttachments attachment)
+{
+	AOutpost* outpost = GetOutpost();
+	if (outpost)
+	{
+		return outpost->GetAttachment(attachment)->AttachmentIsBuilt();
 	}
 
 	return false;

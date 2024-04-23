@@ -117,15 +117,20 @@ void UBuildingAttachment::EnableAttachment()
 
 bool UBuildingAttachment::DisableAttachment()
 {
-	if (buildState == Inactive) return false;
+	if (buildState == Disabled) return false;
 
-	buildState = Inactive;
+	buildState = Disabled;
 	return true;
 }
 
 bool UBuildingAttachment::AttachmentIsActive()
 {
 	return buildState == Complete;
+}
+
+bool UBuildingAttachment::AttachmentIsBuilt()
+{
+	return buildState == Complete || buildState == Disabled;
 }
 
 bool UBuildingAttachment::WorkersAtCap()
