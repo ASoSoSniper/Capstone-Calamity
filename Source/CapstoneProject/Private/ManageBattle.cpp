@@ -56,7 +56,12 @@ void UManageBattle::SwitchState()
 
 void UManageBattle::Reset()
 {
-	HighlightSelected(selectedBattle, false);
+	if (selectedBattle)
+	{
+		HighlightSelected(selectedBattle, false);
+		selectedBattle->selectedByPlayer = false;
+	}
+	selectedBattle = nullptr;
 }
 
 void UManageBattle::CheckSelection()

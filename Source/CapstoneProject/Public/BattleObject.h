@@ -24,7 +24,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
 
 public:	
 	// Called every frame
@@ -71,6 +70,7 @@ public:
 	virtual void Attack();
 	virtual void EndBattle();
 	virtual void DestroyBattle();
+	virtual void Destroyed() override;
 	bool IsAlive(UnitActions::UnitData& group);
 	Factions FleeFromBattle(Factions faction);
 	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);

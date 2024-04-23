@@ -958,7 +958,11 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
-			if (selectedHex->hexOwner != Factions::Human && buildings.Key != SpawnableBuildings::Outpost) return;
+			if (selectedHex->hexOwner != Factions::Human && buildings.Key != SpawnableBuildings::Outpost)
+			{
+				PlayUISound(selectFailSound);
+				return;
+			}
 
 			if (buildings.Key == SpawnableBuildings::Capitol)
 			{
@@ -967,7 +971,6 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 			}
 
 			Build(buildings.Key);
-			PlayUIBuildingSound(buildings.Key);
 
 			return;
 		}

@@ -286,6 +286,7 @@ void ABaseHex::RequestTerrainChange(bool modelOnly)
 	resourceBonuses[StratResources::Food].yieldBonus = info.food;
 	resourceBonuses[StratResources::Production].yieldBonus = info.production;
 	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
+	resourceBonuses[StratResources::Wealth].yieldBonus = info.wealth;
 
 	moveMultiplier = info.moveMultiplier;
 	attritionMultiplier = info.attritionMultiplier;

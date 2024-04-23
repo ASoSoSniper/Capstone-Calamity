@@ -1215,9 +1215,12 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 				}
 			}
 		}
+
+		controller->PlayUIBuildingSound(building);
 	}
 	else
 	{
+		controller->PlayUISound(controller->selectFailSound);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
 	}
 }
@@ -1308,7 +1311,10 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* o
 	}
 
 	if (canAfford) UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
-	
+	else
+	{
+		controller->PlayUISound(controller->selectFailSound);
+	}
 
 	return canAfford;
 }

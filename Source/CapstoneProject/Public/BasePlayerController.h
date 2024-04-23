@@ -57,6 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<Factions, USoundBase*> UITroopSelectionSounds;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") USoundBase* troopCompleteSound;
+	UPROPERTY(EditAnywhere, Category = "Miscellaneous Sounds") USoundBase* selectFailSound;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") USoundBase* buildingCompleteSound;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
