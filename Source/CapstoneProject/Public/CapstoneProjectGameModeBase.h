@@ -42,6 +42,8 @@ public:
 	static inline TMap<Factions, Faction*> activeFactions;
 	static inline TMap<Factions, UMaterialInterface*> factionColors;
 
+	static inline TMap<AActor*, FCinematicObject> cinematicObjects;
+
 	static inline float timeScale = 1.f;
 	float prevTime = 1.f;
 

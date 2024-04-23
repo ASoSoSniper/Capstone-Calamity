@@ -10,6 +10,7 @@
 #include "MeshVisibility.h"
 #include "Components/BoxComponent.h"
 #include "GlobalSpawner.h"
+#include "CinematicPosition.h"
 #include "Building.generated.h"
 
 
@@ -35,6 +36,7 @@ public:
 	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
+	UPROPERTY(EditAnywhere) UCinematicPosition* cinematicComponent;
 	UPROPERTY(EditAnywhere)SpawnableBuildings buildingType;
 	UPROPERTY(VisibleAnywhere) Factions siegingFaction = Factions::None;
 

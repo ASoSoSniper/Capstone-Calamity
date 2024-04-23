@@ -12,6 +12,14 @@
  */
 
 UENUM()
+enum class CinemaState : uint8
+{
+	Neutral,
+	Win,
+	Loss
+};
+
+UENUM()
 enum class ObjectTypes
 {
 	NoType,

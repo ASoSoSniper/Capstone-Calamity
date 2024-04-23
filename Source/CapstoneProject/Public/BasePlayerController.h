@@ -40,6 +40,7 @@ private:
 	virtual void Tick(float DeltaTime) override;	
 
 public:	
+
 	UPROPERTY() UManageMode* noneMode;
 	UPROPERTY() UManageHex* hexMode;
 	UPROPERTY() UManageTroop* troopMode;
@@ -70,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleVictorySound;
 	UPROPERTY(EditAnywhere, Category = "Battle Sounds") USoundBase* battleDefeatSound;
 
-	
+	void SetCinematicObject(AActor* object, CinemaState state = CinemaState::Neutral);
 
 	//Interactable object the cursor hovers over
 	UPROPERTY(VisibleAnywhere) AActor* hoveredWorldObject;

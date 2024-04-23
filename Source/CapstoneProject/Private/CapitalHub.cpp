@@ -40,6 +40,9 @@ void ACapitalHub::SetToFinishedModel()
 		mesh->SetStaticMesh(meshAsset);
 		mesh->SetRelativeRotation(FRotator(0, -45.f, 0));
 	}
+	
+	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
+	spawner->controller->SetCinematicObject(this);
 }
 
 void ACapitalHub::Destroyed()

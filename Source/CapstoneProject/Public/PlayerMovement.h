@@ -31,6 +31,19 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	enum ControlStates
+	{
+		Free,
+		Cinematic
+	};
+	ControlStates controlState = Free;
+	FCinematicObject targetCinemaPos;
+	FVector startPos;
+	float currCinemaTime;
+	float currLingerTime;
+
+	void MoveToCinematicPos(float& DeltaTime);
+
 	ABasePlayerController* controller;
 	UPROPERTY(EditAnywhere) UCameraComponent* camera;
 	UPROPERTY(EditAnywhere) UAudioComponent* audioComponent;

@@ -23,6 +23,17 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FCinematicObject
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AActor* object;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FVector position;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float travelTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float lingerTime;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FSiegeBuildingInfo
 {
 	GENERATED_BODY()

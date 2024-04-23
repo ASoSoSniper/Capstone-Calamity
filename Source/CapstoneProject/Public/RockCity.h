@@ -19,4 +19,6 @@ public:
 	ARockCity();
 	virtual void SetToFinishedModel() override;
 	virtual bool IsDisabled() override;
+
+	UCinematicPosition* cinematicComponent;
 };

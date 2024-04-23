@@ -37,6 +37,9 @@ void APlayerMovement::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	HexCast();
+
+	if (controlState == Cinematic)
+		MoveToCinematicPos(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -53,13 +56,37 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
 }
 
+void APlayerMovement::MoveToCinematicPos(float& DeltaTime)
+{
+	if (controlState != Cinematic) return;
+
+	if (currCinemaTime < 1)
+	{
+		currCinemaTime = FMath::Clamp(currCinemaTime + (DeltaTime / targetCinemaPos.travelTime), 0, 1);
+		FVector step = FMath::Lerp(startPos, targetCinemaPos.position, currCinemaTime);
+
+		SetActorLocation(step);
+		return;
+	}
+
+	if (currLingerTime < 1)
+	{
+		currLingerTime += DeltaTime / targetCinemaPos.lingerTime;
+		return;
+	}
+
+	controlState = Free;
+}
+
 void APlayerMovement::Action1Input()
 {
-	
+	if (controlState != Free) return;
 }
 
 void APlayerMovement::Action2Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action2();
@@ -68,6 +95,8 @@ void APlayerMovement::Action2Input()
 
 void APlayerMovement::Action3Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action3();
@@ -76,6 +105,8 @@ void APlayerMovement::Action3Input()
 
 void APlayerMovement::Action4Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action4();
@@ -84,6 +115,8 @@ void APlayerMovement::Action4Input()
 
 void APlayerMovement::Action5Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action5();
@@ -92,6 +125,8 @@ void APlayerMovement::Action5Input()
 
 void APlayerMovement::Action6Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action6();
@@ -100,6 +135,8 @@ void APlayerMovement::Action6Input()
 
 void APlayerMovement::Action7Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action7();
@@ -108,6 +145,8 @@ void APlayerMovement::Action7Input()
 
 void APlayerMovement::Action8Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action8();
@@ -116,6 +155,8 @@ void APlayerMovement::Action8Input()
 
 void APlayerMovement::Action9Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action9();
@@ -124,6 +165,8 @@ void APlayerMovement::Action9Input()
 
 void APlayerMovement::Action10Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->EnterSelectionMode(true);
@@ -132,6 +175,8 @@ void APlayerMovement::Action10Input()
 
 void APlayerMovement::Action11Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action11();
@@ -140,6 +185,8 @@ void APlayerMovement::Action11Input()
 
 void APlayerMovement::Action12Input()
 {
+	if (controlState != Free) return;
+
 	if (controller)
 	{
 		controller->actionStates[controller->currentActionState]->Action12();
@@ -148,16 +195,22 @@ void APlayerMovement::Action12Input()
 
 void APlayerMovement::DeselectInput()
 {
+	if (controlState != Free) return;
+
 	if (controller) controller->Deselect();
 }
 
 void APlayerMovement::StartCommand()
 {
+	if (controlState != Free) return;
+
 	if (controller) controller->CommandAction();
 }
 
 void APlayerMovement::PanRight(float axis)
 {
+	if (controlState != Free) return;
+
 	if (axis < 0)
 	{
 		if (GetActorLocation().Y < camMaxY)
@@ -192,6 +245,8 @@ void APlayerMovement::PanRight(float axis)
 
 void APlayerMovement::PanUp(float axis)
 {
+	if (controlState != Free) return;
+
 	if (axis < 0)
 	{
 		if (GetActorLocation().X < camMaxX + GetActorLocation().Z)
@@ -225,6 +280,8 @@ void APlayerMovement::PanUp(float axis)
 
 void APlayerMovement::ZoomIn(float axis)
 {
+	if (controlState != Free) return;
+
 	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
 	{
 		FVector currLocation = GetActorLocation();
@@ -250,6 +307,8 @@ void APlayerMovement::ZoomIn(float axis)
 
 void APlayerMovement::AdjustTimeScale(float axis)
 {
+	if (controlState != Free) return;
+
 	ACapstoneProjectGameModeBase::timeScale += axis;
 	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
 

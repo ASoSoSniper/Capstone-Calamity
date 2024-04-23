@@ -6,6 +6,7 @@
 #include "UnitActions.h"
 #include "MergedArmy.h"
 #include "SiegeObject.h"
+#include "CapstoneProjectGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 
 ABasePlayerController::ABasePlayerController()
@@ -607,6 +608,17 @@ void ABasePlayerController::PlayUIHexSound(TerrainType hexType, ABaseHex* hex)
 
 	playerCamera->audioComponent->SetSound(UIHexSounds[hexType]);
 	playerCamera->audioComponent->Play();
+}
+
+void ABasePlayerController::SetCinematicObject(AActor* object, CinemaState state)
+{
+	if (!ACapstoneProjectGameModeBase::cinematicObjects.Contains(object)) return;
+
+	playerCamera->targetCinemaPos = ACapstoneProjectGameModeBase::cinematicObjects[object];
+	playerCamera->controlState = APlayerMovement::Cinematic;
+	playerCamera->currCinemaTime = 0;
+	playerCamera->currLingerTime = 0;
+	playerCamera->startPos = playerCamera->GetActorLocation();
 }
 
 void ABasePlayerController::SetHoveredWorldObject(AActor* object)

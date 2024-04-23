@@ -33,12 +33,17 @@ ABuilding::ABuilding()
 	resourceYields.Add(StratResources::Food, 0);
 	resourceYields.Add(StratResources::Production, 0);
 	resourceYields.Add(StratResources::Wealth, 0);
+
+	cinematicComponent = CreateDefaultSubobject<UCinematicPosition>(TEXT("Cinematic Component"));
+	cinematicComponent->cinematicVars = FCinematicObject{ this, FVector::Zero(), 1.5f, 1.5f};
 }
 
 // Called when the game starts or when spawned
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
+
+	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
 
 	SetupBuilding(buildingType);
 }

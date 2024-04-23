@@ -36,6 +36,9 @@ void ARockCity::SetToFinishedModel()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+
+	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
+	spawner->controller->SetCinematicObject(this);
 }
 
 bool ARockCity::IsDisabled()
