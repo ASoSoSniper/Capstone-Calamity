@@ -6,11 +6,19 @@
 
 void UManageBattle::Select(AActor* selectedObject)
 {
-	if (selectedBattle) HighlightSelected(selectedBattle, false);
+	if (selectedBattle)
+	{
+		HighlightSelected(selectedBattle, false);
+		selectedBattle->selectedByPlayer = false;
+	}
 
 	selectedBattle = Cast<ABattleObject>(selectedObject);
 
-	//if (selectedBattle) HighlightSelected(selectedObject, true);
+	if (selectedBattle)
+	{
+		HighlightSelected(selectedObject, true);
+		selectedBattle->selectedByPlayer = true;
+	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Battle selected"));
 }

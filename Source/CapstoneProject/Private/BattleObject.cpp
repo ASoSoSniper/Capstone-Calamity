@@ -57,6 +57,19 @@ void ABattleObject::BeginPlay()
 	group2Anims = Cast<UCombatAnims>(group2Mesh->GetAnimInstance());
 }
 
+void ABattleObject::Destroyed()
+{
+	if (selectedByPlayer)
+	{
+		AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+		ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
+
+		if (controller) controller->Deselect();
+	}
+
+	Super::Destroyed();
+}
+
 void ABattleObject::Start()
 {
 	//Find hex the object is placed on

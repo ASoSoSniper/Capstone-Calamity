@@ -24,6 +24,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 public:	
 	// Called every frame
@@ -101,4 +102,6 @@ public:
 	Factions attackingFaction = Factions::None;
 	void CalculateGroupDamage();
 	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
+
+	bool selectedByPlayer;
 };
