@@ -174,27 +174,25 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 	if (!troop) return display;
 
 	FTroopStats stats;
-	FTroopCost costs;
+
 	if (spawner->troopStats.Contains(troop->unitStats->unitType))
 	{
 		stats = spawner->troopStats[troop->unitStats->unitType];
-	}
-	if (spawner->troopCosts.Contains(troop->unitStats->unitType))
-	{
-		costs = spawner->troopCosts[troop->unitStats->unitType];
 	}
 
 	if (troop->unitStats->unitType != UnitTypes::Army)
 	{
 		display.name = stats.title;
-		display.icon = costs.icon;
+		display.icon = stats.icon;
+		display.iconHovered = stats.iconHovered;
 	}	
 	else
 	{
 		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(troop);
 
 		display.name = spawner->troopStats[chosenType].title;
-		display.icon = spawner->troopCosts[chosenType].icon;
+		display.icon = spawner->troopStats[chosenType].icon;
+		display.iconHovered = spawner->troopStats[chosenType].iconHovered;
 	}
 
 	display.HP = troop->unitStats->currentHP;

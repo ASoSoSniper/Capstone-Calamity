@@ -215,6 +215,8 @@ struct FTroopStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText desc;
 	UnitTypes type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* iconHovered;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
@@ -276,6 +278,7 @@ struct FArmyDisplay
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* iconHovered;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HPMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
