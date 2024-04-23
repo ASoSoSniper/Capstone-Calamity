@@ -18,7 +18,8 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	MonthDic.Add(Oct, MonthStruct{ TEXT("OCT"), 31, 10 });
 	MonthDic.Add(Nov, MonthStruct{ TEXT("NOV"), 30, 11 });
 	MonthDic.Add(Dec, MonthStruct{ TEXT("DEC"), 31, 12 });
-	dayStruct.currentMonth = 0;
+	dayStruct.currentMonth = 9;
+	dayStruct.day = 26;
 	currSeconds = 1;
 
 	nonBuildableTerrains.Add(TerrainType::AlienCity);
