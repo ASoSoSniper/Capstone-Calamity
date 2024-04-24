@@ -521,6 +521,7 @@ public:
 	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 	AActor* SpawnSmoke(AActor* object);
+	AActor* SpawnEndParticle(AActor* object, GameStates state);
 
 	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
 	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
@@ -545,6 +546,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ABattleObject> battlePrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ASiegeObject> siegePrefab;
 	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> smokePrefab;
+	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> explosionPrefab;
+	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> fireWorksPrefab;
 	
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;

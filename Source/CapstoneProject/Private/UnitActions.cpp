@@ -586,7 +586,7 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     for (auto& resource : resources)
     {
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
-        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources = FMath::Clamp(ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources, 0, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].maxResources);
+        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources);
     }
 }
 

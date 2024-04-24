@@ -1281,7 +1281,27 @@ AActor* AGlobalSpawner::SpawnSmoke(AActor* object)
 
 	return particleSystem;
 }
+AActor* AGlobalSpawner::SpawnEndParticle(AActor* object, GameStates state)
+{
+	AActor* particleSystem = nullptr;;
+	FActorSpawnParameters params;
 
+	switch (state)
+	{
+	case GameStates::None:
+		return nullptr;
+	case GameStates::Defeat:
+		if (!explosionPrefab) return nullptr;
+		particleSystem = GetWorld()->SpawnActor<AActor>(explosionPrefab, object->GetActorLocation(), FRotator(0.f, 0.f, 0.f), params);
+		break;
+	case GameStates::Victory:
+		if (!fireWorksPrefab) return nullptr;
+		particleSystem = GetWorld()->SpawnActor<AActor>(fireWorksPrefab, object->GetActorLocation(), FRotator(0.f, 0.f, 0.f), params);
+		break;
+	}
+
+	return particleSystem;
+}
 bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost)
 {
 	bool canAfford = false;

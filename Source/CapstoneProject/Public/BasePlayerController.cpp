@@ -739,25 +739,25 @@ void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int e
 	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
 	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
 
-	if (resources[StratResources::Food] >= foodCost) canAfford++;
-	if (resources[StratResources::Production] >= prodCost) canAfford++;
-	if (resources[StratResources::Energy] >= energyCost) canAfford++;
-	if (resources[StratResources::Wealth] >= wealthCost) canAfford++;
-	if (workers[WorkerType::Human] >= popCost) canAfford++;
+	if (foodCost >= 0 || resources[StratResources::Food] < foodCost) canAfford++;
+	if (prodCost >= 0 || resources[StratResources::Production] < prodCost) canAfford++;
+	if (energyCost >= 0 || resources[StratResources::Energy] < energyCost) canAfford++;
+	if (wealthCost >= 0 || resources[StratResources::Wealth] < wealthCost) canAfford++;
+	if (popCost >= 0 || workers[WorkerType::Human] < popCost) canAfford++;
 
 	if (canAfford < 5 || !overrideCosts) return;
 
 	TMap<StratResources, int> costs;
-	costs.Add(StratResources::Food, foodCost);
-	costs.Add(StratResources::Production, prodCost);
-	costs.Add(StratResources::Energy, energyCost);
-	costs.Add(StratResources::Wealth, wealthCost);
+	costs.Add(StratResources::Food, -foodCost);
+	costs.Add(StratResources::Production, -prodCost);
+	costs.Add(StratResources::Energy, -energyCost);
+	costs.Add(StratResources::Wealth, -wealthCost);
 	UnitActions::ConsumeSpentResources(playerFaction, costs);
 
-	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available -= popCost;
+	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available += popCost;
 	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available);
 
-	int remainingPopCost = workers[WorkerType::Human] - popCost;
+	int remainingPopCost = workers[WorkerType::Human] + popCost;
 	if (remainingPopCost >= 0) return;
 
 	remainingPopCost = FMath::Abs(remainingPopCost);;
