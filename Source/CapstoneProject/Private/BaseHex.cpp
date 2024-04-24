@@ -152,7 +152,7 @@ void ABaseHex::Tick(float DeltaTime)
 
 	if (hexOwner != Factions::None) ActiveHarvesting();
 
-	CountdownSoundFadeOut(DeltaTime);
+	SetToTargetVolume(DeltaTime);
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -440,8 +440,16 @@ void ABaseHex::SetFaction(Factions faction)
 	UnitActions::AssignFaction(faction, this);
 }
 
-void ABaseHex::CountdownSoundFadeOut(float& DeltaTime)
+
+void ABaseHex::SetToTargetVolume(float& DeltaTime)
 {
-	currFadeoutTime -= DeltaTime;
-	currFadeoutTime = FMath::Clamp(currFadeoutTime, 0, currFadeoutTime);
+	int increase = audioComponent->VolumeMultiplier < targetVolume ? 1 : -1;
+
+	float step = audioComponent->VolumeMultiplier + (DeltaTime * increase * volumeSpeed);
+	step = increase == 1 ? FMath::Clamp(step, audioComponent->VolumeMultiplier, targetVolume) : FMath::Clamp(step, targetVolume, audioComponent->VolumeMultiplier);
+
+	audioComponent->VolumeMultiplier = step;
+	audioComponent->AdjustVolume(0.f, audioComponent->VolumeMultiplier);
+
+	if (audioComponent->VolumeMultiplier <= 0.f && !inSoundboxRadius) audioComponent->Stop();
 }

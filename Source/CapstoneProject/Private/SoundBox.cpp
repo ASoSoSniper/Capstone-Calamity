@@ -27,6 +27,7 @@ void ASoundBox::BeginPlay()
 void ASoundBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	AdjustHexVolumes();
 }
 
@@ -35,9 +36,9 @@ void ASoundBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	if (ABaseHex* hex = Cast<ABaseHex>(OtherActor))
 	{
 		if (!foundHexes.Contains(hex)) foundHexes.Add(hex);
+		hex->inSoundboxRadius = true;
+		SetHexAmbience(hex);
 	}
-
-	AssignHexes();
 }
 
 void ASoundBox::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -45,10 +46,9 @@ void ASoundBox::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if (ABaseHex* hex = Cast<ABaseHex>(OtherActor))
 	{
 		foundHexes.Remove(hex);
-		hex->audioComponent->FadeOut(fadeOutSpeed, 0.f);
+		hex->inSoundboxRadius = false;
+		hex->targetVolume = 0.f;
 	}
-
-	AssignHexes();
 }
 
 void ASoundBox::AssignHexes()
@@ -57,37 +57,51 @@ void ASoundBox::AssignHexes()
 
 	for (int i = 0; i < foundHexes.Num(); i++)
 	{
-		if (foundHexes[i]->audioComponent->IsPlaying()) continue;
-		if (!foundHexes[i]->visibility->factionVisibility[Factions::Human].discoveredByFaction) continue;
+		//SetHexAmbience(foundHexes[i]);
+	}
+}
 
-		if (foundHexes[i]->battleInProgress)
-		{
-			foundHexes[i]->audioComponent->SetSound(battleSound);
-			foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
-			continue;
-		}
+void ASoundBox::SetHexAmbience(ABaseHex* hex)
+{
+	if (!hex->visibility->factionVisibility[Factions::Human].discoveredByFaction) return;
 
-		if (foundHexes[i]->building)
-		{
-			if (buildingSounds.Contains(foundHexes[i]->building->buildingType))
-			{
-				foundHexes[i]->audioComponent->SetSound(buildingSounds[foundHexes[i]->building->buildingType]);
-				foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
-				continue;
-			}
-		}
+	bool soundSet = false;
+	
+	if (hex->battleInProgress)
+	{
+		if (!soundSet) hex->audioComponent->SetSound(battleSound);
+		soundSet = true;
+	}
 
-		if (terrainSounds.Contains(foundHexes[i]->hexTerrain))
+	if (hex->building)
+	{
+		if (buildingSounds.Contains(hex->building->buildingType))
 		{
-			foundHexes[i]->audioComponent->SetSound(terrainSounds[foundHexes[i]->hexTerrain]);
-			foundHexes[i]->audioComponent->FadeIn(fadeInSpeed, 1.f);
+			if (!soundSet) hex->audioComponent->SetSound(buildingSounds[hex->building->buildingType]);
+			soundSet = true;
 		}
 	}
+
+	if (terrainSounds.Contains(hex->hexTerrain))
+	{
+		if (!soundSet) hex->audioComponent->SetSound(terrainSounds[hex->hexTerrain]);
+		soundSet = true;
+	}
+
+	if (!soundSet) return;
+	hex->audioComponent->Play();
 }
 
 void ASoundBox::AdjustHexVolumes()
 {
-	if (!soundsActive) return;
+	if (!soundsActive)
+	{
+		for (int i = 0; i < foundHexes.Num(); i++)
+		{
+			foundHexes[i]->targetVolume = 0.f;
+			return;
+		}
+	}
 
 	FVector center = GetActorLocation();
 	for (int i = 0; i < foundHexes.Num(); i++)
@@ -101,7 +115,7 @@ void ASoundBox::AdjustHexVolumes()
 
 		float volume = FMath::Clamp(((minVolume - maxVolume) / radius) * distanceToCenter + maxVolume, minVolume, maxVolume);
 
-		foundHexes[i]->audioComponent->VolumeMultiplier = volume;
+		foundHexes[i]->targetVolume = volume;
 	}
 }
 
@@ -119,9 +133,8 @@ void ASoundBox::ToggleSoundsActive(bool active)
 	{
 		for (int i = 0; i < foundHexes.Num(); i++)
 		{
-			if (!foundHexes[i]->audioComponent->IsPlaying()) continue;
-
-			foundHexes[i]->audioComponent->FadeOut(fadeOutSpeed, 0.f);
+			//foundHexes[i]->audioComponent->FadeOut(fadeOutSpeed, 0.f);
+			foundHexes[i]->targetVolume = 0.f;
 		}
 	}
 }

@@ -172,6 +172,8 @@ public:
 
 	void SetFaction(Factions faction);
 
-	void CountdownSoundFadeOut(float& DeltaTime);
-	float currFadeoutTime = 0;
+	void SetToTargetVolume(float& DeltaTime);
+	UPROPERTY(EditAnywhere, Category = "Sound") float volumeSpeed = 1.5f;
+	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
+	bool inSoundboxRadius = false;
 };
