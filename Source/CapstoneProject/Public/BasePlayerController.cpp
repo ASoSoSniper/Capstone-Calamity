@@ -732,44 +732,74 @@ TArray<int> ABasePlayerController::GetPlayerResources()
 	return numbers;
 }
 
-void ABasePlayerController::SetPlayerResources(TArray<int> input, bool overrideCosts)
+void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int energyCost, int wealthCost, int popCost, bool overrideCosts)
 {
-	TArray<int> numbers = UnitActions::GetFactionResources(playerFaction);
+	int canAfford = 0;
+
+	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
 	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
-	for (auto worker : workers)
+
+	if (resources[StratResources::Food] >= foodCost) canAfford++;
+	if (resources[StratResources::Production] >= prodCost) canAfford++;
+	if (resources[StratResources::Energy] >= energyCost) canAfford++;
+	if (resources[StratResources::Wealth] >= wealthCost) canAfford++;
+	if (workers[WorkerType::Human] >= popCost) canAfford++;
+
+	if (canAfford < 5 || !overrideCosts) return;
+
+	TMap<StratResources, int> costs;
+	costs.Add(StratResources::Food, foodCost);
+	costs.Add(StratResources::Production, prodCost);
+	costs.Add(StratResources::Energy, energyCost);
+	costs.Add(StratResources::Wealth, wealthCost);
+	UnitActions::ConsumeSpentResources(playerFaction, costs);
+
+	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available -= popCost;
+	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available);
+
+	int remainingPopCost = workers[WorkerType::Human] - popCost;
+	if (remainingPopCost >= 0) return;
+
+	remainingPopCost = FMath::Abs(remainingPopCost);;
+	int thatPopCost = remainingPopCost;
+
+	//Kill working population
+	TArray<ABaseHex*> hexesWithWorkers;
+	for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes.Num(); i++)
 	{
-		numbers.Add(worker.Value);
+		if (ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes[i]->workersInHex[WorkerType::Human] > 0) 
+			hexesWithWorkers.Add(ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes[i]);
 	}
-	bool canAfford = true;
-	for (int i = 0; i < numbers.Num(); ++i)
+
+	int scanIndex = 0;
+
+	if (hexesWithWorkers.IsEmpty()) return;
+
+	int overloadStopper = 0;
+	while (remainingPopCost != 0)
 	{
-		if (i > input.Num() - 1) continue;
-		if (input[i] > 0)
+		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
 		{
-			numbers[i] -= input[i];
+			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
+			remainingPopCost--;
 		}
-		else
+
+		scanIndex++;
+		if (!hexesWithWorkers.IsValidIndex(scanIndex))
 		{
-			if (numbers[i] >= input[i])
-			{
-				numbers[i] += input[i];
-			}
-			else
-			{
-				if (overrideCosts)
-				{
-					numbers[i] = 0;
-				}
-				else
-				{
-					canAfford = false;
-				}
-			}
+			scanIndex = 0;
+		}
+
+		overloadStopper++;
+		if (overloadStopper == 100)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
+			return;
 		}
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("%d, %d, %d"), numbers[0], numbers[1], numbers[2], numbers[3]));
-	if (canAfford)
-		UnitActions::ConsumeSpentResources(playerFaction, numbers);
+	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working -= thatPopCost;
+	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working = 
+		FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working);
 }
 
 int ABasePlayerController::GetPlayerPopulation()

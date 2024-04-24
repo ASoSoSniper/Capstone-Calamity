@@ -101,7 +101,7 @@ public:
 	void Build(SpawnableBuildings building);
 
 	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
-	UFUNCTION(BlueprintCallable) void SetPlayerResources(TArray<int> input, bool overrideCosts);
+	UFUNCTION(BlueprintCallable) void SetPlayerResources(int foodCost, int prodCost, int energyCost, int wealthCost, int popCost, bool overrideCosts = true);
 	UFUNCTION(BlueprintCallable) int GetPlayerPopulation();
 
 	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
