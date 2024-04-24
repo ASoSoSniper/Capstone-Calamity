@@ -175,4 +175,6 @@ public:
 
 	UFUNCTION(BlueprintCallable) bool BattleIsSiege();
 	UFUNCTION(BlueprintCallable) FSiegeBuildingInfo GetSiegeBuildingInfo();
+
+	UFUNCTION(BlueprintCallable) bool UnitTypeOnHex(UnitTypes type);
 };

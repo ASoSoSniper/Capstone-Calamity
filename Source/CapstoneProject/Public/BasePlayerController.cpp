@@ -548,6 +548,23 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 	return info;
 }
 
+bool ABasePlayerController::UnitTypeOnHex(UnitTypes type)
+{
+	if (!selectedHex) return false;
+
+	int index = 0;
+
+	for (int i = 0; i < selectedHex->troopsInHex.Num(); i++)
+	{
+		if (UnitActions::ArmyContainsUnit(selectedHex->troopsInHex[i], type, index))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 /*bool ABasePlayerController::ToggleBuildingUI()
 {
 	if (toggleBuildingUI)
