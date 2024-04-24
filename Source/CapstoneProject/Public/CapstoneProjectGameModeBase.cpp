@@ -528,7 +528,7 @@ void ACapstoneProjectGameModeBase::CheckHumanPop()
 {
 	Faction::WorkerStats workers = activeFactions[Factions::Human]->availableWorkers[WorkerType::Human];
 
-	if (workers.available + workers.working < 50)
+	if (workers.available + workers.working < 25)
 	{
 		gameState = GameStates::Defeat;
 	}
