@@ -739,13 +739,13 @@ void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int e
 	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
 	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
 
-	if (foodCost >= 0 || resources[StratResources::Food] < foodCost) canAfford++;
-	if (prodCost >= 0 || resources[StratResources::Production] < prodCost) canAfford++;
-	if (energyCost >= 0 || resources[StratResources::Energy] < energyCost) canAfford++;
-	if (wealthCost >= 0 || resources[StratResources::Wealth] < wealthCost) canAfford++;
-	if (popCost >= 0 || workers[WorkerType::Human] < popCost) canAfford++;
+	//if (foodCost >= 0 || resources[StratResources::Food] < foodCost) canAfford++;
+	//if (prodCost >= 0 || resources[StratResources::Production] < prodCost) canAfford++;
+	//if (energyCost >= 0 || resources[StratResources::Energy] < energyCost) canAfford++;
+	//if (wealthCost >= 0 || resources[StratResources::Wealth] < wealthCost) canAfford++;
+	//if (popCost >= 0 || workers[WorkerType::Human] < popCost) canAfford++;
 
-	if (canAfford < 5 || !overrideCosts) return;
+	//if (canAfford < 5 || !overrideCosts) return;
 
 	TMap<StratResources, int> costs;
 	costs.Add(StratResources::Food, -foodCost);
