@@ -23,6 +23,13 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FPlayerWorkers
+{
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int available;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int working;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FCinematicObject
 {
 	GENERATED_BODY()

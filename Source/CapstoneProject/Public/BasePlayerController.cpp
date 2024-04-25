@@ -586,6 +586,16 @@ bool ABasePlayerController::BattleGroupIsHuman(int group)
 	return false;
 }
 
+FPlayerWorkers ABasePlayerController::GetPlayerWorkers()
+{
+	FPlayerWorkers workers;
+
+	workers.available = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available;
+	workers.working = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working;
+
+	return workers;
+}
+
 /*bool ABasePlayerController::ToggleBuildingUI()
 {
 	if (toggleBuildingUI)
