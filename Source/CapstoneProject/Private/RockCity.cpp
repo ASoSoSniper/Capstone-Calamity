@@ -45,7 +45,11 @@ bool ARockCity::IsDisabled()
 {
 	if (Super::IsDisabled())
 	{
-		if (spawner) spawner->controller->SetCinematicObject(this, GameStates::Victory);
+		if (spawner)
+		{
+			spawner->controller->SetCinematicObject(this, GameStates::Victory);
+			spawner->SpawnEndParticle(this, GameStates::Victory);
+		}
 		return true;
 	}
 
