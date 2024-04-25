@@ -565,6 +565,26 @@ bool ABasePlayerController::UnitTypeOnHex(UnitTypes type)
 	return false;
 }
 
+bool ABasePlayerController::BattleGroupIsHuman(int group)
+{
+	ABattleObject* battleObject = Cast<ABattleObject>(selectedWorldObject);
+
+	if (group == 0)
+	{
+		if (battleObject->currentBattle.Group1.Contains(Factions::Human))
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if (battleObject->currentBattle.Group2.Contains(Factions::Human))
+		{
+			return true;
+		}
+	}
+}
+
 /*bool ABasePlayerController::ToggleBuildingUI()
 {
 	if (toggleBuildingUI)

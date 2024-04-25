@@ -177,4 +177,5 @@ public:
 	UFUNCTION(BlueprintCallable) FSiegeBuildingInfo GetSiegeBuildingInfo();
 
 	UFUNCTION(BlueprintCallable) bool UnitTypeOnHex(UnitTypes type);
+	UFUNCTION(BlueprintCallable) bool BattleGroupIsHuman(int group);
 };
