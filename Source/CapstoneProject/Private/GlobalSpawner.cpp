@@ -69,7 +69,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/InfButton.InfButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredInfButton.HoveredInfButton'")),
-		240, 15, 16, 12, 1, 100, 1, 1,
+		240, 15, 16, 12, 1, 100, 1, 2,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -90,7 +90,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/CavalryButton.CavalryButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredCavalryButton.HoveredCavalryButton'")),
-		180, 11, 20, 8, 1, 100, 1, 1,
+		180, 11, 20, 8, 1, 100, 1, 2,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -111,7 +111,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/RangedButton.RangedButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredRangedButton.HoveredRangedButton'")),
-		160, 20, 12, 20, 2, 100, 1, 1,
+		160, 20, 12, 20, 2, 100, 1, 2,
 		/*** Attacking ***/
 		/*Infantry*/ 150,
 		/*Cavalry*/ 100,
@@ -132,7 +132,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ShielderButton.ShielderButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredShielderButton.HoveredShielderButton'")),
-		280, 19, 8, 16, 1, 100, 1, 1,
+		280, 19, 8, 16, 1, 100, 1, 2,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 150,
@@ -153,7 +153,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ScoutButton.ScoutButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredScoutButton.HoveredScoutButton'")),
-		140, 7, 4, 4, 3, 100, 1, 1,
+		140, 7, 4, 4, 3, 100, 1, 2,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -174,7 +174,7 @@ AGlobalSpawner::AGlobalSpawner()
 	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts. Outposts can be created on any tile a building can be built on OUTSIDE of your zone of control."), UnitTypes::Settler, 
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/SettlerButton.SettlerButton'")),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredSettlerButton.HoveredSettlerButton'")),
-		200, 15, 0, 0, 1, 100, 1, 1,
+		200, 15, 0, 0, 1, 100, 1, 3,
 		/*** Attacking ***/
 		/*Infantry*/ 100,
 		/*Cavalry*/ 100,
@@ -217,7 +217,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		4,
+		10,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
@@ -247,7 +247,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		4,
+		5,
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
@@ -307,7 +307,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		6,
+		10,
 		/*Max Workers*/
 		5,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
@@ -337,9 +337,9 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
-		10,
+		20,
 		/*Max Workers*/
-		10,
+		15,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'"))
 		});
 	buildingStats.Add(SpawnableBuildings::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
@@ -425,7 +425,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
 		5
 		});
@@ -454,7 +454,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
 		5
 		});
@@ -483,7 +483,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
 		5
 		});
@@ -512,7 +512,7 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
-		2,
+		5,
 		/*Max Workers*/
 		5
 		});

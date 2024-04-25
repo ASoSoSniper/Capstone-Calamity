@@ -8,10 +8,10 @@
 Faction::Faction()
 {
 	faction = Factions::None;
-	resourceInventory.Add(StratResources::Energy, InventoryStat{ 500,500,0, 0 });
-	resourceInventory.Add(StratResources::Production, InventoryStat{ 500,500,0, 0 });
-	resourceInventory.Add(StratResources::Food, InventoryStat{ 500,500,0, 0 });
-	resourceInventory.Add(StratResources::Wealth, InventoryStat{ 500, 500, 0, 0 });
+	resourceInventory.Add(StratResources::Energy, InventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(StratResources::Production, InventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(StratResources::Food, InventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(StratResources::Wealth, InventoryStat{ 000, 300, 0, 0 });
 
 	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,500, 0,1,0 });
 	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,10, 1,0,0 });

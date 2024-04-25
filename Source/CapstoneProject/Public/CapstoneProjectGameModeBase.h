@@ -131,6 +131,6 @@ private:
 	UPROPERTY(EditAnywhere) int maxTroopsInArmy = 20;
 	int troopsInArmy = 0;
 
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 20;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 };
