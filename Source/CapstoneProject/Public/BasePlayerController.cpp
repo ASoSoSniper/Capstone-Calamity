@@ -583,6 +583,7 @@ bool ABasePlayerController::BattleGroupIsHuman(int group)
 			return true;
 		}
 	}
+	return false;
 }
 
 /*bool ABasePlayerController::ToggleBuildingUI()
