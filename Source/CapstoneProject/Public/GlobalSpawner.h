@@ -25,6 +25,8 @@ class UBuildingAttachment;
 USTRUCT(BlueprintType, Blueprintable)
 struct FPlayerWorkers
 {
+	GENERATED_BODY()
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int available;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int working;
 };

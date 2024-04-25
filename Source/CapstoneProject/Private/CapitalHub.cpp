@@ -43,7 +43,7 @@ void ACapitalHub::SetToFinishedModel()
 	
 	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
 	spawner->controller->SetCinematicObject(this);
-	spawner->SpawnEndParticle(this, GameStates::Victory);
+	//spawner->SpawnEndParticle(this, GameStates::Victory);
 }
 
 void ACapitalHub::Destroyed()
