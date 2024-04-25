@@ -1283,19 +1283,23 @@ AActor* AGlobalSpawner::SpawnSmoke(AActor* object)
 }
 AActor* AGlobalSpawner::SpawnEndParticle(AActor* object, GameStates state)
 {
-	AActor* particleSystem = nullptr;;
+	AActor* particleSystem = nullptr;
 	FActorSpawnParameters params;
 
 	switch (state)
 	{
 	case GameStates::None:
-		return nullptr;
+		break;
 	case GameStates::Defeat:
 		if (!explosionPrefab) return nullptr;
 		particleSystem = GetWorld()->SpawnActor<AActor>(explosionPrefab, object->GetActorLocation(), FRotator(0.f, 0.f, 0.f), params);
 		break;
 	case GameStates::Victory:
-		if (!fireWorksPrefab) return nullptr;
+		if (!fireWorksPrefab)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("No prefab"));
+			return nullptr;
+		}
 		particleSystem = GetWorld()->SpawnActor<AActor>(fireWorksPrefab, object->GetActorLocation(), FRotator(0.f, 0.f, 0.f), params);
 		break;
 	}
