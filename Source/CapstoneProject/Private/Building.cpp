@@ -386,6 +386,12 @@ void ABuilding::Destroyed()
 		hex->building = nullptr;
 	}
 
+	if (smokeEffect)
+	{
+		smokeEffect->Destroy();
+		smokeEffect = nullptr;
+	}
+
 	Super::Destroyed();
 }
 

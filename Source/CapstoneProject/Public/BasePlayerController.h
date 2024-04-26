@@ -171,7 +171,9 @@ public:
 	UFUNCTION(BlueprintCallable) bool CanPutWorkersOnHex();
 	UFUNCTION(BlueprintCallable) bool HexIsDiscovered();
 
+
 	UFUNCTION(BlueprintCallable) bool IsHumanControlled(AActor* object);
+	UFUNCTION(BlueprintCallable) bool HexIsHumanControlled();
 
 	UFUNCTION(BlueprintCallable) bool BattleIsSiege();
 	UFUNCTION(BlueprintCallable) FSiegeBuildingInfo GetSiegeBuildingInfo();

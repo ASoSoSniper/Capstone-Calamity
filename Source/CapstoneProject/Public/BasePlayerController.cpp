@@ -548,6 +548,13 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 	return info;
 }
 
+bool ABasePlayerController::HexIsHumanControlled()
+{
+	if (!selectedHex) return false;
+
+	return IsHumanControlled(selectedHex);
+}
+
 bool ABasePlayerController::UnitTypeOnHex(UnitTypes type)
 {
 	if (!selectedHex) return false;
