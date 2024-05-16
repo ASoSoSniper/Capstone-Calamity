@@ -585,7 +585,7 @@ void ACapstoneProjectGameModeBase::SpawnEnemies()
 		ABuilding* building = spawnedSpawner->alienHexes[i]->building;
 		if (building)
 		{
-			if (spawnedSpawner->alienHexes[i]->battleInProgress) continue;
+			if (spawnedSpawner->alienHexes[i]->battle) continue;
 			if (building->siegingFaction != Factions::None) continue;
 		}
 

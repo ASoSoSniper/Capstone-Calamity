@@ -265,10 +265,7 @@ bool ABuilding::SphereCheck()
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
 					SetActorLocation(hexActor->buildingAnchor->GetComponentLocation());
-					hexActor->building = this;
-					hexNav->currentHex = hexActor;
-
-					if (hexActor->hexOwner == Factions::None) hexActor->SetFaction(unitStats->faction);
+					hexActor->AddBuildingToHex(this);
 
 					return true;
 				}

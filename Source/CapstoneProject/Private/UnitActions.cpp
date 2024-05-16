@@ -839,7 +839,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
 
     bool addToList = false;
 
-    if (UnitActions::HexHasEnemyTroop(faction, objectType.hex) || objectType.hex->battleInProgress)
+    if (UnitActions::HexHasEnemyTroop(faction, objectType.hex) || objectType.hex->battle)
     {
         addToList = true;
     }

@@ -1266,7 +1266,6 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 	ABattleObject* battle = GetWorld()->SpawnActor<ABattleObject>(hex->building ? siegePrefab : battlePrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0.f, 0.f, 0.f), params);
 	battle->hexNav->currentHex = hex;
 	battle->spawner = this;
-	hex->battleInProgress = true;
 	battle->Start();
 
 	return battle;

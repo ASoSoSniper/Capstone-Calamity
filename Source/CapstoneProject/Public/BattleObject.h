@@ -61,11 +61,9 @@ public:
 
 	void CreateFactions();
 	void AddUnitToFaction(AMovementAI* troop);
-	void GenerateArmies();
 	virtual void GenerateModels();
 	void AddUnitToArmy(UnitActions::UnitData data);
-
-	void AssignGroups();
+	void AssignFactionToGroup(Factions army);
 
 	virtual void Attack();
 	virtual void EndBattle();
@@ -78,7 +76,7 @@ public:
 
 	UPROPERTY(EditAnywhere) float attackRate = 2.f;
 	float currentAttackTime;
-	bool attacking;
+	UPROPERTY(EditAnywhere) bool attacking;
 	bool ending;
 	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
 

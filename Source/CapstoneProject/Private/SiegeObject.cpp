@@ -9,6 +9,8 @@ void ASiegeObject::Start()
 {
 	//Find hex the object is placed on
 	hex = Cast<ABaseHex>(hexNav->currentHex);
+	hex->battle = this;
+	spawner->controller->PlayUISound(spawner->controller->battleStartSound);
 
 	building = hex->building;
 
@@ -184,7 +186,8 @@ bool ASiegeObject::BuildingIsAlive()
 	bool alive = building->IsDisabled();
 	if (alive)
 	{
-		building->siegingFaction = currentBattle.Group1[0];
+		if (!currentBattle.Group1.IsEmpty())
+			building->siegingFaction = currentBattle.Group1[0];
 	}
 
 	return !building->sieged;

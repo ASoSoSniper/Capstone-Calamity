@@ -67,7 +67,7 @@ void ASoundBox::SetHexAmbience(ABaseHex* hex)
 
 	bool soundSet = false;
 	
-	if (hex->battleInProgress)
+	if (hex->battle)
 	{
 		if (!soundSet) hex->audioComponent->SetSound(battleSound);
 		soundSet = true;

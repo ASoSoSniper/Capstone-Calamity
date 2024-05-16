@@ -124,79 +124,55 @@ void ABattleObject::Tick(float DeltaTime)
 //Collect all units in the hex and sort them into factions
 void ABattleObject::CreateFactions()
 {
-	//For each troop in the hex:
-	for (int i = 0; i < hex->troopsInHex.Num(); ++i)
-	{
-		//Extract data from the troop
-		UnitActions::UnitData unitData = UnitActions::CollectUnitData(hex->troopsInHex[i]->unitStats);
-
-		//If the troop's faction does not yet exist in the battle, create it and add it to the list
-		if (!factionsInBattle.Contains(unitData.faction))
-		{
-			TArray<UnitActions::UnitData> newArmy;
-			factionsInBattle.Add(unitData.faction, newArmy);
-			if (UnitActions::GetFactionRelationship(Factions::Human, unitData.faction) == FactionRelationship::Ally)
-			{
-				visibility->faction = Factions::Human;
-			}
-		}
-
-		//Add the troop data to its respective faction
-		factionsInBattle[unitData.faction].Add(unitData);
-	}
+	//Get the number of troops in the hex (since we'll be removing elements mid-loop)
+	int hexPop = hex->troopsInHex.Num();
 
 	//The attacking faction is very likely to own the last troop to enter the hex, so the troop at the end of the array is set as the attacker
-	attackingFaction = hex->troopsInHex[hex->troopsInHex.Num() - 1]->unitStats->faction;
+	attackingFaction = hex->GetAttackerFaction();
 
-	//After all troop data is collected, remove the troops from the hex and destroy them in the world
-	int hexPop = hex->troopsInHex.Num();
+	//Set attacking faction to group 1 for consistency
+	currentBattle.Group1.Add(attackingFaction);
+
+	//For each troop in the hex, add it to its respective faction
 	for (int i = 0; i < hexPop; ++i)
 	{
-		AMovementAI* currentTroop = hex->troopsInHex[0];
-		hex->troopsInHex.Remove(currentTroop);
-		currentTroop->Destroy();
+		if (hex->troopsInHex.IsEmpty()) break;
+
+		AddUnitToFaction(hex->troopsInHex[0]);
 	}
 
-	//Use the collected troops and factions to generate singular faction units
-	GenerateArmies();
+	//Once sides are determined, visualize each group based on their faction composition
+	GenerateModels();
+
+	//Begin the combat loop
+	attacking = true;
 }
 
 //Add a unit to a faction following the creation of this battle
 void ABattleObject::AddUnitToFaction(AMovementAI* troop)
 {
+	//Extract data from the troop
 	UnitActions::UnitData unitData = UnitActions::CollectUnitData(troop->unitStats);
 
+	//If the troop's faction does not yet exist in the battle, create it and add it to the list
 	if (!factionsInBattle.Contains(unitData.faction))
 	{
 		TArray<UnitActions::UnitData> newArmy;
 		factionsInBattle.Add(unitData.faction, newArmy);
-	}
 
-	factionsInBattle[unitData.faction].Add(unitData);
-	AddUnitToArmy(unitData);
-	hex->troopsInHex.Remove(troop);
-	troop->Destroy();
-}
-
-//Use the created factions and the unit data each possess to generate singular units for each faction
-void ABattleObject::GenerateArmies()
-{
-	//For each faction in the battle:
-	for (auto& faction : factionsInBattle)
-	{
-		//If this faction unit does not already exist, create one and add all stats from each unit in the faction to it
-		if (!armies.Contains(faction.Key))
+		//If the newly joined unit is (an ally to) the player, set the battle to be visible to the player
+		if (UnitActions::GetFactionRelationship(Factions::Human, unitData.faction) == FactionRelationship::Ally)
 		{
-			UnitActions::UnitData army{faction.Key, UnitTypes::Army, false, 0, 0, 0, 0, 0, 0};
-			TArray<UnitActions::UnitData> factionData = faction.Value;
-			for (int i = 0; i < faction.Value.Num(); ++i)
-			{
-				army = UnitActions::AddUnitData(army, factionData[i]);
-			}
-			armies.Add(faction.Key, army);
+			visibility->faction = Factions::Human;
 		}
 	}
-	AssignGroups();
+
+	//Add this unit to the faction unit list and its data to the faction army unit
+	AddUnitToArmy(unitData);
+
+	//Remove the unit from the hex and destroy it in the game world
+	hex->troopsInHex.Remove(troop);
+	troop->Destroy();
 }
 
 void ABattleObject::GenerateModels()
@@ -227,49 +203,41 @@ void ABattleObject::GenerateModels()
 	}
 }
 
-//After adding the unit to the faction, add its stats to the existing army unit
+//Adds the input unit to the faction unit list and its data to the faction army unit
 void ABattleObject::AddUnitToArmy(UnitActions::UnitData data)
 {
-	if (armies.Contains(data.faction))
+	factionsInBattle[data.faction].Add(data);
+
+	if (!armies.Contains(data.faction))
 	{
-		armies[data.faction] = UnitActions::AddUnitData(armies[data.faction], data);
+		UnitActions::UnitData army{ data.faction, UnitTypes::Army, false, 0, 0, 0, 0, 0, 0 };
+
+		armies.Add(data.faction, army);
 	}
+
+	armies[data.faction] = UnitActions::AddUnitData(armies[data.faction], data);
+
+	AssignFactionToGroup(data.faction);
 }
 
-void ABattleObject::AssignGroups()
+void ABattleObject::AssignFactionToGroup(Factions army)
 {
-	//Set attacking faction to group 1 for consistency
-	currentBattle.Group1.Add(attackingFaction);
+	//Skip if already in one of the two groups
+	if (currentBattle.Group1.Contains(army) || currentBattle.Group2.Contains(army)) return;
 
-	//For each faction in the battle:
-	for (auto& army : armies)
-	{	
-		//Skip if attacking faction, since we already added it to group 1
-		if (army.Key == attackingFaction) continue;
+	//Determine this faction's alignment to other factions in the conflict, using that to select which group to join, if any
+	EngagementSelect assignment = UnitActions::DetermineConflictAlignment(army, currentBattle.Group1, currentBattle.Group2);
 
-		//Determine this faction's alignment to other factions in the conflict, using that to select which group to join, if any
-		EngagementSelect assignment = UnitActions::DetermineConflictAlignment(army.Key, currentBattle.Group1, currentBattle.Group2);
-
-		switch (assignment)
-		{
-		case EngagementSelect::JoinGroup1:
-			if (!currentBattle.Group1.Contains(army.Key))
-			{
-				currentBattle.Group1.Add(army.Key);
-			}
-			break;
-		case EngagementSelect::JoinGroup2:
-			if (!currentBattle.Group2.Contains(army.Key))
-			{
-				currentBattle.Group2.Add(army.Key);
-			}
-			break;
-		}
+	//Assign to the resulting group
+	switch (assignment)
+	{
+	case EngagementSelect::JoinGroup1:
+		currentBattle.Group1.Add(army);
+		break;
+	case EngagementSelect::JoinGroup2:
+		currentBattle.Group2.Add(army);
+		break;
 	}
-
-	GenerateModels();
-	
-	attacking = true;
 }
 
 void ABattleObject::Attack()
@@ -393,7 +361,6 @@ void ABattleObject::DestroyBattle()
 		ExtractFactionUnits(faction.Key);
 	}
 
-	hex->battleInProgress = false;
 	hex->battle = nullptr;
 	Destroy();
 }
@@ -522,8 +489,10 @@ float ABattleObject::DecayMorale(Factions faction, float percentReduction)
 
 void ABattleObject::CalculateGroupDamage()
 {
-	groupCompositions[0] = GetArmyComposition(currentBattle.Group1);
-	groupCompositions[1] = GetArmyComposition(currentBattle.Group2);
+	if (!currentBattle.Group1.IsEmpty())
+		groupCompositions[0] = GetArmyComposition(currentBattle.Group1);
+	if (!currentBattle.Group2.IsEmpty())
+		groupCompositions[1] = GetArmyComposition(currentBattle.Group2);
 
 	group1Damage = 0;
 	group2Damage = 0;
@@ -634,6 +603,8 @@ TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TArray<Facti
 	//For each faction in the group:
 	for (Factions& faction : group)
 	{
+		if (!factionsInBattle.Contains(faction)) continue;
+
 		//For each unit in the faction:
 		for (int i = 0; i < factionsInBattle[faction].Num(); i++)
 		{

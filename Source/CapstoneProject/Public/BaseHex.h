@@ -135,16 +135,18 @@ public:
 	TArray<AActor*> GetObjectsInHex();
 
 	void CheckForHostility(AMovementAI* refTroop);
+	void CheckForHostility(ABuilding* refBuilding);
 	void AddTroopToHex(AMovementAI* troop);
+	void AddBuildingToHex(ABuilding* newBuilding);
 	void RemoveTroopFromHex(AMovementAI* troop);
 	int GetNumberOfWorkers();
 	float GetOutputPercent();
 
-	void BeginBattle();
+	void BeginBattle(AMovementAI* attacker = nullptr);
+	Factions GetAttackerFaction();
+	bool ActiveBattleOnHex();
 
 	AGlobalSpawner* spawner;
-
-	bool battleInProgress;
 
 	TMap<WorkerType, int> workersInHex;
 	int maxWorkers = 15;
@@ -176,4 +178,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sound") float volumeSpeed = 1.5f;
 	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
 	bool inSoundboxRadius = false;
+
+private:
+	AMovementAI* attackingTroop;
 };

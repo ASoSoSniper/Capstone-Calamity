@@ -152,6 +152,14 @@ void ABaseHex::Tick(float DeltaTime)
 
 	if (hexOwner != Factions::None) ActiveHarvesting();
 
+	if (attackingTroop)
+	{ 
+		if (!troopsInHex.Contains(attackingTroop)) 
+			attackingTroop = nullptr;
+
+		BeginBattle();
+	}
+
 	SetToTargetVolume(DeltaTime);
 }
 
@@ -179,9 +187,9 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 {	
 	if (building)
 	{
-		if (UnitActions::IsHostileTarget(refTroop, building) && !building->sieged)
+		if (UnitActions::IsHostileTarget(refTroop, building) && building->unitStats->currentHP > 0)
 		{
-			BeginBattle();
+			BeginBattle(refTroop);
 			return;
 		}
 	}
@@ -191,9 +199,23 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 		{
 			if (UnitActions::IsHostileTarget(refTroop, troopsInHex[i]))
 			{
-				BeginBattle();
+				BeginBattle(refTroop);
 				return;
 			}
+		}
+	}
+}
+
+void ABaseHex::CheckForHostility(ABuilding* refBuilding)
+{
+	if (refBuilding->sieged) return;
+
+	for (int i = 0; i < troopsInHex.Num(); ++i)
+	{
+		if (UnitActions::IsHostileTarget(troopsInHex[i], refBuilding))
+		{
+			BeginBattle(troopsInHex[i]);
+			return;
 		}
 	}
 }
@@ -206,6 +228,16 @@ void ABaseHex::AddTroopToHex(AMovementAI* troop)
 	CheckForHostility(troop);
 }
 
+void ABaseHex::AddBuildingToHex(ABuilding* newBuilding)
+{
+	newBuilding->hexNav->currentHex = this;
+	building = newBuilding;
+
+	if (hexOwner == Factions::None) SetFaction(newBuilding->unitStats->faction);
+
+	CheckForHostility(newBuilding);
+}
+
 void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 {
 	if (troopsInHex.Contains(troop))
@@ -214,11 +246,31 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 	}
 }
 
-void ABaseHex::BeginBattle()
+void ABaseHex::BeginBattle(AMovementAI* attacker)
 {
-	if (battleInProgress) return;
+	if (attacker && !attackingTroop && !ActiveBattleOnHex())
+	{
+		attackingTroop = attacker;
+	}
 
-	spawner->SpawnBattle(this);
+	if (battle) return;
+
+	if (attackingTroop) spawner->SpawnBattle(this);
+}
+
+Factions ABaseHex::GetAttackerFaction()
+{
+	Factions faction = attackingTroop->unitStats->faction;
+	attackingTroop = nullptr;
+
+	return faction;
+}
+
+bool ABaseHex::ActiveBattleOnHex()
+{
+	if (!battle) return false;
+
+	return battle->attacking;
 }
 
 
