@@ -3,11 +3,11 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class CapstoneProjectEditorTarget : TargetRules
+public class PolyporeTarget : TargetRules
 {
-	public CapstoneProjectEditorTarget( TargetInfo Target) : base(Target)
+	public PolyporeTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Editor;
+		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
 		ExtraModuleNames.Add("CapstoneProject");
