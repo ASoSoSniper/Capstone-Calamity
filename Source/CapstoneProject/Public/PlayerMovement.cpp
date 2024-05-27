@@ -18,6 +18,8 @@ APlayerMovement::APlayerMovement()
 	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	audioComponent->SetupAttachment(RootComponent);
 	audioComponent->SetUISound(true);
+
+	movement = CreateDefaultSubobject<UCharacterMovementComponent>(TEXT("Movement"));
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +39,7 @@ void APlayerMovement::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	HexCast();
+	DragCamera();
 
 	if (controlState == Cinematic)
 		MoveToCinematicPos(DeltaTime);
@@ -50,8 +53,12 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerMovement::PanRight);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
 	PlayerInputComponent->BindAxis("ZoomIn", this, &APlayerMovement::ZoomIn);
+	PlayerInputComponent->BindAxis("MouseX", this, &APlayerMovement::GetMouseX);
+	PlayerInputComponent->BindAxis("MouseY", this, &APlayerMovement::GetMouseY);
 
 	//PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
+	PlayerInputComponent->BindAction("SelectAction", IE_Pressed, this, &APlayerMovement::SelectInput);
+	PlayerInputComponent->BindAction("SelectAction", IE_Released, this, &APlayerMovement::StartSelect);
 	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
 	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
 }
@@ -202,11 +209,70 @@ void APlayerMovement::DeselectInput()
 	if (controller) controller->Deselect();
 }
 
+void APlayerMovement::SelectInput()
+{
+	if (controlState != Free) return;
+
+	clickHeld = true;
+
+	float x;
+	float y;
+	controller->GetMousePosition(x, y);
+	previousMouseLocation = FVector2D(x, y);
+
+	if (controller) controller->activeSelecting = true;
+}
+
+void APlayerMovement::StartSelect()
+{
+	if (controlState != Free) return;
+
+	clickHeld = false;
+	
+	if (controller)
+	{
+		if (controller->hoveredWorldObject && controller->activeSelecting) 
+			controller->SetSelectedWorldObject(controller->hoveredWorldObject);
+
+		controller->hoveredWorldObject = nullptr;
+		controller->activeSelecting = false;
+	}
+}
+
 void APlayerMovement::StartCommand()
 {
 	if (controlState != Free) return;
 
 	if (controller) controller->CommandAction();
+}
+
+void APlayerMovement::GetMouseX(float axis)
+{
+	mouseX = axis;
+}
+
+void APlayerMovement::GetMouseY(float axis)
+{
+	mouseY = axis;
+}
+
+void APlayerMovement::DragCamera()
+{
+	if (controlState != Free) return;
+	if (!clickHeld) return;
+
+	float x;
+	float y;
+	controller->GetMousePosition(x, y);
+	currentMouseLocation = FVector2D(x, y);
+
+	FVector2D direction = currentMouseLocation - previousMouseLocation;
+	if (direction.Size() > 1.f) controller->activeSelecting = false;
+
+	FVector step = FVector(-direction.Y, direction.X, 0);
+
+	AddActorWorldOffset(step);
+	previousMouseLocation = currentMouseLocation;
 }
 
 void APlayerMovement::PanRight(float axis)

@@ -36,7 +36,7 @@ void UInteractable::BeginPlay()
 		if (collider)
 		{
 			collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-			collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+			//collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
 			return;
 		}
 	}
@@ -47,7 +47,7 @@ void UInteractable::BeginPlay()
 		if (skeletalMesh)
 		{
 			skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-			skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+			//skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
 			return;
 		}
 	}
@@ -59,23 +59,23 @@ void UInteractable::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (controller) return;
-
-	APlayerMovement* player = Cast<APlayerMovement>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass()));
-	if (player)
+	if (!controller)
 	{
-		AController* tempController = player->GetController();
-		controller = Cast<ABasePlayerController>(tempController);
+		APlayerMovement* player = Cast<APlayerMovement>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass()));
+		if (player)
+		{
+			AController* tempController = player->GetController();
+			controller = Cast<ABasePlayerController>(tempController);
+		}
 	}
 }
 
 void UInteractable::MouseHover(UPrimitiveComponent* item)
 {
-	if (!canInteract) return;
-
-	if (controller) controller->SetHoveredWorldObject(GetOwner());
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Hovering over Hex")));
+	if (controller)
+	{
+		controller->SetHoveredWorldObject(canInteract ? GetOwner() : nullptr);
+	}
 }
 
 void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
@@ -90,10 +90,10 @@ void UInteractable::Selected(UPrimitiveComponent* item, FKey ButtonPressed)
 void UInteractable::CreateCollision(UStaticMeshComponent* mesh)
 {
 	collider = mesh;
-	if (otherCollider)
+	if (collider)
 	{
 		collider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		//collider->OnClicked.AddDynamic(this, &UInteractable::Selected);
 	}
 }
 
@@ -103,7 +103,7 @@ void UInteractable::CreateCollision(USkeletalMeshComponent* mesh)
 	if (skeletalMesh)
 	{
 		skeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		//skeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
 	}
 }
 
@@ -113,7 +113,7 @@ void UInteractable::CreateExtraCollision(UStaticMeshComponent* mesh)
 	if (otherCollider)
 	{
 		otherCollider->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		otherCollider->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		//otherCollider->OnClicked.AddDynamic(this, &UInteractable::Selected);
 	}
 }
 
@@ -123,7 +123,7 @@ void UInteractable::CreateExtraCollision(USkeletalMeshComponent* mesh)
 	if (otherSkeletalMesh)
 	{
 		otherSkeletalMesh->OnBeginCursorOver.AddDynamic(this, &UInteractable::MouseHover);
-		otherSkeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
+		//otherSkeletalMesh->OnClicked.AddDynamic(this, &UInteractable::Selected);
 	}
 }
 

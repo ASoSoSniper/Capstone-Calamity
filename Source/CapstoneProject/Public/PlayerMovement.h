@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "SoundBox.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerMovement.generated.h"
 
 class ABasePlayerController;
@@ -48,6 +49,7 @@ public:
 	ABasePlayerController* controller;
 	UPROPERTY(EditAnywhere) UCameraComponent* camera;
 	UPROPERTY(EditAnywhere) UAudioComponent* audioComponent;
+	UPROPERTY(EditAnywhere) UCharacterMovementComponent* movement;
 
 	void Action1Input();
 	void Action2Input();
@@ -63,8 +65,14 @@ public:
 	void Action12Input();
 
 	void DeselectInput();
+	void SelectInput();
+	void StartSelect();
 	void StartCommand();
+	
+	void GetMouseX(float axis);
+	void GetMouseY(float axis);
 
+	void DragCamera();
 	void PanRight(float axis);
 	void PanUp(float axis);
 	void ZoomIn(float axis);
@@ -83,4 +91,12 @@ public:
 	void HexCast();
 	UPROPERTY(EditAnywhere) TSubclassOf<ASoundBox> soundBoxPrefab;
 	UPROPERTY(EditAnywhere) ASoundBox* soundBox;
+
+private:
+	UPROPERTY(VisibleAnywhere) bool clickHeld = false;
+	float mouseX = 0.f;
+	float mouseY = 0.f;
+
+	FVector2D previousMouseLocation;
+	FVector2D currentMouseLocation;
 };

@@ -29,6 +29,7 @@ public:
 	ABasePlayerController* controller;
 	UFUNCTION() //This makes the function actually trigger in AddDynamic, DO NOT FORGET
 	void MouseHover(UPrimitiveComponent* item);
+
 	UFUNCTION()
 	void Selected(UPrimitiveComponent* item, FKey ButtonPressed);
 

@@ -11,6 +11,8 @@ AFloor::AFloor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interactable"));
+	interactable->canInteract = false;
 }
 
 // Called when the game starts or when spawned

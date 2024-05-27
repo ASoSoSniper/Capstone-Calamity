@@ -160,8 +160,8 @@ void UManageTroop::CommandAction()
 	switch (objectType.type)
 	{
 	case ObjectTypes::Hex:
-		if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
-			selectedTroop->hexNav->targetHex = objectType.actor;
+		//if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
+		selectedTroop->hexNav->targetHex = objectType.actor;
 		break;
 	case ObjectTypes::Building:
 		if (hexNav)
@@ -184,16 +184,12 @@ void UManageTroop::CommandAction()
 			//Check subselection mode
 			switch (subSelect)
 			{
-			case None:
-				//Set selected troop to that (friendly) troop
-				//Select(objectType.actor);
-				return;
 			case Merge:
 				//Move toward friendly troop with the intent to merge
 				if (hexNav && selectedTroop != objectType.actor)
 				{
 					CommandToMerge(selectedTroop, objectType.moveAI);
-					GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Merging"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Merging"));
 					return;
 				}
 				else
