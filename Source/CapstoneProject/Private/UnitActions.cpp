@@ -931,6 +931,76 @@ bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
     return false;
 }
 
+void UnitActions::GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString name)
+{
+    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(namingFaction)) return;
+
+    TMap<FString, TArray<int32>>& names = unit->unitStats->faction == Factions::Human ?
+        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesHuman :
+        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesAlien;
+
+    int32& cap = ACapstoneProjectGameModeBase::activeFactions[namingFaction]->maxNameShare;
+
+    if (!names.Contains(name)) names.Add(name, TArray<int32>());
+
+    if (name != TEXT(""))
+    {
+        if (names[name].Num() < cap)
+        {
+            int32 num = 0;
+            for (int i = 1; i < cap; i++)
+            {
+                if (!names[name].Contains(i))
+                {
+                    num = i;
+                    names[name].Add(i);
+                    break;
+                }
+            }
+
+            unit->unitStats->name = name;
+            unit->unitStats->nameInstance = num;
+            if (num != 0) return;
+        }
+    }
+    
+    for (auto& name : names)
+    {
+        if (name.Value.Num() < cap)
+        {
+            int32 num = 0;
+            for (int i = 1; i < cap; i++)
+            {
+                if (!name.Value.Contains(i))
+                {
+                    num = i;
+                    name.Value.Add(i);
+                    break;
+                }
+            }
+
+            unit->unitStats->name = name.Key;
+            unit->unitStats->nameInstance = num;
+            
+            if (num != 0) break;
+        }
+    }
+}
+
+void UnitActions::RemoveArmyName(Factions namingFaction, AMovementAI* unit)
+{
+    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(namingFaction)) return;
+
+    TMap<FString, TArray<int32>>& names = unit->unitStats->faction == Factions::Human ?
+        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesHuman :
+        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesAlien;
+
+    if (names.Contains(unit->unitStats->name) && names[unit->unitStats->name].Contains(unit->unitStats->nameInstance))
+    {
+        names[unit->unitStats->name].Remove(unit->unitStats->nameInstance);
+    }
+}
+
 void UnitActions::AssignFaction(Factions faction, AActor* target)
 {   
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))

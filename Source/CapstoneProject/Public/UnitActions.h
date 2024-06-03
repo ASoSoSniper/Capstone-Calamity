@@ -219,6 +219,9 @@ public:
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
 
 	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
+
+	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString name = TEXT(""));
+	static void RemoveArmyName(Factions namingFaction, AMovementAI* unit);
 };
 
 

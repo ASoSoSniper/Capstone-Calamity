@@ -16,6 +16,20 @@ Faction::Faction()
 	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,500, 0,1,0 });
 	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,10, 1,0,0 });
 	availableWorkers.Add(WorkerType::Alien, WorkerStats{ 0,0, 0,1,0 });
+
+	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
+	armyNamesHuman.Add(TEXT("Asswipes"), TArray<int32>());
+	armyNamesHuman.Add(TEXT("Shitstains"), TArray<int32>());
+	armyNamesHuman.Add(TEXT("Muppets"), TArray<int32>());
+	armyNamesHuman.Add(TEXT("Dummies"), TArray<int32>());
+	armyNamesHuman.Add(TEXT("NPCs"), TArray<int32>());
+
+	armyNamesAlien.Add(TEXT("Uncrustables"), TArray<int32>());
+	armyNamesAlien.Add(TEXT("Oatmeal Cream Pies"), TArray<int32>());
+	armyNamesAlien.Add(TEXT("Hot Pockets"), TArray<int32>());
+	armyNamesAlien.Add(TEXT("Pop Tarts"), TArray<int32>());
+	armyNamesAlien.Add(TEXT("Quakers"), TArray<int32>());
+	armyNamesAlien.Add(TEXT("Lucky Charms"), TArray<int32>());
 }
 
 Faction::~Faction()

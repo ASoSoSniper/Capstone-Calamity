@@ -734,9 +734,7 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 	{
 		//If neither unit is an army, create a new army that consumes both units
 	case 0:
-		mergedArmy = GetWorld()->SpawnActor<AMergedArmy>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-
-		mergedArmy->unitStats->faction = seeker->unitStats->faction;
+		mergedArmy = Cast<AMergedArmy>(BuildArmy(seeker->unitStats->faction, hex));
 		mergedArmy->ConsumeUnit(seeker);
 		mergedArmy->ConsumeUnit(target);
 		break;
@@ -906,7 +904,9 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
 {
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(faction, newTroop);
+
+	UnitActions::AssignFaction(faction, newTroop);	
+	UnitActions::GenerateArmyName(Factions::Human, newTroop);
 
 	return newTroop;
 }
@@ -1256,6 +1256,8 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitDa
 	}
 
 	newTroop->ConsumeData(groupData);
+	UnitActions::AssignFaction(groupData[0].faction, newTroop);
+	UnitActions::GenerateArmyName(Factions::Human, newTroop);
 
 	return newTroop;
 }

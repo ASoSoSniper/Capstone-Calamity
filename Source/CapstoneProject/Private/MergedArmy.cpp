@@ -27,7 +27,6 @@ void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 	
 	unitStats->savedUnits.Add(newData);
 
-	//AddUnitData(newData);
 	UnitActions::AddUnitData(unitStats, newData);
 
 	mergedUnit->Destroy();
@@ -39,7 +38,6 @@ void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
 	{
 		unitStats->savedUnits.Add(mergedArmy->unitStats->savedUnits[i]);
 
-		//AddUnitData(mergedArmy->unitStats->savedUnits[i]);
 		UnitActions::AddUnitData(unitStats, mergedArmy->unitStats->savedUnits[i]);
 	}
 
@@ -48,13 +46,10 @@ void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
 
 void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
 {
-	unitStats->faction = groupData[0].faction;
-
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
 		unitStats->savedUnits.Add(groupData[i]);
 
-		//AddUnitData(groupData[i]);
 		UnitActions::AddUnitData(unitStats, groupData[i]);
 	}
 }

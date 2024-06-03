@@ -32,7 +32,9 @@ public:
 
 	UPROPERTY(EditAnywhere) Factions faction;
 	UPROPERTY(EditAnywhere) UnitTypes unitType;
-	UPROPERTY(EditAnywhere) FString name;
+	UPROPERTY() FString name;
+	UPROPERTY() int32 nameInstance;
+	FString GetUnitName();
 	UPROPERTY(VisibleAnywhere) bool upgraded;
 	//Exclusive property for armies
 	TArray<UnitActions::UnitData> savedUnits;
@@ -58,5 +60,5 @@ public:
 	float maxHealTime = 5.f;
 	float currhealTime = 5.f;
 
-	float moraleRecovery = 0.1f;
+	float moraleRecovery = 0.1f;	
 };

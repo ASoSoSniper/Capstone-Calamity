@@ -557,7 +557,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> smokePrefab;
 	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> explosionPrefab;
 	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> fireWorksPrefab;
-	
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;

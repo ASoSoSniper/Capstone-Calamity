@@ -190,7 +190,7 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 	{
 		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(troop);
 
-		display.name = spawner->troopStats[chosenType].title;
+		display.name = FText::FromString(troop->unitStats->GetUnitName());
 		display.icon = spawner->troopStats[chosenType].icon;
 		display.iconHovered = spawner->troopStats[chosenType].iconHovered;
 	}
@@ -1397,6 +1397,17 @@ void ABasePlayerController::ResourceCheats(int resourceToChange, int val)
 	{
 		UnitActions::SetFactionResources(playerFaction, StratResources(resourceToChange), val);
 	}
+}
+
+void ABasePlayerController::ChangeArmyName(FString newName)
+{
+	AActor* actor = GetActionStateSelection();
+	if (!actor) return;
+
+	ATroop* troop = Cast<ATroop>(actor);
+	if (!troop) return;
+
+	UnitActions::GenerateArmyName(Factions::Human, troop, newName);
 }
 
 FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)

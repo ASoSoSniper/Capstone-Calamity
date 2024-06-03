@@ -150,6 +150,7 @@ public:
 	void CheckForActionStates();
 
 	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
+	UFUNCTION(BlueprintCallable) void ChangeArmyName(FString newName);
 	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(FText buildingName);
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
 

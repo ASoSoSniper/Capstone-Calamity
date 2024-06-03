@@ -74,3 +74,8 @@ void UUnitStats::RecoverMorale()
 	currentMorale = FMath::Clamp(FMath::RoundToInt((float)maxMorale * currMoralePercent), 0, maxMorale);
 }
 
+FString UUnitStats::GetUnitName()
+{
+	return name + TEXT(" No. ") + FString::FromInt(nameInstance);
+}
+

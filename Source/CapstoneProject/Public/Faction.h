@@ -55,4 +55,7 @@ public:
 	UPROPERTY() bool powerOutage = false;
 
 	UPROPERTY() UMaterialInterface* factionColor;
+	UPROPERTY() TMap<FString, TArray<int32>> armyNamesHuman;
+	UPROPERTY() TMap<FString, TArray<int32>> armyNamesAlien;
+	UPROPERTY() int maxNameShare = 3;
 };
