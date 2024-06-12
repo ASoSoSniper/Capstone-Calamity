@@ -187,7 +187,9 @@ bool ASiegeObject::BuildingIsAlive()
 	if (alive)
 	{
 		if (!currentBattle.Group1.IsEmpty())
-			building->siegingFaction = currentBattle.Group1[0];
+		{
+			building->SetSiegeState(true, currentBattle.Group1[0]);
+		}
 	}
 
 	return !building->sieged;

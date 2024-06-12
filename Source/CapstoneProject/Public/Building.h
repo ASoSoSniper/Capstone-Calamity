@@ -92,12 +92,17 @@ public:
 	float currDestructionTime = 0.f;
 	virtual void Destroyed() override;
 
-	bool sieged = false;
+	UPROPERTY(VisibleAnywhere) bool sieged = false;
 	virtual bool IsDisabled();
 	UPROPERTY(EditAnywhere) bool builtAtStart = false;
 
-	bool SetSiegeState(bool sieging);
+	bool SetSiegeState(bool sieging, Factions occupier = Factions::None);
 	bool TroopOccupation();
+	UPROPERTY(EditAnywhere) int troopOccupationMin = 3;
+	UPROPERTY(VisibleAnywhere) float unrestLevel = 0.f;
+	UPROPERTY(EditAnywhere) float unrestTime = 20.f;
+	void UpdateUnrestLevel(float& DeltaTime);
+
 	UPROPERTY(VisibleAnywhere) AActor* smokeEffect;
 	UPROPERTY(EditAnywhere) float siegeResourcePercent = 0.25f;
 

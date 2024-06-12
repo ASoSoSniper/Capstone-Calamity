@@ -61,7 +61,7 @@ void ABuilding::Tick(float DeltaTime)
 		Constructing(DeltaTime);
 		break;
 	case Complete:
-		
+		UpdateUnrestLevel(DeltaTime);
 		break;
 	case Destroying:
 		DestroyingBuilding(DeltaTime);
@@ -397,19 +397,22 @@ bool ABuilding::IsDisabled()
 	if (sieged) return true;
 	if (unitStats->currentHP > 0) return false;
 
-	SetSiegeState(true);
-	smokeEffect = spawner->SpawnSmoke(this);
-
 	return true;
 }
 
-bool ABuilding::SetSiegeState(bool sieging)
+bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
 {
 	if (sieged == sieging) return false;
 
 	sieged = sieging;
 
-	if (!sieged)
+	if (sieged)
+	{
+		smokeEffect = spawner->SpawnSmoke(this);
+		siegingFaction = occupier;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("occupation changed"));
+	}
+	else
 	{
 		siegingFaction = Factions::None;
 		if (smokeEffect)
@@ -446,7 +449,27 @@ bool ABuilding::TroopOccupation()
 		}
 	}
 
-	return occupyingTroops >= 3;
+	return occupyingTroops >= troopOccupationMin;
+}
+
+void ABuilding::UpdateUnrestLevel(float& DeltaTime)
+{
+	if (!sieged)
+	{
+		unrestLevel = 0.f; 
+		return;
+	}
+	if (TroopOccupation())
+	{
+		unrestLevel = 0.f;
+		SetSiegeState(true);
+		return;
+	}
+	unrestLevel += (DeltaTime / unrestTime) * ACapstoneProjectGameModeBase::timeScale;
+	unrestLevel = FMath::Clamp(unrestLevel, 0.f, 1.f);
+	if (unrestLevel < 1.f) return;
+
+	SetSiegeState(false);
 }
 
 float ABuilding::GetBuildPercent()

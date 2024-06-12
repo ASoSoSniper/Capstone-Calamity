@@ -147,7 +147,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 				{
 					dayStruct.day += 1;
-					UpdateBuildingOccupations();
+					//UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
 					SpawnEnemies();
@@ -155,7 +155,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				else
 				{
 					dayStruct.day = 1;
-					UpdateBuildingOccupations();
+					//UpdateBuildingOccupations();
 					FeedPop();
 					ConsumeEnergy();
 					SpawnEnemies();

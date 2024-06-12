@@ -959,7 +959,7 @@ TArray<FBuildingDisplay> ABasePlayerController::GetAttachmentDisplays()
 	TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
 	if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
 
-	for (auto building : spawner->attachmentCosts)
+	for (auto& building : spawner->attachmentCosts)
 	{
 		FText name = building.Value.name;
 		FText production = FText::AsNumber(building.Value.productionCost);
@@ -977,7 +977,7 @@ FBuildingDisplay ABasePlayerController::GetAttachmentDisplay(FText attachmentNam
 {
 	FBuildingDisplay display;
 
-	for (auto attachment : spawner->attachmentCosts)
+	for (auto& attachment : spawner->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
@@ -1061,9 +1061,18 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 		}
 	}
 }
+void ABasePlayerController::DestroyBuilding()
+{
+	if (!selectedHex) return;
+
+	if (selectedHex->building)
+	{
+		selectedHex->building->BeginDestroying();
+	}
+}
 void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 {
-	for (auto attachment : spawner->attachmentCosts)
+	for (auto& attachment : spawner->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
