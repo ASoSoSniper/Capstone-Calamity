@@ -95,28 +95,28 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 
 AActor* UAITroopComponent::SelectClosestHostileTarget()
 {
-	TArray<AActor*> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
+	TSet<AActor*> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
 
 	if (targetList.IsEmpty()) return nullptr;
 
-	int closestIndex = 0;
+	AActor* closestTarget = nullptr;
 	float closestDistance = INFINITY;
-	for (int i = 0; i < targetList.Num() - 1; i++)
+	for (AActor* target : targetList)
 	{
-		if (!targetList[i]) continue;
+		if (!target) continue;
 
-		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), targetList[i]->GetActorLocation());
+		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), target->GetActorLocation());
 
 		if (distance < closestDistance)
 		{
 			closestDistance = distance;
-			closestIndex = i;
+			closestTarget = target;
 		}
 	}
 
-	if (targetList[closestIndex])
+	if (closestTarget)
 	{
-		FVector2D target = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(targetList[closestIndex]));
+		FVector2D target = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
 		FVector2D origin = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("X Dist: %f, Y Dist: %f"), FMath::Abs(target.X - origin.X), FMath::Abs(target.Y - origin.Y)));
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
@@ -125,7 +125,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 			return nullptr;
 		}
 
-		return targetList[closestIndex];
+		return closestTarget;
 	}
 
 	return nullptr;

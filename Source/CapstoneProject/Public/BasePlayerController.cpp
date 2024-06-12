@@ -803,10 +803,10 @@ void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int e
 
 	//Kill working population
 	TArray<ABaseHex*> hexesWithWorkers;
-	for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes.Num(); i++)
+	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes)
 	{
-		if (ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes[i]->workersInHex[WorkerType::Human] > 0) 
-			hexesWithWorkers.Add(ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes[i]);
+		if (hex->workersInHex[WorkerType::Human] > 0) 
+			hexesWithWorkers.Add(hex);
 	}
 
 	int scanIndex = 0;

@@ -129,10 +129,12 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 		if (dayStruct.minute == 0)
 		{
 			dayStruct.minute = 30;
+			UpdateBuildings();
 		}
 		else
 		{
 			dayStruct.minute = 0;
+			UpdateBuildings();
 
 			if (dayStruct.hour < 23)
 			{
@@ -147,7 +149,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 				{
 					dayStruct.day += 1;
-					//UpdateBuildingOccupations();
+					
 					FeedPop();
 					ConsumeEnergy();
 					SpawnEnemies();
@@ -155,7 +157,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 				else
 				{
 					dayStruct.day = 1;
-					//UpdateBuildingOccupations();
+					
 					FeedPop();
 					ConsumeEnergy();
 					SpawnEnemies();
@@ -254,14 +256,13 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 	currentScanTime = visibilityScanRate;
 }
 
-void ACapstoneProjectGameModeBase::UpdateBuildingOccupations()
+void ACapstoneProjectGameModeBase::UpdateBuildings()
 {
 	for (auto& faction : activeFactions)
 	{
-		for (int i = 0; i < faction.Value->allBuildings.Num(); i++)
+		for (ABuilding* building : faction.Value->allBuildings)
 		{
-			if (faction.Value->allBuildings[i]->sieged) 
-				faction.Value->allBuildings[i]->SetSiegeState(faction.Value->allBuildings[i]->TroopOccupation());
+			building->HealOverTime();
 		}
 	}
 }
@@ -379,9 +380,9 @@ void ACapstoneProjectGameModeBase::KillPopulation(Factions faction, int cost, in
 
 	//Kill working population
 	TArray<ABaseHex*> hexesWithWorkers;
-	for (int i = 0; i < activeFactions[faction]->ownedHexes.Num(); i++)
+	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes)
 	{
-		if (activeFactions[faction]->ownedHexes[i]->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(activeFactions[faction]->ownedHexes[i]);
+		if (hex->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(hex);
 	}
 
 	int scanIndex = 0;
@@ -419,7 +420,7 @@ void ACapstoneProjectGameModeBase::KillPopulation(Factions faction, int cost, in
 
 void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction, WorkerType worker)
 {
-	for (auto& hex : activeFactions[faction]->ownedHexes)
+	for (ABaseHex* hex : activeFactions[faction]->ownedHexes)
 	{
 		activeFactions[faction]->availableWorkers[worker].available += hex->workersInHex[worker];
 		hex->workersInHex[worker] = 0;
@@ -507,18 +508,18 @@ int ACapstoneProjectGameModeBase::CalculateEnergyCosts(Factions faction)
 
 	if (!activeFactions[faction]->powerOutage)
 	{
-		for (int i = 0; i < activeFactions[faction]->allUnits.Num(); i++)
+		for (ATroop* troop : activeFactions[faction]->allUnits)
 		{
-			energyCost += activeFactions[faction]->allUnits[i]->unitStats->energyUpkeep;
+			energyCost += troop->unitStats->energyUpkeep;
 		}
 	}
-	for (int i = 0; i < activeFactions[faction]->allBuildings.Num(); i++)
+	for (ABuilding* building : activeFactions[faction]->allBuildings)
 	{
-		energyCost += activeFactions[faction]->allBuildings[i]->unitStats->energyUpkeep;
+		energyCost += building->unitStats->energyUpkeep;
 	}
-	for (int i = 0; i < activeFactions[faction]->ownedHexes.Num(); i++)
+	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes)
 	{
-		energyCost += activeFactions[faction]->ownedHexes[i]->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction)[WorkerType::Robot];
+		energyCost += hex->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction)[WorkerType::Robot];
 	}
 
 	return energyCost;

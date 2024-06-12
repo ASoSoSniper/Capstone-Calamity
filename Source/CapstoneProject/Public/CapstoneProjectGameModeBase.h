@@ -99,7 +99,7 @@ private:
 	void Harvest(float& DeltaTime);
 	void Scan(float& DeltaTime);
 
-	void UpdateBuildingOccupations();
+	void UpdateBuildings();
 
 	void FeedPop();
 	void StarvePop(Factions faction, int foodCost);

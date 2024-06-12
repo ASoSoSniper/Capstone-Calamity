@@ -36,11 +36,11 @@ public:
 	Factions faction;
 	UPROPERTY(BlueprintReadWrite) TMap<StratResources, InventoryStat> resourceInventory;
 	UPROPERTY() TMap<WorkerType, WorkerStats> availableWorkers;
-	UPROPERTY() TArray<ATroop*> allUnits;
-	UPROPERTY()TArray<ABuilding*> allBuildings;
-	UPROPERTY() TArray<ABaseHex*> ownedHexes;
+	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
+	UPROPERTY() TSet<ABuilding*> allBuildings = TSet<ABuilding*>();
+	UPROPERTY() TSet<ABaseHex*> ownedHexes = TSet<ABaseHex*>();
 
-	UPROPERTY() TArray<AActor*> targetList;
+	UPROPERTY() TSet<AActor*> targetList = TSet<AActor*>();
 
 	UPROPERTY() TMap<Factions, FactionRelationship> factionRelationships;
 

@@ -657,9 +657,9 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
 {
     TArray<AOutpost*> outposts;
 
-    for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Num(); i++)
+    for (ABuilding* building : ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings)
     {
-        AOutpost* outpost = Cast<AOutpost>(ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings[i]);
+        AOutpost* outpost = Cast<AOutpost>(building);
         if (outpost) outposts.Add(outpost);
     }
 
@@ -753,14 +753,10 @@ int UnitActions::GetFactionPowerOutageLevel(Factions faction)
 
 void UnitActions::EnableRobots(Factions faction, bool enable)
 {
-    for (int i = 0; i < ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Num(); i++)
+    for (ATroop* troop : ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits)
     {
-        ATroop* troop = ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits[i];
-        if (troop)
-        {
-            troop->interact->SetInteract(enable);
-            if (!enable) troop->CancelPath();
-        }
+        troop->interact->SetInteract(enable);
+        if (!enable) troop->CancelPath();
     }
 }
 
@@ -882,9 +878,9 @@ void UnitActions::RemoveFromAllTargetLists(AActor* target)
     }
 }
 
-TArray<AActor*> UnitActions::GetTargetList(Factions faction)
+TSet<AActor*> UnitActions::GetTargetList(Factions faction)
 {
-    TArray<AActor*> targetList = TArray<AActor*>();
+    TSet<AActor*> targetList = TSet<AActor*>();
 
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
     {
@@ -931,7 +927,7 @@ bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
     return false;
 }
 
-void UnitActions::GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString name)
+void UnitActions::GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName)
 {
     if (!ACapstoneProjectGameModeBase::activeFactions.Contains(namingFaction)) return;
 
@@ -941,24 +937,24 @@ void UnitActions::GenerateArmyName(Factions namingFaction, AMovementAI* unit, FS
 
     int32& cap = ACapstoneProjectGameModeBase::activeFactions[namingFaction]->maxNameShare;
 
-    if (!names.Contains(name)) names.Add(name, TArray<int32>());
+    if (!names.Contains(newName)) names.Add(newName, TArray<int32>());
 
-    if (name != TEXT(""))
+    if (newName != TEXT(""))
     {
-        if (names[name].Num() < cap)
+        if (names[newName].Num() < cap)
         {
             int32 num = 0;
             for (int i = 1; i < cap; i++)
             {
-                if (!names[name].Contains(i))
+                if (!names[newName].Contains(i))
                 {
                     num = i;
-                    names[name].Add(i);
+                    names[newName].Add(i);
                     break;
                 }
             }
 
-            unit->unitStats->name = name;
+            unit->unitStats->name = newName;
             unit->unitStats->nameInstance = num;
             if (num != 0) return;
         }
@@ -1013,7 +1009,7 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
 
             return;
         }
-
+        
         ABuilding* testForBuilding = Cast<ABuilding>(target);
         if (testForBuilding)
         {

@@ -73,6 +73,8 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 {
 	if (unitStats->faction == Factions::None) return false;
 
+	UnitActions::AssignFaction(unitStats->faction, this);
+
 	//If both needed objects are found, then setup is complete and this function can be ignored
 	if (spawner && hexNav->currentHex) return true;
 
@@ -477,5 +479,18 @@ float ABuilding::GetBuildPercent()
 	if (buildTime <= 0) return 0.f;
 
 	return (buildTime - currBuildTime) / buildTime;
+}
+
+void ABuilding::HealOverTime()
+{
+	if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
+	{
+		if (!hex->battle && unitStats->currentHP < unitStats->maxHP)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Healing"));
+			unitStats->currentHP += FMath::RoundToInt(unitStats->maxHP * healPercent);
+			unitStats->currentHP = FMath::Clamp(unitStats->currentHP, 0, unitStats->maxHP);
+		}
+	}
 }
 

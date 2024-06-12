@@ -214,13 +214,13 @@ public:
 
 	static void SetTargetListElement(Factions faction, AActor* target);
 	static void RemoveFromAllTargetLists(AActor* target);
-	static TArray<AActor*> GetTargetList(Factions faction);
+	static TSet<AActor*> GetTargetList(Factions faction);
 
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
 
 	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
 
-	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString name = TEXT(""));
+	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName = TEXT(""));
 	static void RemoveArmyName(Factions namingFaction, AMovementAI* unit);
 };
 

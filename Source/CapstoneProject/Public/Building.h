@@ -107,4 +107,6 @@ public:
 	UPROPERTY(EditAnywhere) float siegeResourcePercent = 0.25f;
 
 	UFUNCTION(BlueprintCallable) float GetBuildPercent();
+	void HealOverTime();
+	UPROPERTY(EditAnywhere) float healPercent = 0.04f;
 };
