@@ -390,6 +390,7 @@ Factions ABattleObject::FleeFromBattle(Factions faction)
 		fleeingTroops[i]->unitStats->currentHP = troopHP;
 	}
 
+	RemoveArmy(faction);
 	return faction;
 }
 
@@ -423,7 +424,7 @@ TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnA
 
 		spawnedTroops.Add(spawn);
 	}
-	
+
 	return spawnedTroops;
 }
 

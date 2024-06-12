@@ -122,6 +122,7 @@ public:
 	UFUNCTION(BlueprintCallable) bool IsInBuildMode();
 	UFUNCTION(BlueprintCallable) void SelectBuilding(FText buildingName);
 	UFUNCTION(BlueprintCallable) void DestroyBuilding();
+	UFUNCTION(BlueprintCallable) void RetreatFromBattle();
 	UFUNCTION(BlueprintCallable) void SelectBuildingAttachment(FText buildingName);
 	UFUNCTION(BlueprintCallable) void SelectTroop(FText troopName);
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();

@@ -1070,6 +1070,15 @@ void ABasePlayerController::DestroyBuilding()
 		selectedHex->building->BeginDestroying();
 	}
 }
+void ABasePlayerController::RetreatFromBattle()
+{
+	AActor* Actor = GetActionStateSelection();
+
+	if (ABattleObject* Battle = Cast<ABattleObject>(Actor))
+	{
+		Battle->FleeFromBattle(Factions::Human);
+	}
+}
 void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 {
 	for (auto& attachment : spawner->attachmentCosts)
