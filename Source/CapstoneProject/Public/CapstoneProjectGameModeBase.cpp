@@ -59,14 +59,10 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 		currentFaction.Value->FindActiveFactions();
 		currentFaction.Value->factionColor = factionColors[currentFaction.Key];
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::Printf(TEXT("%d factions created!"), activeFactions.Num()));
 
 	//For debug purposes, Human and Alien1 hate each other, Human and Alien2 are chill, and Alien3+ literally couldn't give less of a fuck
-	activeFactions[Factions::Human]->factionRelationships[Factions::Alien1] = FactionRelationship::Enemy;
-	activeFactions[Factions::Alien1]->factionRelationships[Factions::Human] = FactionRelationship::Enemy;
-
-	activeFactions[Factions::Human]->factionRelationships[Factions::Alien2] = FactionRelationship::Ally;
-	activeFactions[Factions::Alien2]->factionRelationships[Factions::Human] = FactionRelationship::Ally;
+	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien1, FactionRelationship::Enemy);
+	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
 
 	FActorSpawnParameters params;
 	spawnedSpawner = GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
@@ -74,7 +70,6 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	timeScale = 1.f;
 	FindExistingBuildingsAndTroops();
 	FindExistingHexes();
-
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
@@ -215,7 +210,7 @@ Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 	Faction* newFaction = new Faction();
 
 	//Make the new Faction instance aware of the faction it's assigned to
-	newFaction->faction = selectedFaction;
+	newFaction->SetFaction(selectedFaction);
 
 	//In the global faction dictionary, add the selected faction as a new key and the Faction instance as its value
 	activeFactions.Add(selectedFaction, newFaction);

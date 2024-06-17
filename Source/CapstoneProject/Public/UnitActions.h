@@ -109,10 +109,6 @@ struct FUnitComposition;
 class CAPSTONEPROJECT_API UnitActions
 {
 public:
-	
-	static void HarvestResources(Factions faction, int quantity, StratResources resource);
-
-	static void Attack(TArray<AActor*> attacker, TArray<AActor*> target);
 
 	static bool IsHostileTarget(AMovementAI* unit, AMovementAI* target);
 	static bool IsHostileTarget(AMovementAI* unit, AActor* target);
@@ -120,8 +116,6 @@ public:
 	static bool IsAllyToFaction(FactionRelationship relationship);
 
 	static EngagementSelect DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2);
-
-	static FactionRelationship GetFactionRelationship(Factions unitFaction, Factions targetFaction);
 
 	static void AssignFaction(Factions faction, AActor* target);
 	static void AssignFaction(Factions faction, ABaseHex* hex);
@@ -213,8 +207,8 @@ public:
 	static UnitTypes GetLargestUnitQuantity(ATroop* army);
 
 	static void SetTargetListElement(Factions faction, AActor* target);
-	static void RemoveFromAllTargetLists(AActor* target);
-	static TSet<AActor*> GetTargetList(Factions faction);
+	static void RemoveFromAllTargetLists(ABaseHex* target);
+	static TMap<ABaseHex*, Factions> GetTargetList(Factions faction);
 
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
 
@@ -222,6 +216,9 @@ public:
 
 	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName = TEXT(""));
 	static void RemoveArmyName(Factions namingFaction, AMovementAI* unit);
+
+	static Factions FindHostileTarget(Factions referenceFaction, ABaseHex* hex);
+	static Factions FindHostileTarget(Factions referenceFaction, ABattleObject* battle);
 };
 
 

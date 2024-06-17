@@ -41,16 +41,11 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		if (AActor* hex = SelectClosestHostileTarget())
 		{
-			
 			parentTroop->hexNav->targetHex = hex;
 			parentTroop->CreatePath();
 			currentTarget = ToEnemy;
 			return;
 		}
-	}
-	else
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Orange, TEXT("Attacking hostile target!"));
 	}
 
 	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
@@ -95,22 +90,22 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 
 AActor* UAITroopComponent::SelectClosestHostileTarget()
 {
-	TSet<AActor*> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
+	TMap<ABaseHex*, Factions> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
 
 	if (targetList.IsEmpty()) return nullptr;
 
-	AActor* closestTarget = nullptr;
+	ABaseHex* closestTarget = nullptr;
 	float closestDistance = INFINITY;
-	for (AActor* target : targetList)
+	for (auto& target : targetList)
 	{
-		if (!target) continue;
+		if (!target.Key) continue;
 
-		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), target->GetActorLocation());
+		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), target.Key->GetActorLocation());
 
 		if (distance < closestDistance)
 		{
 			closestDistance = distance;
-			closestTarget = target;
+			closestTarget = target.Key;
 		}
 	}
 
@@ -168,6 +163,13 @@ void UAITroopComponent::GenerateArmy()
 		parentTroop->unitStats->savedUnits.Add(troop);
 		UnitActions::AddUnitData(parentTroop->unitStats, troop);
 	}
+}
+
+void UAITroopComponent::EvaluateCurrentTarget()
+{
+	if (currentTarget != ToEnemy) return;
+
+
 }
 
 

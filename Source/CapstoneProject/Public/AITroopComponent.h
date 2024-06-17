@@ -48,4 +48,5 @@ public:
 	UPROPERTY(EditAnywhere) int troopsInArmy = 1;
 
 	void GenerateArmy();
+	void EvaluateCurrentTarget();
 };

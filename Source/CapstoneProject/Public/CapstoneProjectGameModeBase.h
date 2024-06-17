@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere) int popDeathsPerFoodMissing = 5;
 	UPROPERTY(EditAnywhere) int popDeathsPerPowerMissing = 5;
 	
-	UPROPERTY(EditAnywhere) int alienFactionQuantity = 3;
+	UPROPERTY(EditAnywhere) int alienFactionQuantity = 2;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 	UPROPERTY() AGlobalSpawner* spawnedSpawner;

@@ -161,7 +161,7 @@ void ABattleObject::AddUnitToFaction(AMovementAI* troop)
 		factionsInBattle.Add(unitData.faction, newArmy);
 
 		//If the newly joined unit is (an ally to) the player, set the battle to be visible to the player
-		if (UnitActions::GetFactionRelationship(Factions::Human, unitData.faction) == FactionRelationship::Ally)
+		if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(unitData.faction) == FactionRelationship::Ally)
 		{
 			visibility->faction = Factions::Human;
 		}

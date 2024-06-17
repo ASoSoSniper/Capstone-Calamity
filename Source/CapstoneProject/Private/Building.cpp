@@ -373,7 +373,6 @@ void ABuilding::Destroyed()
 		}
 
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
-		UnitActions::RemoveFromAllTargetLists(this);
 
 		if (spawner->buildingCosts.Contains(buildingType))
 		{

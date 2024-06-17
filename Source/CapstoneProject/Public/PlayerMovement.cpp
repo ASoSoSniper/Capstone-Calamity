@@ -60,7 +60,11 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("SelectAction", IE_Pressed, this, &APlayerMovement::SelectInput);
 	PlayerInputComponent->BindAction("SelectAction", IE_Released, this, &APlayerMovement::StartSelect);
 	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
+
+	PlayerInputComponent->BindAction("Action9", IE_Pressed, this, &APlayerMovement::Action9Input);
 	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
+	PlayerInputComponent->BindAction("Action11", IE_Pressed, this, &APlayerMovement::Action11Input);
+	PlayerInputComponent->BindAction("Action12", IE_Pressed, this, &APlayerMovement::Action12Input);
 }
 
 void APlayerMovement::MoveToCinematicPos(float& DeltaTime)
@@ -164,42 +168,22 @@ void APlayerMovement::Action8Input()
 
 void APlayerMovement::Action9Input()
 {
-	if (controlState != Free) return;
-
-	if (controller)
-	{
-		controller->actionStates[controller->currentActionState]->Action9();
-	}
+	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien1, FactionRelationship::Ally);
 }
 
 void APlayerMovement::Action10Input()
 {
-	if (controlState != Free) return;
-
-	if (controller)
-	{
-		controller->EnterSelectionMode(true);
-	}
+	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien1, FactionRelationship::Enemy);
 }
 
 void APlayerMovement::Action11Input()
 {
-	if (controlState != Free) return;
-
-	if (controller)
-	{
-		controller->actionStates[controller->currentActionState]->Action11();
-	}
+	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
 }
 
 void APlayerMovement::Action12Input()
 {
-	if (controlState != Free) return;
-
-	if (controller)
-	{
-		controller->actionStates[controller->currentActionState]->Action12();
-	}
+	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien2, FactionRelationship::Enemy);
 }
 
 void APlayerMovement::DeselectInput()

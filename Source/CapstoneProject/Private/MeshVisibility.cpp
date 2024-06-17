@@ -97,7 +97,7 @@ void UMeshVisibility::Scan(float radius)
 	float detectionRadius = infiniteRange ? 10000.f : (detectionDistanceInRadius * (float)visionMulti) +
 		(radius * hexMod);
 
-	if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("SearchRadius = %f, visionMod = %f, hexMod = %f"), searchRadius, hexVisionMod, hexMod));
+	//if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("SearchRadius = %f, visionMod = %f, hexMod = %f"), searchRadius, hexVisionMod, hexMod));
 
 	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), searchRadius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, showDebugSphere ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, results, true);
 
@@ -127,7 +127,7 @@ void UMeshVisibility::InSight(Factions thisFaction)
 	//Set object as "In Sight" for the faction and all its allies
 	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		if (UnitActions::GetFactionRelationship(thisFaction, ally.Key) == FactionRelationship::Ally)
+		if (UnitActions::GetFaction(thisFaction)->GetFactionRelationship(ally.Key) == FactionRelationship::Ally)
 		{
 			factionVisibility[ally.Key].inSight = true;
 		}
@@ -148,17 +148,21 @@ void UMeshVisibility::SetVisibility()
 
 			UnitActions::SetTargetListElement(curfaction.Key, GetOwner());
 
-			if (UnitActions::GetFactionRelationship(Factions::Human, curfaction.Key) == FactionRelationship::Ally) visibleToPlayer = true;
+			if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(curfaction.Key) == FactionRelationship::Ally)
+			{
+				visibleToPlayer = true;
+				if (debug) GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Visible to player"));
+			}
 		}
 		else
 		{
 			factionVisibility[curfaction.Key].status = factionVisibility[curfaction.Key].discoveredByFaction ? VisibilityStatus::Discovered : VisibilityStatus::Undiscovered;
-
-			//UnitActions::SetTargetListElement(curfaction.Key, GetOwner());
 		}
 	}
 
-	if (faction == Factions::Human && objectType != ObjectTypes::Hex) visibleToPlayer = true;
+	//If the player commands this object and it is not a hex, set visible to player by default
+	if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(faction) == FactionRelationship::Ally
+		&& objectType != ObjectTypes::Hex) visibleToPlayer = true;
 
 	UMaterialInterface* material = nullptr;
 	UMaterialInterface* otherMaterial = nullptr;
@@ -180,13 +184,13 @@ void UMeshVisibility::SetVisibility()
 				otherMaterial = meshMaterials.modelVisibleTexture;
 			}
 
-			//if (otherMesh) otherMesh->SetVisibility(true);
 			if (hexBaseMesh) baseMaterial = hexBaseMaterials.visibleTexture;
 
-			if (!discoveredByPlayer)
+			if (!discoveredByPlayer && factionVisibility[Factions::Human].discoveredByFaction)
 			{
 				Cast<ABaseHex>(GetOwner())->RequestTerrainChange(true);
 				discoveredByPlayer = true;
+				if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 			}
 			break;
 

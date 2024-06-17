@@ -16,39 +16,11 @@
 #include "Faction.h"
 
 
-void UnitActions::HarvestResources(Factions faction, int quantity, StratResources resource)
-{
-    /*if (resource != StratResources::None)
-    {
-        if (ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory.Find(resource))
-        {
-            ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource] += quantity;
-            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("%d resources gathered!\nThis faction has %d resources!"), quantity, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource]));
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Missing inventory")));
-        }
-        
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, TEXT("No resources found"));
-    }*/
-}
-
-void UnitActions::Attack(TArray<AActor*> attackers, TArray<AActor*> targets)
-{
-    
-
-    
-}
-
 bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 {
     if (unit->unitStats && target->unitStats)
     {
-        if (GetFactionRelationship(unit->unitStats->faction, target->unitStats->faction) == FactionRelationship::Enemy)
+        if (GetFaction(unit->unitStats->faction)->GetFactionRelationship(target->unitStats->faction) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -59,11 +31,9 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 
 bool UnitActions::IsHostileTarget(AMovementAI* unit, AActor* target)
 {
-    UUnitStats* targetStats = target->FindComponentByClass<UUnitStats>();
-
-    if (unit->unitStats && targetStats)
+    if (unit->unitStats)
     {
-        if (GetFactionRelationship(unit->unitStats->faction, targetStats->faction) == FactionRelationship::Enemy)
+        if (GetFaction(unit->unitStats->faction)->GetFactionRelationship(target) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -100,6 +70,8 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
         return EngagementSelect::JoinGroup1;
     }
 
+    Faction* factionObject = GetFaction(unitFaction);
+
     //If Group 2 is empty, check whether Group 1 is composed entirely of enemies or allies, and assign accordingly
     if (group2.IsEmpty())
     {
@@ -113,7 +85,7 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
         {
             if (group1[i] != unitFaction)
             {
-                FactionRelationship factionAlignment = GetFactionRelationship(unitFaction, group1[i]);
+                FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
 
                 //Record the faction's relationship
                 switch (factionAlignment)
@@ -158,7 +130,7 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
     {
         if (group1[i] != unitFaction)
         {
-            FactionRelationship factionAlignment = GetFactionRelationship(unitFaction, group1[i]);
+            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
 
             //If this faction not a direct ally, deny Group 1 as a possible selection
             if (!IsAllyToFaction(factionAlignment))
@@ -173,7 +145,7 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
     {
         if (group2[i] != unitFaction)
         {
-            FactionRelationship factionAlignment = GetFactionRelationship(unitFaction, group2[i]);
+            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
 
             //If this faction not a direct ally, deny Group 2 as a possible selection
             if (!IsAllyToFaction(factionAlignment))
@@ -193,33 +165,6 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
     }
 
     return EngagementSelect::DoNotJoin;
-}
-
-FactionRelationship UnitActions::GetFactionRelationship(Factions unitFaction, Factions targetFaction)
-{
-    //If comparing unit faction to itself, return Ally.
-    if (unitFaction == targetFaction) return FactionRelationship::Ally;
-
-    Faction* faction;
-
-    //If unit faction doesn't exist, return Ally.
-    if (ACapstoneProjectGameModeBase::activeFactions.Contains(unitFaction))
-    {
-        faction = ACapstoneProjectGameModeBase::activeFactions[unitFaction];
-    }
-    else
-    {
-        return FactionRelationship::Ally;
-    }
-
-    //If unit faction has a relationship with target faction, return that relationship.
-    if (faction->factionRelationships.Contains(targetFaction))
-    {
-        return faction->factionRelationships[targetFaction];
-    }
-
-    //Otherwise, return Neutral.
-    return FactionRelationship::Neutral;
 }
 
 UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
@@ -709,10 +654,11 @@ bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
 {
     ABaseHex* hexActor = Cast<ABaseHex>(hex);
     if (!hexActor) return false;
+    Faction* factionObject = GetFaction(faction);
 
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
-        if (UnitActions::GetFactionRelationship(faction, hexActor->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(hexActor->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -826,48 +772,64 @@ UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
     return highestType;
 }
 
+//Called every scan tick, adds found hex to TargetList if hex contains hostile target, removes if target of interest is no longer found there
 void UnitActions::SetTargetListElement(Factions faction, AActor* target)
 {
-    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction) || !target) return;
+    //Return if target actor does not exist
+    if (!target) return;
 
+    //Get the faction object and return if it doesn't exist or is not AI-controlled
+    Faction* factionObject = GetFaction(faction);
+    if (!factionObject) return;
+    if (!factionObject->IsAIControlled()) return;
+
+    //Create an easier-to-read address to the faction's target list
+    TMap<ABaseHex*, Factions>& targetList = factionObject->targetList;
+
+    //Get the object type of the target actor, return if it isn't a hex
     UnitActions::SelectionIdentity objectType = DetermineObjectType(target);
     if (objectType.type != ObjectTypes::Hex) return;
 
-    bool addToList = false;
+    //ADD HEX TO LIST IF:
 
-    if (UnitActions::HexHasEnemyTroop(faction, objectType.hex) || objectType.hex->battle)
+    //(a) Hex contains an enemy troop
+    Factions hostileInHex = FindHostileTarget(faction, objectType.hex);
+    if (hostileInHex != Factions::None)
     {
-        addToList = true;
-    }
-
-    if (ABuilding* building = objectType.hex->building)
-    {
-        if (GetFactionRelationship(faction, building->FindComponentByClass<UUnitStats>()->faction) != FactionRelationship::Enemy) return;
-        if (building->siegingFaction != faction && building->unitStats->currentHP > 0.f)
-        {
-            addToList = true;
-        }
-    }
-
-    if (addToList)
-    {
-        if (!ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
-        {
-            //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex added to target list!"));
-            ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Add(objectType.hex);
-        }
-
+        targetList.Add(objectType.hex, hostileInHex);
         return;
     }
 
-    if (ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Contains(objectType.hex))
+    //(b) Hex contains a battle the faction connects with diplomatically
+    if (objectType.hex->battle)
     {
-        //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Hex remove from target list!"));
-        ACapstoneProjectGameModeBase::activeFactions[faction]->targetList.Remove(objectType.hex);
+        Factions hostileInBattle = FindHostileTarget(faction, objectType.hex->battle);
+        if (hostileInBattle != Factions::None)
+        {
+            targetList.Add(objectType.hex, hostileInBattle);
+            return;
+        }
+    }
+
+    //(c) Hex contains an enemy building this faction is not currently occupying
+    if (ABuilding* building = objectType.hex->building)
+    {
+        if (GetFaction(faction)->GetFactionRelationship(building) != FactionRelationship::Enemy) return;
+        if (building->siegingFaction != faction && building->unitStats->currentHP > 0.f)
+        {
+            targetList.Add(objectType.hex, building->unitStats->faction);
+            return;
+        }
+    }
+
+    //If this hex was on the target list and the above conditions do not trigger on subsequent ticks, remove from the list
+    if (targetList.Contains(objectType.hex))
+    {
+        targetList.Remove(objectType.hex);
     }
 }
 
-void UnitActions::RemoveFromAllTargetLists(AActor* target)
+void UnitActions::RemoveFromAllTargetLists(ABaseHex* target)
 {
     for (auto& faction : ACapstoneProjectGameModeBase::activeFactions)
     {
@@ -878,9 +840,9 @@ void UnitActions::RemoveFromAllTargetLists(AActor* target)
     }
 }
 
-TSet<AActor*> UnitActions::GetTargetList(Factions faction)
+TMap<ABaseHex*, Factions> UnitActions::GetTargetList(Factions faction)
 {
-    TSet<AActor*> targetList = TSet<AActor*>();
+    TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
 
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
     {
@@ -995,6 +957,42 @@ void UnitActions::RemoveArmyName(Factions namingFaction, AMovementAI* unit)
     {
         names[unit->unitStats->name].Remove(unit->unitStats->nameInstance);
     }
+}
+
+Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABaseHex* hex)
+{
+    Faction* factionObject = GetFaction(referenceFaction);
+
+    for (int i = 0; i < hex->troopsInHex.Num(); i++)
+    {
+        if (factionObject->GetFactionRelationship(hex->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
+        {
+            return hex->troopsInHex[i]->unitStats->faction;
+        }
+    }
+
+    return Factions::None;
+}
+
+Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject* battle)
+{
+    Faction* factionObject = GetFaction(referenceFaction);
+
+    //Check Group 1 relationships to this unit's faction
+    for (int i = 0; i < battle->currentBattle.Group1.Num(); ++i)
+    {
+        FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group1[i]);
+        if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+    }
+
+    //Check Group 2 relationships to this unit's faction
+    for (int i = 0; i < battle->currentBattle.Group2.Num(); ++i)
+    {
+        FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group2[i]);
+        if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+    }
+
+    return Factions::None;
 }
 
 void UnitActions::AssignFaction(Factions faction, AActor* target)

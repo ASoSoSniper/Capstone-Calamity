@@ -1198,7 +1198,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	{
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 		UnitActions::ConsumeSpentResources(faction, resourceCosts, hex);
-		//UnitActions::AssignFaction(faction, newBuilding);
+		UnitActions::AssignFaction(faction, newBuilding);
 
 		if (building == SpawnableBuildings::Outpost)
 		{

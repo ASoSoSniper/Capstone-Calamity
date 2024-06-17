@@ -339,7 +339,6 @@ void AMovementAI::Destroyed()
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 		Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
 
-		UnitActions::RemoveFromAllTargetLists(this);
 		UnitActions::RemoveArmyName(Factions::Human, this);
 
 		if (selectedByPlayer)
