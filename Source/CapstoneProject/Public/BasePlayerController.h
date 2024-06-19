@@ -106,9 +106,6 @@ public:
 	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
 	UFUNCTION(BlueprintCallable) void SetPlayerResources(int foodCost, int prodCost, int energyCost, int wealthCost, int popCost, bool overrideCosts = true);
 	UFUNCTION(BlueprintCallable) int GetPlayerPopulation();
-
-	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
-
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInHex();
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInAttachment(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();

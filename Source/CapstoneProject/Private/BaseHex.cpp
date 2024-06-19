@@ -154,6 +154,11 @@ TArray<AActor*> ABaseHex::GetObjectsInHex()
 		actors.Add(building);
 	}
 
+	if (battle)
+	{
+		actors.Add(battle);
+	}
+
 	if (troopsInHex.Num() > 0)
 	{
 		for (int i = 0; i < troopsInHex.Num(); ++i)
@@ -456,9 +461,61 @@ TerrainType ABaseHex::GetHexTerrain()
 	return hexTerrain;
 }
 
-void ABaseHex::SetHexTerrain()
+void ABaseHex::SetHexTerrain(int maxSeedSize, int randToMaintain)
 {
-	SetHexTerrain(TerrainType(FMath::RandRange(1, 6)));
+	//Declare variable to use as return value
+	TerrainType terrainToSet = TerrainType::None;
+
+	//Get surrounding hexes
+	TSet<ABaseHex*> surroundingHexes = GetSurroundingHexes();
+
+	bool randTerrain = false;
+	int highestSeed = 0;
+
+	//Compare seed values for highest value, set return variable to hex with that value
+	for (ABaseHex* hex : surroundingHexes)
+	{
+		if (hex->seedIndex > highestSeed)
+		{
+			highestSeed = hex->seedIndex;
+			terrainToSet = hex->GetHexTerrain();
+		}
+	}
+
+	//If the highest seed found is 0, either no seed was previously set, or the end of an existing seed was reached
+	//Regardless, this is a prompt to set this hex to a new random terrain
+	if (highestSeed <= 0)
+	{
+		randTerrain = true;
+	}
+	else
+	{
+		//If a seed was found, get a random number from 1-10 and add the found seed
+		//This makes growth of the current seed stronger in its beginnings
+		int rand = FMath::RandRange(1, 10) + seedIndex;
+
+		//If the random number is greater than the minimum number to maintain, use the highest seed index terrain
+		//Set this hex's seed index to the highest found minus 1 to reduce chances of continued growth in the next hex
+		if (rand > randToMaintain)
+		{
+			seedIndex = highestSeed - 1;
+		}
+		else
+		{
+			//Otherwise, prompt the beginning of a new random terrain seed
+			randTerrain = true;
+		}
+	}
+
+	//If randomization was prompted, pick a random terrain type and set the seed index to the maximum
+	if (randTerrain)
+	{
+		terrainToSet = TerrainType(FMath::RandRange(1, 6));
+		seedIndex = maxSeedSize;
+	}
+
+	//Set the hex to the resulting terrain value
+	SetHexTerrain(terrainToSet);
 }
 
 void ABaseHex::SetHexTerrain(TerrainType terrain)
@@ -527,4 +584,35 @@ bool ABaseHex::IsPlayerHex()
 bool ABaseHex::CanPutWorkersOnHex()
 {
 	return IsTraversableTerrain() && IsPlayerHex();
+}
+
+TSet<ABaseHex*> ABaseHex::GetSurroundingHexes()
+{
+	FCollisionQueryParams queryParams;
+	queryParams.AddIgnoredActor(this);
+	TArray<AActor*> objectsInHex = GetObjectsInHex();
+	if (objectsInHex.Num() > 0) queryParams.AddIgnoredActors(objectsInHex);
+
+	TSet<ABaseHex*> hexesFound;
+
+	//For each of the 6 directions:
+	for (int i = 0; i < 6; i++)
+	{
+		//Establish trace direction
+		FVector traceStart = GetActorLocation() + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * 10;
+		FVector traceEnd = traceStart + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * 30;
+		FHitResult hit;
+
+		//Trace
+		bool found = GetWorld()->LineTraceSingleByChannel(hit, traceStart, traceEnd, ECC_Visibility, queryParams, FCollisionResponseParams::DefaultResponseParam);
+
+		//Check for hex actor class
+		ABaseHex* foundHex = found ? Cast<ABaseHex>(hit.GetActor()) : nullptr;
+
+		//Add found hex to set
+		if (foundHex)
+			hexesFound.Add(foundHex);
+	}
+
+	return hexesFound;
 }

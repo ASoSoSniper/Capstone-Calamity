@@ -45,12 +45,6 @@ void ABasePlayerController::BeginPlay()
 
 	currentActionState = ActionStates::None;
 
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
-
 	if (!playerCamera)
 	{
 		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerMovement::StaticClass());
@@ -64,12 +58,6 @@ void ABasePlayerController::Tick(float DeltaTime)
 	
 	actionStates[currentActionState]->CheckSelection();	
 	//CheckForActionStates();
-
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
 
 	if (!playerCamera)
 	{
@@ -175,9 +163,9 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 	FTroopStats stats;
 
-	if (spawner->troopStats.Contains(troop->unitStats->unitType))
+	if (AGlobalSpawner::spawnerObject->troopStats.Contains(troop->unitStats->unitType))
 	{
-		stats = spawner->troopStats[troop->unitStats->unitType];
+		stats = AGlobalSpawner::spawnerObject->troopStats[troop->unitStats->unitType];
 	}
 
 	if (troop->unitStats->unitType != UnitTypes::Army)
@@ -191,8 +179,8 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(troop);
 
 		display.name = FText::FromString(troop->unitStats->GetUnitName());
-		display.icon = spawner->troopStats[chosenType].icon;
-		display.iconHovered = spawner->troopStats[chosenType].iconHovered;
+		display.icon = AGlobalSpawner::spawnerObject->troopStats[chosenType].icon;
+		display.iconHovered = AGlobalSpawner::spawnerObject->troopStats[chosenType].iconHovered;
 	}
 
 	display.HP = troop->unitStats->currentHP;
@@ -220,15 +208,15 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 
 	if (army->unitStats->unitType != UnitTypes::Army)
 	{
-		display.name = spawner->troopStats[army->unitStats->unitType].title;
-		display.icon = spawner->troopCosts[army->unitStats->unitType].icon;
+		display.name = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].title;
+		display.icon = AGlobalSpawner::spawnerObject->troopCosts[army->unitStats->unitType].icon;
 	}
 	else
 	{
 		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(army);
 
-		display.name = spawner->troopStats[chosenType].title;
-		display.icon = spawner->troopCosts[chosenType].icon;
+		display.name = AGlobalSpawner::spawnerObject->troopStats[chosenType].title;
+		display.icon = AGlobalSpawner::spawnerObject->troopCosts[chosenType].icon;
 	}
 
 	display.HP = army->unitStats->currentHP;
@@ -253,19 +241,19 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 		{
 			totalUnits += unit.Value.quantity;
 
-			display.attackvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsInfantry;
-			display.attackvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsCavalry;
-			display.attackvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsScout;
-			display.attackvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsRanged;
-			display.attackvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsShielder;
-			display.attackvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].attackvsSettler;
+			display.attackvsInfantry += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsInfantry;
+			display.attackvsCavalry += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsCavalry;
+			display.attackvsScout += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsScout;
+			display.attackvsRanged += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsRanged;
+			display.attackvsShielder += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsShielder;
+			display.attackvsSettler += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsSettler;
 
-			display.defendvsInfantry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsInfantry;
-			display.defendvsCavalry += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsCavalry;
-			display.defendvsScout += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsScout;
-			display.defendvsRanged += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsRanged;
-			display.defendvsShielder += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsShielder;
-			display.defendvsSettler += unit.Value.quantity * spawner->troopStats[unit.Key].defendvsSettler;
+			display.defendvsInfantry += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsInfantry;
+			display.defendvsCavalry += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsCavalry;
+			display.defendvsScout += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsScout;
+			display.defendvsRanged += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsRanged;
+			display.defendvsShielder += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsShielder;
+			display.defendvsSettler += unit.Value.quantity * AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsSettler;
 		}
 
 		display.attackvsInfantry /= totalUnits;
@@ -291,19 +279,19 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	}
 	else
 	{
-		display.attackvsInfantry = spawner->troopStats[army->unitStats->unitType].attackvsInfantry;
-		display.attackvsCavalry = spawner->troopStats[army->unitStats->unitType].attackvsCavalry;
-		display.attackvsScout = spawner->troopStats[army->unitStats->unitType].attackvsScout;
-		display.attackvsRanged = spawner->troopStats[army->unitStats->unitType].attackvsRanged;
-		display.attackvsShielder = spawner->troopStats[army->unitStats->unitType].attackvsShielder;
-		display.attackvsSettler = spawner->troopStats[army->unitStats->unitType].attackvsSettler;
+		display.attackvsInfantry = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsInfantry;
+		display.attackvsCavalry = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsCavalry;
+		display.attackvsScout = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsScout;
+		display.attackvsRanged = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsRanged;
+		display.attackvsShielder = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsShielder;
+		display.attackvsSettler = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].attackvsSettler;
 
-		display.defendvsInfantry = spawner->troopStats[army->unitStats->unitType].defendvsInfantry;
-		display.defendvsCavalry = spawner->troopStats[army->unitStats->unitType].defendvsCavalry;
-		display.defendvsScout = spawner->troopStats[army->unitStats->unitType].defendvsScout;
-		display.defendvsRanged = spawner->troopStats[army->unitStats->unitType].defendvsRanged;
-		display.defendvsShielder = spawner->troopStats[army->unitStats->unitType].defendvsShielder;
-		display.defendvsSettler = spawner->troopStats[army->unitStats->unitType].defendvsSettler;
+		display.defendvsInfantry = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsInfantry;
+		display.defendvsCavalry = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsCavalry;
+		display.defendvsScout = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsScout;
+		display.defendvsRanged = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsRanged;
+		display.defendvsShielder = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsShielder;
+		display.defendvsSettler = AGlobalSpawner::spawnerObject->troopStats[army->unitStats->unitType].defendvsSettler;
 
 		switch (army->unitStats->unitType)
 		{
@@ -378,10 +366,10 @@ FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(Build
 FAttachmentTTBuildInfo ABasePlayerController::GetAttachmentBuildInfo(BuildingAttachments attachment)
 {
 	FAttachmentTTBuildInfo info;
-	if (!spawner->attachmentCosts.Contains(attachment) || !spawner->attachmentStats.Contains(attachment)) return info;
+	if (!AGlobalSpawner::spawnerObject->attachmentCosts.Contains(attachment) || !AGlobalSpawner::spawnerObject->attachmentStats.Contains(attachment)) return info;
 
-	FBuildingCost cost = spawner->attachmentCosts[attachment];
-	FBuildingStats stat = spawner->attachmentStats[attachment];
+	FBuildingCost cost = AGlobalSpawner::spawnerObject->attachmentCosts[attachment];
+	FBuildingStats stat = AGlobalSpawner::spawnerObject->attachmentStats[attachment];
 
 	info.title = cost.name;
 	info.description = stat.description;
@@ -396,9 +384,9 @@ FAttachmentTTBuildInfo ABasePlayerController::GetAttachmentBuildInfo(BuildingAtt
 FMaterialStorageStats ABasePlayerController::GetMaterialStorageStats()
 {
 	FMaterialStorageStats storage;
-	if (!spawner->attachmentStats.Contains(BuildingAttachments::Storage)) return storage;
+	if (!AGlobalSpawner::spawnerObject->attachmentStats.Contains(BuildingAttachments::Storage)) return storage;
 
-	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::Storage];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->attachmentStats[BuildingAttachments::Storage];
 
 	storage.title = stats.name;
 	storage.description = stats.description;
@@ -412,9 +400,9 @@ FMaterialStorageStats ABasePlayerController::GetMaterialStorageStats()
 FRobotFactoryStats ABasePlayerController::GetRobotFactoryStats()
 {
 	FRobotFactoryStats factory;
-	if (!spawner->attachmentStats.Contains(BuildingAttachments::RobotFactory)) return factory;
+	if (!AGlobalSpawner::spawnerObject->attachmentStats.Contains(BuildingAttachments::RobotFactory)) return factory;
 
-	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::RobotFactory];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->attachmentStats[BuildingAttachments::RobotFactory];
 
 	factory.title = stats.name;
 	factory.description = stats.description;
@@ -426,9 +414,9 @@ FRobotFactoryStats ABasePlayerController::GetRobotFactoryStats()
 FRobotStorageStats ABasePlayerController::GetRobotStorageStats()
 {
 	FRobotStorageStats robotStorage;
-	if (!spawner->attachmentStats.Contains(BuildingAttachments::RobotBarracks)) return robotStorage;
+	if (!AGlobalSpawner::spawnerObject->attachmentStats.Contains(BuildingAttachments::RobotBarracks)) return robotStorage;
 
-	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::RobotBarracks];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->attachmentStats[BuildingAttachments::RobotBarracks];
 
 	robotStorage.title = stats.name;
 	robotStorage.description = stats.description;
@@ -442,9 +430,9 @@ FRobotStorageStats ABasePlayerController::GetRobotStorageStats()
 FDefenseStationStats ABasePlayerController::GetDefenseStationStats()
 {
 	FDefenseStationStats defense;
-	if (!spawner->attachmentStats.Contains(BuildingAttachments::DefenseStation)) return defense;
+	if (!AGlobalSpawner::spawnerObject->attachmentStats.Contains(BuildingAttachments::DefenseStation)) return defense;
 
-	FBuildingStats stats = spawner->attachmentStats[BuildingAttachments::DefenseStation];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->attachmentStats[BuildingAttachments::DefenseStation];
 
 	defense.title = stats.name;
 	defense.description = stats.description;
@@ -524,7 +512,7 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 	ASiegeObject* siege = Cast<ASiegeObject>(actor);
 	if (!siege) return info;
 
-	FBuildingStats stats = spawner->buildingStats[siege->building->buildingType];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[siege->building->buildingType];
 	info.buildingName = stats.name;
 	info.buildingType = siege->building->buildingType;
 	info.buildingIcon = stats.buildingIcon;
@@ -749,7 +737,7 @@ void ABasePlayerController::Build(SpawnableBuildings building)
 {
 	if (selectedHex)
 	{
-		spawner->SpawnBuilding(playerFaction, building, selectedHex);
+		AGlobalSpawner::spawnerObject->SpawnBuilding(playerFaction, building, selectedHex);
 		return;
 	}
 }
@@ -878,7 +866,7 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	//TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
 	//if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
 
-	for (auto& building : spawner->buildingCosts)
+	for (auto& building : AGlobalSpawner::spawnerObject->buildingCosts)
 	{
 		if (building.Key == SpawnableBuildings::Capitol && firstBuildPerformed) continue;
 		if (building.Key != SpawnableBuildings::Capitol && !firstBuildPerformed) continue;
@@ -905,18 +893,18 @@ FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
 
 	FBuildingCost costs;
 	FBuildingStats stats;
-	if (spawner->buildingCosts.Contains(selectedBuilding))
+	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(selectedBuilding))
 	{
-		costs = spawner->buildingCosts[selectedBuilding];
+		costs = AGlobalSpawner::spawnerObject->buildingCosts[selectedBuilding];
 	}
 
-	if (!spawner->buildingStats.Contains(selectedBuilding)) return attachmentDisplay;
+	if (!AGlobalSpawner::spawnerObject->buildingStats.Contains(selectedBuilding)) return attachmentDisplay;
 
-	attachmentDisplay.name = spawner->buildingStats[selectedBuilding].name;
+	attachmentDisplay.name = AGlobalSpawner::spawnerObject->buildingStats[selectedBuilding].name;
 	attachmentDisplay.productionCost = FText::AsNumber(costs.productionCost);
 	attachmentDisplay.workerCost = FText::AsNumber(costs.workerCost);
 	attachmentDisplay.buildTime = FText::AsNumber(costs.timeToBuild);
-	attachmentDisplay.buildingIcon = spawner->buildingStats[selectedBuilding].buildingIcon;
+	attachmentDisplay.buildingIcon = AGlobalSpawner::spawnerObject->buildingStats[selectedBuilding].buildingIcon;
 
 	return attachmentDisplay;
 }
@@ -925,7 +913,7 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 {
 	TArray<FTroopDisplay> troops;
 
-	for (auto& troop : spawner->troopCosts)
+	for (auto& troop : AGlobalSpawner::spawnerObject->troopCosts)
 	{
 		if (troop.Key == UnitTypes::None) continue;
 
@@ -949,7 +937,7 @@ TArray<FBuildingDisplay> ABasePlayerController::GetAttachmentDisplays()
 
 	if (!hex->IsBuildableTerrain()) return buildings;
 
-	for (auto& building : spawner->attachmentCosts)
+	for (auto& building : AGlobalSpawner::spawnerObject->attachmentCosts)
 	{
 		FText name = building.Value.name;
 		FText production = FText::AsNumber(building.Value.productionCost);
@@ -967,7 +955,7 @@ FBuildingDisplay ABasePlayerController::GetAttachmentDisplay(FText attachmentNam
 {
 	FBuildingDisplay display;
 
-	for (auto& attachment : spawner->attachmentCosts)
+	for (auto& attachment : AGlobalSpawner::spawnerObject->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
@@ -1029,7 +1017,7 @@ bool ABasePlayerController::IsInBuildMode()
 //FOR BLUEPRINT: Triggered when a building is selected from the UI, identifies which building was selected and builds it accordingly
 void ABasePlayerController::SelectBuilding(FText buildingName)
 {
-	for (auto& buildings : spawner->buildingCosts)
+	for (auto& buildings : AGlobalSpawner::spawnerObject->buildingCosts)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
@@ -1071,14 +1059,14 @@ void ABasePlayerController::RetreatFromBattle()
 }
 void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 {
-	for (auto& attachment : spawner->attachmentCosts)
+	for (auto& attachment : AGlobalSpawner::spawnerObject->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
 			AOutpost* outpost = GetOutpost();
 			if (outpost)
 			{
-				spawner->BuildAttachment(playerFaction, attachment.Key, outpost);
+				AGlobalSpawner::spawnerObject->BuildAttachment(playerFaction, attachment.Key, outpost);
 				PlayUIAttachmentSound(attachment.Key);
 			}
 
@@ -1089,7 +1077,7 @@ void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 //FOR BLUEPRINT: Triggered when a troop is selected from the UI, identifies which troop was selected and builds it accordingly
 void ABasePlayerController::SelectTroop(FText troopName)
 {
-	for (auto& troop : spawner->troopCosts)
+	for (auto& troop : AGlobalSpawner::spawnerObject->troopCosts)
 	{
 		if (troopName.EqualTo(troop.Value.name))
 		{
@@ -1156,11 +1144,11 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 
 	if (outpost->cuedUnits.IsEmpty())
 	{
-		troop.troopInfo = spawner->troopCosts[UnitTypes::None];
+		troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[UnitTypes::None];
 		return troop;
 	}
 
-	troop.troopInfo = spawner->troopCosts[outpost->cuedUnits[0]];
+	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->cuedUnits[0]];
 	troop.currentTime = outpost->currentTroopBuildTime;
 
 	return troop;
@@ -1282,7 +1270,7 @@ bool ABasePlayerController::OutpostCanStoreTroops()
 
 bool ABasePlayerController::AttachmentIsActive(FText attachmentName)
 {
-	for (auto& attachment : spawner->attachmentCosts)
+	for (auto& attachment : AGlobalSpawner::spawnerObject->attachmentCosts)
 	{
 		if (attachmentName.EqualTo(attachment.Value.name))
 		{
@@ -1346,7 +1334,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Farmland;
 		hexBuilding.farmland = farmland;
-		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Farmland].name;
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Farmland].name;
 		return hexBuilding;
 	}
 
@@ -1354,7 +1342,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::PowerPlant;
 		hexBuilding.powerplant = powerplant;
-		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::PowerPlant].name;
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::PowerPlant].name;
 		return hexBuilding;
 	}
 
@@ -1362,7 +1350,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::MiningStation;
 		hexBuilding.miningStation = miningStation;
-		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::MiningStation].name;
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::MiningStation].name;
 		return hexBuilding;
 	}
 
@@ -1371,7 +1359,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 		hexBuilding.buildingType = SpawnableBuildings::Capitol;
 		hexBuilding.hub = hub;
 		hexBuilding.outpost = hub;
-		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Capitol].name;
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Capitol].name;
 		return hexBuilding;
 	}
 
@@ -1379,7 +1367,7 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	{
 		hexBuilding.buildingType = SpawnableBuildings::Outpost;
 		hexBuilding.outpost = outpost;
-		hexBuilding.name = spawner->buildingCosts[SpawnableBuildings::Outpost].name;
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Outpost].name;
 		return hexBuilding;
 	}
 
@@ -1425,7 +1413,7 @@ FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
 
 	bool statsFound = false;
 
-	for (auto& building : spawner->buildingStats)
+	for (auto& building : AGlobalSpawner::spawnerObject->buildingStats)
 	{
 		if (buildingName.EqualTo(building.Value.name))
 		{
@@ -1437,7 +1425,7 @@ FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
 
 	if (!statsFound)
 	{
-		for (auto& building : spawner->attachmentStats)
+		for (auto& building : AGlobalSpawner::spawnerObject->attachmentStats)
 		{
 			if (buildingName.EqualTo(building.Value.name))
 			{
@@ -1478,7 +1466,7 @@ FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
 	FTroopTTInfo info = FTroopTTInfo{};
 	FTroopStats troopStats;
 
-	for (auto& troop : spawner->troopStats)
+	for (auto& troop : AGlobalSpawner::spawnerObject->troopStats)
 	{
 		if (troopName.EqualTo(troop.Value.title))
 		{

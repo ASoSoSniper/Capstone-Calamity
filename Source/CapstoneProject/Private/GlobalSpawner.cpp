@@ -955,8 +955,6 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
 
-				newHex->SetHexTerrain();
-
 				column.Add(newHex);
 			}
 
@@ -964,6 +962,14 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		}
 
 		hexArray = arrayOfHexColumns;
+
+		for (int x = 0; x < hexArray.Num(); x++)
+		{
+			for (int y = 0; y < hexArray[x].Num(); y++)
+			{
+				hexArray[x][y]->SetHexTerrain(hexSeedSize, hexRandToMaintain);
+			}
+		}
 
 		hexArray[3][4]->SetHexTerrain(TerrainType::Ship);
 

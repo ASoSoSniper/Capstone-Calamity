@@ -586,4 +586,8 @@ public:
 	ABasePlayerController* controller;
 
 	UnitActions::UnitData CreateTroopUnitData(Factions faction, UnitTypes unitType);
+
+private:
+	UPROPERTY(EditAnywhere) int hexSeedSize = 5;
+	UPROPERTY(EditAnywhere) int hexRandToMaintain = 5;
 };

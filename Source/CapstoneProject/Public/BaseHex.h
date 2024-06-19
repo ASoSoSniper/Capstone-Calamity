@@ -174,7 +174,7 @@ public:
 	bool inSoundboxRadius = false;
 
 	TerrainType GetHexTerrain();
-	void SetHexTerrain();
+	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
 	void SetHexTerrain(TerrainType terrain);
 	void SetHexModel();
 
@@ -187,4 +187,7 @@ public:
 private:
 	AMovementAI* attackingTroop;
 	TerrainType hexTerrain = TerrainType::Plains;
+	int seedIndex = 0;
+
+	TSet<ABaseHex*> GetSurroundingHexes();
 };
