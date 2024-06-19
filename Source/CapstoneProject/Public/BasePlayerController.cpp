@@ -460,23 +460,14 @@ bool ABasePlayerController::CanBuildOnHex()
 {
 	if (!selectedHex) return false;
 
-	if (selectedHex->hexTerrain == TerrainType::Mountains || 
-		selectedHex->hexTerrain == TerrainType::Border || 
-		selectedHex->hexTerrain == TerrainType::Jungle) return false;
-
-	return true;
+	return selectedHex->IsBuildableTerrain();
 }
 
 bool ABasePlayerController::CanPutWorkersOnHex()
 {
 	if (!selectedHex) return false;
 
-	if (selectedHex->hexTerrain == TerrainType::Mountains ||
-		selectedHex->hexTerrain == TerrainType::Border || 
-		selectedHex->hexTerrain == TerrainType::AlienCity ||
-		selectedHex->hexTerrain == TerrainType::TheRock) return false;
-
-	return true;
+	return selectedHex->CanPutWorkersOnHex();
 }
 
 bool ABasePlayerController::HexIsDiscovered()
@@ -956,8 +947,7 @@ TArray<FBuildingDisplay> ABasePlayerController::GetAttachmentDisplays()
 	TArray<FBuildingDisplay> buildings;
 	if (!hex) return buildings;
 
-	TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
-	if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
+	if (!hex->IsBuildableTerrain()) return buildings;
 
 	for (auto& building : spawner->attachmentCosts)
 	{
@@ -1051,7 +1041,7 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 
 			if (buildings.Key == SpawnableBuildings::Capitol)
 			{
-				if (selectedHex->hexTerrain == TerrainType::Ship) firstBuildPerformed = true;
+				if (selectedHex->GetHexTerrain() == TerrainType::Ship) firstBuildPerformed = true;
 				else return;
 			}
 

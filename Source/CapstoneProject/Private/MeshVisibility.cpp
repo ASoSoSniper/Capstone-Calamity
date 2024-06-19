@@ -188,7 +188,7 @@ void UMeshVisibility::SetVisibility()
 
 			if (!discoveredByPlayer && factionVisibility[Factions::Human].discoveredByFaction)
 			{
-				Cast<ABaseHex>(GetOwner())->RequestTerrainChange(true);
+				Cast<ABaseHex>(GetOwner())->SetHexModel();
 				discoveredByPlayer = true;
 				if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 			}

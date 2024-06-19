@@ -20,7 +20,10 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 {
     if (unit->unitStats && target->unitStats)
     {
-        if (GetFaction(unit->unitStats->faction)->GetFactionRelationship(target->unitStats->faction) == FactionRelationship::Enemy)
+        Faction* factionObject = GetFaction(unit->unitStats->faction);
+        if (!factionObject) return false;
+
+        if (factionObject->GetFactionRelationship(target->unitStats->faction) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -33,7 +36,10 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AActor* target)
 {
     if (unit->unitStats)
     {
-        if (GetFaction(unit->unitStats->faction)->GetFactionRelationship(target) == FactionRelationship::Enemy)
+        Faction* factionObject = GetFaction(unit->unitStats->faction);
+        if (!factionObject) return false;
+
+        if (factionObject->GetFactionRelationship(target) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -575,24 +581,6 @@ void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
     }
 }
 
-TArray<TerrainType> UnitActions::GetNonBuildableTerrain()
-{
-    return ACapstoneProjectGameModeBase::nonBuildableTerrains;
-}
-
-bool UnitActions::HexIsTraversable(AActor* hex)
-{
-    ABaseHex* hexActor = Cast<ABaseHex>(hex);
-    if (!hexActor) return false;
-
-    for (int i = 0; i < ACapstoneProjectGameModeBase::nonBuildableTerrains.Num(); i++)
-    {
-        if (hexActor->hexTerrain == ACapstoneProjectGameModeBase::nonBuildableTerrains[i]) return false;
-    }
-
-    return true;
-}
-
 int UnitActions::GetResourceCap(Factions faction)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].maxResources;
@@ -710,7 +698,7 @@ void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
 {
     if (faction == Factions::None) return;
 
-    if (ACapstoneProjectGameModeBase::activeFactions[faction]->powerOutage)
+    if (GetFaction(faction)->powerOutage)
     {
         robot->interact->SetInteract(false);
     }

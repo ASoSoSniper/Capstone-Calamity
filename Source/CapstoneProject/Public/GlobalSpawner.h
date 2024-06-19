@@ -525,6 +525,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	static AGlobalSpawner* spawnerObject;
+
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
 	ATroop* SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent = 1.f);
 	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);

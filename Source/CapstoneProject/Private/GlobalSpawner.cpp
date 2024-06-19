@@ -21,6 +21,9 @@
 #include "SiegeObject.h"
 
 // Sets default values
+
+AGlobalSpawner* AGlobalSpawner::spawnerObject = nullptr;
+
 AGlobalSpawner::AGlobalSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -680,6 +683,8 @@ void AGlobalSpawner::BeginPlay()
 	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
 	if (!rockCityPrefab) rockCityPrefab = ARockCity::StaticClass();
 
+	spawnerObject = this;
+
 	AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
 	controller = Cast<ABasePlayerController>(controllerTemp);
 
@@ -950,7 +955,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
 
-				newHex->terrainChange = TerrainType(FMath::RandRange(1, 6));
+				newHex->SetHexTerrain();
 
 				column.Add(newHex);
 			}
@@ -960,10 +965,10 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 		hexArray = arrayOfHexColumns;
 
-		hexArray[3][4]->terrainChange = TerrainType::Ship;
+		hexArray[3][4]->SetHexTerrain(TerrainType::Ship);
 
 		rockHex = hexArray[FMath::RandRange(12, 17)][FMath::RandRange(12, 17)];
-		rockHex->terrainChange = TerrainType::TheRock;
+		rockHex->SetHexTerrain(TerrainType::TheRock);
 		SpawnBuildingsAroundCity(rockHex);
 		
 		for (int i = 0; i < 6; i++)
@@ -979,10 +984,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 				if (!usedCoordinates.Contains(randomXY))
 				{
 					ABaseHex* hexTest = hexArray[randomXY.X][randomXY.Y];
-					if (hexTest->terrainChange != TerrainType::AlienCity &&
-						hexTest->terrainChange != TerrainType::TheRock &&
-						hexTest->terrainChange != TerrainType::Ship &&
-						!BuildingOnHex(hexTest))
+					if (!hexTest->IsStaticBuildingTerrain() && !BuildingOnHex(hexTest))
 					{
 						usedCoordinates.Add(randomXY);
 						hex = hexTest;
@@ -990,7 +992,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 				}
 			}
 
-			hex->terrainChange = TerrainType::AlienCity;
+			hex->SetHexTerrain(TerrainType::AlienCity);
 			alienHexes.Add(hex);
 			SpawnBuildingsAroundCity(hex);
 		}
@@ -1113,9 +1115,7 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 				ABaseHex* hexTest = GetHexFromCoordinates(randX, randY);
 				if (!hexTest) continue;
 
-				if (hexTest->terrainChange != TerrainType::AlienCity && 
-					hexTest->terrainChange != TerrainType::TheRock && 
-					hexTest->terrainChange != TerrainType::Ship &&
+				if (!hexTest->IsStaticBuildingTerrain() &&
 					!BuildingOnHex(hexTest))
 				{
 					hex = hexTest;

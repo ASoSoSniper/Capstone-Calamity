@@ -28,10 +28,10 @@ bool UOutpostDefenses::DisableAttachment()
 
 bool UOutpostDefenses::SetUpAttachment(BuildingAttachments attachment)
 {
-	if (!outpost->spawner->attachmentStats.Contains(attachment)) return false;
+	if (!AGlobalSpawner::spawnerObject->attachmentStats.Contains(attachment)) return false;
 
-	FBuildingStats stats = outpost->spawner->attachmentStats[attachment];
-	FBuildingCost costs = outpost->spawner->attachmentCosts[attachment];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->attachmentStats[attachment];
+	FBuildingCost costs = AGlobalSpawner::spawnerObject->attachmentCosts[attachment];
 
 	maxWorkers = stats.maxWorkers;
 	buildTime = costs.timeToBuild;

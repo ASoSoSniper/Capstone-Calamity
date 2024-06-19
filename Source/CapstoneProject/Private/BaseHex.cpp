@@ -108,14 +108,6 @@ void ABaseHex::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
-	
-	if (spawner) RequestTerrainChange();
-
 	currentHarvestTime = maxHarvestTime;
 }
 
@@ -124,19 +116,9 @@ void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!spawner)
+	if ((building && !IsBuildableTerrain()) || (!troopsInHex.IsEmpty() && !IsTraversableTerrain()))
 	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-	}
-	if ((building && (hexTerrain == TerrainType::Mountains || hexTerrain == TerrainType::Jungle)) || (!troopsInHex.IsEmpty() && hexTerrain == TerrainType::Mountains))
-	{
-		terrainChange = TerrainType(FMath::RandRange(1, 4));
-	}
-
-	if (spawner && terrainChange != hexTerrain)
-	{
-		RequestTerrainChange();
+		SetHexTerrain(TerrainType(FMath::RandRange(1, 4)));
 	}
 
 	if (hexTerrain != TerrainType::None)
@@ -255,7 +237,7 @@ void ABaseHex::BeginBattle(AMovementAI* attacker)
 
 	if (battle) return;
 
-	if (attackingTroop) spawner->SpawnBattle(this);
+	if (attackingTroop) AGlobalSpawner::spawnerObject->SpawnBattle(this);
 }
 
 Factions ABaseHex::GetAttackerFaction()
@@ -272,7 +254,6 @@ bool ABaseHex::ActiveBattleOnHex()
 
 	return battle->attacking;
 }
-
 
 bool ABaseHex::ActiveHarvesting()
 {
@@ -314,42 +295,6 @@ void ABaseHex::ToggleResourceYield()
 	if (debug) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, FString::Printf(TEXT("Output Percent: %f"), newOutputPercent));
 
 	outputPercent = newOutputPercent;
-}
-
-void ABaseHex::RequestTerrainChange(bool modelOnly)
-{
-	if (visibility->factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num()) return;
-
-	if (terrainChange != TerrainType::None) hexTerrain = terrainChange;
-	else terrainChange = hexTerrain;
-
-	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
-	{
-		spawner->CreateHexModel(TerrainType::None, this);
-	}
-	else
-	{
-		spawner->CreateHexModel(hexTerrain, this);
-	}
-
-	if (modelOnly) return;
-
-	FHexInfo info = hexInfo[hexTerrain];
-	resourceBonuses[StratResources::Food].yieldBonus = info.food;
-	resourceBonuses[StratResources::Production].yieldBonus = info.production;
-	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
-	resourceBonuses[StratResources::Wealth].yieldBonus = info.wealth;
-
-	moveMultiplier = info.moveMultiplier;
-	attritionMultiplier = info.attritionMultiplier;
-	defenderBonus = info.defenderBonus;
-	vision = info.visionModifier;
-
-	if (hexTerrain == TerrainType::Ship)
-	{
-		visibility->enableScan = true;
-		hexOwner = Factions::Human;
-	}
 }
 
 bool ABaseHex::HasBuilding()
@@ -504,4 +449,82 @@ void ABaseHex::SetToTargetVolume(float& DeltaTime)
 	audioComponent->AdjustVolume(0.f, audioComponent->VolumeMultiplier);
 
 	if (audioComponent->VolumeMultiplier <= 0.f && !inSoundboxRadius) audioComponent->Stop();
+}
+
+TerrainType ABaseHex::GetHexTerrain()
+{
+	return hexTerrain;
+}
+
+void ABaseHex::SetHexTerrain()
+{
+	SetHexTerrain(TerrainType(FMath::RandRange(1, 6)));
+}
+
+void ABaseHex::SetHexTerrain(TerrainType terrain)
+{
+	hexTerrain = terrain;
+
+	FHexInfo info = hexInfo[hexTerrain];
+	resourceBonuses[StratResources::Food].yieldBonus = info.food;
+	resourceBonuses[StratResources::Production].yieldBonus = info.production;
+	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
+	resourceBonuses[StratResources::Wealth].yieldBonus = info.wealth;
+
+	moveMultiplier = info.moveMultiplier;
+	attritionMultiplier = info.attritionMultiplier;
+	defenderBonus = info.defenderBonus;
+	vision = info.visionModifier;
+
+	if (hexTerrain == TerrainType::Ship)
+	{
+		visibility->enableScan = true;
+		hexOwner = Factions::Human;
+	}
+
+	SetHexModel();
+}
+
+void ABaseHex::SetHexModel()
+{
+	if (!visibility->factionVisibility.Contains(Factions::Human)) return;
+
+	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
+	{
+		AGlobalSpawner::spawnerObject->CreateHexModel(TerrainType::None, this);
+	}
+	else
+	{
+		AGlobalSpawner::spawnerObject->CreateHexModel(hexTerrain, this);
+	}
+}
+
+bool ABaseHex::IsStaticBuildingTerrain()
+{
+	return hexTerrain == TerrainType::Ship ||
+		hexTerrain == TerrainType::TheRock ||
+		hexTerrain == TerrainType::AlienCity;
+}
+
+bool ABaseHex::IsTraversableTerrain()
+{
+	return hexTerrain != TerrainType::Border && 
+		hexTerrain != TerrainType::Mountains;
+}
+
+bool ABaseHex::IsBuildableTerrain()
+{
+	return hexTerrain != TerrainType::Border && 
+		hexTerrain != TerrainType::Mountains && 
+		hexTerrain != TerrainType::Jungle;
+}
+
+bool ABaseHex::IsPlayerHex()
+{
+	return hexOwner == Factions::Human;
+}
+
+bool ABaseHex::CanPutWorkersOnHex()
+{
+	return IsTraversableTerrain() && IsPlayerHex();
 }

@@ -60,10 +60,6 @@ public:
 
 	int resourceCapIncrease = 0;
 
-	bool SetupBuilding(SpawnableBuildings type);
-	void Constructing(float& DeltaTime);
-	void SetBuildState();
-
 	virtual void UpdateResources();
 	virtual void RevertResources();
 	virtual void BuildingAction();
@@ -72,8 +68,6 @@ public:
 	bool SphereCheck();
 	UPROPERTY(EditAnywhere) float hexSearchDistance = 100.f;
 	UPROPERTY(EditAnywhere) float hexSnapDistance = 50.f;
-
-	UPROPERTY(VisibleAnywhere) AGlobalSpawner* spawner;
 
 	virtual void Action1();
 	virtual void Action2();
@@ -109,4 +103,10 @@ public:
 	UFUNCTION(BlueprintCallable) float GetBuildPercent();
 	void HealOverTime();
 	UPROPERTY(EditAnywhere) float healPercent = 0.04f;
+
+private:
+	bool SetupBuilding(SpawnableBuildings type);
+	void Constructing(float& DeltaTime);
+	void SetBuildState();
+	bool setupComplete;
 };

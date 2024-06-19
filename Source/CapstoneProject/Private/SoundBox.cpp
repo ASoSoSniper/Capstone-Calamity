@@ -82,9 +82,9 @@ void ASoundBox::SetHexAmbience(ABaseHex* hex)
 		}
 	}
 
-	if (terrainSounds.Contains(hex->hexTerrain))
+	if (terrainSounds.Contains(hex->GetHexTerrain()))
 	{
-		if (!soundSet) hex->audioComponent->SetSound(terrainSounds[hex->hexTerrain]);
+		if (!soundSet) hex->audioComponent->SetSound(terrainSounds[hex->GetHexTerrain()]);
 		soundSet = true;
 	}
 

@@ -14,7 +14,7 @@ void UManageHex::Select(AActor* selectedObject)
 	if (hex)
 	{
 		controller->selectedHex = hex;
-		controller->PlayUIHexSound(hex->hexTerrain, hex);
+		controller->PlayUIHexSound(hex->GetHexTerrain(), hex);
 	}
 
 	//Highlight new hex

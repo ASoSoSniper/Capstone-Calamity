@@ -241,12 +241,12 @@ void AMovementAI::SphereCheck(float rangeMulti)
 bool AMovementAI::HexIsTraversable(AActor* hex)
 {
 	ABaseHex* foundHex = Cast<ABaseHex>(hex);
-	return foundHex->hexTerrain != TerrainType::Mountains && foundHex->hexTerrain != TerrainType::Border;
+	return foundHex->IsTraversableTerrain();
 }
 
 bool AMovementAI::HexIsTraversable(ABaseHex* hex)
 {
-	return hex->hexTerrain != TerrainType::Mountains && hex->hexTerrain != TerrainType::Border;
+	return hex->IsTraversableTerrain();
 }
 
 float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
@@ -270,6 +270,7 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 void AMovementAI::CountdownToMove(float& DeltaTime)
 {
 	ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
+	if (!targetHex) return;
 
 	currTimeTillHexMove += DeltaTime * targetHex->moveMultiplier * ACapstoneProjectGameModeBase::timeScale;
 	currTimeTillHexMove = FMath::Clamp(currTimeTillHexMove, 0.f, unitStats->speed);

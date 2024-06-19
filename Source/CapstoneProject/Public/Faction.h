@@ -80,4 +80,5 @@ private:
 	UPROPERTY() TMap<Factions, FRelationshipStats> factionRelationships;
 	UFUNCTION() void CleanTargetPool();
 	UFUNCTION() void GetTargetsOfAllies();
+	UFUNCTION() void TargetBuildingsOfFaction(Factions targetFaction);
 };

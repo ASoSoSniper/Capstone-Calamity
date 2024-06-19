@@ -51,14 +51,14 @@ void AOutpost::Tick(float DeltaTime)
 	}
 	else
 	{
-		if (!cuedUnits.IsEmpty() && spawner)
+		if (!cuedUnits.IsEmpty() && AGlobalSpawner::spawnerObject)
 		{
 			BuildTroop();
 
 			cuedUnits.RemoveAt(0);
 			if (!cuedUnits.IsEmpty())
 			{
-				currentTroopBuildTime = spawner->troopCosts[cuedUnits[0]].timeToBuild;
+				currentTroopBuildTime = AGlobalSpawner::spawnerObject->troopCosts[cuedUnits[0]].timeToBuild;
 			}
 		}
 	}
@@ -200,19 +200,19 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 
 void AOutpost::CueTroopBuild(UnitTypes unit)
 {
-	if (!spawner) return;
+	if (!AGlobalSpawner::spawnerObject) return;
 	if (!troopFactoryBuilding->AttachmentIsActive()) return;
 
 	//Temp line to remove troop cueing
 	//if (!cuedUnits.IsEmpty()) return;
 
-	if (spawner->troopCosts.Contains(unit))
+	if (AGlobalSpawner::spawnerObject->troopCosts.Contains(unit))
 	{
-		bool purchased = spawner->PurchaseTroop(unitStats->faction, unit, this);
+		bool purchased = AGlobalSpawner::spawnerObject->PurchaseTroop(unitStats->faction, unit, this);
 		if (purchased)
 		{
 			cuedUnits.Add(unit);
-			if (cuedUnits.Num() == 1) currentTroopBuildTime = spawner->troopCosts[unit].timeToBuild;
+			if (cuedUnits.Num() == 1) currentTroopBuildTime = AGlobalSpawner::spawnerObject->troopCosts[unit].timeToBuild;
 		}
 	}
 }
@@ -221,9 +221,9 @@ void AOutpost::BuildTroop()
 {
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
 
-	ATroop* troop = spawner->BuildTroop(unitStats->faction, cuedUnits[0], hex);
+	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(unitStats->faction, cuedUnits[0], hex);
 
-	spawner->controller->PlayUISound(spawner->controller->troopCompleteSound);
+	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->troopCompleteSound);
 
 	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex, troop))
 	{
@@ -273,11 +273,11 @@ TArray<ATroop*> AOutpost::ReleaseTroops()
 		switch (troopsInStorage[i].unitType)
 		{
 		case UnitTypes::Army:
-			spawn = spawner->SpawnArmy(spawnPoint, troopsInStorage[i].savedUnits);
+			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[i].savedUnits);
 			break;
 
 		default:
-			spawn = spawner->SpawnTroop(spawnPoint, troopsInStorage[i]);
+			spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, troopsInStorage[i]);
 			break;
 		}
 

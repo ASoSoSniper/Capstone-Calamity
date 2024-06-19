@@ -44,8 +44,6 @@ void ABuilding::BeginPlay()
 	Super::BeginPlay();
 
 	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
-
-	SetupBuilding(buildingType);
 }
 
 // Called every frame
@@ -53,7 +51,10 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!SetupBuilding(buildingType)) return;
+	if (!setupComplete)
+	{
+		setupComplete = SetupBuilding(buildingType);
+	}
 
 	switch (buildState)
 	{
@@ -71,18 +72,20 @@ void ABuilding::Tick(float DeltaTime)
 
 bool ABuilding::SetupBuilding(SpawnableBuildings type)
 {
-	if (unitStats->faction == Factions::None) return false;
-
-	UnitActions::AssignFaction(unitStats->faction, this);
-
-	//If both needed objects are found, then setup is complete and this function can be ignored
-	if (spawner && hexNav->currentHex) return true;
-
-	//If spawner is not set, search the world for one
-	if (!spawner)
+	if (!AGlobalSpawner::spawnerObject)
 	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No global spawner, could not set up building"));
+		return false;
+	}
+	if (unitStats->faction == Factions::None)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No faction set, could not set up building"));
+		return false;
+	}
+	if (!AGlobalSpawner::spawnerObject->buildingStats.Contains(type))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No building stats found, could not set up building"));
+		return false;
 	}
 	
 	//If the building's hex is not set, scan until a hex is found
@@ -91,15 +94,18 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		SphereCheck();
 	}
 
-	//If either objects are missing, cancel the process
-	if (!spawner || !hexNav->currentHex) return false;
+	//If a hex is not found, cancel the process
+	if (!hexNav->currentHex)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No hex found, could not set up building"));
+		return false;
+	}
 
-	//If data for this building type does not exist, return
-	if (type == SpawnableBuildings::None || 
-		!spawner->buildingStats.Contains(type)) return false;
+	//Assign the faction, if not spawned through spawnerObject
+	UnitActions::AssignFaction(unitStats->faction, this);
 
 	//Get the building data
-	FBuildingStats stats = spawner->buildingStats[type];	
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[type];
 
 	unitStats->currentHP = stats.HP;
 	unitStats->maxHP = stats.HP;
@@ -115,9 +121,9 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	FBuildingCost costs;
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
-	if (spawner->buildingCosts.Contains(type))
+	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(type))
 	{
-		costs = spawner->buildingCosts[type];
+		costs = AGlobalSpawner::spawnerObject->buildingCosts[type];
 
 		if (hex->maxWorkers != costs.workerCost)
 		{
@@ -191,7 +197,7 @@ void ABuilding::SetBuildState()
 		BuildingAction();
 		SetToFinishedModel();
 		visibility->enableScan = true;
-		if (unitStats->faction == Factions::Human) spawner->controller->PlayUISound(spawner->controller->buildingCompleteSound);
+		if (unitStats->faction == Factions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
 		break;
 	case Complete:
 		currBuildTime = upgradeTime;
@@ -374,10 +380,10 @@ void ABuilding::Destroyed()
 
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 
-		if (spawner->buildingCosts.Contains(buildingType))
+		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
 			TMap<StratResources, int> addResources;
-			addResources.Add(StratResources::Production, spawner->buildingCosts[buildingType].productionCost * 0.25f);
+			addResources.Add(StratResources::Production, AGlobalSpawner::spawnerObject->buildingCosts[buildingType].productionCost * 0.25f);
 			UnitActions::AddResources(unitStats->faction, addResources);
 		}
 
@@ -409,7 +415,7 @@ bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
 
 	if (sieged)
 	{
-		smokeEffect = spawner->SpawnSmoke(this);
+		smokeEffect = AGlobalSpawner::spawnerObject->SpawnSmoke(this);
 		siegingFaction = occupier;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("occupation changed"));
 	}

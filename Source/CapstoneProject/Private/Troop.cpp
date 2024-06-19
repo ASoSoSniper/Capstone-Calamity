@@ -15,88 +15,16 @@ ATroop::ATroop()
 void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (unitStats->faction != Factions::Human)
-	{
-		//AITroopComponent->isEnemy = true;
-	}
-
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-		
-		if (spawner && unitStats->unitType != UnitTypes::None)
-		{
-			if (spawner->troopStats.Contains(unitStats->unitType))
-			{
-				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
-			}
-		}
-	}
-
-	if (!visibility->meshMaterials.visibleTexture || !visibility->meshMaterials.selectedTexture)
-	{
-		if (spawner && spawner->troopFactionMaterials.Contains(unitStats->faction))
-		{
-			visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
-			visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
-		}
-	}
 }
 
 void ATroop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!spawnCheck)
+	if (!setupComplete)
 	{
-		if (unitStats->faction != Factions::None && spawner)
-		{
-			UnitActions::RobotIsActive(unitStats->faction, this);
-
-			if (spawner->troopFactionMaterials.Contains(unitStats->faction))
-			{
-				visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
-				visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, TEXT("No materials found"));
-			}
-			
-			spawnCheck = true;
-		}
+		setupComplete = SetUpTroop();
 	}
-
-	if (unitStats->faction != Factions::Human)
-	{
-		if (!debug) AITroopComponent->isEnemy = true;
-	}
-
-	if (!spawner)
-	{
-		AActor* temp = UGameplayStatics::GetActorOfClass(GetWorld(), AGlobalSpawner::StaticClass());
-		spawner = Cast<AGlobalSpawner>(temp);
-		
-		if (spawner && unitStats->unitType != UnitTypes::None)
-		{
-			if (spawner->troopStats.Contains(unitStats->unitType))
-			{
-				UnitActions::ApplyDataToUnitStats(unitStats, spawner->troopStats[unitStats->unitType]);
-			}
-		}
-	}
-
-	if (!visibility->meshMaterials.visibleTexture || !visibility->meshMaterials.selectedTexture)
-	{
-		if (spawner && spawner->troopFactionMaterials.Contains(unitStats->faction))
-		{
-			visibility->meshMaterials.visibleTexture = spawner->troopFactionMaterials[unitStats->faction].visibleTexture;
-			visibility->meshMaterials.selectedTexture = spawner->troopFactionMaterials[unitStats->faction].selectedTexture;
-		}
-	}
-	
 
 	if (merging)
 	{
@@ -124,9 +52,9 @@ void ATroop::MergeOnTile()
 	case ObjectTypes::MoveAI:
 		if (hexNav->currentHex == objectType.moveAI->hexNav->currentHex)
 		{
-			if (spawner && targetToMerge)
+			if (AGlobalSpawner::spawnerObject && targetToMerge)
 			{
-				spawner->MergeArmies(this, objectType.moveAI, Cast<ABaseHex>(hexNav->currentHex));
+				AGlobalSpawner::spawnerObject->MergeArmies(this, objectType.moveAI, Cast<ABaseHex>(hexNav->currentHex));
 			}
 		}
 		break;
@@ -192,5 +120,45 @@ FTroopUIData ATroop::GetUIData()
 	data.progressToMove = (float)currTimeTillHexMove / (float)unitStats->speed;
 
 	return data;
+}
+
+bool ATroop::SetUpTroop()
+{
+	//Various checks to ensure all necessary data exists
+	if (!AGlobalSpawner::spawnerObject)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No global spawner, could not set up troop"));
+		return false;
+	}
+	else if (unitStats->faction == Factions::None || unitStats->unitType == UnitTypes::None)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction or UnitType not set, could not set up troop"));
+		return false;
+	}
+	else if (!AGlobalSpawner::spawnerObject->troopStats.Contains(unitStats->unitType) && unitStats->unitType != UnitTypes::Army)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Troop stats missing, could not set up troop"));
+		return false;
+	}
+	else if (!AGlobalSpawner::spawnerObject->troopFactionMaterials.Contains(unitStats->faction))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction materials missing, could not set up troop"));
+		return false;
+	}
+
+	//If all data is present, perform setup
+	UnitActions::AssignFaction(unitStats->faction, this);
+	UnitActions::RobotIsActive(unitStats->faction, this);
+	if (unitStats->unitType != UnitTypes::Army) UnitActions::ApplyDataToUnitStats(unitStats, AGlobalSpawner::spawnerObject->troopStats[unitStats->unitType]);
+
+	if (unitStats->faction != Factions::Human)
+	{
+		if (!debug) AITroopComponent->isEnemy = true;
+	}
+
+	visibility->meshMaterials.visibleTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[unitStats->faction].visibleTexture;
+	visibility->meshMaterials.selectedTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[unitStats->faction].selectedTexture;
+
+	return true;
 }
 

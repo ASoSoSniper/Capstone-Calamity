@@ -84,6 +84,7 @@ void Faction::SetFactionRelationship(Factions targetFaction, FactionRelationship
 	//Set the new relationship and update the target pool to reflect that
 	factionRelationships[targetFaction].relationship = newRelationship;
 	CleanTargetPool();
+	TargetBuildingsOfFaction(targetFaction);
 	GetTargetsOfAllies();
 
 	//Perform the same method in the targetFaction object, checks at the top should avoid infinite recursion
@@ -134,6 +135,8 @@ bool Faction::IsAIControlled()
 
 void Faction::CleanTargetPool()
 {
+	if (!AIControlled) return;
+
 	TArray<ABaseHex*> targetsToRemove;
 
 	//If targets in the pool are no longer enemies, add to the removal list
@@ -164,6 +167,29 @@ void Faction::GetTargetsOfAllies()
 		{
 			if (GetFactionRelationship(target.Value) == FactionRelationship::Enemy)
 				targetList.Add(target);
+		}
+	}
+}
+
+void Faction::TargetBuildingsOfFaction(Factions targetFaction)
+{
+	if (!AIControlled || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
+
+	Faction* factionObject = UnitActions::GetFaction(targetFaction);
+
+	for (auto& building : factionObject->allBuildings)
+	{
+		if (building->siegingFaction != Factions::None)
+		{
+			if (GetFactionRelationship(building->siegingFaction) == FactionRelationship::Enemy)
+			{
+				targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), building->siegingFaction);
+				continue;
+			}
+		}
+		else
+		{
+			targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), targetFaction);
 		}
 	}
 }

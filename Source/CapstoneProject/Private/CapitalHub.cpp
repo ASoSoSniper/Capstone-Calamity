@@ -42,16 +42,16 @@ void ACapitalHub::SetToFinishedModel()
 	}
 	
 	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
-	spawner->controller->SetCinematicObject(this);
+	AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this);
 	//spawner->SpawnEndParticle(this, GameStates::Victory);
 }
 
 void ACapitalHub::Destroyed()
 {
-	if (spawner)
+	if (AGlobalSpawner::spawnerObject)
 	{
-		spawner->controller->SetCinematicObject(this, GameStates::Defeat);
-		spawner->SpawnEndParticle(this, GameStates::Defeat);
+		AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this, GameStates::Defeat);
+		AGlobalSpawner::spawnerObject->SpawnEndParticle(this, GameStates::Defeat);
 	}
 
 	Super::Destroyed();

@@ -79,7 +79,6 @@ public:
 //Components created upon initialization
 #pragma region Components
 
-	//UPROPERTY(VisibleAnywhere) UHexInfo* hexInfo;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
@@ -120,8 +119,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Resources") int wealthYieldBonus = 1;
 	UPROPERTY(EditAnywhere, Category = "Identity") int hexID;
-	UPROPERTY(EditAnywhere, Category = "Identity") TerrainType hexTerrain = TerrainType::Plains;
-	TerrainType terrainChange = TerrainType::None;
 	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
 
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
@@ -146,8 +143,6 @@ public:
 	Factions GetAttackerFaction();
 	bool ActiveBattleOnHex();
 
-	AGlobalSpawner* spawner;
-
 	TMap<WorkerType, int> workersInHex;
 	int maxWorkers = 15;
 
@@ -165,7 +160,6 @@ public:
 	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
 	void ToggleResourceYield();
 
-	void RequestTerrainChange(bool modelOnly = false);
 	bool HasBuilding();
 
 	FHexDisplay GetDisplayInfo();
@@ -179,6 +173,18 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
 	bool inSoundboxRadius = false;
 
+	TerrainType GetHexTerrain();
+	void SetHexTerrain();
+	void SetHexTerrain(TerrainType terrain);
+	void SetHexModel();
+
+	bool IsStaticBuildingTerrain();
+	bool IsTraversableTerrain();
+	bool IsBuildableTerrain();
+	bool IsPlayerHex();
+	bool CanPutWorkersOnHex();
+
 private:
 	AMovementAI* attackingTroop;
+	TerrainType hexTerrain = TerrainType::Plains;
 };

@@ -38,17 +38,17 @@ void ARockCity::SetToFinishedModel()
 	}
 
 	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
-	if (spawner) spawner->controller->SetCinematicObject(this);
+	if (AGlobalSpawner::spawnerObject) AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this);
 }
 
 bool ARockCity::IsDisabled()
 {
 	if (Super::IsDisabled())
 	{
-		if (spawner)
+		if (AGlobalSpawner::spawnerObject)
 		{
-			spawner->controller->SetCinematicObject(this, GameStates::Victory);
-			spawner->SpawnEndParticle(this, GameStates::Victory);
+			AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this, GameStates::Victory);
+			AGlobalSpawner::spawnerObject->SpawnEndParticle(this, GameStates::Victory);
 		}
 		return true;
 	}

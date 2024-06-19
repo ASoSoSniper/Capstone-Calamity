@@ -77,11 +77,11 @@ void UAITroopComponent::SetDestination()
 
 ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 {
-	if (parentTroop->spawner->hexArray.IsValidIndex(X))
+	if (AGlobalSpawner::spawnerObject->hexArray.IsValidIndex(X))
 	{
-		if (parentTroop->spawner->hexArray[X].IsValidIndex(Y))
+		if (AGlobalSpawner::spawnerObject->hexArray[X].IsValidIndex(Y))
 		{
-			return parentTroop->spawner->hexArray[X][Y];
+			return AGlobalSpawner::spawnerObject->hexArray[X][Y];
 		}
 	}
 
@@ -111,8 +111,8 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 
 	if (closestTarget)
 	{
-		FVector2D target = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
-		FVector2D origin = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+		FVector2D target = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
+		FVector2D origin = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("X Dist: %f, Y Dist: %f"), FMath::Abs(target.X - origin.X), FMath::Abs(target.Y - origin.Y)));
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
 			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
@@ -128,7 +128,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 
 AActor* UAITroopComponent::FindRandomHex()
 {
-	FVector2D coordinates = parentTroop->spawner->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+	FVector2D coordinates = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
 
 	FVector2D hexCoords = coordinates;
 
@@ -142,7 +142,7 @@ AActor* UAITroopComponent::FindRandomHex()
 
 	if (randomHex)
 	{
-		if (!UnitActions::HexIsTraversable(randomHex))
+		if (!randomHex->IsTraversableTerrain())
 		{
 			return nullptr;
 		}
@@ -158,7 +158,7 @@ void UAITroopComponent::GenerateArmy()
 	{
 		UnitTypes randomType = UnitTypes(FMath::RandRange(1, 5));
 
-		UnitActions::UnitData troop = parentTroop->spawner->CreateTroopUnitData(parentTroop->unitStats->faction, randomType);
+		UnitActions::UnitData troop = AGlobalSpawner::spawnerObject->CreateTroopUnitData(parentTroop->unitStats->faction, randomType);
 
 		parentTroop->unitStats->savedUnits.Add(troop);
 		UnitActions::AddUnitData(parentTroop->unitStats, troop);

@@ -190,8 +190,6 @@ public:
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
-	static TArray<TerrainType> GetNonBuildableTerrain();
-	static bool HexIsTraversable(AActor* hex);
 	static int GetResourceCap(Factions faction);
 	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
 	static bool HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* referenceTroop = nullptr);
