@@ -195,15 +195,21 @@ void Faction::ConsumeEnergy()
 
 void Faction::BuildRandomBuilding()
 {
-	TArray<ABaseHex*> hexes = ownedHexes.Array();
+	if (!AIControlled) return;
+
+	TArray<ABaseHex*> hexes;
+
+	for (ABaseHex* hex : ownedHexes)
+	{
+		if (!hex->IsStaticBuildingTerrain() && !hex->building)
+			hexes.Add(hex);
+	}
 
 	int rand = FMath::RandRange(0, hexes.Num() - 1);
 
-	ABaseHex* randHex = hexes[rand];
-
 	if (AGlobalSpawner::spawnerObject)
 	{
-		
+		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), hexes[rand]);
 	}
 }
 

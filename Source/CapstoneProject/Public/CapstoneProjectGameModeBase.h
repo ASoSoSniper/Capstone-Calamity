@@ -46,9 +46,7 @@ public:
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 2;
-
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
-	UPROPERTY() AGlobalSpawner* spawnedSpawner;
 	static inline TArray<TerrainType> nonBuildableTerrains;
 	static inline GameStates gameState;
 
@@ -109,6 +107,7 @@ private:
 	void CheckDate();
 
 	void SpawnEnemies();
+	void SpawnBuildings();
 	UPROPERTY(EditAnywhere) int daysTillArmySpawn = 1;
 	int currentDaysTillArmySpawn = 0;
 	UPROPERTY(VisibleAnywhere) bool playerBuiltTroop = false;

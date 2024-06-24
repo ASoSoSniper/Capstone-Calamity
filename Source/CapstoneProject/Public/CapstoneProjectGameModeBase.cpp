@@ -65,7 +65,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
 
 	FActorSpawnParameters params;
-	spawnedSpawner = GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
+	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
 
 	timeScale = 1.f;
 	FindExistingBuildingsAndTroops();
@@ -159,6 +159,7 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 		FeedPop();
 		ConsumeEnergy();
 		SpawnEnemies();
+		SpawnBuildings();
 
 		dayStruct.day++;
 
@@ -395,25 +396,33 @@ void ACapstoneProjectGameModeBase::SpawnEnemies()
 	if (!playerBuiltTroop) return;
 
 	TArray<ABaseHex*> spawnableHexes;
-	for (int i = 0; i < spawnedSpawner->alienHexes.Num(); i++)
+	for (int i = 0; i < AGlobalSpawner::spawnerObject->alienHexes.Num(); i++)
 	{
-		ABuilding* building = spawnedSpawner->alienHexes[i]->building;
+		ABuilding* building = AGlobalSpawner::spawnerObject->alienHexes[i]->building;
 		if (building)
 		{
-			if (spawnedSpawner->alienHexes[i]->battle) continue;
+			if (AGlobalSpawner::spawnerObject->alienHexes[i]->battle) continue;
 			if (building->GetOccupier() != Factions::None) continue;
 		}
 
-		spawnableHexes.Add(spawnedSpawner->alienHexes[i]);
+		spawnableHexes.Add(AGlobalSpawner::spawnerObject->alienHexes[i]);
 	}
 
 	if (!spawnableHexes.IsEmpty() && enemyTroops.Num() < spawnableHexes.Num())
 	{
-		ABaseHex* randHex = spawnedSpawner->alienHexes[FMath::RandRange(0, spawnableHexes.Num() - 1)];
+		ABaseHex* randHex = AGlobalSpawner::spawnerObject->alienHexes[FMath::RandRange(0, spawnableHexes.Num() - 1)];
 
-		ATroop* army = spawnedSpawner->BuildArmy(Factions::Alien1, randHex);
+		ATroop* army = AGlobalSpawner::spawnerObject->BuildArmy(Factions::Alien1, randHex);
 		army->AITroopComponent->troopsInArmy = troopsInArmy;
 
 		currentDaysTillArmySpawn = daysTillArmySpawn;
+	}
+}
+
+void ACapstoneProjectGameModeBase::SpawnBuildings()
+{
+	for (auto& factionObject : activeFactions)
+	{
+		factionObject.Value->BuildRandomBuilding();
 	}
 }
