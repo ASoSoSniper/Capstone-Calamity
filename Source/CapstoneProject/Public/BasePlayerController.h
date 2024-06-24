@@ -184,4 +184,7 @@ public:
 	UFUNCTION(BlueprintCallable) bool UnitTypeOnHex(UnitTypes type);
 	UFUNCTION(BlueprintCallable) bool BattleGroupIsHuman(int group);
 	UFUNCTION(BlueprintCallable) FPlayerWorkers GetPlayerWorkers();
+
+	UFUNCTION(BlueprintCallable) FString GetTroopNameRaw();
+	UFUNCTION(BlueprintCallable) bool CheckIfArmy();
 };

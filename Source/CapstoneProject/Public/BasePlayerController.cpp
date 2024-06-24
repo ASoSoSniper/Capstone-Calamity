@@ -582,6 +582,30 @@ FPlayerWorkers ABasePlayerController::GetPlayerWorkers()
 	return workers;
 }
 
+FString ABasePlayerController::GetTroopNameRaw()
+{
+	AActor* Actor = GetActionStateSelection();
+
+	if (ATroop*Troop = Cast<ATroop>(Actor))
+	{
+		return Troop->unitStats->name;
+	}
+	
+	return "";
+}
+
+bool ABasePlayerController::CheckIfArmy()
+{
+	AActor* Actor = GetActionStateSelection();
+
+	if (ATroop* Army = Cast<ATroop>(Actor))
+	{
+		return Army->unitStats->unitType == UnitTypes::Army;
+	}
+
+	return false;
+}
+
 /*bool ABasePlayerController::ToggleBuildingUI()
 {
 	if (toggleBuildingUI)
