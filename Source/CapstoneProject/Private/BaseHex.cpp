@@ -195,7 +195,7 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 
 void ABaseHex::CheckForHostility(ABuilding* refBuilding)
 {
-	if (refBuilding->sieged) return;
+	if (refBuilding->IsOccupied()) return;
 
 	for (int i = 0; i < troopsInHex.Num(); ++i)
 	{

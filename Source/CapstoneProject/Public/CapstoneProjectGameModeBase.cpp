@@ -211,6 +211,7 @@ Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 
 	//Make the new Faction instance aware of the faction it's assigned to
 	newFaction->SetFaction(selectedFaction);
+	newFaction->SetFoodAndDeathCosts(foodPerNonWorkers, foodPerWorkers, popDeathsPerFoodMissing, popDeathsPerPowerMissing);
 
 	//In the global faction dictionary, add the selected faction as a new key and the Faction instance as its value
 	activeFactions.Add(selectedFaction, newFaction);
@@ -226,7 +227,7 @@ void ACapstoneProjectGameModeBase::Harvest(float& DeltaTime)
 		currentHarvestTime -= DeltaTime * timeScale;
 		return;
 	}
-	for (auto faction : activeFactions)
+	for (auto& faction : activeFactions)
 	{
 		for (auto& resource : faction.Value->resourceInventory)
 		{
@@ -266,159 +267,15 @@ void ACapstoneProjectGameModeBase::FeedPop()
 {
 	for (auto &faction : activeFactions)
 	{
-		int workerAvailableCost = 0;
-		int workerFoodCost = 0;
-
-		CalculateFoodCosts(faction.Key, workerAvailableCost, workerFoodCost);
-
-		int totalCost = activeFactions[faction.Key]->resourceInventory[StratResources::Food].lossesPerDay;
-		
-		//Enter full starvation if unaffordable non-working food cost
-		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
-		{
-			StarvePop(faction.Key, totalCost);
-			return;
-		}
-		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
-
-		//Enter worker starvation if unaffordable working food cost
-		if (activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources < workerFoodCost)
-		{
-			StarvePop(faction.Key, totalCost);
-			return;
-		}
-		activeFactions[faction.Key]->resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
-
-		activeFactions[faction.Key]->currStarveDays = 0;
-		activeFactions[faction.Key]->starving = false;
+		faction.Value->FeedPop();
 	}
-}
-
-void ACapstoneProjectGameModeBase::StarvePop(Factions faction, int foodCost)
-{
-	int missingFood = foodCost - activeFactions[faction]->resourceInventory[StratResources::Food].currentResources;
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Food cost = %d"), missingFood));
-
-	activeFactions[faction]->resourceInventory[StratResources::Food].currentResources = 0;	
-
-	if (!activeFactions[faction]->starving)
-	{
-		activeFactions[faction]->starving = true;
-		//RemoveWorkers(faction);
-	}
-
-	if (activeFactions[faction]->currStarveDays < activeFactions[faction]->daysTillStarve)
-	{
-		++activeFactions[faction]->currStarveDays;
-		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till starve"), activeFactions[faction]->daysTillStarve - activeFactions[faction]->currStarveDays));
-		return;
-	}
-
-	KillPopulation(faction, missingFood, popDeathsPerFoodMissing);
 }
 
 void ACapstoneProjectGameModeBase::ConsumeEnergy()
 {
 	for (auto& faction : activeFactions)
 	{
-		int energyCost = activeFactions[faction.Key]->resourceInventory[StratResources::Energy].lossesPerDay;
-
-		if (energyCost > faction.Value->resourceInventory[StratResources::Energy].currentResources)
-		{
-			PowerOutage(faction.Key, energyCost);
-			RemoveWorkers(faction.Key, WorkerType::Robot);
-			return;
-		}
-
-		faction.Value->resourceInventory[StratResources::Energy].currentResources -= energyCost;
-		faction.Value->currPowerDays = 0;
-		faction.Value->powerOutage = false;
-		if (faction.Key == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
-	}
-}
-
-void ACapstoneProjectGameModeBase::PowerOutage(Factions faction, int energyCost)
-{
-	int missingEnergy = energyCost - activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources;	
-
-	if (!activeFactions[faction]->powerOutage)
-	{
-		activeFactions[faction]->powerOutage = true;
-		activeFactions[faction]->resourceInventory[StratResources::Energy].currentResources = 0;
-		if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, false);
-	}
-
-	if (activeFactions[faction]->currPowerDays < activeFactions[faction]->daysTillPowerOutage)
-	{
-		++activeFactions[faction]->currPowerDays;
-		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%d days remaining till power outage"), activeFactions[faction]->daysTillPowerOutage - activeFactions[faction]->currPowerDays));
-		return;
-	}
-
-	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
-	KillPopulation(faction, missingEnergy, popDeathsPerPowerMissing);
-}
-
-void ACapstoneProjectGameModeBase::KillPopulation(Factions faction, int cost, int deathsPerResource)
-{
-	int remainingCost = 0;
-
-	//Kill non-working population
-	activeFactions[faction]->availableWorkers[WorkerType::Human].available -= cost * deathsPerResource;
-
-	if (activeFactions[faction]->availableWorkers[WorkerType::Human].available < 0)
-	{
-		remainingCost = -1 * activeFactions[faction]->availableWorkers[WorkerType::Human].available;
-		activeFactions[faction]->availableWorkers[WorkerType::Human].available = 0;
-	}
-	else return;
-
-	//Kill working population
-	TArray<ABaseHex*> hexesWithWorkers;
-	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes)
-	{
-		if (hex->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(hex);
-	}
-
-	int scanIndex = 0;
-	int workersToRemove = FMath::Min(remainingCost, activeFactions[faction]->availableWorkers[WorkerType::Human].working);
-
-	if (hexesWithWorkers.IsEmpty()) return;
-
-	int overloadStopper = 0;
-	while (workersToRemove != 0)
-	{
-		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
-		{
-			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
-			workersToRemove--;
-		}
-
-		scanIndex++;
-		if (!hexesWithWorkers.IsValidIndex(scanIndex))
-		{
-			scanIndex = 0;
-		}
-
-		overloadStopper++;
-		if (overloadStopper == 100)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
-			return;
-		}
-	}
-	activeFactions[faction]->availableWorkers[WorkerType::Human].working -= remainingCost;
-
-	if (activeFactions[faction]->availableWorkers[WorkerType::Human].working < 0)
-		activeFactions[faction]->availableWorkers[WorkerType::Human].working = 0;
-}
-
-void ACapstoneProjectGameModeBase::RemoveWorkers(Factions faction, WorkerType worker)
-{
-	for (ABaseHex* hex : activeFactions[faction]->ownedHexes)
-	{
-		activeFactions[faction]->availableWorkers[worker].available += hex->workersInHex[worker];
-		hex->workersInHex[worker] = 0;
+		faction.Value->ConsumeEnergy();
 	}
 }
 
@@ -467,57 +324,8 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 {
 	for (auto& faction : activeFactions)
 	{
-		//Food
-		int workerAvailableCost = 0;
-		int workerFoodCost = 0;
-
-		CalculateFoodCosts(faction.Key, workerAvailableCost, workerFoodCost);
-		faction.Value->resourceInventory[StratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
-
-		//Energy
-		int energyCost = CalculateEnergyCosts(faction.Key);
-		
-		faction.Value->resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
+		faction.Value->UpdateResourceCosts();
 	}
-}
-
-void ACapstoneProjectGameModeBase::CalculateFoodCosts(Factions faction, int& availableWorkerCost, int& workingWorkerCost)
-{
-	int remainder = activeFactions[faction]->availableWorkers[WorkerType::Human].available % foodPerNonWorkers;
-	availableWorkerCost = activeFactions[faction]->availableWorkers[WorkerType::Human].available / foodPerNonWorkers;
-	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
-
-	int workerRemainder = 0;
-
-	for (auto& workers : activeFactions[faction]->availableWorkers)
-	{
-		workerRemainder = workers.Value.working % foodPerWorkers;
-		int cost = workers.Value.working / foodPerWorkers;
-		workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
-	}
-}
-
-int ACapstoneProjectGameModeBase::CalculateEnergyCosts(Factions faction)
-{
-	int energyCost = 0;
-
-	if (!activeFactions[faction]->powerOutage)
-	{
-		for (ATroop* troop : activeFactions[faction]->allUnits)
-		{
-			energyCost += troop->unitStats->energyUpkeep;
-		}
-	}
-	for (ABuilding* building : activeFactions[faction]->allBuildings)
-	{
-		energyCost += building->unitStats->energyUpkeep;
-	}
-	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes)
-	{
-		energyCost += hex->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction)[WorkerType::Robot];
-	}
-
-	return energyCost;
 }
 
 void ACapstoneProjectGameModeBase::CheckHumanPop()
@@ -582,7 +390,7 @@ void ACapstoneProjectGameModeBase::SpawnEnemies()
 		if (building)
 		{
 			if (spawnedSpawner->alienHexes[i]->battle) continue;
-			if (building->siegingFaction != Factions::None) continue;
+			if (building->GetOccupier() != Factions::None) continue;
 		}
 
 		spawnableHexes.Add(spawnedSpawner->alienHexes[i]);

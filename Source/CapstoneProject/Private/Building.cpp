@@ -200,7 +200,7 @@ void ABuilding::SetBuildState()
 		if (unitStats->faction == Factions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
 		break;
 	case Complete:
-		currBuildTime = upgradeTime;
+		
 		break;
 	case Uprading:
 		buildState = Upgraded;
@@ -216,10 +216,10 @@ void ABuilding::UpdateResources()
 	for (auto& resource : resourceYields)
 	{
 		int value = resource.Value;
-		if (siegingFaction != Factions::None)
+		if (occupyingFaction != Factions::None)
 		{
-			int ownerPortion = FMath::RoundToInt((float)value - (float)value * siegeResourcePercent);
-			int siegePortion = FMath::RoundToInt((float)value * siegeResourcePercent);
+			int ownerPortion = FMath::RoundToInt((float)value - (float)value * occupyResourcePercent);
+			int siegePortion = FMath::RoundToInt((float)value * occupyResourcePercent);
 			hex->UpdateResourceYield(resource.Key, ownerPortion);
 			hex->UpdateResourceYield(resource.Key, siegePortion);
 		}
@@ -401,7 +401,7 @@ void ABuilding::Destroyed()
 
 bool ABuilding::IsDisabled()
 {
-	if (sieged) return true;
+	if (occupied) return true;
 	if (unitStats->currentHP > 0) return false;
 
 	return true;
@@ -409,19 +409,19 @@ bool ABuilding::IsDisabled()
 
 bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
 {
-	if (sieged == sieging) return false;
+	if (occupied == sieging) return false;
 
-	sieged = sieging;
+	occupied = sieging;
 
-	if (sieged)
+	if (occupied)
 	{
 		smokeEffect = AGlobalSpawner::spawnerObject->SpawnSmoke(this);
-		siegingFaction = occupier;
+		occupyingFaction = occupier;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("occupation changed"));
 	}
 	else
 	{
-		siegingFaction = Factions::None;
+		occupyingFaction = Factions::None;
 		if (smokeEffect)
 		{
 			smokeEffect->Destroy();
@@ -435,7 +435,24 @@ bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
 	return true;
 }
 
+bool ABuilding::IsOccupied()
+{
+	return occupied;
+}
+
+void ABuilding::SetBuildAtStart(bool active)
+{
+	if (setupComplete) return;
+
+	builtAtStart = active;
+}
+
 bool ABuilding::TroopOccupation()
+{
+	return GetOccupyingTroops() >= troopOccupationMin;
+}
+
+int ABuilding::GetOccupyingTroops()
 {
 	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
 
@@ -443,7 +460,7 @@ bool ABuilding::TroopOccupation()
 
 	for (int i = 0; i < hex->troopsInHex.Num(); i++)
 	{
-		if (hex->troopsInHex[i]->unitStats->faction == siegingFaction)
+		if (hex->troopsInHex[i]->unitStats->faction == occupyingFaction)
 		{
 			if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Army)
 			{
@@ -456,12 +473,17 @@ bool ABuilding::TroopOccupation()
 		}
 	}
 
-	return occupyingTroops >= troopOccupationMin;
+	return occupyingTroops;
+}
+
+int ABuilding::GetOccupationMinCount()
+{
+	return troopOccupationMin;
 }
 
 void ABuilding::UpdateUnrestLevel(float& DeltaTime)
 {
-	if (!sieged)
+	if (!occupied)
 	{
 		unrestLevel = 0.f; 
 		return;
@@ -479,11 +501,26 @@ void ABuilding::UpdateUnrestLevel(float& DeltaTime)
 	SetSiegeState(false);
 }
 
+Factions ABuilding::GetOccupier()
+{
+	return occupyingFaction;
+}
+
 float ABuilding::GetBuildPercent()
 {
 	if (buildTime <= 0) return 0.f;
 
 	return (buildTime - currBuildTime) / buildTime;
+}
+
+float ABuilding::GetUnrestPercent()
+{
+	return unrestLevel;
+}
+
+SpawnableBuildings ABuilding::GetBuildingType()
+{
+	return buildingType;
 }
 
 void ABuilding::HealOverTime()

@@ -50,6 +50,15 @@ void Faction::FindActiveFactions()
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Faction found %d other factions!"), factionRelationships.Num()));
 }
 
+void Faction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
+{
+	foodPerNonWorkers = foodPerNonWorkersVar;
+	foodPerWorkers = foodPerWorkersVar;
+
+	popDeathsPerFoodMissing = popDeathsPerFoodMissingVar;
+	popDeathsPerPowerMissing = popDeathsPerPowerMissingVar;
+}
+
 FactionRelationship Faction::GetFactionRelationship(Factions targetFaction)
 {
 	//If comparing unit faction to itself, return Ally.
@@ -133,6 +142,216 @@ bool Faction::IsAIControlled()
 	return AIControlled;
 }
 
+void Faction::FeedPop()
+{
+	if (AIControlled) return;
+
+	int workerAvailableCost = 0;
+	int workerFoodCost = 0;
+
+	CalculateFoodCost(workerAvailableCost, workerFoodCost);
+
+	int totalCost = resourceInventory[StratResources::Food].lossesPerDay;
+
+	//Enter full starvation if unaffordable non-working food cost
+	if (resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
+	{
+		StarvePop(totalCost);
+		return;
+	}
+	resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
+
+	//Enter worker starvation if unaffordable working food cost
+	if (resourceInventory[StratResources::Food].currentResources < workerFoodCost)
+	{
+		StarvePop(totalCost);
+		return;
+	}
+	resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
+
+	currStarveDays = 0;
+	starving = false;
+}
+
+void Faction::ConsumeEnergy()
+{
+	if (AIControlled) return;
+
+	int energyCost = resourceInventory[StratResources::Energy].lossesPerDay;
+
+	if (energyCost > resourceInventory[StratResources::Energy].currentResources)
+	{
+		PowerOutage(energyCost);
+		RemoveWorkers(WorkerType::Robot);
+		return;
+	}
+
+	resourceInventory[StratResources::Energy].currentResources -= energyCost;
+	currPowerDays = 0;
+	powerOutage = false;
+	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
+}
+
+void Faction::StarvePop(int foodCost)
+{
+	int missingFood = foodCost - resourceInventory[StratResources::Food].currentResources;
+
+	resourceInventory[StratResources::Food].currentResources = 0;
+
+	if (!starving)
+	{
+		starving = true;
+	}
+
+	if (currStarveDays < daysTillStarve)
+	{
+		++currStarveDays;
+		return;
+	}
+
+	KillPopulation(missingFood, popDeathsPerFoodMissing);
+}
+
+void Faction::PowerOutage(int energyCost)
+{
+	int missingEnergy = energyCost - resourceInventory[StratResources::Energy].currentResources;
+
+	if (!powerOutage)
+	{
+		powerOutage = true;
+		resourceInventory[StratResources::Energy].currentResources = 0;
+		if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, false);
+	}
+
+	if (currPowerDays < daysTillPowerOutage)
+	{
+		++currPowerDays;
+		return;
+	}
+
+	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
+	KillPopulation(missingEnergy, popDeathsPerPowerMissing);
+}
+
+void Faction::RemoveWorkers(WorkerType workerType)
+{
+	for (ABaseHex* hex : ownedHexes)
+	{
+		availableWorkers[workerType].available += hex->workersInHex[workerType];
+		hex->workersInHex[workerType] = 0;
+	}
+}
+
+void Faction::KillPopulation(int cost, int deathsPerResource)
+{
+	int remainingCost = 0;
+
+	//Kill non-working population
+	availableWorkers[WorkerType::Human].available -= cost * deathsPerResource;
+
+	if (availableWorkers[WorkerType::Human].available < 0)
+	{
+		remainingCost = -1 * availableWorkers[WorkerType::Human].available;
+		availableWorkers[WorkerType::Human].available = 0;
+	}
+	else return;
+
+	//Kill working population
+	TArray<ABaseHex*> hexesWithWorkers;
+	for (ABaseHex* hex : ownedHexes)
+	{
+		if (hex->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(hex);
+	}
+
+	int scanIndex = 0;
+	int workersToRemove = FMath::Min(remainingCost, availableWorkers[WorkerType::Human].working);
+
+	if (hexesWithWorkers.IsEmpty()) return;
+
+	int overloadStopper = 0;
+	while (workersToRemove != 0)
+	{
+		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
+		{
+			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
+			workersToRemove--;
+		}
+
+		scanIndex++;
+		if (!hexesWithWorkers.IsValidIndex(scanIndex))
+		{
+			scanIndex = 0;
+		}
+
+		overloadStopper++;
+		if (overloadStopper == 100)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
+			return;
+		}
+	}
+	availableWorkers[WorkerType::Human].working -= remainingCost;
+
+	if (availableWorkers[WorkerType::Human].working < 0)
+		availableWorkers[WorkerType::Human].working = 0;
+}
+
+void Faction::UpdateResourceCosts()
+{
+	if (AIControlled) return;
+
+	//Food
+	int workerAvailableCost = 0;
+	int workerFoodCost = 0;
+
+	CalculateFoodCost(workerAvailableCost, workerFoodCost);
+	resourceInventory[StratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
+
+	//Energy
+	int energyCost = CalculateEnergyCost();
+
+	resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
+}
+
+void Faction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
+{
+	int remainder = availableWorkers[WorkerType::Human].available % foodPerNonWorkers;
+	availableWorkerCost = availableWorkers[WorkerType::Human].available / foodPerNonWorkers;
+	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
+
+	int workerRemainder = 0;
+
+	for (auto& workers : availableWorkers)
+	{
+		workerRemainder = workers.Value.working % foodPerWorkers;
+		int cost = workers.Value.working / foodPerWorkers;
+		workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
+	}
+}
+
+int Faction::CalculateEnergyCost()
+{
+	int energyCost = 0;
+
+	if (!powerOutage)
+	{
+		for (ATroop* troop : allUnits)
+		{
+			energyCost += troop->unitStats->energyUpkeep;
+		}
+	}
+	for (ABuilding* building : allBuildings)
+	{
+		energyCost += building->unitStats->energyUpkeep;
+	}
+	for (ABaseHex* hex : ownedHexes)
+	{
+		energyCost += hex->workersInHex[WorkerType::Robot] * UnitActions::GetWorkerEnergyCost(faction)[WorkerType::Robot];
+	}
+
+	return energyCost;
+}
+
 void Faction::CleanTargetPool()
 {
 	if (!AIControlled) return;
@@ -179,11 +398,11 @@ void Faction::TargetBuildingsOfFaction(Factions targetFaction)
 
 	for (auto& building : factionObject->allBuildings)
 	{
-		if (building->siegingFaction != Factions::None)
+		if (building->GetOccupier() != Factions::None)
 		{
-			if (GetFactionRelationship(building->siegingFaction) == FactionRelationship::Enemy)
+			if (GetFactionRelationship(building->GetOccupier()) == FactionRelationship::Enemy)
 			{
-				targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), building->siegingFaction);
+				targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), building->GetOccupier());
 				continue;
 			}
 		}

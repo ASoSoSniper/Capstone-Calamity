@@ -48,6 +48,7 @@ public:
 	UPROPERTY() TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
 
 	void FindActiveFactions();
+	void SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
 
 	UPROPERTY() int daysTillStarve = 3;
 	UPROPERTY() int currStarveDays = 0;
@@ -72,6 +73,10 @@ public:
 	UFUNCTION() void SetFaction(Factions newFaction);
 	UFUNCTION() bool IsAIControlled();
 
+	UFUNCTION() void UpdateResourceCosts();
+	UFUNCTION() void FeedPop();
+	UFUNCTION() void ConsumeEnergy();
+	
 private:
 
 	UPROPERTY() Factions faction;
@@ -81,4 +86,17 @@ private:
 	UFUNCTION() void CleanTargetPool();
 	UFUNCTION() void GetTargetsOfAllies();
 	UFUNCTION() void TargetBuildingsOfFaction(Factions targetFaction);
+
+	UFUNCTION() void CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost);
+	UFUNCTION() int CalculateEnergyCost();
+
+	UFUNCTION() void StarvePop(int foodCost);
+	UFUNCTION() void PowerOutage(int energyCost);
+	UFUNCTION() void RemoveWorkers(WorkerType workerType);
+	UFUNCTION() void KillPopulation(int cost, int deathsPerResource);
+
+	int foodPerNonWorkers;
+	int foodPerWorkers;
+	int popDeathsPerFoodMissing;
+	int popDeathsPerPowerMissing;
 };

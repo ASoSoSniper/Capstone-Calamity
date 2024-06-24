@@ -803,7 +803,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     if (ABuilding* building = objectType.hex->building)
     {
         if (GetFaction(faction)->GetFactionRelationship(building) != FactionRelationship::Enemy) return;
-        if (building->siegingFaction != faction && building->unitStats->currentHP > 0.f)
+        if (building->GetOccupier() != faction && building->unitStats->currentHP > 0.f)
         {
             targetList.Add(objectType.hex, building->unitStats->faction);
             return;

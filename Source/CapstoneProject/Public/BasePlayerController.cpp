@@ -477,8 +477,8 @@ bool ABasePlayerController::IsHumanControlled(AActor* object)
 		return identity.moveAI->unitStats->faction == Factions::Human;
 
 	case ObjectTypes::Building:
-		return (identity.building->unitStats->faction == Factions::Human && identity.building->siegingFaction == Factions::None) ||
-			(identity.building->unitStats->faction != Factions::Human && identity.building->siegingFaction == Factions::Human);
+		return (identity.building->unitStats->faction == Factions::Human && identity.building->GetOccupier() == Factions::None) ||
+			(identity.building->unitStats->faction != Factions::Human && identity.building->GetOccupier() == Factions::Human);
 
 	case ObjectTypes::Hex:
 		return identity.hex->hexOwner == Factions::Human;
@@ -512,9 +512,9 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 	ASiegeObject* siege = Cast<ASiegeObject>(actor);
 	if (!siege) return info;
 
-	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[siege->building->buildingType];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[siege->building->GetBuildingType()];
 	info.buildingName = stats.name;
-	info.buildingType = siege->building->buildingType;
+	info.buildingType = siege->building->GetBuildingType();
 	info.buildingIcon = stats.buildingIcon;
 
 	info.currentHealth = siege->building->unitStats->currentHP;
@@ -631,7 +631,7 @@ void ABasePlayerController::PlayUIHexSound(TerrainType hexType, ABaseHex* hex)
 	{
 		if (hex->building)
 		{
-			PlayUIBuildingSound(hex->building->buildingType);
+			PlayUIBuildingSound(hex->building->GetBuildingType());
 			return;
 		}
 	}
@@ -889,7 +889,7 @@ FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
 	FBuildingDisplay attachmentDisplay;
 	if (!hex->building) return attachmentDisplay;
 
-	SpawnableBuildings selectedBuilding = building->buildingType;
+	SpawnableBuildings selectedBuilding = building->GetBuildingType();
 
 	FBuildingCost costs;
 	FBuildingStats stats;

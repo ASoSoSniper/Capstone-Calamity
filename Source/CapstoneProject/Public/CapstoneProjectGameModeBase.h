@@ -45,9 +45,6 @@ public:
 	static inline float currentScanTime = 0;
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 
-	UPROPERTY(EditAnywhere) int popDeathsPerFoodMissing = 5;
-	UPROPERTY(EditAnywhere) int popDeathsPerPowerMissing = 5;
-	
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 2;
 
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
@@ -101,21 +98,12 @@ private:
 
 	void UpdateBuildings();
 
+	void UpdateResourceCosts();
 	void FeedPop();
-	void StarvePop(Factions faction, int foodCost);
-
 	void ConsumeEnergy();
-	void PowerOutage(Factions faction, int energyCost);
 
-	void KillPopulation(Factions faction, int cost, int deathsPerResource);
-
-	void RemoveWorkers(Factions faction, WorkerType worker);
 	void FindExistingBuildingsAndTroops();
 	void FindExistingHexes();
-	void UpdateResourceCosts();
-
-	void CalculateFoodCosts(Factions faction, int& availableWorkerCost, int& workingWorkerCost);
-	int CalculateEnergyCosts(Factions faction);
 
 	void CheckHumanPop();
 	void CheckDate();
@@ -133,4 +121,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerPowerMissing = 5;
 };

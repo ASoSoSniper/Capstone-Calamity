@@ -192,5 +192,5 @@ bool ASiegeObject::BuildingIsAlive()
 		}
 	}
 
-	return !building->sieged;
+	return !building->IsOccupied();
 }

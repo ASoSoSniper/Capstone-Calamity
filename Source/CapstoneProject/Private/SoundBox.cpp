@@ -75,9 +75,9 @@ void ASoundBox::SetHexAmbience(ABaseHex* hex)
 
 	if (hex->building)
 	{
-		if (buildingSounds.Contains(hex->building->buildingType))
+		if (buildingSounds.Contains(hex->building->GetBuildingType()))
 		{
-			if (!soundSet) hex->audioComponent->SetSound(buildingSounds[hex->building->buildingType]);
+			if (!soundSet) hex->audioComponent->SetSound(buildingSounds[hex->building->GetBuildingType()]);
 			soundSet = true;
 		}
 	}

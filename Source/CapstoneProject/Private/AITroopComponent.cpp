@@ -4,6 +4,7 @@
 #include "AITroopComponent.h"
 #include "Troop.h"
 #include "BaseHex.h"
+#include "Building.h"
 
 // Sets default values for this component's properties
 UAITroopComponent::UAITroopComponent()
@@ -30,31 +31,18 @@ void UAITroopComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
-
-	if (parentTroop->unitStats->unitType == UnitTypes::Army)
-	{
-		if (parentTroop->unitStats->savedUnits.IsEmpty()) GenerateArmy();
-	}
-
-	if (currentTarget != ToEnemy)
-	{
-		if (AActor* hex = SelectClosestHostileTarget())
-		{
-			parentTroop->hexNav->targetHex = hex;
-			parentTroop->CreatePath();
-			currentTarget = ToEnemy;
-			return;
-		}
-	}
-
-	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
-	{
-		SetDestination();
-	}
+	UpdateBehavior();
 }
 
-void UAITroopComponent::SetDestination()
+void UAITroopComponent::EnableEnemyAI()
+{
+	isEnemy = true;
+
+	if (parentTroop->unitStats->unitType == UnitTypes::Army)
+		GenerateArmy();
+}
+
+void UAITroopComponent::SetNeutralDestination()
 {
 	AActor* targetHex = nullptr;
 
@@ -71,8 +59,33 @@ void UAITroopComponent::SetDestination()
 	{
 		parentTroop->hexNav->targetHex = targetHex;
 		parentTroop->CreatePath();
-		currentTarget = ToHex;
+		currentState = ToHex;
 	}
+}
+
+void UAITroopComponent::SetHostileDestination(AActor* hex)
+{
+	parentTroop->hexNav->targetHex = hex;
+	parentTroop->CreatePath();
+	currentState = ToEnemy;
+}
+
+bool UAITroopComponent::OccupyingBuilding()
+{
+	ABaseHex* hex = Cast<ABaseHex>(parentTroop->hexNav->currentHex);
+	if (!hex->building) return false;
+
+	if (hex->building->GetOccupier() == parentTroop->unitStats->faction)
+	{
+		if (hex->building->GetOccupyingTroops() <= hex->building->GetOccupationMinCount())
+		{
+			currentState = HoldPosition;
+			parentTroop->CancelPath();
+			return true;
+		}
+	}
+
+	return false;
 }
 
 ABaseHex* UAITroopComponent::FindHex(int X, int Y)
@@ -88,7 +101,7 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 	return nullptr;
 }
 
-AActor* UAITroopComponent::SelectClosestHostileTarget()
+AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 {
 	TMap<ABaseHex*, Factions> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
 
@@ -99,6 +112,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	for (auto& target : targetList)
 	{
 		if (!target.Key) continue;
+		if (targetType != ObjectTypes::NoType && !IsViableTarget(target.Key, targetType)) continue;
 
 		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), target.Key->GetActorLocation());
 
@@ -113,7 +127,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	{
 		FVector2D target = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
 		FVector2D origin = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
-		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("X Dist: %f, Y Dist: %f"), FMath::Abs(target.X - origin.X), FMath::Abs(target.Y - origin.Y)));
+		
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
 			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
 		{
@@ -124,6 +138,23 @@ AActor* UAITroopComponent::SelectClosestHostileTarget()
 	}
 
 	return nullptr;
+}
+
+bool UAITroopComponent::IsViableTarget(ABaseHex* hex, ObjectTypes targetType)
+{
+	switch (targetType)
+	{
+	case ObjectTypes::Building:
+		if (hex->building &&
+			hex->building->GetOccupier() == parentTroop->unitStats->faction &&
+			!hex->building->TroopOccupation())
+			return true;
+		else 
+			return false;
+		break;
+	}
+
+	return true;
 }
 
 AActor* UAITroopComponent::FindRandomHex()
@@ -165,11 +196,46 @@ void UAITroopComponent::GenerateArmy()
 	}
 }
 
-void UAITroopComponent::EvaluateCurrentTarget()
+bool UAITroopComponent::CanFindOccupiableBuilding()
 {
-	if (currentTarget != ToEnemy) return;
+	if (currentState == ToEnemy) return true;
 
+	if (AActor* hex = SelectClosestHostileTarget(ObjectTypes::Building))
+	{
+		SetHostileDestination(hex);
+		return true;
+	}
 
+	return false;
+}
+
+bool UAITroopComponent::CanFindEnemyTarget()
+{
+	if (currentState == ToEnemy) return true;
+
+	if (AActor* hex = SelectClosestHostileTarget())
+	{
+		SetHostileDestination(hex);
+		return true;
+	}
+
+	return false;
+}
+
+void UAITroopComponent::UpdateBehavior()
+{
+	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
+
+	if (OccupyingBuilding()) return;
+
+	if (CanFindOccupiableBuilding()) return;
+
+	if (CanFindEnemyTarget()) return;
+
+	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
+	{
+		SetNeutralDestination();
+	}
 }
 
 

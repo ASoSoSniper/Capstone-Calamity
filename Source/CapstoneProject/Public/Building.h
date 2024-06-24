@@ -26,48 +26,16 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere) UCinematicPosition* cinematicComponent;
+	UPROPERTY(VisibleAnywhere)UInteractable* interactable;
+	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(VisibleAnywhere)UInteractable* interactable;
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
-	UPROPERTY(EditAnywhere)UStaticMeshComponent* mesh;
-	UPROPERTY(EditAnywhere) UCinematicPosition* cinematicComponent;
-	UPROPERTY(EditAnywhere)SpawnableBuildings buildingType;
-	UPROPERTY(VisibleAnywhere) Factions siegingFaction = Factions::None;
-
-
-	TMap<StratResources, int> resourceYields;
-
-	enum BuildStates
-	{
-		None,
-		Building,
-		Complete,
-		Uprading,
-		Upgraded,
-		Destroying
-	};
-	BuildStates buildState = None;
-
-	float buildTime = 5.f;
-	float upgradeTime = 10.f;
-	float currBuildTime;
-
-	int resourceCapIncrease = 0;
-
-	virtual void UpdateResources();
-	virtual void RevertResources();
-	virtual void BuildingAction();
-	virtual void SetToFinishedModel();
-
-	bool SphereCheck();
-	UPROPERTY(EditAnywhere) float hexSearchDistance = 100.f;
-	UPROPERTY(EditAnywhere) float hexSnapDistance = 50.f;
 
 	virtual void Action1();
 	virtual void Action2();
@@ -79,34 +47,72 @@ public:
 	virtual void Action8();
 	virtual void Action9();
 	virtual void Action10();
-
+	
 	virtual void BeginDestroying();
-	virtual void DestroyingBuilding(float& DeltaTime);
-	float destructionTime = 10.f;
-	float currDestructionTime = 0.f;
-	virtual void Destroyed() override;
-
-	UPROPERTY(VisibleAnywhere) bool sieged = false;
 	virtual bool IsDisabled();
-	UPROPERTY(EditAnywhere) bool builtAtStart = false;
 
 	bool SetSiegeState(bool sieging, Factions occupier = Factions::None);
+	bool IsOccupied();
+	void SetBuildAtStart(bool active);
+	
 	bool TroopOccupation();
-	UPROPERTY(EditAnywhere) int troopOccupationMin = 3;
-	UPROPERTY(VisibleAnywhere) float unrestLevel = 0.f;
-	UPROPERTY(EditAnywhere) float unrestTime = 20.f;
-	void UpdateUnrestLevel(float& DeltaTime);
-
-	UPROPERTY(VisibleAnywhere) AActor* smokeEffect;
-	UPROPERTY(EditAnywhere) float siegeResourcePercent = 0.25f;
-
-	UFUNCTION(BlueprintCallable) float GetBuildPercent();
+	int GetOccupyingTroops();
+	int GetOccupationMinCount();
 	void HealOverTime();
-	UPROPERTY(EditAnywhere) float healPercent = 0.04f;
+	UFUNCTION(BlueprintCallable) Factions GetOccupier();
+	UFUNCTION(BlueprintCallable) float GetBuildPercent();
+	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
+	UFUNCTION(BlueprintCallable) SpawnableBuildings GetBuildingType();
+
+protected:
+	enum BuildStates
+	{
+		None,
+		Building,
+		Complete,
+		Uprading,
+		Upgraded,
+		Destroying
+	};
+	BuildStates buildState = None;
+
+	UPROPERTY(VisibleAnywhere) SpawnableBuildings buildingType;
+	TMap<StratResources, int> resourceYields;
+	int resourceCapIncrease = 0;
+	UPROPERTY(EditAnywhere, Category = "Initialization") bool builtAtStart = false;
+
+	virtual void UpdateResources();
+	virtual void RevertResources();
+	virtual void BuildingAction();
+	virtual void SetToFinishedModel();
+	virtual void Destroyed() override;
+	virtual void DestroyingBuilding(float& DeltaTime);
 
 private:
 	bool SetupBuilding(SpawnableBuildings type);
 	void Constructing(float& DeltaTime);
+	void UpdateUnrestLevel(float& DeltaTime);
+	bool SphereCheck();
 	void SetBuildState();
 	bool setupComplete;
+
+	UPROPERTY(EditAnywhere, Category = "Occupation") int troopOccupationMin = 3;
+	UPROPERTY(EditAnywhere, Category = "Occupation") float occupyResourcePercent = 0.25f;
+	UPROPERTY(VisibleAnywhere, Category = "Occupation") bool occupied = false;
+	UPROPERTY(VisibleAnywhere, Category = "Occupation") Factions occupyingFaction = Factions::None;
+	UPROPERTY(VisibleAnywhere, Category = "Unrest") float unrestLevel = 0.f;
+	UPROPERTY(EditAnywhere, Category = "Unrest") float unrestTime = 20.f;
+
+	UPROPERTY(EditAnywhere, Category = "Healing") float healPercent = 0.04f;
+
+	UPROPERTY(EditAnywhere, Category = "Initialization") float hexSearchDistance = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Initialization") float hexSnapDistance = 50.f;
+
+	UPROPERTY(EditAnywhere, Category = "Initialization") float buildTime = 5.f;
+	float currBuildTime;
+
+	UPROPERTY() AActor* smokeEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Destruction") float destructionTime = 10.f;
+	float currDestructionTime = 0.f;
 };

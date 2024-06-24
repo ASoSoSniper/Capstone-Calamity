@@ -1136,15 +1136,15 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 
 	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, randomHexes[0]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, miningStation);
-	miningStation->builtAtStart = true;
+	miningStation->SetBuildAtStart(true);
 
 	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, randomHexes[1]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, farmland);
-	farmland->builtAtStart = true;
+	farmland->SetBuildAtStart(true);
 
 	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, randomHexes[2]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	UnitActions::AssignFaction(Factions::Alien1, powerPlant);
-	powerPlant->builtAtStart = true;
+	powerPlant->SetBuildAtStart(true);
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)

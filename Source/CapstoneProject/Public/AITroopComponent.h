@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "UnitActions.h"
 #include "AITroopComponent.generated.h"
 
 class ATroop;
 class ABaseHex;
+class ABuilding;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UAITroopComponent : public UActorComponent
 {
@@ -25,28 +27,38 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(VisibleAnywhere) ATroop* parentTroop = nullptr;
+	UPROPERTY(EditAnywhere) int troopsInArmy = 1;
 
+	void EnableEnemyAI();
+
+private:
 	enum MoveTarget
 	{
 		ToHex,
-		ToEnemy
+		ToEnemy,
+		HoldPosition
 	};
-	MoveTarget currentTarget;
+	MoveTarget currentState;
 
-	void SetDestination();
+	UPROPERTY(VisibleAnywhere) ATroop* parentTroop = nullptr;
 
 	ABaseHex* FindHex(int X, int Y);
 
-	AActor* SelectClosestHostileTarget();
+	AActor* SelectClosestHostileTarget(ObjectTypes targetType = ObjectTypes::NoType);
+	bool IsViableTarget(ABaseHex* hex, ObjectTypes targetType = ObjectTypes::NoType);
 	AActor* FindRandomHex();
 
 	UPROPERTY(VisibleAnywhere) bool isEnemy = false;
 
 	UPROPERTY(EditAnywhere) int randomHexInterval = 5;
 	UPROPERTY(EditAnywhere) int targetAttackDistance = 15;
-	UPROPERTY(EditAnywhere) int troopsInArmy = 1;
 
 	void GenerateArmy();
-	void EvaluateCurrentTarget();
+	void UpdateBehavior();
+
+	bool CanFindOccupiableBuilding();
+	bool CanFindEnemyTarget();
+	void SetNeutralDestination();
+	void SetHostileDestination(AActor* hex);
+	bool OccupyingBuilding();
 };

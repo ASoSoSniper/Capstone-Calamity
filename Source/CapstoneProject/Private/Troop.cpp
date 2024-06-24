@@ -153,7 +153,7 @@ bool ATroop::SetUpTroop()
 
 	if (unitStats->faction != Factions::Human)
 	{
-		if (!debug) AITroopComponent->isEnemy = true;
+		if (!debug) AITroopComponent->EnableEnemyAI();
 	}
 
 	visibility->meshMaterials.visibleTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[unitStats->faction].visibleTexture;
