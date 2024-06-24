@@ -195,21 +195,29 @@ void Faction::ConsumeEnergy()
 
 void Faction::BuildRandomBuilding()
 {
-	if (!AIControlled) return;
+	if (!AIControlled || ownedHexes.IsEmpty()) return;
 
 	TArray<ABaseHex*> hexes;
 
 	for (ABaseHex* hex : ownedHexes)
 	{
-		if (!hex->IsStaticBuildingTerrain() && !hex->building)
+		if (hex->IsBuildableTerrain() && !hex->building)
 			hexes.Add(hex);
+	}
+
+	if (hexes.IsEmpty())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No Valid hexes found"));
+		return;
 	}
 
 	int rand = FMath::RandRange(0, hexes.Num() - 1);
 
+	ABaseHex* randHex = hexes[rand];
+
 	if (AGlobalSpawner::spawnerObject)
 	{
-		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), hexes[rand]);
+		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), randHex);
 	}
 }
 
