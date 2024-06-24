@@ -590,7 +590,7 @@ FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 {
 	FCurrentResourceYields yields;
 
-	float outputPercent = GetOutputPercent();
+	//float outputPercent = GetOutputPercent();
 
 	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food].yieldBonus);
 	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy].yieldBonus);

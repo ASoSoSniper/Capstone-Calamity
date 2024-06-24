@@ -1150,7 +1150,7 @@ FResourcesPerTick ABasePlayerController::GetResourcesPerTick()
 
 FCurrentResourceYields ABasePlayerController::GetHexResourceYields()
 {
-	FCurrentResourceYields yields;
+	FCurrentResourceYields yields = FCurrentResourceYields{};
 
 	if (selectedHex) yields = selectedHex->GetCurrentResourceYields();
 
