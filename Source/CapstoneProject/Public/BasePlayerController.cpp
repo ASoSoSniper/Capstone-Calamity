@@ -1148,6 +1148,15 @@ FResourcesPerTick ABasePlayerController::GetResourcesPerTick()
 	return resources;
 }
 
+FCurrentResourceYields ABasePlayerController::GetHexResourceYields()
+{
+	FCurrentResourceYields yields;
+
+	if (selectedHex) yields = selectedHex->GetCurrentResourceYields();
+
+	return yields;
+}
+
 //FOR BLUEPRINT: Checks if selected hex has a building
 bool ABasePlayerController::HexHasBuilding()
 {

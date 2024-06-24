@@ -586,6 +586,20 @@ bool ABaseHex::CanPutWorkersOnHex()
 	return IsTraversableTerrain() && IsPlayerHex();
 }
 
+FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
+{
+	FCurrentResourceYields yields;
+
+	float outputPercent = GetOutputPercent();
+
+	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food].yieldBonus);
+	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy].yieldBonus);
+	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production].yieldBonus);
+	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth].yieldBonus);
+
+	return yields;
+}
+
 TSet<ABaseHex*> ABaseHex::GetSurroundingHexes()
 {
 	FCollisionQueryParams queryParams;

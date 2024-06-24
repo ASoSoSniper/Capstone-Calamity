@@ -113,62 +113,73 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 	FText extraHourZero = FText::FromString("");
 	FText extraDayZero = FText::FromString("");
 
-	if (currSeconds < 1.f)
-	{
-		currSeconds += deltaTime * timeScale;
-	}
-	else
+	bool minuteChanged = false;
+	bool hourChanged = false;
+	bool dayChanged = false;
+	bool monthChanged = false;
+
+	//Count up in seconds, scaled with timeScale
+	currSeconds += deltaTime * timeScale;
+
+	//If 1 second of scaled time passes, update world time by 30 minutes
+	if (currSeconds > 1.f)
 	{
 		currSeconds = 0.f;
+		dayStruct.minute = dayStruct.minute == 0 ? 30 : 0;
+		minuteChanged = true;
+	}
 
-		if (dayStruct.minute == 0)
+	//If the minute display was updated, trigger behaviors
+	if (minuteChanged)
+	{
+		UpdateBuildings();
+
+		//Update hour when minutes reset to 0
+		if (dayStruct.minute == 0) hourChanged = true;
+	}
+
+	//If the hour display was updated, trigger behaviors
+	if (hourChanged)
+	{
+		UpdateResourceCosts();
+
+		dayStruct.hour++;
+
+		//Update day when hours reset to 0
+		if (dayStruct.hour > 23)
 		{
-			dayStruct.minute = 30;
-			UpdateBuildings();
-		}
-		else
-		{
-			dayStruct.minute = 0;
-			UpdateBuildings();
-
-			if (dayStruct.hour < 23)
-			{
-				dayStruct.hour += 1;
-				UpdateResourceCosts();
-			}
-			else
-			{
-				dayStruct.hour = 0;
-				UpdateResourceCosts();
-
-				if (dayStruct.day < MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
-				{
-					dayStruct.day += 1;
-					
-					FeedPop();
-					ConsumeEnergy();
-					SpawnEnemies();
-				}
-				else
-				{
-					dayStruct.day = 1;
-					
-					FeedPop();
-					ConsumeEnergy();
-					SpawnEnemies();
-					
-					if (dayStruct.currentMonth < 12)
-					{
-						dayStruct.currentMonth += 1;
-					}
-					else
-					{
-						dayStruct.currentMonth = 1;
-					}
-				}
-			}
+			dayStruct.hour = 0;
+			dayChanged = true;
 		}
 	}
+
+	//If the day display was updated, trigger behaviors
+	if (dayChanged)
+	{
+		FeedPop();
+		ConsumeEnergy();
+		SpawnEnemies();
+
+		dayStruct.day++;
+
+		//Update month when days reset to 1
+		if (dayStruct.day > MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
+		{
+			dayStruct.day = 1;
+			monthChanged = true;
+		}
+	}
+
+	//If month display was updated, trigger behaviors
+	if (monthChanged)
+	{
+		dayStruct.currentMonth++;
+		if (dayStruct.currentMonth > 12)
+		{
+			dayStruct.currentMonth = 1;
+		}
+	}
+	
 	if (dayStruct.minute < 10) extraMinuteZero = FText::FromString("0");
 	if (dayStruct.hour < 10) extraHourZero = FText::FromString("0");
 	if (dayStruct.day < 10) extraDayZero = FText::FromString("0");

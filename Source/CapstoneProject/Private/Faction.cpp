@@ -3,6 +3,7 @@
 
 #include "Faction.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "GlobalSpawner.h"
 
 
 Faction::Faction()
@@ -190,6 +191,20 @@ void Faction::ConsumeEnergy()
 	currPowerDays = 0;
 	powerOutage = false;
 	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
+}
+
+void Faction::BuildRandomBuilding()
+{
+	TArray<ABaseHex*> hexes = ownedHexes.Array();
+
+	int rand = FMath::RandRange(0, hexes.Num() - 1);
+
+	ABaseHex* randHex = hexes[rand];
+
+	if (AGlobalSpawner::spawnerObject)
+	{
+		
+	}
 }
 
 void Faction::StarvePop(int foodCost)

@@ -58,6 +58,16 @@ struct FHexDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 };
 
+USTRUCT(BlueprintType)
+struct FCurrentResourceYields
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
+};
 
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
@@ -183,6 +193,8 @@ public:
 	bool IsBuildableTerrain();
 	bool IsPlayerHex();
 	bool CanPutWorkersOnHex();
+
+	FCurrentResourceYields GetCurrentResourceYields();
 
 private:
 	AMovementAI* attackingTroop;

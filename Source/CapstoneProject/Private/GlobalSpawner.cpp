@@ -1134,17 +1134,9 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 		claimedCoordinates.Add(FVector2D(randX, randY));
 	}
 
-	ABuilding* miningStation = GetWorld()->SpawnActor<ABuilding>(miningStationPrefab, randomHexes[0]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, miningStation);
-	miningStation->SetBuildAtStart(true);
-
-	ABuilding* farmland = GetWorld()->SpawnActor<ABuilding>(farmlandPrefab, randomHexes[1]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, farmland);
-	farmland->SetBuildAtStart(true);
-
-	ABuilding* powerPlant = GetWorld()->SpawnActor<ABuilding>(powerPlantPrefab, randomHexes[2]->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(Factions::Alien1, powerPlant);
-	powerPlant->SetBuildAtStart(true);
+	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::MiningStation, randomHexes[0], true);
+	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::Farmland, randomHexes[1], true);
+	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::PowerPlant, randomHexes[2], true);
 }
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
@@ -1229,6 +1221,13 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		controller->PlayUISound(controller->selectFailSound);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
 	}
+}
+
+void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
+{
+	ABuilding* spawn = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(building), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	UnitActions::AssignFaction(faction, spawn);
+	spawn->SetBuildAtStart(buildAtStart);
 }
 
 ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent)

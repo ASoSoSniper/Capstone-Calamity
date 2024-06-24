@@ -125,6 +125,7 @@ public:
 	UFUNCTION(BlueprintCallable) FHexDisplay GetHexDisplayInfo();
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
 	UFUNCTION(BlueprintCallable) FResourcesPerTick GetResourcesPerTick();
+	UFUNCTION(BlueprintCallable) FCurrentResourceYields GetHexResourceYields();
 	UFUNCTION(BlueprintCallable) bool HexHasBuilding();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
 	UFUNCTION(BlueprintCallable) int GetStarveLevel();

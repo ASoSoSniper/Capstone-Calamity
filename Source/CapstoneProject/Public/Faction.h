@@ -76,6 +76,8 @@ public:
 	UFUNCTION() void UpdateResourceCosts();
 	UFUNCTION() void FeedPop();
 	UFUNCTION() void ConsumeEnergy();
+
+	UFUNCTION() void BuildRandomBuilding();
 	
 private:
 

@@ -528,6 +528,7 @@ public:
 	static AGlobalSpawner* spawnerObject;
 
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
+	void SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
 	ATroop* SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent = 1.f);
 	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
