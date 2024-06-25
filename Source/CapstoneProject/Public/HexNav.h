@@ -22,9 +22,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	UPROPERTY(VisibleAnywhere)AActor* targetHex;
 
-	UPROPERTY(VisibleAnywhere) AActor* currentHex;
+	void SetCurrentHex(AActor* hex);
+	void SetTargetHex(AActor* hex);
+	ABaseHex* GetCurrentHex();
+	ABaseHex* GetTargetHex();
+
+	bool CurrentEqualToTarget();
+
+private:
+	UPROPERTY(VisibleAnywhere)ABaseHex* targetHex;
+
+	UPROPERTY(VisibleAnywhere) ABaseHex* currentHex;
+
+	bool movableEntity = false;
 };

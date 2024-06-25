@@ -32,8 +32,8 @@ void UManageBuilding::SwitchState()
 		break;
 
 	case ObjectTypes::Building:
-		controller->selectedWorldObject = objectType.building->hexNav->currentHex;
-		CueActionState(ActionStates::HexManage, objectType.building->hexNav->currentHex);
+		controller->selectedWorldObject = objectType.building->hexNav->GetCurrentHex();
+		CueActionState(ActionStates::HexManage, objectType.building->hexNav->GetCurrentHex());
 		break;
 	}
 }

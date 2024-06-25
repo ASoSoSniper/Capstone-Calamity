@@ -42,8 +42,8 @@ void UManageHex::SwitchState()
 		break;
 		//If building, switch to BaseManage state
 	case ObjectTypes::Building:
-		controller->selectedWorldObject = objectType.building->hexNav->currentHex;
-		CueActionState(ActionStates::HexManage, objectType.building->hexNav->currentHex);
+		controller->selectedWorldObject = objectType.building->hexNav->GetCurrentHex();
+		CueActionState(ActionStates::HexManage, objectType.building->hexNav->GetCurrentHex());
 		break;
 	case ObjectTypes::Battle:
 		CueActionState(ActionStates::BattleManage, objectType.actor);

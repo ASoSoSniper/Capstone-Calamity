@@ -51,7 +51,7 @@ void AMovementAI::Tick(float DeltaTime)
 
 	if (anims) anims->timeScale = ACapstoneProjectGameModeBase::timeScale;
 	
-	if (!hexNav->currentHex)
+	if (!hexNav->GetCurrentHex())
 	{
 		SphereCheck(20.f);
 		return;
@@ -73,8 +73,7 @@ void AMovementAI::Tick(float DeltaTime)
 
 void AMovementAI::CreatePath()
 {
-	if (hexNav->targetHex == hexNav->currentHex || (!hexPath.IsEmpty() && moveState == Move && hexNav->targetHex == hexPath[hexPath.Num() - 1])) return;
-	if (!HexIsTraversable(hexNav->targetHex))
+	if (!HexIsTraversable(hexNav->GetTargetHex()))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot move here"));
 		return;
@@ -97,17 +96,17 @@ void AMovementAI::CreatePath()
 	if (temp != nullptr)
 		hexPath.Add(temp);
 
-	if (temp != hexNav->targetHex)
+	if (temp != hexNav->GetTargetHex())
 	{
 		//Choose initial hex
-		AActor* hexToSearch = (temp == nullptr) ? hexNav->currentHex : temp;
+		AActor* hexToSearch = (temp == nullptr) ? hexNav->GetCurrentHex() : temp;
 
 		//Scan for hexes leading to the target hex	
 		for (int i = 0; i < maxHexes; i++)
 		{
 			hexPath.Add(HexSearch(hexToSearch));
 
-			if (hexPath[i] == hexNav->targetHex) break;
+			if (hexPath[i] == hexNav->GetTargetHex()) break;
 
 			hexToSearch = hexPath[i];
 		}
@@ -127,13 +126,25 @@ void AMovementAI::CreatePath()
 	}
 }
 
+void AMovementAI::SetDestination(AActor* targetHex)
+{
+	hexNav->SetTargetHex(targetHex);
+
+	//If the new target hex equals the current hex or the destination it's already moving toward, do not create a new path
+	if (hexNav->CurrentEqualToTarget()) return;
+	if ((!hexPath.IsEmpty() && moveState == Move && hexNav->GetTargetHex() == hexPath[hexPath.Num() - 1])) return;
+
+	//Otherwise, begin path creation
+	CreatePath();
+}
+
 void AMovementAI::SnapToHex(ABaseHex* hex)
 {
 	//Snap position to hex
 	SetActorLocation(hex->troopAnchor->GetComponentLocation());
 
 	//Remove this unit from previous hex troop pool
-	ABaseHex* previousHex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* previousHex = hexNav->GetCurrentHex();
 	if (previousHex)
 	{
 		previousHex->RemoveTroopFromHex(this);
@@ -185,7 +196,7 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 		if (foundHex) traversable = HexIsTraversable(foundHex);
 
 		//Get hex's angle to target
-		if (hexNav->targetHex)
+		if (hexNav->GetTargetHex())
 		{
 			float angle = INFINITY;
 			if (foundHex && traversable)
@@ -225,7 +236,7 @@ void AMovementAI::SphereCheck(float rangeMulti)
 		for (int i = 0; i < results.Num(); i++)
 		{
 			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
-			if (hexActor && results[i].GetActor() != hexNav->currentHex)
+			if (hexActor && results[i].GetActor() != hexNav->GetCurrentHex())
 			{
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance * rangeMulti && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance * rangeMulti)
 				{
@@ -263,7 +274,7 @@ float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
 
 FVector AMovementAI::GetVectorToTarget(FVector origin)
 {
-	FVector targetDirection = hexNav->targetHex->GetActorLocation() - origin;
+	FVector targetDirection = hexNav->GetTargetHex()->GetActorLocation() - origin;
 	return targetDirection;
 }
 
@@ -278,7 +289,7 @@ void AMovementAI::CountdownToMove(float& DeltaTime)
 
 void AMovementAI::MoveToTarget(float& DeltaTime)
 {
-	if (!hexNav->currentHex)
+	if (!hexNav->GetCurrentHex())
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, TEXT("No current hex"));
 		return;
@@ -291,7 +302,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 
 	if (hexPath.Num() > 0)
 	{
-		ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+		ABaseHex* hex = hexNav->GetCurrentHex();
 		ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
 
 		currentMoveAlpha += moveSpeed * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
@@ -319,12 +330,11 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 
 void AMovementAI::CancelPath()
 {
-	if (hexPath.IsEmpty() || hexNav->currentHex == hexNav->targetHex) return;
+	if (hexPath.IsEmpty() || hexNav->CurrentEqualToTarget()) return;
 
 	if (currTimeTillHexMove >= unitStats->speed)
 	{
-		hexNav->targetHex = hexPath[hexPathIndex];
-		CreatePath();
+		SetDestination(hexPath[hexPathIndex]);
 	}
 	else
 	{
@@ -335,10 +345,10 @@ void AMovementAI::CancelPath()
 
 void AMovementAI::Destroyed()
 {
-	if (hexNav->currentHex)
+	if (hexNav->GetCurrentHex())
 	{
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
-		Cast<ABaseHex>(hexNav->currentHex)->troopsInHex.Remove(this);
+		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
 
 		UnitActions::RemoveArmyName(Factions::Human, this);
 

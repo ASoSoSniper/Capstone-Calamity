@@ -32,7 +32,7 @@ void UManageBattle::SwitchState()
 	{
 		//If hex, switch to None state
 	case ObjectTypes::Hex:
-		if (objectType.hex != Cast<ABaseHex>(selectedBattle->hexNav->currentHex)) CueActionState(ActionStates::HexManage, objectType.actor);
+		if (objectType.hex != selectedBattle->hexNav->GetCurrentHex()) CueActionState(ActionStates::HexManage, objectType.actor);
 		else
 		{
 			AdvanceSelectCycle(objectType.hex);
@@ -44,8 +44,8 @@ void UManageBattle::SwitchState()
 		break;
 
 	case ObjectTypes::Building:
-		controller->selectedWorldObject = objectType.building->hexNav->currentHex;
-		CueActionState(ActionStates::HexManage, objectType.building->hexNav->currentHex);
+		controller->selectedWorldObject = objectType.building->hexNav->GetCurrentHex();
+		CueActionState(ActionStates::HexManage, objectType.building->hexNav->GetCurrentHex());
 		break;
 
 	case ObjectTypes::Battle:

@@ -8,9 +8,9 @@
 void ASiegeObject::Start()
 {
 	//Find hex the object is placed on
-	hex = Cast<ABaseHex>(hexNav->currentHex);
+	hex = hexNav->GetCurrentHex();
 	hex->battle = this;
-	spawner->controller->PlayUISound(spawner->controller->battleStartSound);
+	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleStartSound);
 
 	building = hex->building;
 
@@ -125,11 +125,11 @@ void ASiegeObject::EndBattle()
 		(currentBattle.Group2.Contains(Factions::Human) || 
 			(building->unitStats->faction == Factions::Human && BuildingIsAlive())))
 	{
-		spawner->controller->PlayUISound(spawner->controller->battleVictorySound);
+		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleVictorySound);
 	}
 	else
 	{
-		spawner->controller->PlayUISound(spawner->controller->battleDefeatSound);
+		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleDefeatSound);
 	}
 
 	attacking = false;
@@ -144,23 +144,23 @@ void ASiegeObject::GenerateModels()
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
 	if (building->unitStats->faction == Factions::Human)
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 }
 
@@ -177,7 +177,7 @@ void ASiegeObject::CalculateSiegeDamage()
 	attackerSiegeDamage = 0;
 	for (auto& unit : groupCompositions[0])
 	{
-		attackerSiegeDamage += spawner->troopStats[unit.Key].siegePower * unit.Value.quantity;
+		attackerSiegeDamage += AGlobalSpawner::spawnerObject->troopStats[unit.Key].siegePower * unit.Value.quantity;
 	}
 }
 

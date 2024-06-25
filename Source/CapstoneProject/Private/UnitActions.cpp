@@ -610,7 +610,7 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
 
     if (closestOutpost)
     {
-        ABaseHex* outpostHex = Cast<ABaseHex>(closestOutpost->hexNav->currentHex);
+        ABaseHex* outpostHex = closestOutpost->hexNav->GetCurrentHex();
         if (outpostHex) return outpostHex;
     }
 
@@ -863,13 +863,11 @@ bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
 
     if (troop->unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > troop->armyCap) return false;
 
-    troop->hexNav->targetHex = hexNav->currentHex;
-
-    if (troop->hexNav->targetHex)
+    if (hexNav->GetCurrentHex())
     {
         troop->merging = true;
         troop->targetToMerge = target;
-        troop->CreatePath();
+        troop->SetDestination(hexNav->GetCurrentHex());
 
         return true;
     }

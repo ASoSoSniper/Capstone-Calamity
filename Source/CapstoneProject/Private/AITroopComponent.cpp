@@ -57,22 +57,20 @@ void UAITroopComponent::SetNeutralDestination()
 
 	if (targetHex)
 	{
-		parentTroop->hexNav->targetHex = targetHex;
-		parentTroop->CreatePath();
+		parentTroop->SetDestination(targetHex);
 		currentState = ToHex;
 	}
 }
 
 void UAITroopComponent::SetHostileDestination(AActor* hex)
 {
-	parentTroop->hexNav->targetHex = hex;
-	parentTroop->CreatePath();
+	parentTroop->SetDestination(hex);
 	currentState = ToEnemy;
 }
 
 bool UAITroopComponent::OccupyingBuilding()
 {
-	ABaseHex* hex = Cast<ABaseHex>(parentTroop->hexNav->currentHex);
+	ABaseHex* hex = parentTroop->hexNav->GetCurrentHex();
 	if (!hex->building) return false;
 
 	if (hex->building->GetOccupier() == parentTroop->unitStats->faction)
@@ -114,7 +112,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 		if (!target.Key) continue;
 		if (targetType != ObjectTypes::NoType && !IsViableTarget(target.Key, targetType)) continue;
 
-		float distance = FVector::Distance(parentTroop->hexNav->currentHex->GetActorLocation(), target.Key->GetActorLocation());
+		float distance = FVector::Distance(parentTroop->hexNav->GetCurrentHex()->GetActorLocation(), target.Key->GetActorLocation());
 
 		if (distance < closestDistance)
 		{
@@ -126,7 +124,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 	if (closestTarget)
 	{
 		FVector2D target = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
-		FVector2D origin = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+		FVector2D origin = AGlobalSpawner::spawnerObject->GetHexCoordinates(parentTroop->hexNav->GetCurrentHex());
 		
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
 			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
@@ -159,7 +157,7 @@ bool UAITroopComponent::IsViableTarget(ABaseHex* hex, ObjectTypes targetType)
 
 AActor* UAITroopComponent::FindRandomHex()
 {
-	FVector2D coordinates = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(parentTroop->hexNav->currentHex));
+	FVector2D coordinates = AGlobalSpawner::spawnerObject->GetHexCoordinates(parentTroop->hexNav->GetCurrentHex());
 
 	FVector2D hexCoords = coordinates;
 
@@ -198,8 +196,6 @@ void UAITroopComponent::GenerateArmy()
 
 bool UAITroopComponent::CanFindOccupiableBuilding()
 {
-	if (currentState == ToEnemy) return true;
-
 	if (AActor* hex = SelectClosestHostileTarget(ObjectTypes::Building))
 	{
 		SetHostileDestination(hex);
@@ -211,8 +207,6 @@ bool UAITroopComponent::CanFindOccupiableBuilding()
 
 bool UAITroopComponent::CanFindEnemyTarget()
 {
-	if (currentState == ToEnemy) return true;
-
 	if (AActor* hex = SelectClosestHostileTarget())
 	{
 		SetHostileDestination(hex);
@@ -224,15 +218,18 @@ bool UAITroopComponent::CanFindEnemyTarget()
 
 void UAITroopComponent::UpdateBehavior()
 {
-	if (!isEnemy || !parentTroop->hexNav->currentHex) return;
+	if (!isEnemy || !parentTroop->hexNav->GetCurrentHex()) return;
 
 	if (OccupyingBuilding()) return;
 
-	if (CanFindOccupiableBuilding()) return;
+	if (currentState != ToEnemy)
+	{
+		if (CanFindOccupiableBuilding()) return;
 
-	if (CanFindEnemyTarget()) return;
+		if (CanFindEnemyTarget()) return;
+	}
 
-	if (parentTroop->hexNav->targetHex == nullptr || parentTroop->hexNav->currentHex == parentTroop->hexNav->targetHex)
+	if (!parentTroop->hexNav->GetTargetHex() || parentTroop->hexNav->CurrentEqualToTarget())
 	{
 		SetNeutralDestination();
 	}

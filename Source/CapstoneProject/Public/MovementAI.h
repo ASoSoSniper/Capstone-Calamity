@@ -25,6 +25,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void CreatePath();
 
 public:	
 	// Called every frame
@@ -53,8 +54,8 @@ public:
 		float currentMoveAlpha = 0.f;
 	UPROPERTY(VisibleAnywhere)
 		float currTimeTillHexMove = 0.f;
-
-	virtual void CreatePath();
+	
+	void SetDestination(AActor* targetHex);
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
 	

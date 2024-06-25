@@ -89,13 +89,13 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	}
 	
 	//If the building's hex is not set, scan until a hex is found
-	if (!hexNav->currentHex)
+	if (!hexNav->GetCurrentHex())
 	{
 		SphereCheck();
 	}
 
 	//If a hex is not found, cancel the process
-	if (!hexNav->currentHex)
+	if (!hexNav->GetCurrentHex())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No hex found, could not set up building"));
 		return false;
@@ -120,7 +120,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	resourceYields[StratResources::Wealth] = stats.wealthYield;
 
 	FBuildingCost costs;
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(type))
 	{
 		costs = AGlobalSpawner::spawnerObject->buildingCosts[type];
@@ -210,7 +210,7 @@ void ABuilding::SetBuildState()
 
 void ABuilding::UpdateResources()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	if (!hex) return;
 
 	for (auto& resource : resourceYields)
@@ -234,7 +234,7 @@ void ABuilding::UpdateResources()
 
 void ABuilding::RevertResources()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	if (!hex) return;
 
 	for (auto& resource : resourceYields)
@@ -268,7 +268,7 @@ bool ABuilding::SphereCheck()
 		for (int i = 0; i < results.Num(); i++)
 		{
 			ABaseHex* hexActor = Cast<ABaseHex>(results[i].GetActor());
-			if (hexActor && results[i].GetActor() != hexNav->currentHex)
+			if (hexActor && results[i].GetActor() != hexNav->GetCurrentHex())
 			{
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
@@ -347,7 +347,7 @@ void ABuilding::DestroyingBuilding(float& DeltaTime)
 
 void ABuilding::Destroyed()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	if (hex)
 	{
@@ -454,7 +454,7 @@ bool ABuilding::TroopOccupation()
 
 int ABuilding::GetOccupyingTroops()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	int occupyingTroops = 0;
 
@@ -525,7 +525,7 @@ SpawnableBuildings ABuilding::GetBuildingType()
 
 void ABuilding::HealOverTime()
 {
-	if (ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex))
+	if (ABaseHex* hex = hexNav->GetCurrentHex())
 	{
 		if (!hex->battle && unitStats->currentHP < unitStats->maxHP)
 		{

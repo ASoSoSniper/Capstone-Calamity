@@ -28,7 +28,7 @@ void ATroop::Tick(float DeltaTime)
 
 	if (merging)
 	{
-		if (hexNav->currentHex == hexNav->targetHex)
+		if (hexNav->CurrentEqualToTarget())
 		{
 			MergeOnTile();
 			merging = false;
@@ -50,16 +50,16 @@ void ATroop::MergeOnTile()
 	case ObjectTypes::Hex:
 		break;
 	case ObjectTypes::MoveAI:
-		if (hexNav->currentHex == objectType.moveAI->hexNav->currentHex)
+		if (hexNav->GetCurrentHex() == objectType.moveAI->hexNav->GetCurrentHex())
 		{
 			if (AGlobalSpawner::spawnerObject && targetToMerge)
 			{
-				AGlobalSpawner::spawnerObject->MergeArmies(this, objectType.moveAI, Cast<ABaseHex>(hexNav->currentHex));
+				AGlobalSpawner::spawnerObject->MergeArmies(this, objectType.moveAI, hexNav->GetCurrentHex());
 			}
 		}
 		break;
 	case ObjectTypes::Building:
-		if (hexNav->currentHex == objectType.building->hexNav->currentHex && objectType.building->unitStats->faction == unitStats->faction)
+		if (hexNav->GetCurrentHex() == objectType.building->hexNav->GetCurrentHex() && objectType.building->unitStats->faction == unitStats->faction)
 		{
 			if (AOutpost* outpost = Cast<AOutpost>(objectType.building))
 			{
@@ -102,10 +102,10 @@ void ATroop::RotateToFaceTarget(FVector direction, float& DeltaTime)
 
 void ATroop::MoveToTarget(float& DeltaTime)
 {
-	if (!hexNav->currentHex) return;
+	if (!hexNav->GetCurrentHex()) return;
 
 	if (hexPathIndex < hexPath.Num())
-		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->currentHex->GetActorLocation(), DeltaTime);
+		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->GetCurrentHex()->GetActorLocation(), DeltaTime);
 
 	Super::MoveToTarget(DeltaTime);
 }

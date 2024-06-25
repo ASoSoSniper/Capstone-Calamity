@@ -73,9 +73,9 @@ void ABattleObject::Destroyed()
 void ABattleObject::Start()
 {
 	//Find hex the object is placed on
-	hex = Cast<ABaseHex>(hexNav->currentHex);
+	hex = hexNav->GetCurrentHex();
 	hex->battle = this;
-	spawner->controller->PlayUISound(spawner->controller->battleStartSound);
+	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleStartSound);
 
 	//Once created, begin organizing armies into factions
 	CreateFactions();
@@ -183,23 +183,23 @@ void ABattleObject::GenerateModels()
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
-		group1Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
 	if (currentBattle.Group2.Contains(Factions::Human))
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Human].visibleTexture);
+		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
-		group2Mesh->SetMaterial(0, spawner->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 }
 
@@ -342,11 +342,11 @@ void ABattleObject::EndBattle()
 
 	if (currentBattle.Group1.Contains(Factions::Human) || currentBattle.Group2.Contains(Factions::Human))
 	{
-		spawner->controller->PlayUISound(spawner->controller->battleVictorySound);
+		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleVictorySound);
 	}
 	else
 	{
-		spawner->controller->PlayUISound(spawner->controller->battleDefeatSound);
+		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleDefeatSound);
 	}
 
 	attacking = false;
@@ -414,11 +414,11 @@ TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnA
 		switch (factionsInBattle[faction][i].unitType)
 		{
 		case UnitTypes::Army:
-			spawn = spawner->SpawnArmy(spawnPoint, factionsInBattle[faction][i].savedUnits, hpPercent);
+			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, factionsInBattle[faction][i].savedUnits, hpPercent);
 			break;
 
 		default:
-			spawn = spawner->SpawnTroop(spawnPoint, factionsInBattle[faction][i], hpPercent);
+			spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, factionsInBattle[faction][i], hpPercent);
 			break;
 		}
 
@@ -512,22 +512,22 @@ void ABattleObject::CalculateGroupDamage()
 			switch (enemyUnit.Key)
 			{
 			case UnitTypes::Infantry:
-				percent = spawner->troopStats[unit.Key].attackvsInfantry;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsInfantry;
 				break;
 			case UnitTypes::Cavalry:
-				percent = spawner->troopStats[unit.Key].attackvsCavalry;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsCavalry;
 				break;
 			case UnitTypes::Ranged:
-				percent = spawner->troopStats[unit.Key].attackvsRanged;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsRanged;
 				break;
 			case UnitTypes::Shielder:
-				percent = spawner->troopStats[unit.Key].attackvsShielder;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsShielder;
 				break;
 			case UnitTypes::Scout:
-				percent = spawner->troopStats[unit.Key].attackvsScout;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsScout;
 				break;
 			case UnitTypes::Settler:
-				percent = spawner->troopStats[unit.Key].attackvsSettler;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsSettler;
 				break;
 			}
 
@@ -541,7 +541,7 @@ void ABattleObject::CalculateGroupDamage()
 		}
 
 		//When all percentages have been added up, multiply the total by the unit type's base damage
-		damage *= spawner->troopStats[unit.Key].damage;
+		damage *= AGlobalSpawner::spawnerObject->troopStats[unit.Key].damage;
 
 		//Add to the total group damage the calculated damage times the number of this unit type in the army
 		group1Damage += FMath::RoundToInt(damage) * unit.Value.quantity;
@@ -561,22 +561,22 @@ void ABattleObject::CalculateGroupDamage()
 			switch (enemyUnit.Key)
 			{
 			case UnitTypes::Infantry:
-				percent = spawner->troopStats[unit.Key].defendvsInfantry;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsInfantry;
 				break;
 			case UnitTypes::Cavalry:
-				percent = spawner->troopStats[unit.Key].defendvsCavalry;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsCavalry;
 				break;
 			case UnitTypes::Ranged:
-				percent = spawner->troopStats[unit.Key].defendvsRanged;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsRanged;
 				break;
 			case UnitTypes::Shielder:
-				percent = spawner->troopStats[unit.Key].defendvsShielder;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsShielder;
 				break;
 			case UnitTypes::Scout:
-				percent = spawner->troopStats[unit.Key].defendvsScout;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsScout;
 				break;
 			case UnitTypes::Settler:
-				percent = spawner->troopStats[unit.Key].defendvsSettler;
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].defendvsSettler;
 				break;
 			}
 
@@ -590,7 +590,7 @@ void ABattleObject::CalculateGroupDamage()
 		}
 
 		//When all percentages have been added up, multiply the total by the unit type's base damage
-		damage *= spawner->troopStats[unit.Key].damage;
+		damage *= AGlobalSpawner::spawnerObject->troopStats[unit.Key].damage;
 
 		//Add to the total group damage the calculated damage times the number of this unit type in the army
 		group2Damage += FMath::RoundToInt(damage) * unit.Value.quantity;

@@ -79,7 +79,7 @@ TArray<ABaseHex*> AOutpost::ClaimLand()
 		return hexesToClaim;
 	}
 
-	ABaseHex* startHex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* startHex = hexNav->GetCurrentHex();
 
 	startHex->hexOwner = unitStats->faction;
 	hexesToClaim.Add(startHex);
@@ -219,7 +219,7 @@ void AOutpost::CueTroopBuild(UnitTypes unit)
 
 void AOutpost::BuildTroop()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(unitStats->faction, cuedUnits[0], hex);
 
@@ -262,7 +262,7 @@ TArray<ATroop*> AOutpost::ReleaseTroops()
 {
 	TArray<ATroop*> spawnedTroops;
 	TArray<ABaseHex*> usedHexes;
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	for (int i = 0; i < troopsInStorage.Num(); ++i)
 	{
@@ -296,7 +296,7 @@ void AOutpost::HealTroops(float& DeltaTime)
 	}
 
 	currentHealRate = healRate;
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	if (hex->troopsInHex.IsEmpty()) return;
 

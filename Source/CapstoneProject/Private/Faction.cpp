@@ -431,13 +431,13 @@ void Faction::TargetBuildingsOfFaction(Factions targetFaction)
 		{
 			if (GetFactionRelationship(building->GetOccupier()) == FactionRelationship::Enemy)
 			{
-				targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), building->GetOccupier());
+				targetList.Add(building->hexNav->GetCurrentHex(), building->GetOccupier());
 				continue;
 			}
 		}
 		else
 		{
-			targetList.Add(Cast<ABaseHex>(building->hexNav->currentHex), targetFaction);
+			targetList.Add(Cast<ABaseHex>(building->hexNav->GetCurrentHex()), targetFaction);
 		}
 	}
 }

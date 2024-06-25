@@ -87,7 +87,7 @@ void UMeshVisibility::Scan(float radius)
 	TArray<FHitResult> results;
 
 	int visionMulti = unitStats ? unitStats->vision : 1;
-	float hexVisionMod = (hexNav && hexNav->currentHex) ? Cast<ABaseHex>(hexNav->currentHex)->vision : 0;
+	float hexVisionMod = (hexNav && hexNav->GetCurrentHex()) ? hexNav->GetCurrentHex()->vision : 0;
 
 	bool zeroVision = ((radius * visionMulti) + (radius * hexVisionMod) == 0);
 	float hexMod = zeroVision ? -0.5f : hexVisionMod;

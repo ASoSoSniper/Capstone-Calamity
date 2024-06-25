@@ -64,7 +64,7 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	TArray<ABaseHex*> ignoredHexes;
 
 	hex->troopsInHex.Remove(this);
@@ -129,7 +129,7 @@ void AMergedArmy::ExtractOneUnit(UnitTypes type)
 
 	if (!UnitActions::ArmyContainsUnit(this, type, unitIndex)) return;
 
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	TArray<ABaseHex*> ignoredHexes;
 
 	UnitActions::UnitData unit = UnitActions::ExtractUnit(unitStats, unitIndex);

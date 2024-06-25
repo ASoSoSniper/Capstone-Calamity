@@ -1271,8 +1271,7 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 {
 	FActorSpawnParameters params;
 	ABattleObject* battle = GetWorld()->SpawnActor<ABattleObject>(hex->building ? siegePrefab : battlePrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0.f, 0.f, 0.f), params);
-	battle->hexNav->currentHex = hex;
-	battle->spawner = this;
+	battle->hexNav->SetCurrentHex(hex);
 	battle->Start();
 
 	return battle;

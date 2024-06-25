@@ -13,22 +13,42 @@ UHexNav::UHexNav()
 	// ...
 }
 
-
-// Called when the game starts
 void UHexNav::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	AMovementAI* movement = Cast<AMovementAI>(GetOwner());
+	movableEntity = movement != nullptr;
 }
 
-
-// Called every frame
-void UHexNav::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UHexNav::SetCurrentHex(AActor* hex)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (ABaseHex* castHex = Cast<ABaseHex>(hex))
+	{
+		currentHex = castHex;
+	}
+}
 
-	// ...
+void UHexNav::SetTargetHex(AActor* hex)
+{
+	if (!movableEntity) return;
+
+	if (ABaseHex* castHex = Cast<ABaseHex>(hex))
+	{
+		targetHex = castHex;
+	}
+}
+
+ABaseHex* UHexNav::GetCurrentHex()
+{
+	return currentHex;
+}
+
+ABaseHex* UHexNav::GetTargetHex()
+{
+	return targetHex;
+}
+
+bool UHexNav::CurrentEqualToTarget()
+{
+	return currentHex == targetHex;
 }
 

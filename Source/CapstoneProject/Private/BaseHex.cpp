@@ -209,7 +209,7 @@ void ABaseHex::CheckForHostility(ABuilding* refBuilding)
 
 void ABaseHex::AddTroopToHex(AMovementAI* troop)
 {
-	troop->hexNav->currentHex = this;
+	troop->hexNav->SetCurrentHex(this);
 	troopsInHex.Add(troop);
 
 	CheckForHostility(troop);
@@ -217,7 +217,7 @@ void ABaseHex::AddTroopToHex(AMovementAI* troop)
 
 void ABaseHex::AddBuildingToHex(ABuilding* newBuilding)
 {
-	newBuilding->hexNav->currentHex = this;
+	newBuilding->hexNav->SetCurrentHex(this);
 	building = newBuilding;
 
 	if (hexOwner == Factions::None) SetFaction(newBuilding->unitStats->faction);

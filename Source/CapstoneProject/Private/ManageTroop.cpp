@@ -37,7 +37,7 @@ void UManageTroop::SwitchState()
 	{
 		//If hex, set troop's destination to the hex
 	case ObjectTypes::Hex:
-		if (objectType.hex != Cast<ABaseHex>(selectedTroop->hexNav->currentHex)) CueActionState(ActionStates::HexManage, objectType.actor);
+		if (objectType.hex != selectedTroop->hexNav->GetCurrentHex()) CueActionState(ActionStates::HexManage, objectType.actor);
 		else
 		{
 			AdvanceSelectCycle(objectType.hex);
@@ -54,13 +54,13 @@ void UManageTroop::SwitchState()
 		if (hostileTarget)
 		{
 			if (hexNav)
-				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+				selectedTroop->SetDestination(hexNav->GetCurrentHex());
 		}
 		else
 		{
 			//else switch to BaseManage state
-			controller->selectedWorldObject = objectType.building->hexNav->currentHex;
-			CueActionState(ActionStates::HexManage, objectType.building->hexNav->currentHex);
+			controller->selectedWorldObject = objectType.building->hexNav->GetCurrentHex();
+			CueActionState(ActionStates::HexManage, objectType.building->hexNav->GetCurrentHex());
 			return;
 		}
 		break;
@@ -72,14 +72,6 @@ void UManageTroop::SwitchState()
 	}
 
 	subSelect = None;
-	if (!selectedTroop) return;
-
-	if (selectedTroop->hexNav->targetHex)
-	{
-		selectedTroop->CreatePath();
-		//controller->Deselect();
-	}
-		
 }
 
 void UManageTroop::Reset()
@@ -161,23 +153,23 @@ void UManageTroop::CommandAction()
 	{
 	case ObjectTypes::Hex:
 		//if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
-		selectedTroop->hexNav->targetHex = objectType.actor;
+		selectedTroop->SetDestination(objectType.actor);
 		break;
 	case ObjectTypes::Building:
 		if (hexNav)
 		{
-			if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, hexNav->currentHex))
-				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+			if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, hexNav->GetCurrentHex()))
+				selectedTroop->SetDestination(hexNav->GetCurrentHex());
 		}
 		break;
 	case ObjectTypes::Battle:
 		if (hexNav)
-			selectedTroop->hexNav->targetHex = hexNav->currentHex;
+			selectedTroop->SetDestination(hexNav->GetCurrentHex());
 	case ObjectTypes::MoveAI:
 		if (hostileTarget)
 		{
 			if (hexNav)
-				selectedTroop->hexNav->targetHex = hexNav->currentHex;
+				selectedTroop->SetDestination(hexNav->GetCurrentHex());
 		}
 		else
 		{
@@ -200,10 +192,5 @@ void UManageTroop::CommandAction()
 			}
 
 		}
-	}
-
-	if (selectedTroop->hexNav->targetHex)
-	{
-		selectedTroop->CreatePath();
 	}
 }

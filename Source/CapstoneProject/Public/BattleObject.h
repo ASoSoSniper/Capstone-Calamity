@@ -79,9 +79,6 @@ public:
 	UPROPERTY(EditAnywhere) bool attacking;
 	bool ending;
 	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
-
-	AGlobalSpawner* spawner;
-
 	UPROPERTY(VisibleAnywhere) int group1Die = 0;
 	UPROPERTY(VisibleAnywhere) int group2Die = 0;
 	UPROPERTY(VisibleAnywhere) int group1Damage = 0;

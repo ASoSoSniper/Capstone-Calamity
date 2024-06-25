@@ -27,7 +27,7 @@ AFarmland::AFarmland()
 
 void AFarmland::UpdateResources()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	if (!hex) return;
 
 	if (producingFood)
@@ -38,7 +38,7 @@ void AFarmland::UpdateResources()
 
 void AFarmland::RevertResources()
 {
-	ABaseHex* hex = Cast<ABaseHex>(hexNav->currentHex);
+	ABaseHex* hex = hexNav->GetCurrentHex();
 	if (!hex) return;
 
 	if (producingFood)
