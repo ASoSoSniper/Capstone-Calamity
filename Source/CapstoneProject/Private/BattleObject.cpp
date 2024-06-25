@@ -657,3 +657,30 @@ TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TArray<Facti
 
 	return unitsInArmy;
 }
+
+float ABattleObject::DisplayBattleProgress()
+{
+	int group1TotalHealth = 0;
+	int group2TotalHealth = 0;
+	int group1CurrentHealth = 0;
+	int group2CurrentHealth = 0;
+
+	for (int i = 0; i < currentBattle.Group1.Num(); i++)
+	{
+		group1CurrentHealth += armies[currentBattle.Group1[i]].currentHP;
+		group1TotalHealth += armies[currentBattle.Group1[i]].maxHP;
+	}
+
+	for (int i = 0; i < currentBattle.Group2.Num(); i++)
+	{
+		group2CurrentHealth += armies[currentBattle.Group2[i]].currentHP;
+		group2TotalHealth += armies[currentBattle.Group2[i]].maxHP;
+	}
+
+	float group1Percent = (float)group1CurrentHealth / (float)group1TotalHealth;
+	float group2Percent = (float)group2CurrentHealth / (float)group2TotalHealth;
+
+	float totalPercent = (group1Percent + 1 - group2Percent) / 2;
+
+	return totalPercent;
+}

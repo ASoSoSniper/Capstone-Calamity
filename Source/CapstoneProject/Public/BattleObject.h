@@ -102,4 +102,6 @@ public:
 	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
 
 	bool selectedByPlayer;
+
+	UFUNCTION(Blueprintable) float DisplayBattleProgress();
 };
