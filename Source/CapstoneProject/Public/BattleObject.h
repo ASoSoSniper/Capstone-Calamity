@@ -34,8 +34,8 @@ public:
 	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 	ABaseHex* hex;
 
-	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group1Mesh;
-	UPROPERTY(EditAnywhere) USkeletalMeshComponent* group2Mesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group1Mesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group2Mesh;
 
 	UPROPERTY(EditAnywhere) UCombatAnims* group1Anims;
 	UPROPERTY(EditAnywhere) UCombatAnims* group2Anims;
@@ -103,5 +103,5 @@ public:
 
 	bool selectedByPlayer;
 
-	UFUNCTION(Blueprintable) float DisplayBattleProgress();
+	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
 };
