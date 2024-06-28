@@ -102,7 +102,7 @@ void ATroop::RotateToFaceTarget(FVector direction, float& DeltaTime)
 
 void ATroop::MoveToTarget(float& DeltaTime)
 {
-	if (!hexNav->GetCurrentHex()) return;
+	if (!hexNav->GetCurrentHex() || hexPath.IsEmpty()) return;
 
 	if (hexPathIndex < hexPath.Num())
 		RotateToFaceTarget(hexPath[hexPathIndex]->GetActorLocation() - hexNav->GetCurrentHex()->GetActorLocation(), DeltaTime);
@@ -120,6 +120,30 @@ FTroopUIData ATroop::GetUIData()
 	data.progressToMove = (float)currTimeTillHexMove / (float)unitStats->speed;
 
 	return data;
+}
+
+bool ATroop::CommandTroopToMerge(AActor* target)
+{
+	UHexNav* targetHexNav = target->GetComponentByClass<UHexNav>();
+	UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
+
+	if (unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > armyCap) return false;
+
+	if (targetHexNav->GetCurrentHex())
+	{
+		merging = true;
+		targetToMerge = target;
+		SetDestination(targetHexNav->GetCurrentHex());
+
+		return true;
+	}
+
+	return false;
+}
+
+int ATroop::GetArmyCap()
+{
+	return armyCap;
 }
 
 bool ATroop::SetUpTroop()

@@ -356,7 +356,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
     {
         workersInHex += workers.Value;
     }
-    if (workersInHex >= hex->maxWorkers) return 0;
+    if (workersInHex >= hex->GetMaxWorkers()) return 0;
     int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
@@ -789,7 +789,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     }
 
     //(b) Hex contains a battle the faction connects with diplomatically
-    if (objectType.hex->battle)
+    if (objectType.hex->battle && !objectType.hex->battle->IsEnding())
     {
         Factions hostileInBattle = FindHostileTarget(faction, objectType.hex->battle);
         if (hostileInBattle != Factions::None)
@@ -853,25 +853,6 @@ bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unit
         }
     }
 
-    return false;
-}
-
-bool UnitActions::CommandTroopToMerge(ATroop* troop, AActor* target)
-{
-    UHexNav* hexNav = target->GetComponentByClass<UHexNav>();
-    UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
-
-    if (troop->unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > troop->armyCap) return false;
-
-    if (hexNav->GetCurrentHex())
-    {
-        troop->merging = true;
-        troop->targetToMerge = target;
-        troop->SetDestination(hexNav->GetCurrentHex());
-
-        return true;
-    }
-    
     return false;
 }
 
@@ -964,18 +945,24 @@ Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject
 {
     Faction* factionObject = GetFaction(referenceFaction);
 
-    //Check Group 1 relationships to this unit's faction
-    for (int i = 0; i < battle->currentBattle.Group1.Num(); ++i)
+    if (!battle->currentBattle.Group1.IsEmpty())
     {
-        FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group1[i]);
-        if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+        //Check Group 1 relationships to this unit's faction
+        for (int i = 0; i < battle->currentBattle.Group1.Num(); i++)
+        {
+            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group1[i]);
+            if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+        }
     }
 
-    //Check Group 2 relationships to this unit's faction
-    for (int i = 0; i < battle->currentBattle.Group2.Num(); ++i)
+    if (!battle->currentBattle.Group2.IsEmpty())
     {
-        FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group2[i]);
-        if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+        //Check Group 2 relationships to this unit's faction
+        for (int i = 0; i < battle->currentBattle.Group2.Num(); i++)
+        {
+            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group2[i]);
+            if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
+        }
     }
 
     return Factions::None;
@@ -1003,31 +990,6 @@ void UnitActions::AssignFaction(Factions faction, AActor* target)
             return;
         }
     }
-}
-
-void UnitActions::AssignFaction(Factions faction, ABaseHex* hex)
-{
-    if (hex->hexOwner != Factions::None)
-    {
-        if (ACapstoneProjectGameModeBase::activeFactions[hex->hexOwner]->ownedHexes.Contains(hex))
-            ACapstoneProjectGameModeBase::activeFactions[hex->hexOwner]->ownedHexes.Remove(hex);
-    }
-
-    hex->hexOwner = faction;
-    
-    if (faction == Factions::None)
-    {
-        hex->visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::factionColors[Factions::None];
-        return;
-    }
-
-    hex->visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
-
-    if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(hex))
-    {
-        ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(hex);
-    }
-        
 }
 
 void UnitActions::RemoveFromFaction(Factions faction, AActor* target)

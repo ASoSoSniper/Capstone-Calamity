@@ -18,6 +18,10 @@ class CAPSTONEPROJECT_API ASiegeObject : public ABattleObject
 	
 public:
 	virtual void Start() override;
+
+	ABuilding* GetBuilding();
+
+protected:
 	virtual void Attack() override;
 	virtual void EndBattle() override;
 

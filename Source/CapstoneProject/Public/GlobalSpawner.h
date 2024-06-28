@@ -544,23 +544,6 @@ public:
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> miningStationPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> farmlandPrefab;
-
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> powerPlantPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> capitalPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> alienCityPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> rockCityPrefab;
-
-	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
-	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;
-	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ABattleObject> battlePrefab;
-	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ASiegeObject> siegePrefab;
-	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> smokePrefab;
-	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> explosionPrefab;
-	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> fireWorksPrefab;
-
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingStats> buildingStats;
@@ -591,4 +574,21 @@ public:
 private:
 	UPROPERTY(EditAnywhere) int hexSeedSize = 5;
 	UPROPERTY(EditAnywhere) int hexRandToMaintain = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> miningStationPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> farmlandPrefab;
+
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> powerPlantPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> capitalPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> alienCityPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> rockCityPrefab;
+
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ABattleObject> battlePrefab;
+	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ASiegeObject> siegePrefab;
+	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> smokePrefab;
+	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> explosionPrefab;
+	UPROPERTY(EditAnywhere, Category = "Particle Effect") TSubclassOf<class AActor> fireWorksPrefab;
 };

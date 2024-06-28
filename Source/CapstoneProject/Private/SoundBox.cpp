@@ -36,7 +36,7 @@ void ASoundBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	if (ABaseHex* hex = Cast<ABaseHex>(OtherActor))
 	{
 		if (!foundHexes.Contains(hex)) foundHexes.Add(hex);
-		hex->inSoundboxRadius = true;
+		hex->SetInSoundBoxRadius(true);
 		SetHexAmbience(hex);
 	}
 }
@@ -46,8 +46,8 @@ void ASoundBox::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if (ABaseHex* hex = Cast<ABaseHex>(OtherActor))
 	{
 		foundHexes.Remove(hex);
-		hex->inSoundboxRadius = false;
-		hex->targetVolume = 0.f;
+		hex->SetInSoundBoxRadius(false);
+		hex->SetTargetVolume(0.f);
 	}
 }
 
@@ -98,7 +98,7 @@ void ASoundBox::AdjustHexVolumes()
 	{
 		for (int i = 0; i < foundHexes.Num(); i++)
 		{
-			foundHexes[i]->targetVolume = 0.f;
+			foundHexes[i]->SetTargetVolume(0.f);
 			return;
 		}
 	}
@@ -115,7 +115,7 @@ void ASoundBox::AdjustHexVolumes()
 
 		float volume = FMath::Clamp(((minVolume - maxVolume) / radius) * distanceToCenter + maxVolume, minVolume, maxVolume);
 
-		foundHexes[i]->targetVolume = volume;
+		foundHexes[i]->SetTargetVolume(volume);
 	}
 }
 
@@ -134,7 +134,7 @@ void ASoundBox::ToggleSoundsActive(bool active)
 		for (int i = 0; i < foundHexes.Num(); i++)
 		{
 			//foundHexes[i]->audioComponent->FadeOut(fadeOutSpeed, 0.f);
-			foundHexes[i]->targetVolume = 0.f;
+			foundHexes[i]->SetTargetVolume(0.f);
 		}
 	}
 }

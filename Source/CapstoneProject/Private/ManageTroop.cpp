@@ -106,7 +106,7 @@ AActor* UManageTroop::GetSelectedObject()
 
 void UManageTroop::CommandToMerge(ATroop* troop, AActor* target)
 {
-	UnitActions::CommandTroopToMerge(troop, target);
+	troop->CommandTroopToMerge(target);
 
 	CueActionState(ActionStates::None);
 }

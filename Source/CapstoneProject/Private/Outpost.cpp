@@ -81,7 +81,7 @@ TArray<ABaseHex*> AOutpost::ClaimLand()
 
 	ABaseHex* startHex = hexNav->GetCurrentHex();
 
-	startHex->hexOwner = unitStats->faction;
+	startHex->SetHexOwner(unitStats->faction);
 	hexesToClaim.Add(startHex);
 
 	for (int i = 0; i < range; ++i)
@@ -134,10 +134,10 @@ TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
 		//Check found hex for neutrality
 		if (foundHex)
 		{
-			if (foundHex->hexOwner == Factions::None)
+			if (foundHex->GetHexOwner() == Factions::None)
 			{
 				//Add hex to list of found hexes
-				foundHex->SetFaction(unitStats->faction);
+				foundHex->SetHexOwner(unitStats->faction);
 				foundHexes.Add(foundHex);
 			}
 		}
@@ -217,6 +217,18 @@ void AOutpost::CueTroopBuild(UnitTypes unit)
 	}
 }
 
+float AOutpost::GetTroopBuildTime()
+{
+	return currentTroopBuildTime;
+}
+
+UnitTypes AOutpost::GetCuedTroop()
+{
+	if (cuedUnits.IsEmpty()) return UnitTypes::None;
+
+	return cuedUnits[0];
+}
+
 void AOutpost::BuildTroop()
 {
 	ABaseHex* hex = hexNav->GetCurrentHex();
@@ -231,10 +243,10 @@ void AOutpost::BuildTroop()
 		{
 			if (hex->troopsInHex[i]->unitStats->faction == unitStats->faction)
 			{
-				if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->armyCap)
+				if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->GetArmyCap())
 				{
 					troop->SphereCheck(20.f);
-					UnitActions::CommandTroopToMerge(troop, hex->troopsInHex[i]);
+					troop->CommandTroopToMerge(hex->troopsInHex[i]);
 				}
 				else
 				{
@@ -267,7 +279,7 @@ TArray<ATroop*> AOutpost::ReleaseTroops()
 	for (int i = 0; i < troopsInStorage.Num(); ++i)
 	{
 		ATroop* spawn = nullptr;
-		ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->hexOwner, usedHexes);
+		ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
 		usedHexes.Add(spawnPoint);
 
 		switch (troopsInStorage[i].unitType)
@@ -338,7 +350,7 @@ void AOutpost::Destroyed()
 	}
 	for (int i = 0; i < claimedHexes.Num(); i++)
 	{
-		claimedHexes[i]->SetFaction(Factions::None);
+		claimedHexes[i]->SetHexOwner(Factions::None);
 	}
 
 	Super::Destroyed();

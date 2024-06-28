@@ -29,43 +29,15 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere) int range = 2;
-	TArray<ABaseHex*> ClaimLand();
-
-	TArray<ABaseHex*> ScanHex(ABaseHex* hex);
-	
-	UPROPERTY(EditAnywhere)
-		float traceStartOffset = 10.f;
-	UPROPERTY(EditAnywhere)
-		float traceLength = 50.f;
-	UPROPERTY(VisibleAnywhere) TArray<ABaseHex*> claimedHexes;
-	
-	void BuildingAction() override;
-	virtual void SetToFinishedModel();
-
 	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
 	void BuildAttachment(BuildingAttachments attachment);
-	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
 
-	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
-	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
-	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
-	UPROPERTY(EditAnywhere) UOutpostDefenses* defenseBuilding;
-
-	TArray<UnitTypes> cuedUnits;
-	float currentTroopBuildTime;
 	void CueTroopBuild(UnitTypes unit);
-	void BuildTroop();
+	float GetTroopBuildTime();
+	UnitTypes GetCuedTroop();
 	
-	TArray<UnitActions::UnitData> troopsInStorage;
 	void StoreTroop(ATroop* troop);
-	TArray<ATroop*> ReleaseTroops();
-
-	void HealTroops(float& DeltaTime);
-	UPROPERTY(EditAnywhere) float healRate = 1.f;
-	float currentHealRate = 0;
-	UPROPERTY(EditAnywhere) int healAmount = 5;
 
 	virtual void Action1() override;
 	virtual void Action2() override;
@@ -73,4 +45,40 @@ public:
 	virtual void Action4() override;
 
 	virtual void Destroyed() override;
+protected:
+
+	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
+	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
+	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
+	UPROPERTY(EditAnywhere) UOutpostDefenses* defenseBuilding;
+
+	UPROPERTY(EditAnywhere) int range = 2;
+
+	UPROPERTY(EditAnywhere)
+		float traceStartOffset = 10.f;
+	UPROPERTY(EditAnywhere)
+		float traceLength = 50.f;
+	UPROPERTY(VisibleAnywhere) TArray<ABaseHex*> claimedHexes;
+
+private:
+	TArray<UnitActions::UnitData> troopsInStorage;
+
+	TArray<ABaseHex*> ClaimLand();
+
+	TArray<ABaseHex*> ScanHex(ABaseHex* hex);
+
+	void BuildingAction() override;
+	void BuildTroop();
+	virtual void SetToFinishedModel();
+	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
+
+	TArray<UnitTypes> cuedUnits;
+	float currentTroopBuildTime;
+
+	void HealTroops(float& DeltaTime);
+	UPROPERTY(EditAnywhere) float healRate = 1.f;
+	float currentHealRate = 0;
+	UPROPERTY(EditAnywhere) int healAmount = 5;
+
+	TArray<ATroop*> ReleaseTroops();
 };

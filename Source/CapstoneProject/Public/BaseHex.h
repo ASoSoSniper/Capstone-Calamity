@@ -104,12 +104,7 @@ public:
 //Variables that change depending on the hex's interaction with the world
 #pragma region Variables
 
-	UPROPERTY(EditAnywhere) bool isSelected = false;
-	UPROPERTY(EditAnywhere) bool hasFOW = true;
-
 	UPROPERTY(VisibleAnywhere) ABuilding* building;
-
-	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
 	UPROPERTY(VisibleAnywhere) ABattleObject* battle;
 
@@ -117,26 +112,14 @@ public:
 
 //Variables that change depending on the hex's identity
 #pragma region Identity
-	struct ResourceStats
-	{
-		int yieldBonus;
-	};
 
-	TMap<StratResources, ResourceStats> resourceBonuses;
+	Factions GetHexOwner();
+	void SetHexOwner(Factions faction);
 
-	UPROPERTY(EditAnywhere, Category = "Resources") int energyYieldBonus = 1;
-	UPROPERTY(EditAnywhere, Category = "Resources") int productionYieldBonus = 1;
-	UPROPERTY(EditAnywhere, Category = "Resources") int foodYieldBonus = 1;
-	UPROPERTY(EditAnywhere, Category = "Resources") int wealthYieldBonus = 1;
-	UPROPERTY(EditAnywhere, Category = "Identity") int hexID;
-	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
-
-	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
-
-	UPROPERTY(EditAnywhere, Category = "Identity") float moveMultiplier = 1.f;
-	UPROPERTY(EditAnywhere, Category = "Identity") float attritionMultiplier = 1.f;
-	UPROPERTY(EditAnywhere, Category = "Identity") int defenderBonus = 0;
-	UPROPERTY(EditAnywhere, Category = "Identity") int vision = 0;
+	int GetMovementMulti();
+	int GetAttritionMulti();
+	int GetDefenderBonus();
+	int GetVision();
 #pragma endregion
 
 	TArray<AActor*> GetObjectsInHex();
@@ -154,39 +137,31 @@ public:
 	bool ActiveBattleOnHex();
 
 	TMap<WorkerType, int> workersInHex;
-	int maxWorkers = 15;
-
-	float currentHarvestTime;
-	float maxHarvestTime = 2.f;
-	bool harvesting;
-	float outputPercent;
-	bool hasBuilding;
-	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
-
-	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
+	int GetMaxWorkers();
+	void SetMaxWorkers(int newMax);
+	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
 	bool ActiveHarvesting();
 
 	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
 	void ToggleResourceYield();
 
-	bool HasBuilding();
+	ABuilding* GetBuilding();
+	void SetBuilding(ABuilding* setBuilding);
 
 	FHexDisplay GetDisplayInfo();
 
 	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
 
-	void SetFaction(Factions faction);
-
-	void SetToTargetVolume(float& DeltaTime);
-	UPROPERTY(EditAnywhere, Category = "Sound") float volumeSpeed = 1.5f;
-	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
-	bool inSoundboxRadius = false;
+	float GetTargetVolume();
+	void SetTargetVolume(float volume);
+	void SetInSoundBoxRadius(bool inRadius);
 
 	TerrainType GetHexTerrain();
 	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
 	void SetHexTerrain(TerrainType terrain);
 	void SetHexModel();
+	void SetAttachmentCanBeVisible(bool canBeVisible);
 
 	bool IsStaticBuildingTerrain();
 	bool IsTraversableTerrain();
@@ -197,9 +172,32 @@ public:
 	FCurrentResourceYields GetCurrentResourceYields();
 
 private:
+
 	AMovementAI* attackingTroop;
 	TerrainType hexTerrain = TerrainType::Plains;
 	int seedIndex = 0;
+	bool harvesting;
+	float outputPercent;
 
 	TSet<ABaseHex*> GetSurroundingHexes();
+
+	TMap<StratResources, int> resourceBonuses;
+
+	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") float moveMultiplier = 1.f;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") float attritionMultiplier = 1.f;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") int defenderBonus = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") int vision = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkers = 15;
+	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkersDefault = 15;
+
+	UPROPERTY(EditAnywhere, Category = "Sound") float volumeSpeed = 1.5f;
+	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
+	void SetToTargetVolume(float& DeltaTime);
+	bool inSoundboxRadius = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
+
+	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 };

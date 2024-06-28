@@ -32,7 +32,6 @@ public:
 	UPROPERTY(EditAnywhere) UInteractable* interact;
 	UPROPERTY(EditAnywhere) UHexNav* hexNav;
 	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
-	ABaseHex* hex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group1Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group2Mesh;
@@ -59,26 +58,46 @@ public:
 
 	virtual void Start();
 
+	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
+
+	bool IsEnding();
+	bool IsAttacking();
+
+	void SetSelected(bool selected);
+	int GetGroup1Die();
+	int GetGroup2Die();
+	ABaseHex* GetHex();
+
+	Factions FleeFromBattle(Factions faction);
+
+protected:
+
 	void CreateFactions();
 	void AddUnitToFaction(AMovementAI* troop);
 	virtual void GenerateModels();
 	void AddUnitToArmy(UnitActions::UnitData data);
 	void AssignFactionToGroup(Factions army);
 
+	bool IsAlive(UnitActions::UnitData& group);
+	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
+	void RemoveArmy(Factions faction);
+
 	virtual void Attack();
 	virtual void EndBattle();
 	virtual void DestroyBattle();
 	virtual void Destroyed() override;
-	bool IsAlive(UnitActions::UnitData& group);
-	Factions FleeFromBattle(Factions faction);
-	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
-	void RemoveArmy(Factions faction);
 
-	UPROPERTY(EditAnywhere) float attackRate = 2.f;
-	float currentAttackTime;
+	int RollDie(int& groupDie);
+	float GetRollModifier(int& groupDie);
+
+	float GetMoralePercent(Factions faction);
+	float DecayMorale(Factions faction, float percentReduction);
+	void CalculateGroupDamage();
+
 	UPROPERTY(EditAnywhere) bool attacking;
 	bool ending;
-	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
+	ABaseHex* hex;
+
 	UPROPERTY(VisibleAnywhere) int group1Die = 0;
 	UPROPERTY(VisibleAnywhere) int group2Die = 0;
 	UPROPERTY(VisibleAnywhere) int group1Damage = 0;
@@ -86,19 +105,17 @@ public:
 
 	UPROPERTY(EditAnywhere) int ticksTillRoll = 5;
 	int currentTickTillRoll = 0;
-
-	int RollDie(int& groupDie);
-	float GetRollModifier(int& groupDie);
-
 	UPROPERTY(EditAnywhere) float moraleDecayRate = 0.01f;
-	float GetMoralePercent(Factions faction);
-	float DecayMorale(Factions faction, float percentReduction);
+
+private:
+	UPROPERTY(EditAnywhere) float attackRate = 2.f;
+	float currentAttackTime;
+	
+	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
 
 	Factions attackingFaction = Factions::None;
-	void CalculateGroupDamage();
-	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
 
 	bool selectedByPlayer;
 
-	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
+	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
 };

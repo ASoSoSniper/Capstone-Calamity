@@ -263,7 +263,7 @@ void ABattleObject::Attack()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
 	}
 
-	int group1DieModded = FMath::Clamp(group1Die - hex->defenderBonus, 1, group1Die - hex->defenderBonus);
+	int group1DieModded = FMath::Clamp(group1Die - hex->GetDefenderBonus(), 1, group1Die - hex->GetDefenderBonus());
 
 	int group1DamageTotal = FMath::RoundToInt((float)group1Damage * GetRollModifier(group1DieModded));
 	int group2DamageTotal = FMath::RoundToInt((float)group2Damage * GetRollModifier(group2Die));
@@ -392,6 +392,11 @@ Factions ABattleObject::FleeFromBattle(Factions faction)
 
 	RemoveArmy(faction);
 	return faction;
+}
+
+void ABattleObject::SetSelected(bool selected)
+{
+	selectedByPlayer = selected;
 }
 
 TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnAtOutpost)
@@ -683,4 +688,29 @@ float ABattleObject::DisplayBattleProgress()
 	float totalPercent = (group1Percent + 1 - group2Percent) / 2;
 
 	return totalPercent;
+}
+
+bool ABattleObject::IsEnding()
+{
+	return ending;
+}
+
+bool ABattleObject::IsAttacking()
+{
+	return attacking;
+}
+
+int ABattleObject::GetGroup1Die()
+{
+	return group1Die;
+}
+
+int ABattleObject::GetGroup2Die()
+{
+	return group2Die;
+}
+
+ABaseHex* ABattleObject::GetHex()
+{
+	return hex;
 }

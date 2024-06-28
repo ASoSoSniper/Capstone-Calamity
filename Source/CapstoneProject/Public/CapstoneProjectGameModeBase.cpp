@@ -69,7 +69,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 	timeScale = 1.f;
 	FindExistingBuildingsAndTroops();
-	FindExistingHexes();
+	//FindExistingHexes();
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
@@ -328,7 +328,6 @@ void ACapstoneProjectGameModeBase::FindExistingHexes()
 	for (int i = 0; i < hexes.Num(); i++)
 	{
 		ABaseHex* hex = Cast<ABaseHex>(hexes[i]);
-		hex->SetFaction(hex->hexOwner);
 	}
 }
 

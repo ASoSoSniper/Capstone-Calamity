@@ -30,41 +30,43 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere) UInteractable* interact;
+	UPROPERTY(VisibleAnywhere) UHexNav* hexNav;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* mesh;
+	UPROPERTY(EditAnywhere) UUnitStats* unitStats;
+	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
+	bool selectedByPlayer;
 
-	UPROPERTY(EditAnywhere)
-		UInteractable* interact;
-	UPROPERTY(VisibleAnywhere)
-		UHexNav* hexNav;
-	UPROPERTY(VisibleAnywhere)
-		TArray<AActor*> hexPath;
-	int hexPathIndex;
-	
-	UPROPERTY(EditAnywhere)
-		float traceStartOffset = 10.f;
-	UPROPERTY(EditAnywhere)
-		float traceLength = 50.f;
-	UPROPERTY(EditAnywhere)
-		float hexSearchDistance = 100.f;
-	UPROPERTY(EditAnywhere)
-		float hexSnapDistance = 2.f;
-	UPROPERTY(EditAnywhere)
-		int maxHexes = 200;
-	UPROPERTY(EditAnywhere)
-		float moveSpeed = 1.f;
-		float currentMoveAlpha = 0.f;
-	UPROPERTY(VisibleAnywhere)
-		float currTimeTillHexMove = 0.f;
-	
 	void SetDestination(AActor* targetHex);
-	void SnapToHex(ABaseHex* hex);
-	ABaseHex* HexSearch(AActor* hex);
-	
 	void SphereCheck(float rangeMulti = 1.f);
-	bool HexIsTraversable(AActor* hex);
-	bool HexIsTraversable(ABaseHex* hex);
+	virtual void CancelPath();
+
+protected:
+	UPROPERTY(VisibleAnywhere) TArray<AActor*> hexPath;
+	int hexPathIndex;
+	UPROPERTY(VisibleAnywhere) float currTimeTillHexMove = 0.f;
+
+	void CountdownToMove(float& DeltaTime);
+	virtual void MoveToTarget(float& DeltaTime);
+	
+	virtual void Destroyed() override;
+
+private:
+	UPROPERTY(EditAnywhere) float traceStartOffset = 10.f;
+	UPROPERTY(EditAnywhere) float traceLength = 50.f;
+	UPROPERTY(EditAnywhere) float hexSearchDistance = 100.f;
+	UPROPERTY(EditAnywhere) float hexSnapDistance = 2.f;
+	UPROPERTY(EditAnywhere) UExploreAnims* anims;
+	UPROPERTY(EditAnywhere) int maxHexes = 200;
+	UPROPERTY(EditAnywhere) float moveSpeed = 1.f;
+	float currentMoveAlpha = 0.f;
 
 	float AngleBetweenVectors(FVector a, FVector b);
 	FVector GetVectorToTarget(FVector origin);
+	bool HexIsTraversable(AActor* hex);
+	bool HexIsTraversable(ABaseHex* hex);
+	void SnapToHex(ABaseHex* hex);
+	ABaseHex* HexSearch(AActor* hex);
 
 	enum MoveStates
 	{
@@ -73,19 +75,4 @@ public:
 		Attack
 	};
 	MoveStates moveState = Idle;
-	void CountdownToMove(float& DeltaTime);
-	virtual void MoveToTarget(float& DeltaTime);
-	virtual void CancelPath();
-	virtual void Destroyed() override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMeshComponent* mesh;
-	UPROPERTY(EditAnywhere)
-		UUnitStats* unitStats;
-	UPROPERTY(EditAnywhere)
-		UMeshVisibility* visibility;
-	UPROPERTY(EditAnywhere)
-		UExploreAnims* anims;
-
-	bool selectedByPlayer;
 };

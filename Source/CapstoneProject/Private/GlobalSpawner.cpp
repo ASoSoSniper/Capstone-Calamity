@@ -903,7 +903,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	}
 
 	hex->hexMeshAttachment->SetVisibility(extraAsset != nullptr);
-	hex->attachmentCanBeVisible = extraAsset != nullptr;
+	hex->SetAttachmentCanBeVisible(extraAsset != nullptr);
 }
 
 ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)

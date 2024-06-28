@@ -103,10 +103,10 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 	ABattleObject* battleObject = Cast<ABattleObject>(GetActionStateSelection());
 	if (!battleObject) return unit;
 
-	unit.hexIcon = battleObject->hex->GetDisplayInfo().icon;
-	unit.dieRoll = group == 0 ? battleObject->group1Die : battleObject->group2Die;
+	unit.hexIcon = battleObject->GetHex()->GetDisplayInfo().icon;
+	unit.dieRoll = group == 0 ? battleObject->GetGroup1Die() : battleObject->GetGroup2Die();
 	unit.name = FText::FromString(TEXT("Goofy ah"));
-	unit.defenderBonus = FText::AsNumber(battleObject->hex->defenderBonus);
+	unit.defenderBonus = FText::AsNumber(battleObject->GetHex()->GetDefenderBonus());
 
 	if (battleObject->currentBattle.Group1.IsEmpty() && group == 0) return unit;
 	if (battleObject->currentBattle.Group2.IsEmpty() && group == 1) return unit;
@@ -481,7 +481,7 @@ bool ABasePlayerController::IsHumanControlled(AActor* object)
 			(identity.building->unitStats->faction != Factions::Human && identity.building->GetOccupier() == Factions::Human);
 
 	case ObjectTypes::Hex:
-		return identity.hex->hexOwner == Factions::Human;
+		return identity.hex->GetHexOwner() == Factions::Human;
 	}
 
 	return false;
@@ -512,17 +512,17 @@ FSiegeBuildingInfo ABasePlayerController::GetSiegeBuildingInfo()
 	ASiegeObject* siege = Cast<ASiegeObject>(actor);
 	if (!siege) return info;
 
-	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[siege->building->GetBuildingType()];
+	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[siege->GetBuilding()->GetBuildingType()];
 	info.buildingName = stats.name;
-	info.buildingType = siege->building->GetBuildingType();
+	info.buildingType = siege->GetBuilding()->GetBuildingType();
 	info.buildingIcon = stats.buildingIcon;
 
-	info.currentHealth = siege->building->unitStats->currentHP;
-	info.maxHealth = siege->building->unitStats->maxHP;
+	info.currentHealth = siege->GetBuilding()->unitStats->currentHP;
+	info.maxHealth = siege->GetBuilding()->unitStats->maxHP;
 
 	info.buildingHealthPercent = (float)info.currentHealth / (float)info.maxHealth;
 
-	info.buildingDamage = siege->building->unitStats->damage;
+	info.buildingDamage = siege->GetBuilding()->unitStats->damage;
 
 	return info;
 }
@@ -858,7 +858,7 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 	workers.humans = hex->workersInHex[WorkerType::Human];
 	workers.robots = hex->workersInHex[WorkerType::Robot];
 	workers.aliens = hex->workersInHex[WorkerType::Alien];
-	workers.maxWorkers = hex->maxWorkers;
+	workers.maxWorkers = hex->GetMaxWorkers();
 
 	return workers;
 }
@@ -1045,7 +1045,7 @@ void ABasePlayerController::SelectBuilding(FText buildingName)
 	{
 		if (buildingName.EqualTo(buildings.Value.name))
 		{
-			if (selectedHex->hexOwner != Factions::Human && buildings.Key != SpawnableBuildings::Outpost)
+			if (selectedHex->GetHexOwner() != Factions::Human && buildings.Key != SpawnableBuildings::Outpost)
 			{
 				PlayUISound(selectFailSound);
 				return;
@@ -1175,14 +1175,8 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 	AOutpost* outpost = GetOutpost();
 	if (!outpost) return troop;
 
-	if (outpost->cuedUnits.IsEmpty())
-	{
-		troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[UnitTypes::None];
-		return troop;
-	}
-
-	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->cuedUnits[0]];
-	troop.currentTime = outpost->currentTroopBuildTime;
+	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->GetCuedTroop()];
+	troop.currentTime = outpost->GetTroopBuildTime();
 
 	return troop;
 }
@@ -1220,15 +1214,15 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 {
 	if (!selectedHex) return sliders;
 
-	selectedHex->workersInHex[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * selectedHex->maxWorkers), selectedHex);
-	selectedHex->workersInHex[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * selectedHex->maxWorkers), selectedHex);
-	selectedHex->workersInHex[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * selectedHex->maxWorkers), selectedHex);
+	selectedHex->workersInHex[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	selectedHex->workersInHex[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	selectedHex->workersInHex[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * selectedHex->GetMaxWorkers()), selectedHex);
 
 	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
 	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];
 	sliders.alienDisplay = selectedHex->workersInHex[WorkerType::Alien];
 
-	sliders.maxWorkers = selectedHex->maxWorkers;
+	sliders.maxWorkers = selectedHex->GetMaxWorkers();
 	sliders.currWorkers = selectedHex->workersInHex[WorkerType::Human] + selectedHex->workersInHex[WorkerType::Robot] + selectedHex->workersInHex[WorkerType::Alien];
 
 	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);

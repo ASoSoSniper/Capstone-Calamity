@@ -21,16 +21,11 @@ class CAPSTONEPROJECT_API ATroop : public AMovementAI
 	
 public:
 	ATroop();
-
 	UPROPERTY(EditAnywhere) UAITroopComponent* AITroopComponent;
-
-	UPROPERTY(VisibleAnywhere) bool attacking;
-	UPROPERTY(VisibleAnywhere) bool merging;
-	UPROPERTY(EditAnywhere) int armyCap = 20;
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void CreatePath() override;
+	
 	virtual void MergeOnTile();
 	
 	virtual void Action1();
@@ -38,17 +33,23 @@ public:
 	virtual void Action3();
 	virtual void Action4();
 
-	void RotateToFaceTarget(FVector direction, float& DeltaTime);
-	virtual void MoveToTarget(float& DeltaTime) override;
-
 	UFUNCTION(BlueprintCallable) FTroopUIData GetUIData();
+	bool CommandTroopToMerge(AActor* target);
+	int GetArmyCap();
+
+protected:
+	virtual void MoveToTarget(float& DeltaTime) override;
+	virtual void CreatePath() override;
 
 private:
 	bool SetUpTroop();
 	bool setupComplete;
+	void RotateToFaceTarget(FVector direction, float& DeltaTime);
 
 	UPROPERTY(EditAnywhere) float rotateSpeedMultiplier = 3.f;
 
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
 	UPROPERTY(EditAnywhere) bool debug = false;
+	UPROPERTY(EditAnywhere) int armyCap = 20;
+	UPROPERTY(VisibleAnywhere) bool merging;
 };

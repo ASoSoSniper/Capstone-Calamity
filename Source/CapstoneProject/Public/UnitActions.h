@@ -118,7 +118,6 @@ public:
 	static EngagementSelect DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2);
 
 	static void AssignFaction(Factions faction, AActor* target);
-	static void AssignFaction(Factions faction, ABaseHex* hex);
 	static void RemoveFromFaction(Factions faction, AActor* target);
 
 	static Faction* GetFaction(Factions faction);
@@ -209,8 +208,6 @@ public:
 	static TMap<ABaseHex*, Factions> GetTargetList(Factions faction);
 
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
-
-	static bool CommandTroopToMerge(ATroop* troop, AActor* target);
 
 	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName = TEXT(""));
 	static void RemoveArmyName(Factions namingFaction, AMovementAI* unit);

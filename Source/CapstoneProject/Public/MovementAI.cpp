@@ -283,7 +283,7 @@ void AMovementAI::CountdownToMove(float& DeltaTime)
 	ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
 	if (!targetHex) return;
 
-	currTimeTillHexMove += DeltaTime * targetHex->moveMultiplier * ACapstoneProjectGameModeBase::timeScale;
+	currTimeTillHexMove += DeltaTime * targetHex->GetMovementMulti() * ACapstoneProjectGameModeBase::timeScale;
 	currTimeTillHexMove = FMath::Clamp(currTimeTillHexMove, 0.f, unitStats->speed);
 }
 

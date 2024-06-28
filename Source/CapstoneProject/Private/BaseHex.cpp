@@ -97,18 +97,16 @@ ABaseHex::ABaseHex()
 	workersInHex.Add(WorkerType::Alien, 0);
 
 	//Initialize resource yields
-	resourceBonuses.Add(StratResources::Wealth, ResourceStats{ wealthYieldBonus });
-	resourceBonuses.Add(StratResources::Energy, ResourceStats{ energyYieldBonus});
-	resourceBonuses.Add(StratResources::Production, ResourceStats{ productionYieldBonus});
-	resourceBonuses.Add(StratResources::Food, ResourceStats{ foodYieldBonus});
+	resourceBonuses.Add(StratResources::Wealth, 1 );
+	resourceBonuses.Add(StratResources::Energy, 1);
+	resourceBonuses.Add(StratResources::Production, 1);
+	resourceBonuses.Add(StratResources::Food, 1);
 }
 
 // Called when the game starts or when spawned
 void ABaseHex::BeginPlay()
 {
 	Super::BeginPlay();
-
-	currentHarvestTime = maxHarvestTime;
 }
 
 // Called every frame
@@ -119,17 +117,6 @@ void ABaseHex::Tick(float DeltaTime)
 	if ((building && !IsBuildableTerrain()) || (!troopsInHex.IsEmpty() && !IsTraversableTerrain()))
 	{
 		SetHexTerrain(TerrainType(FMath::RandRange(1, 4)));
-	}
-
-	if (hexTerrain != TerrainType::None)
-	{
-		if (HasBuilding())
-		{
-			if (hexOwner == Factions::None)
-			{
-				SetFaction(building->unitStats->faction);
-			}
-		}
 	}
 
 	if (hexOwner != Factions::None) ActiveHarvesting();
@@ -143,6 +130,55 @@ void ABaseHex::Tick(float DeltaTime)
 	}
 
 	SetToTargetVolume(DeltaTime);
+}
+
+Factions ABaseHex::GetHexOwner()
+{
+	return hexOwner;
+}
+
+void ABaseHex::SetHexOwner(Factions faction)
+{
+	if (hexOwner != Factions::None)
+	{
+		if (ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ownedHexes.Contains(this))
+			ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ownedHexes.Remove(this);
+	}
+
+	hexOwner = faction;
+
+	if (faction == Factions::None)
+	{
+		visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::factionColors[Factions::None];
+		return;
+	}
+
+	visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
+
+	if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(this))
+	{
+		ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(this);
+	}
+}
+
+int ABaseHex::GetMovementMulti()
+{
+	return moveMultiplier;
+}
+
+int ABaseHex::GetAttritionMulti()
+{
+	return attritionMultiplier;
+}
+
+int ABaseHex::GetDefenderBonus()
+{
+	return defenderBonus;
+}
+
+int ABaseHex::GetVision()
+{
+	return vision;
 }
 
 TArray<AActor*> ABaseHex::GetObjectsInHex()
@@ -220,7 +256,7 @@ void ABaseHex::AddBuildingToHex(ABuilding* newBuilding)
 	newBuilding->hexNav->SetCurrentHex(this);
 	building = newBuilding;
 
-	if (hexOwner == Factions::None) SetFaction(newBuilding->unitStats->faction);
+	if (hexOwner == Factions::None) SetHexOwner(newBuilding->unitStats->faction);
 
 	CheckForHostility(newBuilding);
 }
@@ -257,7 +293,17 @@ bool ABaseHex::ActiveBattleOnHex()
 {
 	if (!battle) return false;
 
-	return battle->attacking;
+	return battle->IsAttacking();
+}
+
+int ABaseHex::GetMaxWorkers()
+{
+	return maxWorkers;
+}
+
+void ABaseHex::SetMaxWorkers(int newMax)
+{
+	maxWorkers = newMax > 0 ? newMax : 0;
 }
 
 bool ABaseHex::ActiveHarvesting()
@@ -290,8 +336,8 @@ void ABaseHex::ToggleResourceYield()
 
 	for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory)
 	{
-		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key].yieldBonus;
-		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key].yieldBonus;
+		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key];
+		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key];
 
 		resource.Value.resourcePerTick -= FMath::RoundToInt(originalOutput);
 		resource.Value.resourcePerTick += FMath::RoundToInt(newOutput);
@@ -302,33 +348,56 @@ void ABaseHex::ToggleResourceYield()
 	outputPercent = newOutputPercent;
 }
 
-bool ABaseHex::HasBuilding()
+ABuilding* ABaseHex::GetBuilding()
 {
-	if (building != nullptr)
+	return building;
+}
+
+void ABaseHex::SetBuilding(ABuilding* setBuilding)
+{
+	if (attachmentCanBeVisible)
 	{
-		if (attachmentCanBeVisible)
-		{
-			hexMeshAttachment->SetVisibility(false);
-			hasBuilding = true;
-		}
+		hexMeshAttachment->SetVisibility(setBuilding == nullptr);
 	}
-	else
+
+	if (setBuilding) SetHexOwner(setBuilding->unitStats->faction);
+
+	if (building && !setBuilding)
 	{
-		if (attachmentCanBeVisible)
+		SetMaxWorkers(maxWorkersDefault);
+		int totalWorkers = 0;
+		for (auto& worker : workersInHex)
 		{
-			hexMeshAttachment->SetVisibility(true);
-			hasBuilding = false;
+			totalWorkers += worker.Value;
+		}
+		int workersToRemove = totalWorkers > maxWorkersDefault ? totalWorkers - maxWorkersDefault : 0;
+
+		int removedWorkers = 0;
+		while (removedWorkers < workersToRemove)
+		{
+			for (auto& worker : workersInHex)
+			{
+				if (removedWorkers == workersToRemove) break;
+
+				int remove = UnitActions::RemoveWorkers(building->unitStats->faction, worker.Key, 1, this);
+
+				if (remove > 0)
+				{
+					removedWorkers++;
+					workersInHex[worker.Key]--;
+				}
+			}
 		}
 	}
 
-	return building != nullptr;
+	building = setBuilding;
 }
 
 int ABaseHex::GetNumberOfWorkers()
 {
 	int totalWorkers = 0;
 
-	for (auto worker : workersInHex)
+	for (auto& worker : workersInHex)
 	{
 		totalWorkers += worker.Value;
 	}
@@ -389,6 +458,21 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> igno
 	return this;
 }
 
+float ABaseHex::GetTargetVolume()
+{
+	return targetVolume;
+}
+
+void ABaseHex::SetTargetVolume(float volume)
+{
+	targetVolume = volume > 0 ? volume : 0;
+}
+
+void ABaseHex::SetInSoundBoxRadius(bool inRadius)
+{
+	inSoundboxRadius = inRadius;
+}
+
 FHexDisplay ABaseHex::GetDisplayInfo()
 {
 	FHexDisplay display;
@@ -396,10 +480,10 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	display.name = hexInfo[hexTerrain].name;
 	display.description = hexInfo[hexTerrain].description;
 
-	display.food = FText::AsNumber(resourceBonuses[StratResources::Food].yieldBonus);
-	display.production = FText::AsNumber(resourceBonuses[StratResources::Production].yieldBonus);
-	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy].yieldBonus);
-	display.wealth = FText::AsNumber(resourceBonuses[StratResources::Wealth].yieldBonus);
+	display.food = FText::AsNumber(resourceBonuses[StratResources::Food]);
+	display.production = FText::AsNumber(resourceBonuses[StratResources::Production]);
+	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy]);
+	display.wealth = FText::AsNumber(resourceBonuses[StratResources::Wealth]);
 
 	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
 	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
@@ -425,7 +509,7 @@ void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions 
 {
 	Factions selectedFaction = faction != Factions::None ? faction : hexOwner;
 
-	resourceBonuses[resource].yieldBonus += value;
+	resourceBonuses[resource] += value;
 
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(selectedFaction))
 	{
@@ -436,12 +520,6 @@ void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions 
 	if (harvesting)
 		ACapstoneProjectGameModeBase::activeFactions[selectedFaction]->resourceInventory[resource].resourcePerTick += value;
 }
-
-void ABaseHex::SetFaction(Factions faction)
-{
-	UnitActions::AssignFaction(faction, this);
-}
-
 
 void ABaseHex::SetToTargetVolume(float& DeltaTime)
 {
@@ -523,10 +601,10 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 	hexTerrain = terrain;
 
 	FHexInfo info = hexInfo[hexTerrain];
-	resourceBonuses[StratResources::Food].yieldBonus = info.food;
-	resourceBonuses[StratResources::Production].yieldBonus = info.production;
-	resourceBonuses[StratResources::Energy].yieldBonus = info.energy;
-	resourceBonuses[StratResources::Wealth].yieldBonus = info.wealth;
+	resourceBonuses[StratResources::Food] = info.food;
+	resourceBonuses[StratResources::Production] = info.production;
+	resourceBonuses[StratResources::Energy] = info.energy;
+	resourceBonuses[StratResources::Wealth] = info.wealth;
 
 	moveMultiplier = info.moveMultiplier;
 	attritionMultiplier = info.attritionMultiplier;
@@ -536,7 +614,7 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 	if (hexTerrain == TerrainType::Ship)
 	{
 		visibility->enableScan = true;
-		hexOwner = Factions::Human;
+		SetHexOwner(Factions::Human);
 	}
 
 	SetHexModel();
@@ -554,6 +632,11 @@ void ABaseHex::SetHexModel()
 	{
 		AGlobalSpawner::spawnerObject->CreateHexModel(hexTerrain, this);
 	}
+}
+
+void ABaseHex::SetAttachmentCanBeVisible(bool canBeVisible)
+{
+	attachmentCanBeVisible = canBeVisible;
 }
 
 bool ABaseHex::IsStaticBuildingTerrain()
@@ -592,10 +675,10 @@ FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 
 	//float outputPercent = GetOutputPercent();
 
-	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food].yieldBonus);
-	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy].yieldBonus);
-	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production].yieldBonus);
-	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth].yieldBonus);
+	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food]);
+	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy]);
+	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production]);
+	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth]);
 
 	return yields;
 }

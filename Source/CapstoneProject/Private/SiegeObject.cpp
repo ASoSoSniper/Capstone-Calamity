@@ -18,6 +18,11 @@ void ASiegeObject::Start()
 	CreateFactions();
 }
 
+ABuilding* ASiegeObject::GetBuilding()
+{
+	return building;
+}
+
 void ASiegeObject::Attack()
 {
 	//End the battle if one group is completely wiped out
@@ -36,7 +41,7 @@ void ASiegeObject::Attack()
 		currentTickTillRoll = 0;
 		RollDie(group1Die);
 		RollDie(group2Die);
-		group1Die = FMath::Clamp(group1Die - hex->defenderBonus, 1, group1Die - hex->defenderBonus);
+		group1Die = FMath::Clamp(group1Die - hex->GetDefenderBonus(), 1, group1Die - hex->GetDefenderBonus());
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
 	}
@@ -152,7 +157,7 @@ void ASiegeObject::GenerateModels()
 		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
-	if (building->unitStats->faction == Factions::Human)
+	if (building->unitStats->faction == Factions::Human || building->GetOccupier() == Factions::Human)
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
 		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);

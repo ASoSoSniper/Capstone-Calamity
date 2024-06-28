@@ -121,13 +121,14 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	FBuildingCost costs;
 	ABaseHex* hex = hexNav->GetCurrentHex();
+	hex->SetBuilding(this);
 	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(type))
 	{
 		costs = AGlobalSpawner::spawnerObject->buildingCosts[type];
 
-		if (hex->maxWorkers != costs.workerCost)
+		if (hex->GetMaxWorkers() != costs.workerCost)
 		{
-			hex->maxWorkers = costs.workerCost;
+			hex->SetMaxWorkers(costs.workerCost);
 		}
 	}
 
@@ -143,7 +144,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		availableWorkers += worker.Value;
 	}
 
-	while (hexWorkers < hex->maxWorkers && availableWorkers > 0)
+	while (hexWorkers < hex->GetMaxWorkers() && availableWorkers > 0)
 	{
 		for (auto& worker : factionWorkers)
 		{
@@ -153,7 +154,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 			hexWorkers += addedWorker;
 			availableWorkers -= addedWorker;
 
-			if (hexWorkers >= hex->maxWorkers || availableWorkers <= 0) break;
+			if (hexWorkers >= hex->GetMaxWorkers() || availableWorkers <= 0) break;
 		}
 	}
 
@@ -353,31 +354,6 @@ void ABuilding::Destroyed()
 	{
 		UnitActions::UpdateResourceCapacity(unitStats->faction, -resourceCapIncrease);
 
-		hex->maxWorkers = 10;
-		int totalWorkers = 0;
-		for (auto& worker : hex->workersInHex)
-		{
-			totalWorkers += worker.Value;
-		}
-		int workersToRemove = totalWorkers > 10 ? totalWorkers - 10 : 0;
-
-		int removedWorkers = 0;
-		while (removedWorkers < workersToRemove)
-		{
-			for (auto& worker : hex->workersInHex)
-			{
-				if (removedWorkers == workersToRemove) break;
-
-				int remove = UnitActions::RemoveWorkers(unitStats->faction, worker.Key, 1, hex);
-
-				if (remove > 0)
-				{
-					removedWorkers++;
-					hex->workersInHex[worker.Key]--;
-				}
-			}
-		}
-
 		UnitActions::RemoveFromFaction(unitStats->faction, this);
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
@@ -387,7 +363,7 @@ void ABuilding::Destroyed()
 			UnitActions::AddResources(unitStats->faction, addResources);
 		}
 
-		hex->building = nullptr;
+		hex->SetBuilding(nullptr);
 	}
 
 	if (smokeEffect)

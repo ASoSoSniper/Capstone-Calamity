@@ -9,7 +9,7 @@ void UManageBattle::Select(AActor* selectedObject)
 	if (selectedBattle)
 	{
 		HighlightSelected(selectedBattle, false);
-		selectedBattle->selectedByPlayer = false;
+		selectedBattle->SetSelected(false);
 	}
 
 	selectedBattle = Cast<ABattleObject>(selectedObject);
@@ -17,7 +17,7 @@ void UManageBattle::Select(AActor* selectedObject)
 	if (selectedBattle)
 	{
 		HighlightSelected(selectedObject, true);
-		selectedBattle->selectedByPlayer = true;
+		selectedBattle->SetSelected(true);
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Battle selected"));
@@ -59,7 +59,7 @@ void UManageBattle::Reset()
 	if (selectedBattle)
 	{
 		HighlightSelected(selectedBattle, false);
-		selectedBattle->selectedByPlayer = false;
+		selectedBattle->SetSelected(false);
 	}
 	selectedBattle = nullptr;
 }
