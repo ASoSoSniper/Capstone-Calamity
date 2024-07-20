@@ -65,4 +65,9 @@ void AAlienCity::SetToFinishedModel()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
+
+	storageBuilding->ActivateAttachment(true);
+	barracksBuilding->ActivateAttachment(true);
+	troopFactoryBuilding->ActivateAttachment(true);
+	defenseBuilding->ActivateAttachment(true);
 }

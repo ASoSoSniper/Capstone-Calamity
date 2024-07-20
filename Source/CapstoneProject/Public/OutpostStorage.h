@@ -18,7 +18,7 @@ class CAPSTONEPROJECT_API UOutpostStorage : public UBuildingAttachment
 
 public:
 	UOutpostStorage();
-	virtual void ActivateAttachment() override;
+	virtual void ActivateAttachment(bool instantBuild = false) override;
 	virtual bool DisableAttachment() override;
 
 	virtual bool SetUpAttachment(BuildingAttachments attachment) override;

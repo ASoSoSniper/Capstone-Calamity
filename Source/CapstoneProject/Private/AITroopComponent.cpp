@@ -5,6 +5,7 @@
 #include "Troop.h"
 #include "BaseHex.h"
 #include "Building.h"
+#include "Faction.h"
 
 // Sets default values for this component's properties
 UAITroopComponent::UAITroopComponent()
@@ -66,6 +67,26 @@ void UAITroopComponent::SetHostileDestination(AActor* hex)
 {
 	parentTroop->SetDestination(hex);
 	currentState = ToEnemy;
+}
+
+void UAITroopComponent::SetSettlerDestination()
+{
+	AActor* targetHex = nullptr;
+
+	int giveUp = 50;
+	while (!targetHex)
+	{
+		targetHex = FindHexToSettle();
+
+		--giveUp;
+		if (giveUp <= 0) break;
+	}
+
+	if (targetHex)
+	{
+		parentTroop->SetDestination(targetHex);
+		currentState = ToHex;
+	}
 }
 
 bool UAITroopComponent::OccupyingBuilding()
@@ -181,8 +202,40 @@ AActor* UAITroopComponent::FindRandomHex()
 	return nullptr;
 }
 
+AActor* UAITroopComponent::FindHexToSettle()
+{
+	Faction* factionObject = UnitActions::GetFaction(parentTroop->unitStats->faction);
+
+	ABaseHex* bestHex = nullptr;
+	int mostFreeHexes = 0;
+
+	for (ABaseHex* ownedHex : factionObject->ownedHexes)
+	{
+		int freeHexes = 0;
+		TSet<ABaseHex*> adjacentHexes = ownedHex->GetSurroundingHexes();
+
+		for (ABaseHex* foundHex : adjacentHexes)
+		{
+			if (foundHex->GetHexOwner() != parentTroop->unitStats->faction)
+			{
+				freeHexes++;
+			}
+		}
+
+		if (freeHexes > mostFreeHexes)
+		{
+			mostFreeHexes = freeHexes;
+			bestHex = ownedHex;
+		}
+	}
+
+	return bestHex;
+}
+
 void UAITroopComponent::GenerateArmy()
 {
+	troopsInArmy = UnitActions::GetFaction(parentTroop->unitStats->faction)->GetArmyTroopCount();
+
 	for (int i = 0; i < troopsInArmy; i++)
 	{
 		UnitTypes randomType = UnitTypes(FMath::RandRange(1, 5));
@@ -219,6 +272,15 @@ bool UAITroopComponent::CanFindEnemyTarget()
 void UAITroopComponent::UpdateBehavior()
 {
 	if (!isEnemy || !parentTroop->hexNav->GetCurrentHex()) return;
+
+	if (parentTroop->unitStats->unitType == UnitTypes::Settler)
+	{
+		if (!parentTroop->hexNav->GetTargetHex() || parentTroop->hexNav->CurrentEqualToTarget())
+		{
+			SetSettlerDestination();
+		}
+		return;
+	}
 
 	if (OccupyingBuilding()) return;
 

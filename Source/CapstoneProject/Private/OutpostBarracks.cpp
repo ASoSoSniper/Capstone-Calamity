@@ -5,7 +5,7 @@
 
 UOutpostBarracks::UOutpostBarracks()
 {
-	type = BuildingAttachments::RobotBarracks;
+	attachmentType = BuildingAttachments::RobotBarracks;
 }
 
 bool UOutpostBarracks::SetUpAttachment(BuildingAttachments attachment)

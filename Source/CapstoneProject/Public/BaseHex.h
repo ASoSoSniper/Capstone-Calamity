@@ -158,6 +158,7 @@ public:
 	void SetInSoundBoxRadius(bool inRadius);
 
 	TerrainType GetHexTerrain();
+	TSet<ABaseHex*> GetSurroundingHexes();
 	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
 	void SetHexTerrain(TerrainType terrain);
 	void SetHexModel();
@@ -178,8 +179,6 @@ private:
 	int seedIndex = 0;
 	bool harvesting;
 	float outputPercent;
-
-	TSet<ABaseHex*> GetSurroundingHexes();
 
 	TMap<StratResources, int> resourceBonuses;
 

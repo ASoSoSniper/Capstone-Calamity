@@ -10,12 +10,12 @@ void UOutpostStorage::UpdateResources()
 
 UOutpostStorage::UOutpostStorage()
 {
-	type = BuildingAttachments::Storage;
+	attachmentType = BuildingAttachments::Storage;
 }
 
-void UOutpostStorage::ActivateAttachment()
+void UOutpostStorage::ActivateAttachment(bool instantBuild)
 {
-	Super::ActivateAttachment();
+	Super::ActivateAttachment(instantBuild);
 }
 
 bool UOutpostStorage::DisableAttachment()

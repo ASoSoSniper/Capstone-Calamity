@@ -104,7 +104,7 @@ void Faction::SetFactionRelationship(Factions targetFaction, FactionRelationship
 void Faction::IncreaseHostility(Factions targetFaction, float& amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
-	if (!AIControlled || amount <= 0.f) return;
+	if (!IsAIControlled() || amount <= 0.f) return;
 	if (!factionRelationships.Contains(targetFaction)) return;
 
 	//Increase hostility by the amount, clamping between 0 and 1
@@ -118,7 +118,7 @@ void Faction::IncreaseHostility(Factions targetFaction, float& amount)
 void Faction::LowerHostility(Factions targetFaction, float& amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
-	if (!AIControlled || amount <= 0.f) return;
+	if (!IsAIControlled() || amount <= 0.f) return;
 	if (!factionRelationships.Contains(targetFaction)) return;
 
 	//Decrease hostility by the amount, clamping between 0 and 1
@@ -135,17 +135,17 @@ void Faction::SetFaction(Factions newFaction)
 
 	faction = newFaction;
 
-	if (newFaction != Factions::Human) AIControlled = true;
+	if (newFaction != Factions::Human) behaviorState = Expansion;
 }
 
 bool Faction::IsAIControlled()
 {
-	return AIControlled;
+	return behaviorState != AIInactive;
 }
 
 void Faction::FeedPop()
 {
-	if (AIControlled) return;
+	if (IsAIControlled()) return;
 
 	int workerAvailableCost = 0;
 	int workerFoodCost = 0;
@@ -176,7 +176,7 @@ void Faction::FeedPop()
 
 void Faction::ConsumeEnergy()
 {
-	if (AIControlled) return;
+	if (IsAIControlled()) return;
 
 	int energyCost = resourceInventory[StratResources::Energy].lossesPerDay;
 
@@ -195,7 +195,12 @@ void Faction::ConsumeEnergy()
 
 void Faction::BuildRandomBuilding()
 {
-	if (!AIControlled || ownedHexes.IsEmpty()) return;
+	if (!IsAIControlled() || ownedHexes.IsEmpty()) return;
+
+	--currentDaysTillBuildingSpawn;
+
+	if (currentDaysTillBuildingSpawn > 0) return;
+	currentDaysTillBuildingSpawn = daysTillBuildingSpawn;
 
 	TArray<ABaseHex*> hexes;
 
@@ -219,6 +224,60 @@ void Faction::BuildRandomBuilding()
 	{
 		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), randHex);
 	}
+}
+
+void Faction::SpawnEnemy()
+{
+	if (!IsAIControlled()) return;
+
+	//Restrict enemy spawning if bool checking for player troops is enabled
+	if (ACapstoneProjectGameModeBase::playerTroopsNeededForAISpawn)
+	{
+		if (!UnitActions::GetFaction(Factions::Human)->allUnits.IsEmpty())
+		{
+			ACapstoneProjectGameModeBase::playerTroopsNeededForAISpawn = false;
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	--currentDaysTillArmySpawn;
+	--currentDaysTillArmyGrowth;
+
+	if (currentDaysTillArmyGrowth <= 0)
+	{
+		troopsInArmy = FMath::Clamp(troopsInArmy + 1, 1, maxTroopsInArmy);
+		currentDaysTillArmyGrowth = daysTillArmyGrowth;
+	}
+
+	if (currentDaysTillArmySpawn > 0) return;
+
+	TArray<ABuilding*> spawnableBuildings;
+	for (ABuilding* building : allBuildings)
+	{
+		if (building->GetOccupier() != Factions::None) continue;
+
+		if (building->GetBuildingType() == SpawnableBuildings::AlienCity)
+		{
+			spawnableBuildings.Add(building);
+		}
+	}
+
+	if (!spawnableBuildings.IsEmpty()) return;
+	if (allUnits.Num() >= spawnableBuildings.Num()) return;
+
+	AOutpost* randBuilding = Cast<AOutpost>(spawnableBuildings[FMath::RandRange(0, spawnableBuildings.Num() - 1)]);
+
+	randBuilding->CueTroopBuild(UnitTypes::Army);
+
+	currentDaysTillArmySpawn = daysTillArmySpawn;
+}
+
+int Faction::GetArmyTroopCount()
+{
+	return troopsInArmy;
 }
 
 void Faction::StarvePop(int foodCost)
@@ -325,9 +384,21 @@ void Faction::KillPopulation(int cost, int deathsPerResource)
 		availableWorkers[WorkerType::Human].working = 0;
 }
 
+void Faction::SetDaysToTroopBuild(unsigned int days)
+{
+	daysTillArmySpawn = days;
+	currentDaysTillArmySpawn = FMath::Clamp(currentDaysTillArmySpawn, 0, daysTillArmySpawn);
+}
+
+void Faction::SetDaysToBuildingBuild(unsigned int days)
+{
+	daysTillBuildingSpawn = days;
+	currentDaysTillBuildingSpawn = FMath::Clamp(currentDaysTillBuildingSpawn, 0, daysTillBuildingSpawn);
+}
+
 void Faction::UpdateResourceCosts()
 {
-	if (AIControlled) return;
+	if (IsAIControlled()) return;
 
 	//Food
 	int workerAvailableCost = 0;
@@ -381,9 +452,17 @@ int Faction::CalculateEnergyCost()
 	return energyCost;
 }
 
+void Faction::DetermineBehaviorState()
+{
+	for (auto& relationShip : factionRelationships)
+	{
+		
+	}
+}
+
 void Faction::CleanTargetPool()
 {
-	if (!AIControlled) return;
+	if (!IsAIControlled()) return;
 
 	TArray<ABaseHex*> targetsToRemove;
 
@@ -405,7 +484,7 @@ void Faction::CleanTargetPool()
 
 void Faction::GetTargetsOfAllies()
 {
-	if (!AIControlled) return;
+	if (!IsAIControlled()) return;
 
 	for (auto& otherFaction : factionRelationships)
 	{
@@ -421,7 +500,7 @@ void Faction::GetTargetsOfAllies()
 
 void Faction::TargetBuildingsOfFaction(Factions targetFaction)
 {
-	if (!AIControlled || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
+	if (!IsAIControlled() || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
 
 	Faction* factionObject = UnitActions::GetFaction(targetFaction);
 

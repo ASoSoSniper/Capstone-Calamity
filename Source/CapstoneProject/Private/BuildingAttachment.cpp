@@ -101,9 +101,15 @@ void UBuildingAttachment::UpdateResources()
 	
 }
 
-void UBuildingAttachment::ActivateAttachment()
+BuildStates UBuildingAttachment::GetBuildState()
 {
-	SetUpAttachment(type);
+	return buildState;
+}
+
+void UBuildingAttachment::ActivateAttachment(bool instantBuild)
+{
+	SetUpAttachment(attachmentType);
+	if (instantBuild) currBuildTime = 0;
 	buildState = Building;
 }
 
@@ -133,6 +139,11 @@ bool UBuildingAttachment::AttachmentIsBuilt()
 	return buildState == Complete || buildState == Disabled;
 }
 
+int UBuildingAttachment::GetMaxWorkers()
+{
+	return maxWorkers;
+}
+
 bool UBuildingAttachment::WorkersAtCap()
 {
 	int totalWorkers = 0;
@@ -144,5 +155,15 @@ bool UBuildingAttachment::WorkersAtCap()
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("workers = %d"), totalWorkers));
 	return totalWorkers >= maxWorkers;
+}
+
+float UBuildingAttachment::GetBuildTime()
+{
+	return buildTime;
+}
+
+float UBuildingAttachment::GetCurrentBuildTime()
+{
+	return currBuildTime;
 }
 

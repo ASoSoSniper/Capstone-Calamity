@@ -47,6 +47,7 @@ private:
 	AActor* SelectClosestHostileTarget(ObjectTypes targetType = ObjectTypes::NoType);
 	bool IsViableTarget(ABaseHex* hex, ObjectTypes targetType = ObjectTypes::NoType);
 	AActor* FindRandomHex();
+	AActor* FindHexToSettle();
 
 	UPROPERTY(VisibleAnywhere) bool isEnemy = false;
 
@@ -60,5 +61,6 @@ private:
 	bool CanFindEnemyTarget();
 	void SetNeutralDestination();
 	void SetHostileDestination(AActor* hex);
+	void SetSettlerDestination();
 	bool OccupyingBuilding();
 };

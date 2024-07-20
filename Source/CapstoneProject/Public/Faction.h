@@ -6,6 +6,13 @@
 #include "Troop.h"
 #include "Building.h"
 
+enum AIBehaviorStates
+{
+	AIInactive,
+	Expansion,
+	War
+};
+
 class CAPSTONEPROJECT_API Faction
 {
 public:
@@ -78,11 +85,19 @@ public:
 	UFUNCTION() void ConsumeEnergy();
 
 	UFUNCTION() void BuildRandomBuilding();
+
+	UFUNCTION() void SpawnEnemy();
+	UFUNCTION() int GetArmyTroopCount();
+
+	UFUNCTION() void SetDaysToTroopBuild(unsigned int days);
+	UFUNCTION() void SetDaysToBuildingBuild(unsigned int days);
 	
 private:
 
 	UPROPERTY() Factions faction;
-	UPROPERTY() bool AIControlled = false;
+	UPROPERTY() AIBehaviorStates behaviorState = AIBehaviorStates::AIInactive;
+	UFUNCTION() void DetermineBehaviorState();
+
 
 	UPROPERTY() TMap<Factions, FRelationshipStats> factionRelationships;
 	UFUNCTION() void CleanTargetPool();
@@ -101,4 +116,15 @@ private:
 	int foodPerWorkers;
 	int popDeathsPerFoodMissing;
 	int popDeathsPerPowerMissing;
+
+	int currentDaysTillArmySpawn = 0;
+	int currentDaysTillArmyGrowth = 0;
+	int currentDaysTillBuildingSpawn = 0;
+
+	int troopsInArmy = 0;
+	int maxTroopsInArmy = 20;
+
+	int daysTillArmySpawn = 1;
+	int daysTillArmyGrowth = 10;
+	int daysTillBuildingSpawn = 2;
 };

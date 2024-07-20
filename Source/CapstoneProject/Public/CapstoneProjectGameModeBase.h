@@ -38,6 +38,7 @@ public:
 	static inline TMap<AActor*, FCinematicObject> cinematicObjects;
 
 	static inline float timeScale = 1.f;
+	static inline bool playerTroopsNeededForAISpawn = false;
 	float prevTime = 1.f;
 
 	static inline float currentHarvestTime = 0;
@@ -47,7 +48,6 @@ public:
 
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 2;
 	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
-	static inline TArray<TerrainType> nonBuildableTerrains;
 	static inline GameStates gameState;
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
@@ -108,15 +108,7 @@ private:
 
 	void SpawnEnemies();
 	void SpawnBuildings();
-	UPROPERTY(EditAnywhere) int daysTillArmySpawn = 1;
-	int currentDaysTillArmySpawn = 0;
-	UPROPERTY(VisibleAnywhere) bool playerBuiltTroop = false;
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
-
-	UPROPERTY(EditAnywhere) int daysTillArmyGrowth = 10;
-	int currentDaysTillArmyGrowth = 0;
-	UPROPERTY(EditAnywhere) int maxTroopsInArmy = 20;
-	int troopsInArmy = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;

@@ -33,26 +33,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere) float buildTime = 5.f;
-	float currBuildTime;
-	
-	UPROPERTY(VisibleAnywhere) AOutpost* outpost;
-	UPROPERTY(VisibleAnywhere) BuildingAttachments type;
-	
-	BuildStates buildState = Inactive;
-
 	TMap<WorkerType, int> workersInAttachment;
-	int maxWorkers = 15;
-	int GetNumberOfWorkers();
+	
+	BuildStates GetBuildState();
 
-	void SetBuildState();
-	void Constructing(float& DeltaTime);
-	virtual bool SetUpAttachment(BuildingAttachments attachment);
-
-
-	virtual void UpdateResources();
-
-	virtual void ActivateAttachment();
+	virtual void ActivateAttachment(bool instantBuild = false);
 
 	virtual void EnableAttachment();
 
@@ -61,5 +46,25 @@ public:
 	virtual bool AttachmentIsActive();
 	virtual bool AttachmentIsBuilt();
 
+	int GetNumberOfWorkers();
+	int GetMaxWorkers();
 	bool WorkersAtCap();
+
+	float GetBuildTime();
+	float GetCurrentBuildTime();
+
+protected:
+	UPROPERTY(VisibleAnywhere) AOutpost* outpost;
+	BuildingAttachments attachmentType;
+	BuildStates buildState = BuildStates::Inactive;
+	void SetBuildState();
+	void Constructing(float& DeltaTime);
+	virtual bool SetUpAttachment(BuildingAttachments attachment);
+
+	virtual void UpdateResources();
+
+	float buildTime = 5.f;
+	float currBuildTime;
+
+	int maxWorkers = 15;
 };

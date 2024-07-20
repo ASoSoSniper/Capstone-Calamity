@@ -356,9 +356,9 @@ FAttachmentBuildProgress ABasePlayerController::GetAttachmentBuildProgress(Build
 
 	UBuildingAttachment* component = outpost->GetAttachment(attachment);
 	
-	buildProgress.currentProgress = component->currBuildTime;
-	buildProgress.buildTime = component->buildTime;
-	buildProgress.isBuilding = component->buildState == BuildStates::Building;
+	buildProgress.currentProgress = component->GetCurrentBuildTime();
+	buildProgress.buildTime = component->GetBuildTime();
+	buildProgress.isBuilding = component->GetBuildState() == BuildStates::Building;
 
 	return buildProgress;
 }
@@ -875,7 +875,7 @@ FWorkersInHex ABasePlayerController::GetWorkersInAttachment(BuildingAttachments 
 		workers.humans = selectedAttachment->workersInAttachment[WorkerType::Human];
 		workers.robots = selectedAttachment->workersInAttachment[WorkerType::Robot];
 		workers.aliens = selectedAttachment->workersInAttachment[WorkerType::Alien];
-		workers.maxWorkers = selectedAttachment->maxWorkers;
+		workers.maxWorkers = selectedAttachment->GetMaxWorkers();
 	}
 
 	return workers;
@@ -939,7 +939,7 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 
 	for (auto& troop : AGlobalSpawner::spawnerObject->troopCosts)
 	{
-		if (troop.Key == UnitTypes::None) continue;
+		if (troop.Key == UnitTypes::None || troop.Key == UnitTypes::Army) continue;
 
 		FText name = troop.Value.name;
 		UTexture2D* icon = troop.Value.icon;
@@ -1241,15 +1241,15 @@ FWorkerSliders ABasePlayerController::SetAttachmentWorkerCount(FWorkerSliders sl
 		UBuildingAttachment* attachment = outpost->GetAttachment(attachmentType);
 		if (!attachment) return sliders;
 
-		attachment->workersInAttachment[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * attachment->maxWorkers), outpost, attachmentType);
-		attachment->workersInAttachment[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * attachment->maxWorkers), outpost, attachmentType);
-		attachment->workersInAttachment[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * attachment->maxWorkers), outpost, attachmentType);
+		attachment->workersInAttachment[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * attachment->GetMaxWorkers()), outpost, attachmentType);
+		attachment->workersInAttachment[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * attachment->GetMaxWorkers()), outpost, attachmentType);
+		attachment->workersInAttachment[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * attachment->GetMaxWorkers()), outpost, attachmentType);
 
 		sliders.humanDisplay = attachment->workersInAttachment[WorkerType::Human];
 		sliders.robotDisplay = attachment->workersInAttachment[WorkerType::Robot];
 		sliders.alienDisplay = attachment->workersInAttachment[WorkerType::Alien];
 
-		sliders.maxWorkers = attachment->maxWorkers;
+		sliders.maxWorkers = attachment->GetMaxWorkers();
 		sliders.currWorkers = attachment->workersInAttachment[WorkerType::Human] + attachment->workersInAttachment[WorkerType::Robot] + attachment->workersInAttachment[WorkerType::Alien];
 
 		sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);

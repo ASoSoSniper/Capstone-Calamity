@@ -376,7 +376,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
     {
         workersInHex += workers.Value;
     }
-    if (workersInHex >= selectedAttachment->maxWorkers) return 0;
+    if (workersInHex >= selectedAttachment->GetMaxWorkers()) return 0;
     int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
@@ -434,11 +434,11 @@ int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWork
 
     if (desiredWorkers > attachmentType->workersInAttachment[worker])
     {
-        return AddWorkers(faction, worker, desiredWorkers - attachmentType->workersInAttachment[worker], outpost, attachmentType->type);
+        return AddWorkers(faction, worker, desiredWorkers - attachmentType->workersInAttachment[worker], outpost, attachment);
     }
     else if (desiredWorkers < attachmentType->workersInAttachment[worker])
     {
-        return -RemoveWorkers(faction, worker, attachmentType->workersInAttachment[worker] - desiredWorkers, outpost, attachmentType->type);
+        return -RemoveWorkers(faction, worker, attachmentType->workersInAttachment[worker] - desiredWorkers, outpost, attachment);
     }
 
     return 0;

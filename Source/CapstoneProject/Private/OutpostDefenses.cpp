@@ -5,7 +5,7 @@
 
 UOutpostDefenses::UOutpostDefenses()
 {
-	type = BuildingAttachments::DefenseStation;
+	attachmentType = BuildingAttachments::DefenseStation;
 }
 
 void UOutpostDefenses::UpdateResources()

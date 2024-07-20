@@ -5,7 +5,7 @@
 
 UOutpostTroopFactory::UOutpostTroopFactory()
 {
-	type = BuildingAttachments::RobotFactory;
+	attachmentType = BuildingAttachments::RobotFactory;
 }
 
 bool UOutpostTroopFactory::SetUpAttachment(BuildingAttachments attachment)
