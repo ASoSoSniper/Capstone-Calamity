@@ -352,7 +352,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
 {
     int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
     int workersInHex = 0;
-    for (auto workers : hex->workersInHex)
+    for (auto& workers : hex->workersInHex)
     {
         workersInHex += workers.Value;
     }
@@ -372,7 +372,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
 
     UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
 
-    for (auto workers : selectedAttachment->workersInAttachment)
+    for (auto& workers : selectedAttachment->workersInAttachment)
     {
         workersInHex += workers.Value;
     }

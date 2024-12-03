@@ -138,6 +138,11 @@ void Faction::SetFaction(Factions newFaction)
 	if (newFaction != Factions::Human) behaviorState = Expansion;
 }
 
+Factions Faction::GetFaction()
+{
+	return faction;
+}
+
 bool Faction::IsAIControlled()
 {
 	return behaviorState != AIInactive;
@@ -224,6 +229,40 @@ void Faction::BuildRandomBuilding()
 	{
 		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), randHex);
 	}
+}
+
+TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minValue, bool includeHexesWithBuildings)
+{
+	TArray<ABaseHex*> hexes = TArray<ABaseHex*>();
+
+	for (ABaseHex* hex : ownedHexes)
+	{
+		if (!includeHexesWithBuildings && hex->GetBuilding()) continue;
+		if (hex->GetNumberOfWorkers() > 0) continue;
+
+		FCurrentResourceYields hexYields = hex->GetCurrentResourceYields();
+		int yield = 0;
+
+		switch (resource)
+		{
+		case StratResources::Food:
+			yield = hexYields.foodYield;
+			break;
+		case StratResources::Production:
+			yield = hexYields.productionYield;
+			break;
+		case StratResources::Energy:
+			yield = hexYields.energyYield;
+			break;
+		case StratResources::Wealth:
+			yield = hexYields.wealthYield;
+			break;
+		}
+
+		if (yield >= minValue) hexes.Add(hex);
+	}
+
+	return hexes;
 }
 
 void Faction::SpawnEnemy()

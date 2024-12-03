@@ -78,6 +78,7 @@ public:
 	UFUNCTION() void LowerHostility(Factions targetFaction, float& amount);
 
 	UFUNCTION() void SetFaction(Factions newFaction);
+	UFUNCTION() Factions GetFaction();
 	UFUNCTION() bool IsAIControlled();
 
 	UFUNCTION() void UpdateResourceCosts();
@@ -85,6 +86,7 @@ public:
 	UFUNCTION() void ConsumeEnergy();
 
 	UFUNCTION() void BuildRandomBuilding();
+	UFUNCTION() TArray<ABaseHex*> GetHexesOfResource(StratResources resource, int minValue = 2, bool includeHexesWithBuildings = false);
 
 	UFUNCTION() void SpawnEnemy();
 	UFUNCTION() int GetArmyTroopCount();

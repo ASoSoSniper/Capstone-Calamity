@@ -23,6 +23,17 @@ class ARockCity;
 class UBuildingAttachment;
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FFactionPersonality
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int xenophilia;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int spirituality;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int compliance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int violence;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FPlayerWorkers
 {
 	GENERATED_BODY()
