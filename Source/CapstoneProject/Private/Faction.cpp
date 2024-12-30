@@ -239,6 +239,7 @@ TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minVa
 	{
 		if (!includeHexesWithBuildings && hex->GetBuilding()) continue;
 		if (hex->GetNumberOfWorkers() > 0) continue;
+		if (!hex->IsBuildableTerrain()) continue;
 
 		FCurrentResourceYields hexYields = hex->GetCurrentResourceYields();
 		int yield = 0;
@@ -263,6 +264,23 @@ TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minVa
 	}
 
 	return hexes;
+}
+
+TArray<AOutpost*> Faction::GetFactionOutposts()
+{
+	TArray<AOutpost*> outposts;
+
+	for (ABuilding* building : allBuildings)
+	{
+		SpawnableBuildings type = building->GetBuildingType();
+
+		if (type == SpawnableBuildings::Outpost || type == SpawnableBuildings::Capitol || type == SpawnableBuildings::AlienCity)
+		{
+			outposts.Add(Cast<AOutpost>(building));
+		}
+	}
+
+	return outposts;
 }
 
 void Faction::SpawnEnemy()
@@ -450,6 +468,25 @@ void Faction::UpdateResourceCosts()
 	int energyCost = CalculateEnergyCost();
 
 	resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
+}
+
+FResourceGainLoss Faction::GetResourceRates()
+{
+	FResourceGainLoss result;
+
+	TMap<StratResources, int> resourceGains = UnitActions::GetResourcesPerTick(faction);
+	TMap<StratResources, int> resourceLosses = UnitActions::GetResourceLosses(faction);
+
+	result.wealthGain = resourceGains[StratResources::Wealth];
+	result.wealthLoss = resourceLosses[StratResources::Wealth];
+	result.energyGain = resourceGains[StratResources::Energy];
+	result.energyLoss = resourceLosses[StratResources::Energy];
+	result.foodGain = resourceGains[StratResources::Food];
+	result.foodLoss = resourceLosses[StratResources::Food];
+	result.productionGain = resourceGains[StratResources::Production];
+	result.productionLoss = resourceLosses[StratResources::Production];
+
+	return result;
 }
 
 void Faction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)

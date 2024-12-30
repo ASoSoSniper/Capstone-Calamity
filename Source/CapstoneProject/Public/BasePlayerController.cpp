@@ -1193,21 +1193,7 @@ int ABasePlayerController::GetPowerOutageLevel()
 
 FResourceGainLoss ABasePlayerController::GetResourceRates()
 {
-	FResourceGainLoss result;
-
-	TMap<StratResources, int> resourceGains = UnitActions::GetResourcesPerTick(playerFaction);
-	TMap<StratResources, int> resourceLosses = UnitActions::GetResourceLosses(playerFaction);
-
-	result.wealthGain = resourceGains[StratResources::Wealth];
-	result.wealthLoss = resourceLosses[StratResources::Wealth];
-	result.energyGain = resourceGains[StratResources::Energy];
-	result.energyLoss = resourceLosses[StratResources::Energy];
-	result.foodGain = resourceGains[StratResources::Food];
-	result.foodLoss = resourceLosses[StratResources::Food];
-	result.productionGain = resourceGains[StratResources::Production];
-	result.productionLoss = resourceLosses[StratResources::Production];
-
-	return result;
+	return UnitActions::GetFaction(playerFaction)->GetResourceRates();
 }
 
 FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)

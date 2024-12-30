@@ -82,11 +82,13 @@ public:
 	UFUNCTION() bool IsAIControlled();
 
 	UFUNCTION() void UpdateResourceCosts();
+	UFUNCTION() FResourceGainLoss GetResourceRates();
 	UFUNCTION() void FeedPop();
 	UFUNCTION() void ConsumeEnergy();
 
 	UFUNCTION() void BuildRandomBuilding();
 	UFUNCTION() TArray<ABaseHex*> GetHexesOfResource(StratResources resource, int minValue = 2, bool includeHexesWithBuildings = false);
+	UFUNCTION() TArray<AOutpost*> GetFactionOutposts();
 
 	UFUNCTION() void SpawnEnemy();
 	UFUNCTION() int GetArmyTroopCount();

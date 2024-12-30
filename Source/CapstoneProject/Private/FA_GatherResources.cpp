@@ -5,8 +5,16 @@
 #include "GlobalSpawner.h"
 
 /*
-    --Gather Resources-- 
-    If resources are low, place workers on hexes to harvest needed resources
+    --Gather Resources (Via Workers)-- 
+    
+    Score Factors:
+        - Resource quantities are below the defined 'low' current/max percentage
+            - Yields higher scores the fewer resources are available
+            - Scores each resource separately and adds them to make the combined total
+    Action:
+        - Fill an owned tile with workers
+            - Selects tile with a high output of the desired resource
+            - (Not implemented) Selects tile in close proximity to an outpost
 */
 
 FA_GatherResources::FA_GatherResources()
