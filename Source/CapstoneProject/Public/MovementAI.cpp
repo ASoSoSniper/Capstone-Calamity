@@ -224,6 +224,47 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 	return closestHexToTarget;
 }
 
+//Unfinished, research A-Star search algorithm to implement
+TArray<AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
+{
+	TArray<AActor*> path;
+
+	TQueue<ABaseHex*> hexesToSearch;
+	TSet<ABaseHex*> searchedHexes;
+
+	if (AGlobalSpawner::spawnerObject) return path;
+
+	int dir[6][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,1} };
+
+	hexesToSearch.Enqueue(hexNav->GetCurrentHex());
+
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	while (!hexesToSearch.IsEmpty())
+	{
+		ABaseHex* currHex = nullptr;
+		if (!hexesToSearch.Dequeue(currHex)) break;
+		searchedHexes.Add(currHex);
+
+		FVector2D currCell = AGlobalSpawner::spawnerObject->GetHexCoordinates(currHex);
+
+		for (int i = 0; i < 6; i++)
+		{
+			int x = currCell[0] + dir[i][0];
+			int y = currCell[1] + dir[i][1];
+
+			if (x < 0 || x > max || y < 0 || y > max) continue;
+
+			ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
+			if (searchedHexes.Contains(hex)) continue;
+
+
+		}
+	}
+
+	return path;
+}
+
 void AMovementAI::SphereCheck(float rangeMulti)
 {
 	TArray<AActor*> actorsToIgnore;

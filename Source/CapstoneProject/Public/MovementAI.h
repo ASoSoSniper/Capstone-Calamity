@@ -68,6 +68,8 @@ private:
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
 
+	TArray<AActor*> GeneratePath(ABaseHex* destination);
+
 	enum MoveStates
 	{
 		Idle,
