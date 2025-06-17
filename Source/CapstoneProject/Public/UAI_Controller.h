@@ -56,6 +56,7 @@ protected:
 	virtual float GetDefaultScore() const PURE_VIRTUAL(IUAI_Controller::GetDefaultScore, return 0.f;);
 	virtual float GetUpdateRate() const PURE_VIRTUAL(IUAI_Controller::GetUpdateRate, return 0.f;);
 	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
+	virtual bool IsAIControlled();
 private:
 	UAI_Action* bestAction;
 	EActionType currentActionType = EActionType::None;

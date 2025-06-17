@@ -115,6 +115,7 @@ void IUAI_Controller::FSM_Tick(const float& DeltaTime)
     switch (FSM_State)
     {
     case EDecisionState::Deciding:
+        if (!IsAIControlled()) return;
         if (UpdateTimer(scaledDeltaTime))
             DecideBestAction();
         break;
@@ -138,4 +139,9 @@ void IUAI_Controller::FSM_Reset()
 {
     bestAction = nullptr;
     FSM_State = EDecisionState::Deciding;
+}
+
+bool IsAIControlled()
+{
+    return false;
 }
