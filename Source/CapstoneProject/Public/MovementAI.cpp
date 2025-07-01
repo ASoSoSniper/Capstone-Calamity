@@ -79,38 +79,21 @@ void AMovementAI::CreatePath()
 		return;
 	}
 
-	AActor* prevDestination = (!hexPath.IsEmpty() && moveState == Move) ? hexPath[hexPathIndex] : nullptr;
-
 	//Continue moving toward destination if new hex path is created while moving toward previous destination
-	AActor* temp = nullptr;
-	if (!hexPath.IsEmpty() && currTimeTillHexMove >= unitStats->speed)
+	const ABaseHex* prevStep = nullptr;
+	if (!hexPath.IsEmpty() && moveState == Move
+		&& currTimeTillHexMove >= unitStats->speed)
 	{
-		temp = hexPath[hexPathIndex];
+		prevStep = hexPath[hexPathIndex];
 	}
 
 	//Reset path data
 	hexPathIndex = 0;
 	if (hexPath.Num() > 0) hexPath.Empty();
 
-	//Add last hex destination to new path
-	if (temp != nullptr)
-		hexPath.Add(temp);
-
-	if (temp != hexNav->GetTargetHex())
-	{
-		//Choose initial hex
-		AActor* hexToSearch = (temp == nullptr) ? hexNav->GetCurrentHex() : temp;
-
-		//Scan for hexes leading to the target hex	
-		for (int i = 0; i < maxHexes; i++)
-		{
-			hexPath.Add(HexSearch(hexToSearch));
-
-			if (hexPath[i] == hexNav->GetTargetHex()) break;
-
-			hexToSearch = hexPath[i];
-		}
-	}
+	//Generate path
+	//hexPath = GeneratePath_Legacy(hexNav->GetTargetHex(), prevStep);
+	hexPath = GeneratePath_AStar(hexNav->GetTargetHex(), prevStep);
 
 	//Begin moving along path
 	moveState = Move;
@@ -120,13 +103,21 @@ void AMovementAI::CreatePath()
 		anims->isWalking = true;
 	}
 
-	if ((currTimeTillHexMove < unitStats->speed) && (hexPath[0] != prevDestination))
+	if ((currTimeTillHexMove < unitStats->speed) && (hexPath[0] != prevStep))
 	{
 		currTimeTillHexMove = 0.f;
 	}
 }
 
 void AMovementAI::SetDestination(AActor* targetHex)
+{
+	if (const ABaseHex* hex = Cast<ABaseHex>(targetHex))
+	{
+		SetDestination(hex);
+	}
+}
+
+void AMovementAI::SetDestination(const ABaseHex* targetHex)
 {
 	hexNav->SetTargetHex(targetHex);
 
@@ -154,16 +145,13 @@ void AMovementAI::SnapToHex(ABaseHex* hex)
 	hex->AddTroopToHex(this);
 }
 
-ABaseHex* AMovementAI::HexSearch(AActor* hex)
+ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex)
 {	
-	if (!Cast<ABaseHex>(hex))
-	{
-		return nullptr;
-	}
+	if (!hex) return nullptr;
 
 	FCollisionQueryParams queryParams;
 	queryParams.AddIgnoredActor(hex);
-	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hex)->GetObjectsInHex();
+	TArray<AActor*> objectsInHex = hex->GetObjectsInHex();
 	if (objectsInHex.Num() > 0) queryParams.AddIgnoredActors(objectsInHex);
 
 	TArray<ABaseHex*> hexesFound;
@@ -224,9 +212,36 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 	return closestHexToTarget;
 }
 
-TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
+TArray<const ABaseHex*> AMovementAI::GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep)
 {
-	TArray<const AActor*> path;
+	TArray<const ABaseHex*> path;
+
+	//Add last hex destination to new path
+	if (prevStep != nullptr)
+		path.Add(prevStep);
+
+	if (prevStep != hexNav->GetTargetHex())
+	{
+		//Choose initial hex
+		const ABaseHex* hexToSearch = (prevStep == nullptr) ? hexNav->GetCurrentHex() : prevStep;
+
+		//Scan for hexes leading to the target hex	
+		for (int i = 0; i < maxHexes; i++)
+		{
+			path.Add(HexSearch(hexToSearch));
+
+			if (path[i] == hexNav->GetTargetHex()) break;
+
+			hexToSearch = path[i];
+		}
+	}
+
+	return path;
+}
+
+TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep)
+{
+	TArray<const ABaseHex*> path;
 
 	TArray<FNodeData*> hexesToSearch;
 	TSet<const ABaseHex*> searchedHexes;
@@ -248,12 +263,12 @@ TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
 
 	auto GetCheapestNode = [&hexesToSearch]()
 		{
-			int cheapest = INFINITY;
+			float cheapest = INFINITY;
 			FNodeData* cheapestNode = nullptr;
 
 			for (int i = 0; i < hexesToSearch.Num(); i++)
 			{
-				int f = hexesToSearch[i]->GetF();
+				float f = hexesToSearch[i]->GetF();
 				if (f < cheapest)
 				{
 					cheapest = f;
@@ -268,6 +283,7 @@ TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
 	while (!hexesToSearch.IsEmpty() || end != nullptr)
 	{
 		FNodeData* currNode = GetCheapestNode();
+		if (!currNode) break;
 		searchedHexes.Add(currNode->hex);
 
 		const int cell[2] = { currNode->x, currNode->y };
@@ -297,11 +313,14 @@ TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
 	if (!end) return path;
 
 	const FNodeData* currentNode = end;
-	while (currentNode != nullptr)
+	while (currentNode->parent != nullptr)
 	{
 		path.Add(currentNode->hex);
 		currentNode = currentNode->parent;
 	}
+
+	if (prevStep)
+		path.Add(prevStep);
 
 	Algo::Reverse(path);
 
@@ -339,7 +358,7 @@ bool AMovementAI::HexIsTraversable(AActor* hex)
 	return foundHex->IsTraversableTerrain();
 }
 
-bool AMovementAI::HexIsTraversable(ABaseHex* hex)
+bool AMovementAI::HexIsTraversable(const ABaseHex* hex)
 {
 	return hex->IsTraversableTerrain();
 }
@@ -364,7 +383,7 @@ FVector AMovementAI::GetVectorToTarget(FVector origin)
 
 void AMovementAI::CountdownToMove(float& DeltaTime)
 {
-	ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
+	const ABaseHex* targetHex = hexPath[hexPathIndex];
 	if (!targetHex) return;
 
 	currTimeTillHexMove += DeltaTime * targetHex->GetMovementMulti() * ACapstoneProjectGameModeBase::timeScale;
@@ -386,8 +405,8 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 
 	if (hexPath.Num() > 0)
 	{
-		ABaseHex* hex = hexNav->GetCurrentHex();
-		ABaseHex* targetHex = Cast<ABaseHex>(hexPath[hexPathIndex]);
+		const ABaseHex* hex = hexNav->GetCurrentHex();
+		const ABaseHex* targetHex = hexPath[hexPathIndex];
 
 		currentMoveAlpha += moveSpeed * DeltaTime * ACapstoneProjectGameModeBase::timeScale;
 		currentMoveAlpha = FMath::Clamp(currentMoveAlpha, 0.f, 1.f);
@@ -448,17 +467,17 @@ void AMovementAI::Destroyed()
 	Super::Destroyed();
 }
 
-int AMovementAI::FNodeData::GetG() const
+float AMovementAI::FNodeData::GetG() const
 {
 	return g;
 }
 
-int AMovementAI::FNodeData::GetH() const
+float AMovementAI::FNodeData::GetH() const
 {
 	return h;
 }
 
-int AMovementAI::FNodeData::GetF() const
+float AMovementAI::FNodeData::GetF() const
 {
 	return g + h;
 }

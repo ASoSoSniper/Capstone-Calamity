@@ -25,13 +25,14 @@ public:
 
 	void SetCurrentHex(AActor* hex);
 	void SetTargetHex(AActor* hex);
+	void SetTargetHex(const ABaseHex* hex);
 	ABaseHex* GetCurrentHex();
-	ABaseHex* GetTargetHex();
+	const ABaseHex* GetTargetHex();
 
 	bool CurrentEqualToTarget();
 
 private:
-	UPROPERTY(VisibleAnywhere)ABaseHex* targetHex;
+	UPROPERTY(VisibleAnywhere) const ABaseHex* targetHex;
 
 	UPROPERTY(VisibleAnywhere) ABaseHex* currentHex;
 

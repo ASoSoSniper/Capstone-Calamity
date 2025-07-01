@@ -116,13 +116,13 @@ public:
 	Factions GetHexOwner();
 	void SetHexOwner(Factions faction);
 
-	int GetMovementMulti();
-	int GetAttritionMulti();
-	int GetDefenderBonus();
-	int GetVision();
+	int GetMovementMulti() const;
+	int GetAttritionMulti() const;
+	int GetDefenderBonus() const;
+	int GetVision() const;
 #pragma endregion
 
-	TArray<AActor*> GetObjectsInHex();
+	TArray<AActor*> GetObjectsInHex() const;
 
 	void CheckForHostility(AMovementAI* refTroop);
 	void CheckForHostility(ABuilding* refBuilding);

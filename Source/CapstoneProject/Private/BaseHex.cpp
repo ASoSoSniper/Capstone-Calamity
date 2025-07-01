@@ -161,27 +161,27 @@ void ABaseHex::SetHexOwner(Factions faction)
 	}
 }
 
-int ABaseHex::GetMovementMulti()
+int ABaseHex::GetMovementMulti() const
 {
 	return moveMultiplier;
 }
 
-int ABaseHex::GetAttritionMulti()
+int ABaseHex::GetAttritionMulti() const
 {
 	return attritionMultiplier;
 }
 
-int ABaseHex::GetDefenderBonus()
+int ABaseHex::GetDefenderBonus() const
 {
 	return defenderBonus;
 }
 
-int ABaseHex::GetVision()
+int ABaseHex::GetVision() const
 {
 	return vision;
 }
 
-TArray<AActor*> ABaseHex::GetObjectsInHex()
+TArray<AActor*> ABaseHex::GetObjectsInHex() const
 {
 	TArray<AActor*> actors;
 

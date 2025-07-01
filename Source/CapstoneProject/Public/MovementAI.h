@@ -38,11 +38,12 @@ public:
 	bool selectedByPlayer;
 
 	void SetDestination(AActor* targetHex);
+	void SetDestination(const ABaseHex* targetHex);
 	void SphereCheck(float rangeMulti = 1.f);
 	virtual void CancelPath();
 
 protected:
-	UPROPERTY(VisibleAnywhere) TArray<AActor*> hexPath;
+	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;
 	int hexPathIndex;
 	UPROPERTY(VisibleAnywhere) float currTimeTillHexMove = 0.f;
 
@@ -64,9 +65,9 @@ private:
 	float AngleBetweenVectors(FVector a, FVector b);
 	FVector GetVectorToTarget(FVector origin);
 	bool HexIsTraversable(AActor* hex);
-	bool HexIsTraversable(ABaseHex* hex);
+	bool HexIsTraversable(const ABaseHex* hex);
 	void SnapToHex(ABaseHex* hex);
-	ABaseHex* HexSearch(AActor* hex);
+	ABaseHex* HexSearch(const ABaseHex* hex);
 
 	struct FNodeData
 	{
@@ -76,14 +77,14 @@ private:
 		const int x;
 		const int y;
 
-		inline int GetF() const;
-		inline int GetG() const;
-		inline int GetH() const;
+		inline float GetF() const;
+		inline float GetG() const;
+		inline float GetH() const;
 
 		FNodeData() : hex(nullptr), parent(nullptr), x(0), y(0){}
 		FNodeData(const ABaseHex* setHex, const FNodeData* setParent, int setX, int setY, const FVector2D destination = FVector2D::Zero()) : hex(setHex), parent(setParent), x(setX), y(setY)
 		{
-			g = setParent->GetG() - 1;
+			g = setParent ? (setParent->GetG() - 1) : 0;
 			h = FMath::Sqrt((float)(FMath::Square(destination.X - setX) + FMath::Square(destination.Y - setY)));
 		}
 
@@ -92,7 +93,8 @@ private:
 		float h = 0;
 	};
 
-	TArray<const AActor*> GeneratePath(ABaseHex* destination);
+	TArray<const ABaseHex*> GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep = nullptr);
+	TArray<const ABaseHex*> GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep = nullptr);
 
 	enum MoveStates
 	{

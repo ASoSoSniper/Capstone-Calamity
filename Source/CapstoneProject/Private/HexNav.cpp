@@ -29,12 +29,17 @@ void UHexNav::SetCurrentHex(AActor* hex)
 
 void UHexNav::SetTargetHex(AActor* hex)
 {
-	if (!movableEntity) return;
-
 	if (ABaseHex* castHex = Cast<ABaseHex>(hex))
 	{
-		targetHex = castHex;
+		SetTargetHex(castHex);
 	}
+}
+
+void UHexNav::SetTargetHex(const ABaseHex* hex)
+{
+	if (!movableEntity) return;
+
+	targetHex = hex;
 }
 
 ABaseHex* UHexNav::GetCurrentHex()
@@ -42,7 +47,7 @@ ABaseHex* UHexNav::GetCurrentHex()
 	return currentHex;
 }
 
-ABaseHex* UHexNav::GetTargetHex()
+const ABaseHex* UHexNav::GetTargetHex()
 {
 	return targetHex;
 }

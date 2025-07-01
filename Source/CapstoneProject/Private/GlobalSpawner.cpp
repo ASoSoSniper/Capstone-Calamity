@@ -1017,7 +1017,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	}
 }
 
-FVector2D AGlobalSpawner::GetHexCoordinates(ABaseHex* hex)
+FVector2D AGlobalSpawner::GetHexCoordinates(const ABaseHex* hex)
 {
 	int hexesSearched = 0;
 	for (int x = 0; x < hexArray.Num(); x++)

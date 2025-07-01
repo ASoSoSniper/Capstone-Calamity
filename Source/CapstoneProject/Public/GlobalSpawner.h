@@ -574,7 +574,7 @@ public:
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
 	void SpawnBuildingsAroundCity(ABaseHex* centerHex);
 	UPROPERTY(EditAnywhere) int buildingDistanceFromCity = 2;
-	FVector2D GetHexCoordinates(ABaseHex* hex);
+	FVector2D GetHexCoordinates(const ABaseHex* hex);
 	ABaseHex* GetHexFromCoordinates(int x, int y);
 	bool BuildingOnHex(ABaseHex* hex);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
