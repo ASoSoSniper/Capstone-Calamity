@@ -646,7 +646,7 @@ bool ABaseHex::IsStaticBuildingTerrain()
 		hexTerrain == TerrainType::AlienCity;
 }
 
-bool ABaseHex::IsTraversableTerrain()
+bool ABaseHex::IsTraversableTerrain() const
 {
 	return hexTerrain != TerrainType::Border && 
 		hexTerrain != TerrainType::Mountains;

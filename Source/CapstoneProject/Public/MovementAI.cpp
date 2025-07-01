@@ -224,43 +224,84 @@ ABaseHex* AMovementAI::HexSearch(AActor* hex)
 	return closestHexToTarget;
 }
 
-//Unfinished, research A-Star search algorithm to implement
-TArray<AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
+TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
 {
-	TArray<AActor*> path;
+	TArray<const AActor*> path;
 
-	TQueue<ABaseHex*> hexesToSearch;
-	TSet<ABaseHex*> searchedHexes;
+	TArray<FNodeData*> hexesToSearch;
+	TSet<const ABaseHex*> searchedHexes;
 
-	if (AGlobalSpawner::spawnerObject) return path;
+	if (!AGlobalSpawner::spawnerObject) return path;
 
 	int dir[6][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,1} };
 
-	hexesToSearch.Enqueue(hexNav->GetCurrentHex());
+	ABaseHex* startHex = hexNav->GetCurrentHex();
+
+	const FVector2D startCoords = AGlobalSpawner::spawnerObject->GetHexCoordinates(startHex);
+	const FVector2D endCoords = AGlobalSpawner::spawnerObject->GetHexCoordinates(destination);
+
+	FNodeData* start = new FNodeData(startHex, nullptr, startCoords.X, startCoords.Y);
+	FNodeData* end = nullptr;
+	hexesToSearch.Add(start);
 
 	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
 
-	while (!hexesToSearch.IsEmpty())
-	{
-		ABaseHex* currHex = nullptr;
-		if (!hexesToSearch.Dequeue(currHex)) break;
-		searchedHexes.Add(currHex);
+	auto GetCheapestNode = [&hexesToSearch]()
+		{
+			int cheapest = INFINITY;
+			FNodeData* cheapestNode = nullptr;
 
-		FVector2D currCell = AGlobalSpawner::spawnerObject->GetHexCoordinates(currHex);
+			for (int i = 0; i < hexesToSearch.Num(); i++)
+			{
+				int f = hexesToSearch[i]->GetF();
+				if (f < cheapest)
+				{
+					cheapest = f;
+					cheapestNode = hexesToSearch[i];
+				}
+			}
+
+			hexesToSearch.Remove(cheapestNode);
+			return cheapestNode;
+		};
+
+	while (!hexesToSearch.IsEmpty() || end != nullptr)
+	{
+		FNodeData* currNode = GetCheapestNode();
+		searchedHexes.Add(currNode->hex);
+
+		const int cell[2] = { currNode->x, currNode->y };
 
 		for (int i = 0; i < 6; i++)
 		{
-			int x = currCell[0] + dir[i][0];
-			int y = currCell[1] + dir[i][1];
+			int x = cell[0] + dir[i][0];
+			int y = cell[1] + dir[i][1];
 
 			if (x < 0 || x > max || y < 0 || y > max) continue;
 
-			ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
+			const ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
 			if (searchedHexes.Contains(hex)) continue;
+			if (!hex->IsTraversableTerrain()) continue;
 
-
+			FNodeData* nodeData = new FNodeData(hex, currNode, x, y, endCoords);
+			if (hex == destination)
+			{
+				end = nodeData;
+				break;
+			}
 		}
 	}
+
+	if (!end) return path;
+
+	const FNodeData* currentNode = end;
+	while (currentNode != nullptr)
+	{
+		path.Add(currentNode->hex);
+		currentNode = currentNode->parent;
+	}
+
+	Algo::Reverse(path);
 
 	return path;
 }
@@ -405,4 +446,17 @@ void AMovementAI::Destroyed()
 	Super::Destroyed();
 }
 
+int AMovementAI::FNodeData::GetG() const
+{
+	return g;
+}
 
+int AMovementAI::FNodeData::GetH() const
+{
+	return h;
+}
+
+int AMovementAI::FNodeData::GetF() const
+{
+	return g + h;
+}

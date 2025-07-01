@@ -165,7 +165,7 @@ public:
 	void SetAttachmentCanBeVisible(bool canBeVisible);
 
 	bool IsStaticBuildingTerrain();
-	bool IsTraversableTerrain();
+	bool IsTraversableTerrain() const;
 	bool IsBuildableTerrain();
 	bool IsPlayerHex();
 	bool CanPutWorkersOnHex();

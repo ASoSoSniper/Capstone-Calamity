@@ -68,7 +68,31 @@ private:
 	void SnapToHex(ABaseHex* hex);
 	ABaseHex* HexSearch(AActor* hex);
 
-	TArray<AActor*> GeneratePath(ABaseHex* destination);
+	struct FNodeData
+	{
+	public:
+		const int x;
+		const int y;
+		const ABaseHex* hex;
+		const FNodeData* parent;
+
+		inline int GetF() const;
+		inline int GetG() const;
+		inline int GetH() const;
+
+		FNodeData() : hex(nullptr), parent(nullptr), x(0), y(0){}
+		FNodeData(const ABaseHex* setHex, const FNodeData* setParent, int setX, int setY, const FVector2D destination = FVector2D::Zero()) : hex(setHex), parent(setParent), x(setX), y(setY)
+		{
+			g = setParent->GetG() - 1;
+			h = FMath::Sqrt((float)(FMath::Square(destination.X - setX) + FMath::Square(destination.Y - setY)));
+		}
+
+	private:
+		float g = 0;
+		float h = 0;
+	};
+
+	TArray<const AActor*> GeneratePath(ABaseHex* destination);
 
 	enum MoveStates
 	{
