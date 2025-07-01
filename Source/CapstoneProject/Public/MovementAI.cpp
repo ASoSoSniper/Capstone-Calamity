@@ -289,6 +289,8 @@ TArray<const AActor*> AMovementAI::GeneratePath(ABaseHex* destination)
 				end = nodeData;
 				break;
 			}
+			else
+				hexesToSearch.Add(nodeData);
 		}
 	}
 

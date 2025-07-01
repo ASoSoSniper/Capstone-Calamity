@@ -52,11 +52,8 @@ protected:
 	void FSM_Tick(const float& DeltaTime);
 	void FSM_Reset();
 
-	virtual TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
-	virtual float GetDefaultScore() const PURE_VIRTUAL(IUAI_Controller::GetDefaultScore, return 0.f;);
-	virtual float GetUpdateRate() const PURE_VIRTUAL(IUAI_Controller::GetUpdateRate, return 0.f;);
-	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
 	virtual bool IsAIControlled();
+
 private:
 	UAI_Action* bestAction;
 	EActionType currentActionType = EActionType::None;
@@ -72,4 +69,10 @@ private:
 	bool AbandonTimer(const float& DeltaTime);
 
 	float abandonTime = 0.f;
+
+protected:
+	virtual TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
+	virtual float GetDefaultScore() const PURE_VIRTUAL(IUAI_Controller::GetDefaultScore, return 0.f;);
+	virtual float GetUpdateRate() const PURE_VIRTUAL(IUAI_Controller::GetUpdateRate, return 0.f;);
+	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
 };

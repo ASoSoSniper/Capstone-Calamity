@@ -141,7 +141,7 @@ void IUAI_Controller::FSM_Reset()
     FSM_State = EDecisionState::Deciding;
 }
 
-bool IsAIControlled()
+bool IUAI_Controller::IsAIControlled()
 {
     return false;
 }

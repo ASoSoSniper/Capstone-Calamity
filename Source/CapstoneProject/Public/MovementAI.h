@@ -71,10 +71,10 @@ private:
 	struct FNodeData
 	{
 	public:
-		const int x;
-		const int y;
 		const ABaseHex* hex;
 		const FNodeData* parent;
+		const int x;
+		const int y;
 
 		inline int GetF() const;
 		inline int GetG() const;
