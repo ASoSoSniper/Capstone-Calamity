@@ -922,8 +922,8 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 {
 	bool shipExists = false;
 	bool rockExists = false;
-	float stepDistanceX = 63.f;
-	float stepDistanceY = -73.5f;
+	float stepDistanceX = 73.5f;
+	float stepDistanceY = -63.f;
 	FVector origin = FVector(-250.f, 400.f, -1.f);
 	float sqroot;
 	int roundedSQRoot;
@@ -951,11 +951,12 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 			for (int y = 0; y < roundedSQRoot; y++)
 			{
-				float oddHex = (x % 2 > 0) ? 1 : 0;
+				float oddHex = (y % 2 > 0) ? 1 : 0;
 
-				FVector spawnPos = origin + FVector(stepDistanceX * x, (stepDistanceY * y) + (oddHex * stepDistanceY / 2), 0.f);
+				FVector spawnPos = origin + FVector(-(stepDistanceY * y), -(stepDistanceX * x + (oddHex * stepDistanceX / 2)), 0.f);
 
 				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
+				newHex->PrintCoordinates(x, y);
 
 				column.Add(newHex);
 			}
@@ -973,7 +974,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 			}
 		}
 
-		hexArray[3][4]->SetHexTerrain(TerrainType::Ship);
+		hexArray[4][3]->SetHexTerrain(TerrainType::Ship);
 
 		rockHex = hexArray[FMath::RandRange(12, 17)][FMath::RandRange(12, 17)];
 		rockHex->SetHexTerrain(TerrainType::TheRock);
@@ -1019,19 +1020,16 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 FVector2D AGlobalSpawner::GetHexCoordinates(const ABaseHex* hex)
 {
-	int hexesSearched = 0;
 	for (int x = 0; x < hexArray.Num(); x++)
 	{
 		for (int y = 0; y < hexArray[x].Num(); y++)
 		{
-			hexesSearched++;
 			if (hex == hexArray[x][y])
 			{
 				return FVector2D(x, y);
 			}
 		}
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%d hexes searched"), hexesSearched));
 
 	return FVector2D::Zero();
 }

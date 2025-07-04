@@ -3,6 +3,7 @@
 
 #include "ManageHex.h"
 #include "BasePlayerController.h"
+#include "GlobalSpawner.h"
 
 void UManageHex::Select(AActor* selectedObject)
 {
@@ -19,6 +20,10 @@ void UManageHex::Select(AActor* selectedObject)
 
 	//Highlight new hex
 	if (selectedObject) HighlightSelected(selectedObject, true);
+
+	//(Debug) Display the coordinates of the selected hex
+	/*FVector2D coords = AGlobalSpawner::spawnerObject->GetHexCoordinates(hex);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Orange, FString::Printf(TEXT("(ManageHex) Selected hex [%d, %d]"), FMath::RoundToInt(coords.X), FMath::RoundToInt(coords.Y)));*/
 }
 
 void UManageHex::SwitchState()

@@ -85,7 +85,9 @@ private:
 		FNodeData(const ABaseHex* setHex, const FNodeData* setParent, int setX, int setY, const FVector2D destination = FVector2D::Zero()) : hex(setHex), parent(setParent), x(setX), y(setY)
 		{
 			g = setParent ? (setParent->GetG() - 1) : 0;
-			h = FMath::Sqrt((float)(FMath::Square(destination.X - setX) + FMath::Square(destination.Y - setY)));
+			h = FMath::Sqrt(
+				FMath::Abs((float)FMath::Square(destination.X - (float)setX) + 
+				FMath::Abs((float)FMath::Square(destination.Y - (float)setY))));
 		}
 
 	private:

@@ -172,6 +172,8 @@ public:
 
 	FCurrentResourceYields GetCurrentResourceYields();
 
+	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
+
 private:
 
 	AMovementAI* attackingTroop;

@@ -248,7 +248,7 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 
 	if (!AGlobalSpawner::spawnerObject) return path;
 
-	int dir[6][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {-1,1} };
+	int dir[6][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,-1}, {1, 1} };
 
 	ABaseHex* startHex = hexNav->GetCurrentHex();
 
@@ -280,7 +280,7 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 			return cheapestNode;
 		};
 
-	while (!hexesToSearch.IsEmpty() || end != nullptr)
+	while (!hexesToSearch.IsEmpty() && end == nullptr)
 	{
 		FNodeData* currNode = GetCheapestNode();
 		if (!currNode) break;
