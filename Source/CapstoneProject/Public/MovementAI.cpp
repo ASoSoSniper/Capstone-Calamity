@@ -248,7 +248,8 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 
 	if (!AGlobalSpawner::spawnerObject) return path;
 
-	int dir[6][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,-1}, {1, 1} };
+	int dirOdd[6][2] = { {1,0}, {-1,0}, {0,-1}, {1,1}, {0, 1}, {1,-1} };
+	int dirEven[6][2] = { {1,0}, {-1,0}, {-1,-1}, {0,1}, {-1,1}, {0,-1} };
 
 	ABaseHex* startHex = hexNav->GetCurrentHex();
 
@@ -287,6 +288,8 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 		searchedHexes.Add(currNode->hex);
 
 		const int cell[2] = { currNode->x, currNode->y };
+
+		int (*dir)[2] = (currNode->y % 2 == 0) ? dirEven : dirOdd;
 
 		for (int i = 0; i < 6; i++)
 		{
