@@ -449,6 +449,11 @@ void AMovementAI::CancelPath()
 	}
 }
 
+bool AMovementAI::VisibleToFaction(Factions faction) const
+{
+	return visibility->VisibleToFaction(faction);
+}
+
 void AMovementAI::Destroyed()
 {
 	if (hexNav->GetCurrentHex())

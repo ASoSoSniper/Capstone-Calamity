@@ -48,6 +48,8 @@ class CAPSTONEPROJECT_API IUAI_Controller
 public:
 	UAI_Action* GetBestAction() const;
 	void SetBestAction(UAI_Action* action, EActionType actionType = EActionType::None);
+
+	virtual void EndAction();
 protected:
 	void FSM_Tick(const float& DeltaTime);
 	void FSM_Reset();
@@ -67,12 +69,16 @@ private:
 
 	bool UpdateTimer(const float& DeltaTime);
 	bool AbandonTimer(const float& DeltaTime);
+	bool DestinationUpdateTimer(const float& DeltaTime);
 
 	float abandonTime = 0.f;
+	float destinationUpdateTime = 0.f;
 
 protected:
+	virtual float GetDefaultScore() const;
+	virtual float GetUpdateRate() const;
 	virtual TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
-	virtual float GetDefaultScore() const PURE_VIRTUAL(IUAI_Controller::GetDefaultScore, return 0.f;);
-	virtual float GetUpdateRate() const PURE_VIRTUAL(IUAI_Controller::GetUpdateRate, return 0.f;);
 	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
+
+	void SetDestinationUpdateTimer(const float& duration);
 };

@@ -325,3 +325,23 @@ void UMeshVisibility::SetSelected(bool active)
 {
 	selected = active;
 }
+
+bool UMeshVisibility::VisibleToFaction(Factions factionToCheck)
+{
+	if (!factionVisibility.Contains(factionToCheck)) return false;
+
+	return factionVisibility[factionToCheck].status == VisibilityStatus::Visible;
+}
+
+bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck)
+{
+	if (!factionVisibility.Contains(factionToCheck)) return false;
+
+	switch (factionVisibility[factionToCheck].status)
+	{
+	case VisibilityStatus::Undiscovered:
+		return false;
+	default:
+		return true;
+	}
+}

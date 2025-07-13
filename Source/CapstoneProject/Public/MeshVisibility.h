@@ -44,32 +44,38 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UPROPERTY(VisibleAnywhere) Factions faction;
-	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
-	UPROPERTY() UUnitStats* unitStats;
-	UPROPERTY() UHexNav* hexNav;
-
+	
 	FVisibilityMaterials meshMaterials;
 	FVisibilityMaterials hexBaseMaterials;
 	UPROPERTY() UStaticMeshComponent* mesh;
 	UPROPERTY() UStaticMeshComponent* otherMesh;
-	UPROPERTY() UStaticMeshComponent* hexBaseMesh;
 	UPROPERTY() USkeletalMeshComponent* skeletalMesh;
 	UPROPERTY() USkeletalMeshComponent* otherSkeletalMesh;
-	UPROPERTY(VisibleAnywhere) bool selected;
+	UPROPERTY() UStaticMeshComponent* hexBaseMesh;
+	UPROPERTY(VisibleAnywhere) Factions faction;
 	UPROPERTY(VisibleAnywhere) bool enableScan = true;
-	UPROPERTY(EditAnywhere) bool debug;
-	UPROPERTY() bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) float visibilityRadius = 100.f;
 	UPROPERTY(EditAnywhere) float detectionDistanceInRadius = 90.f;
+	TMap<Factions, FVisibility> factionVisibility;
+
+	void SetSelected(bool active);
+	bool VisibleToFaction(Factions factionToCheck);
+	bool DiscoveredByFaction(Factions factionToCheck);
+
+private:
+	
+	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
+	UPROPERTY() UUnitStats* unitStats;
+	UPROPERTY() UHexNav* hexNav;
+	
+	UPROPERTY(VisibleAnywhere) bool selected;
+	UPROPERTY(EditAnywhere) bool debug;
+	UPROPERTY() bool discoveredByPlayer;
 	UPROPERTY(EditAnywhere) bool infiniteRange;
 	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
-	TMap<Factions, FVisibility> factionVisibility;
 
 	void FindFactionOfOwner();
 	void Scan(float radius);
 	void InSight(Factions thisFaction);
 	void SetVisibility();
-	void SetSelected(bool active);
 };

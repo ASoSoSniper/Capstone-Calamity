@@ -42,6 +42,8 @@ public:
 	void SphereCheck(float rangeMulti = 1.f);
 	virtual void CancelPath();
 
+	bool VisibleToFaction(Factions faction) const;
+
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;
 	int hexPathIndex;

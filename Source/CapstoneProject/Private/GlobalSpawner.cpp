@@ -748,7 +748,7 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 
 		//If one unit is an army, determine which unit is that army and merge the other into it
 	case 1:
-		AMergedArmy * army;
+		AMergedArmy* army;
 		ATroop* unit;
 		if (testSeeker)
 		{
@@ -760,8 +760,6 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 			army = testTarget;
 			unit = seeker;
 		}
-
-		hex->troopsInHex.Remove(unit);
 
 		army->ConsumeUnit(unit);
 		break;

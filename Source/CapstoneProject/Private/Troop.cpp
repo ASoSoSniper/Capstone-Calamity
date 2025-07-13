@@ -34,6 +34,8 @@ void ATroop::Tick(float DeltaTime)
 			merging = false;
 		}
 	}
+
+	FSM_Tick(DeltaTime);
 }
 
 void ATroop::CreatePath()
@@ -146,6 +148,13 @@ int ATroop::GetArmyCap()
 	return armyCap;
 }
 
+float ATroop::GetRemainingHexTraversalTime() const
+{
+	float remainingTime = unitStats->speed - currTimeTillHexMove;
+
+	return remainingTime / hexNav->GetCurrentHex()->GetMovementMulti();
+}
+
 bool ATroop::SetUpTroop()
 {
 	//Various checks to ensure all necessary data exists
@@ -186,3 +195,64 @@ bool ATroop::SetUpTroop()
 	return true;
 }
 
+bool ATroop::DestinationReached() const
+{
+	return hexNav->CurrentEqualToTarget();
+}
+
+void ATroop::AI_SetMovementAction(UAI_Action* action, const ABaseHex* target)
+{
+	hexNav->SetTargetHex(target);
+
+	SetBestAction(action);
+}
+
+void ATroop::AI_SetMovementAction(UAI_Action* action, UHexNav* target)
+{
+	targetUnit = target;
+
+	const ABaseHex* targetHex = targetUnit->GetTargetHex();
+	AI_SetMovementAction(action, targetHex ? targetHex : targetUnit->GetCurrentHex());
+}
+
+void ATroop::UpdateDestination()
+{
+	const ABaseHex* target = nullptr;
+
+	if (targetUnit)
+	{
+		if (ATroop* troop = Cast<ATroop>(targetUnit->GetOwner()))
+		{
+			if (!troop->VisibleToFaction(unitStats->faction))
+			{
+				EndAction();
+				return;
+			}
+		}
+
+		const ABaseHex* targetUnitDest = targetUnit->GetTargetHex();
+		target = targetUnitDest ? targetUnitDest : targetUnit->GetCurrentHex();
+	}
+	else
+	{
+		const ABaseHex* unitDest = hexNav->GetTargetHex();
+		target = unitDest ? unitDest : hexNav->GetCurrentHex();
+	}
+
+	if (target)
+	{
+		SetDestination(target);
+		SetDestinationUpdateTimer(GetRemainingHexTraversalTime());
+	}
+}
+
+void ATroop::EndAction()
+{
+	targetUnit = nullptr;
+	IUAI_Controller::EndAction();
+}
+
+UHexNav* ATroop::GetTargetUnit() const
+{
+	return targetUnit;
+}

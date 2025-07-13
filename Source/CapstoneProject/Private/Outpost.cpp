@@ -264,6 +264,8 @@ void AOutpost::BuildTroop()
 
 void AOutpost::StoreTroop(ATroop* troop)
 {
+	if (!BuildingAttachmentIsActive(BuildingAttachments::Storage)) return;
+
 	UnitActions::UnitData troopData = UnitActions::CollectUnitData(troop->unitStats);
 	troopsInStorage.Add(troopData);
 

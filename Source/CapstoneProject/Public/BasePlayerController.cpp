@@ -462,9 +462,7 @@ bool ABasePlayerController::HexIsDiscovered()
 {
 	if (!selectedHex) return false;
 
-	if (!selectedHex->visibility->discoveredByPlayer) return false;
-
-	return true;
+	return selectedHex->visibility->DiscoveredByFaction(Factions::Human);
 }
 
 bool ABasePlayerController::IsHumanControlled(AActor* object)

@@ -29,6 +29,11 @@ void IUAI_Controller::SetBestAction(UAI_Action* action, EActionType actionType)
         FSM_State = EDecisionState::Executing;
 }
 
+void IUAI_Controller::EndAction()
+{
+    FSM_Reset();
+}
+
 EActionType IUAI_Controller::DecideBestActionType(TMap<EActionType, FActionSelection>& actionTypes)
 {
     EActionType selectedAction = EActionType::None;
@@ -108,6 +113,23 @@ bool IUAI_Controller::AbandonTimer(const float& DeltaTime)
     return true;
 }
 
+void IUAI_Controller::SetDestinationUpdateTimer(const float& duration)
+{
+    if (!bestAction->CanUpdateDestination()) return;
+
+    destinationUpdateTime = duration;
+}
+
+bool IUAI_Controller::DestinationUpdateTimer(const float& DeltaTime)
+{
+    if (!bestAction->CanUpdateDestination()) return false;
+
+    destinationUpdateTime -= DeltaTime;
+    if (destinationUpdateTime > 0.f) return false;
+
+    return true;
+}
+
 void IUAI_Controller::FSM_Tick(const float& DeltaTime)
 {
     float scaledDeltaTime = DeltaTime * ACapstoneProjectGameModeBase::timeScale;
@@ -122,6 +144,8 @@ void IUAI_Controller::FSM_Tick(const float& DeltaTime)
     case EDecisionState::Moving:
         if (AbandonTimer(scaledDeltaTime))
             FSM_Reset();
+        if (DestinationUpdateTimer(scaledDeltaTime))
+            bestAction->SetDestination(this);
         if (DestinationReached())
             FSM_State = EDecisionState::Executing;
         break;
@@ -144,4 +168,14 @@ void IUAI_Controller::FSM_Reset()
 bool IUAI_Controller::IsAIControlled()
 {
     return false;
+}
+
+float IUAI_Controller::GetDefaultScore() const
+{
+    return 0.0f;
+}
+
+float IUAI_Controller::GetUpdateRate() const
+{
+    return 0.0f;
 }

@@ -15,7 +15,7 @@ EActionType UAI_Action::GetDefaultActionType() const
 
 bool UAI_Action::IsMovementAction() const
 {
-    return bMovementAction;
+    return false;
 }
 
 void UAI_Action::SetDestination(IUAI_Controller* controller)
@@ -30,4 +30,9 @@ bool UAI_Action::CanAbandon() const
 float UAI_Action::GetAbandonTime() const
 {
     return abandonTime;
+}
+
+bool UAI_Action::CanUpdateDestination() const
+{
+    return updateDestination;
 }
