@@ -327,7 +327,7 @@ void Faction::SpawnEnemy()
 
 	AOutpost* randBuilding = Cast<AOutpost>(spawnableBuildings[FMath::RandRange(0, spawnableBuildings.Num() - 1)]);
 
-	randBuilding->CueTroopBuild(UnitTypes::Army);
+	randBuilding->QueueTroopBuild(UnitTypes::Army);
 
 	currentDaysTillArmySpawn = daysTillArmySpawn;
 }

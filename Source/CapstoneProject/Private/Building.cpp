@@ -327,6 +327,8 @@ void ABuilding::Action10()
 
 void ABuilding::BeginDestroying()
 {
+	if (buildState == Destroying) return;
+
 	if (buildingType == SpawnableBuildings::Capitol || 
 		buildingType == SpawnableBuildings::AlienCity || 
 		buildingType == SpawnableBuildings::RockCity) return;

@@ -3,6 +3,9 @@
 
 #include "CapstoneProjectGameModeBase.h"
 
+float ACapstoneProjectGameModeBase::currSeconds = 0.f;
+FDateTickUpdate ACapstoneProjectGameModeBase::dateTickUpdates = FDateTickUpdate();
+
 ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -69,7 +72,7 @@ void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 {
 	Harvest(DeltaTime);
 	Scan(DeltaTime);
-	Date(DeltaTime);
+	DateTick(DeltaTime);
 	CheckHumanPop();
 	CheckDate();
 
@@ -100,16 +103,12 @@ bool ACapstoneProjectGameModeBase::TimeScaleIsZero()
 	return timeScale == 0.f;
 }
 
-FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
+void ACapstoneProjectGameModeBase::DateTick(float& deltaTime)
 {
-	FText extraMinuteZero = FText::FromString("");
-	FText extraHourZero = FText::FromString("");
-	FText extraDayZero = FText::FromString("");
-
-	bool minuteChanged = false;
-	bool hourChanged = false;
-	bool dayChanged = false;
-	bool monthChanged = false;
+	dateTickUpdates.minuteTick = false;
+	dateTickUpdates.hourTick = false;
+	dateTickUpdates.dayTick = false;
+	dateTickUpdates.monthTick = false;
 
 	//Count up in seconds, scaled with timeScale
 	currSeconds += deltaTime * timeScale;
@@ -119,53 +118,44 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 	{
 		currSeconds = 0.f;
 		dayStruct.minute = dayStruct.minute == 0 ? 30 : 0;
-		minuteChanged = true;
+		dateTickUpdates.minuteTick = true;
 	}
 
 	//If the minute display was updated, trigger behaviors
-	if (minuteChanged)
+	if (dateTickUpdates.minuteTick)
 	{
-		UpdateBuildings();
-
 		//Update hour when minutes reset to 0
-		if (dayStruct.minute == 0) hourChanged = true;
+		if (dayStruct.minute == 0) dateTickUpdates.hourTick = true;
 	}
 
 	//If the hour display was updated, trigger behaviors
-	if (hourChanged)
+	if (dateTickUpdates.hourTick)
 	{
-		UpdateResourceCosts();
-
 		dayStruct.hour++;
 
 		//Update day when hours reset to 0
 		if (dayStruct.hour > 23)
 		{
 			dayStruct.hour = 0;
-			dayChanged = true;
+			dateTickUpdates.dayTick = true;
 		}
 	}
 
 	//If the day display was updated, trigger behaviors
-	if (dayChanged)
+	if (dateTickUpdates.dayTick)
 	{
-		FeedPop();
-		ConsumeEnergy();
-		SpawnEnemies();
-		SpawnBuildings();
-
 		dayStruct.day++;
 
 		//Update month when days reset to 1
 		if (dayStruct.day > MonthDic[MonthEnum(dayStruct.currentMonth)].numOfDays)
 		{
 			dayStruct.day = 1;
-			monthChanged = true;
+			dateTickUpdates.monthTick = true;
 		}
 	}
 
 	//If month display was updated, trigger behaviors
-	if (monthChanged)
+	if (dateTickUpdates.monthTick)
 	{
 		dayStruct.currentMonth++;
 		if (dayStruct.currentMonth > 12)
@@ -173,24 +163,30 @@ FString ACapstoneProjectGameModeBase::Date(float& deltaTime)
 			dayStruct.currentMonth = 1;
 		}
 	}
-	
-	if (dayStruct.minute < 10) extraMinuteZero = FText::FromString("0");
-	if (dayStruct.hour < 10) extraHourZero = FText::FromString("0");
-	if (dayStruct.day < 10) extraDayZero = FText::FromString("0");
 
-	FString extraDayZeroString = extraDayZero.ToString();
-	FString extraHourZeroString = extraHourZero.ToString();
-	FString extraMinuteZeroString = extraMinuteZero.ToString();
+	FString extraMinuteZero = dayStruct.minute < 10 ? TEXT("0") : TEXT("");
+	FString extraHourZero = dayStruct.hour < 10 ? TEXT("0") : TEXT("");
+	FString extraDayZero = dayStruct.day < 10 ? TEXT("0") : TEXT("");
 
 	TArray<FStringFormatArg> Args;
 	Args.Add(FStringFormatArg(MonthDic[MonthEnum(dayStruct.currentMonth)].name));
-	Args.Add(FStringFormatArg(extraDayZeroString));
+	Args.Add(FStringFormatArg(extraDayZero));
 	Args.Add(FStringFormatArg(dayStruct.day));
-	Args.Add(FStringFormatArg(extraHourZeroString));
+	Args.Add(FStringFormatArg(extraHourZero));
 	Args.Add(FStringFormatArg(dayStruct.hour));
-	Args.Add(FStringFormatArg(extraMinuteZeroString));
+	Args.Add(FStringFormatArg(extraMinuteZero));
 	Args.Add(FStringFormatArg(dayStruct.minute));
-	return FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
+	currentDate = FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
+}
+
+FDateTickUpdate* ACapstoneProjectGameModeBase::GetDateUpdates()
+{
+	return &dateTickUpdates;
+}
+
+FString ACapstoneProjectGameModeBase::GetWorldDate() const
+{
+	return currentDate;
 }
 
 GameStates  ACapstoneProjectGameModeBase::GetGameState()
@@ -198,9 +194,9 @@ GameStates  ACapstoneProjectGameModeBase::GetGameState()
 	return gameState;
 }
 
-FDayStruct ACapstoneProjectGameModeBase::GetDateInfo()
+float ACapstoneProjectGameModeBase::GetTimeTillNextTick()
 {
-	return FDayStruct();
+	return FMath::Clamp(1.f - currSeconds, 0.f, 1.f);
 }
 
 Factions ACapstoneProjectGameModeBase::CreateNewFaction()

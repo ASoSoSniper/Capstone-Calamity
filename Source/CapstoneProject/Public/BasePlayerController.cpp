@@ -1107,7 +1107,7 @@ void ABasePlayerController::SelectTroop(FText troopName)
 
 			if (outpost)
 			{
-				outpost->CueTroopBuild(troop.Key);
+				outpost->QueueTroopBuild(troop.Key);
 			}
 
 			return;
@@ -1173,7 +1173,7 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 	AOutpost* outpost = GetOutpost();
 	if (!outpost) return troop;
 
-	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->GetCuedTroop()];
+	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->GetQueuedTroop()];
 	troop.currentTime = outpost->GetTroopBuildTime();
 
 	return troop;

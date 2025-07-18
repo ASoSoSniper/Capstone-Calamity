@@ -11,11 +11,12 @@
 #include "Components/BoxComponent.h"
 #include "GlobalSpawner.h"
 #include "CinematicPosition.h"
+#include "UAI_Controller.h"
 #include "Building.generated.h"
 
 
 UCLASS()
-class CAPSTONEPROJECT_API ABuilding : public AActor
+class CAPSTONEPROJECT_API ABuilding : public AActor, public IUAI_Controller
 {
 	GENERATED_BODY()
 	

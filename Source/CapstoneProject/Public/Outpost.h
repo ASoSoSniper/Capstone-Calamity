@@ -33,9 +33,9 @@ public:
 	void BuildAttachment(BuildingAttachments attachment);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
 
-	void CueTroopBuild(UnitTypes unit);
+	void QueueTroopBuild(UnitTypes unit);
 	float GetTroopBuildTime();
-	UnitTypes GetCuedTroop();
+	UnitTypes GetQueuedTroop();
 	
 	void StoreTroop(ATroop* troop);
 

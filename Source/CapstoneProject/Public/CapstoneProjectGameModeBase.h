@@ -20,6 +20,17 @@ struct FDayStruct
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int minute = 0;
 };
 
+USTRUCT()
+struct FDateTickUpdate
+{
+	GENERATED_USTRUCT_BODY()
+
+	bool minuteTick = false;
+	bool hourTick = false;
+	bool dayTick = false;
+	bool monthTick = false;
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -55,7 +66,9 @@ public:
 	UFUNCTION(BlueprintCallable) void SetToPreviousTime();
 	UFUNCTION(BlueprintCallable) bool TimeScaleIsZero();
 
-	UFUNCTION(BlueprintCallable) FString Date(float& deltaTime);
+	UFUNCTION() void DateTick(float& deltaTime);
+	static FDateTickUpdate* GetDateUpdates();
+	UFUNCTION(BlueprintCallable, BlueprintPure) FString GetWorldDate() const;
 	struct MonthStruct 
 	{
 		FString name;
@@ -81,13 +94,18 @@ public:
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FDayStruct dayStruct = FDayStruct{};
-	float currSeconds = 0;
+	
 
 	UFUNCTION(BlueprintCallable) GameStates GetGameState();
 
-	UFUNCTION(BlueprintCallable) FDayStruct GetDateInfo();
+	static float GetTimeTillNextTick();
 
 private:
+
+	FString currentDate;
+	static FDateTickUpdate dateTickUpdates;
+	static float currSeconds;
+
 	Factions CreateNewFaction();
 	int factionCount = 0;
 

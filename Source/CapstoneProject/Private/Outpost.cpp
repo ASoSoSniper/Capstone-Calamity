@@ -198,7 +198,7 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 	return false;
 }
 
-void AOutpost::CueTroopBuild(UnitTypes unit)
+void AOutpost::QueueTroopBuild(UnitTypes unit)
 {
 	if (!AGlobalSpawner::spawnerObject) return;
 	if (!troopFactoryBuilding->AttachmentIsActive()) return;
@@ -222,7 +222,7 @@ float AOutpost::GetTroopBuildTime()
 	return currentTroopBuildTime;
 }
 
-UnitTypes AOutpost::GetCuedTroop()
+UnitTypes AOutpost::GetQueuedTroop()
 {
 	if (cuedUnits.IsEmpty()) return UnitTypes::None;
 
@@ -322,7 +322,7 @@ void AOutpost::HealTroops(float& DeltaTime)
 
 void AOutpost::Action1()
 {
-	CueTroopBuild(UnitTypes::Infantry);
+	QueueTroopBuild(UnitTypes::Infantry);
 }
 
 void AOutpost::Action2()
