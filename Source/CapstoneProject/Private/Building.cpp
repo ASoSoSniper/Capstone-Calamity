@@ -121,7 +121,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	FBuildingCost costs;
 	ABaseHex* hex = hexNav->GetCurrentHex();
-	hex->SetBuilding(this);
+
 	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(type))
 	{
 		costs = AGlobalSpawner::spawnerObject->buildingCosts[type];
@@ -274,7 +274,7 @@ bool ABuilding::SphereCheck()
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
 					SetActorLocation(hexActor->buildingAnchor->GetComponentLocation());
-					hexActor->AddBuildingToHex(this);
+					hexActor->SetBuilding(this, GetHexLayersToOccupy());
 
 					return true;
 				}
@@ -365,7 +365,7 @@ void ABuilding::Destroyed()
 			UnitActions::AddResources(unitStats->faction, addResources);
 		}
 
-		hex->SetBuilding(nullptr);
+		hex->SetBuilding(nullptr, GetHexLayersToOccupy());
 	}
 
 	if (smokeEffect)
@@ -512,5 +512,10 @@ void ABuilding::HealOverTime()
 			unitStats->currentHP = FMath::Clamp(unitStats->currentHP, 0, unitStats->maxHP);
 		}
 	}
+}
+
+int ABuilding::GetHexLayersToOccupy() const
+{
+	return AGlobalSpawner::spawnerObject->buildingCosts[buildingType].hexLayers;
 }
 

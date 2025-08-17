@@ -116,6 +116,9 @@ public:
 	Factions GetHexOwner();
 	void SetHexOwner(Factions faction);
 
+	FVector2D GetHexCoordinates() const;
+	void SetHexCoordinates(int x, int y);
+
 	int GetMovementMulti() const;
 	int GetAttritionMulti() const;
 	int GetDefenderBonus() const;
@@ -127,7 +130,6 @@ public:
 	void CheckForHostility(AMovementAI* refTroop);
 	void CheckForHostility(ABuilding* refBuilding);
 	void AddTroopToHex(AMovementAI* troop);
-	void AddBuildingToHex(ABuilding* newBuilding);
 	void RemoveTroopFromHex(AMovementAI* troop);
 	int GetNumberOfWorkers();
 	float GetOutputPercent();
@@ -147,11 +149,12 @@ public:
 	void ToggleResourceYield();
 
 	ABuilding* GetBuilding();
-	void SetBuilding(ABuilding* setBuilding);
+	void SetBuilding(ABuilding* setBuilding, int layers = 0);
 
 	FHexDisplay GetDisplayInfo();
 
 	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
+	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1) const;
 
 	float GetTargetVolume();
 	void SetTargetVolume(float volume);
@@ -175,6 +178,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
 
 private:
+
+	FVector2D hexCoordinates;
 
 	AMovementAI* attackingTroop;
 	TerrainType hexTerrain = TerrainType::Plains;

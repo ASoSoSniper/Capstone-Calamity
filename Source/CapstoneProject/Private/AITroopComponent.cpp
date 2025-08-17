@@ -144,8 +144,8 @@ AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 
 	if (closestTarget)
 	{
-		FVector2D target = AGlobalSpawner::spawnerObject->GetHexCoordinates(Cast<ABaseHex>(closestTarget));
-		FVector2D origin = AGlobalSpawner::spawnerObject->GetHexCoordinates(parentTroop->hexNav->GetCurrentHex());
+		FVector2D target = closestTarget->GetHexCoordinates();
+		FVector2D origin = parentTroop->hexNav->GetCurrentHex()->GetHexCoordinates();
 		
 		if (FMath::Abs(target.X - origin.X) > targetAttackDistance ||
 			FMath::Abs(target.Y - origin.Y) > targetAttackDistance)
@@ -178,7 +178,7 @@ bool UAITroopComponent::IsViableTarget(ABaseHex* hex, ObjectTypes targetType)
 
 AActor* UAITroopComponent::FindRandomHex()
 {
-	FVector2D coordinates = AGlobalSpawner::spawnerObject->GetHexCoordinates(parentTroop->hexNav->GetCurrentHex());
+	FVector2D coordinates = parentTroop->hexNav->GetCurrentHex()->GetHexCoordinates();
 
 	FVector2D hexCoords = coordinates;
 

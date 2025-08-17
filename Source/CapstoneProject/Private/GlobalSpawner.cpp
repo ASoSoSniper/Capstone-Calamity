@@ -29,24 +29,24 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 60, FText::FromString("Mining Station"),
+	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Mining Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 60, FText::FromString("Farmland"),
+	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Farmland"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 60, FText::FromString("Power Plant"),
+	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 60, 1, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 60, FText::FromString("Outpost"),
+	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 10, 0, FText::FromString("Capitol Hub"),
+	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
 
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, FText::FromString("Storage"),
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Storage"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, FText::FromString("Defense Station"),
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Defense Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, FText::FromString("Robot Factory"),
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Factory"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, FText::FromString("Robot Barracks"),
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Barracks"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
 
 	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
@@ -954,6 +954,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 				FVector spawnPos = origin + FVector(-(stepDistanceY * y), -(stepDistanceX * x + (oddHex * stepDistanceX / 2)), 0.f);
 
 				newHex = GetWorld()->SpawnActor<ABaseHex>(hexActor, spawnPos, FRotator::ZeroRotator);
+				newHex->SetHexCoordinates(x, y);
 				newHex->PrintCoordinates(x, y);
 
 				column.Add(newHex);
@@ -1014,22 +1015,6 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 	default:
 		break;
 	}
-}
-
-FVector2D AGlobalSpawner::GetHexCoordinates(const ABaseHex* hex)
-{
-	for (int x = 0; x < hexArray.Num(); x++)
-	{
-		for (int y = 0; y < hexArray[x].Num(); y++)
-		{
-			if (hex == hexArray[x][y])
-			{
-				return FVector2D(x, y);
-			}
-		}
-	}
-
-	return FVector2D::Zero();
 }
 
 ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
@@ -1095,7 +1080,7 @@ UnitActions::UnitData AGlobalSpawner::CreateTroopUnitData(Factions faction, Unit
 
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
-	FVector2D center = GetHexCoordinates(centerHex);
+	FVector2D center = centerHex->GetHexCoordinates();
 	if (center == FVector2D::Zero())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Could not get coordinates"));
@@ -1139,10 +1124,24 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
 {
-	//If hex already
+	//If hex already occupied
 	if (hex->building)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
+		return;
+	}
+
+	//Check if terrain is valid
+	TSet<ABaseHex*> hexesToBuild = hex->GetHexesInRadius(buildingCosts[building].hexLayers);
+	for (ABaseHex* hex : hexesToBuild)
+	{
+		if (hex->building ||
+			!hex->IsBuildableTerrain() ||
+			hex->GetHexOwner() != faction)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
+			return;
+		}
 	}
 
 	//Determine building prefab to spawn
@@ -1267,6 +1266,9 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitDa
 
 ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 {
+	if (hex->building)
+		hex = hex->building->hexNav->GetCurrentHex();
+
 	FActorSpawnParameters params;
 	ABattleObject* battle = GetWorld()->SpawnActor<ABattleObject>(hex->building ? siegePrefab : battlePrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0.f, 0.f, 0.f), params);
 	battle->hexNav->SetCurrentHex(hex);

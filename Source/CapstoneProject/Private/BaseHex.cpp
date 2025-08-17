@@ -161,6 +161,16 @@ void ABaseHex::SetHexOwner(Factions faction)
 	}
 }
 
+FVector2D ABaseHex::GetHexCoordinates() const
+{
+	return hexCoordinates;
+}
+
+void ABaseHex::SetHexCoordinates(int x, int y)
+{
+	hexCoordinates = FVector2D(x, y);
+}
+
 int ABaseHex::GetMovementMulti() const
 {
 	return moveMultiplier;
@@ -249,16 +259,6 @@ void ABaseHex::AddTroopToHex(AMovementAI* troop)
 	troopsInHex.Add(troop);
 
 	CheckForHostility(troop);
-}
-
-void ABaseHex::AddBuildingToHex(ABuilding* newBuilding)
-{
-	newBuilding->hexNav->SetCurrentHex(this);
-	building = newBuilding;
-
-	if (hexOwner == Factions::None) SetHexOwner(newBuilding->unitStats->faction);
-
-	CheckForHostility(newBuilding);
 }
 
 void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
@@ -353,15 +353,32 @@ ABuilding* ABaseHex::GetBuilding()
 	return building;
 }
 
-void ABaseHex::SetBuilding(ABuilding* setBuilding)
+void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
 {
 	if (attachmentCanBeVisible)
 	{
 		hexMeshAttachment->SetVisibility(setBuilding == nullptr);
 	}
 
-	if (setBuilding) SetHexOwner(setBuilding->unitStats->faction);
+	TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
+	if (layers > 0)
+	{
+		for (ABaseHex* hex : hexes)
+		{
+			hex->SetBuilding(setBuilding);
+		}
+	}
 
+	if (setBuilding)
+	{
+		setBuilding->hexNav->SetCurrentHex(this);
+		building = setBuilding;
+		SetHexOwner(setBuilding->unitStats->faction);
+
+		CheckForHostility(setBuilding);
+	}	
+
+	//Reset worker capacity if building removed
 	if (building && !setBuilding)
 	{
 		SetMaxWorkers(maxWorkersDefault);
@@ -389,8 +406,6 @@ void ABaseHex::SetBuilding(ABuilding* setBuilding)
 			}
 		}
 	}
-
-	building = setBuilding;
 }
 
 int ABaseHex::GetNumberOfWorkers()
@@ -456,6 +471,57 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> igno
 		if (!factionInHex) return hex;
 	}
 	return this;
+}
+
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers) const
+{
+	TSet<ABaseHex*> hexes;
+	TQueue<const ABaseHex*> found;
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	int dirOdd[6][2] = { {1,0}, {-1,0}, {0,-1}, {1,1}, {0, 1}, {1,-1} };
+	int dirEven[6][2] = { {1,0}, {-1,0}, {-1,-1}, {0,1}, {-1,1}, {0,-1} };
+
+	auto GetAdjacentHexes = [&](const ABaseHex* centerHex)
+		{
+			FVector2D coords = centerHex->GetHexCoordinates();
+			int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+
+			for (int i = 0; i < 6; i++)
+			{
+				int x = coords.X + dir[i][0];
+				int y = coords.Y + dir[i][1];
+
+				if (x > max || x < 0 || y > max || y < 0) continue;
+
+				ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
+				if (!hexes.Contains(hex))
+				{
+					found.Enqueue(hex);
+					hexes.Add(hex);
+				}
+			}
+		};
+
+	found.Enqueue(this);
+
+	for (int i = 0; i < layers; i++)
+	{
+		TQueue<const ABaseHex*> layer;
+		const ABaseHex* currentVal = nullptr;
+
+		while (found.Dequeue(currentVal))
+		{
+			layer.Enqueue(currentVal);
+		}
+
+		while (layer.Dequeue(currentVal))
+		{
+			GetAdjacentHexes(currentVal);
+		}
+	}
+
+	return hexes;
 }
 
 float ABaseHex::GetTargetVolume()

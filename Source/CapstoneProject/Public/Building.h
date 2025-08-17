@@ -60,6 +60,7 @@ public:
 	int GetOccupyingTroops();
 	int GetOccupationMinCount();
 	void HealOverTime();
+	UFUNCTION(BlueprintCallable) int GetHexLayersToOccupy() const;
 	UFUNCTION(BlueprintCallable) Factions GetOccupier();
 	UFUNCTION(BlueprintCallable) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
@@ -109,7 +110,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Initialization") float hexSearchDistance = 100.f;
 	UPROPERTY(EditAnywhere, Category = "Initialization") float hexSnapDistance = 50.f;
 
-	UPROPERTY(EditAnywhere, Category = "Initialization") float buildTime = 5.f;
+	UPROPERTY(EditAnywhere, Category = "Construction") float buildTime = 5.f;
 	float currBuildTime;
 
 	UPROPERTY() AActor* smokeEffect;

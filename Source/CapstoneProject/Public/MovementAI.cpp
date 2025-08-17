@@ -253,8 +253,8 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 
 	ABaseHex* startHex = hexNav->GetCurrentHex();
 
-	const FVector2D startCoords = AGlobalSpawner::spawnerObject->GetHexCoordinates(startHex);
-	const FVector2D endCoords = AGlobalSpawner::spawnerObject->GetHexCoordinates(destination);
+	const FVector2D startCoords = startHex->GetHexCoordinates();
+	const FVector2D endCoords = destination->GetHexCoordinates();
 
 	FNodeData* start = new FNodeData(startHex, nullptr, startCoords.X, startCoords.Y);
 	FNodeData* end = nullptr;
