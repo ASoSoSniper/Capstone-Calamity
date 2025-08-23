@@ -355,7 +355,7 @@ void ABattleObject::EndBattle()
 
 void ABattleObject::DestroyBattle()
 {
-	for (auto faction : factionsInBattle)
+	for (auto& faction : factionsInBattle)
 	{
 		if (faction.Value.IsEmpty()) continue;
 		ExtractFactionUnits(faction.Key);

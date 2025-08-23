@@ -12,6 +12,7 @@
 #include "MiningStation.h"
 #include "Farmland.h"
 #include "PowerPlant.h"
+#include "MaterialStorage.h"
 #include "Outpost.h"
 #include "CapitalHub.h"
 #include "AlienCity.h"
@@ -35,6 +36,8 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
 	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 60, 1, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
+	buildingCosts.Add(SpawnableBuildings::Storage, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Material Storage"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
 	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
@@ -286,6 +289,36 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
+		});
+	//Material Storage Stats
+	buildingStats.Add(SpawnableBuildings::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		500,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		400,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		0,
+		/*Max Workers*/
+		10,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'"))
 		});
 	//Outpost Stats
 	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
@@ -666,6 +699,17 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
 	troopFactionMaterials.Add(Factions::Alien1, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienTroopMat01")), 
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
+
+	using SB = SpawnableBuildings;
+
+	buildingPrefabs.Add(SB::MiningStation, AMiningStation::StaticClass());
+	buildingPrefabs.Add(SB::Farmland, AFarmland::StaticClass());
+	buildingPrefabs.Add(SB::PowerPlant, APowerPlant::StaticClass());
+	buildingPrefabs.Add(SB::Storage, AMaterialStorage::StaticClass());
+	buildingPrefabs.Add(SB::Outpost, AOutpost::StaticClass());
+	buildingPrefabs.Add(SB::Capitol, ACapitalHub::StaticClass());
+	buildingPrefabs.Add(SB::AlienCity, AAlienCity::StaticClass());
+	buildingPrefabs.Add(SB::RockCity, ARockCity::StaticClass());
 }
 
 // Called when the game starts or when spawned
@@ -675,15 +719,8 @@ void AGlobalSpawner::BeginPlay()
 	
 	if (!troopPrefab) troopPrefab = ATroop::StaticClass();
 	if (!mergedArmyPrefab) mergedArmyPrefab = AMergedArmy::StaticClass();
-	if (!miningStationPrefab) miningStationPrefab = AMiningStation::StaticClass();
-	if (!farmlandPrefab) farmlandPrefab = AFarmland::StaticClass();
-	if (!powerPlantPrefab) powerPlantPrefab = APowerPlant::StaticClass();
-	if (!outpostPrefab) outpostPrefab = AOutpost::StaticClass();
-	if (!capitalPrefab) capitalPrefab = ACapitalHub::StaticClass();
 	if (!battlePrefab) battlePrefab = ABattleObject::StaticClass();
 	if (!siegePrefab) siegePrefab = ASiegeObject::StaticClass();
-	if (!alienCityPrefab) alienCityPrefab = AAlienCity::StaticClass();
-	if (!rockCityPrefab) rockCityPrefab = ARockCity::StaticClass();
 
 	spawnerObject = this;
 
@@ -707,21 +744,13 @@ void AGlobalSpawner::Tick(float DeltaTime)
 
 UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 {
-	switch (building)
+	if (!buildingPrefabs.Contains(building))
 	{
-	case SpawnableBuildings::MiningStation:
-		return miningStationPrefab;
-	case SpawnableBuildings::Farmland:
-		return farmlandPrefab;
-	case SpawnableBuildings::PowerPlant:
-		return powerPlantPrefab;
-	case SpawnableBuildings::Outpost:
-		return outpostPrefab;
-	case SpawnableBuildings::Capitol:
-		return capitalPrefab;
-	default:
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Failed to build: building prefab not found"));
 		return nullptr;
 	}
+
+	return buildingPrefabs[building];
 }
 
 void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
@@ -838,14 +867,14 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	case TerrainType::AlienCity:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
 
-		newBuilding = GetWorld()->SpawnActor<ABuilding>(alienCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
 		break;
 	case TerrainType::TheRock:		
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
 
-		newBuilding = GetWorld()->SpawnActor<ABuilding>(rockCityPrefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
 		break;
@@ -1133,11 +1162,11 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 
 	//Check if terrain is valid
 	TSet<ABaseHex*> hexesToBuild = hex->GetHexesInRadius(buildingCosts[building].hexLayers);
-	for (ABaseHex* hex : hexesToBuild)
+	for (ABaseHex* aHex : hexesToBuild)
 	{
-		if (hex->building ||
-			!hex->IsBuildableTerrain() ||
-			hex->GetHexOwner() != faction)
+		if (aHex->building ||
+			!aHex->IsBuildableTerrain() ||
+			aHex->GetHexOwner() != faction)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
 			return;

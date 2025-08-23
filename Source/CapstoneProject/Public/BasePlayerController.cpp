@@ -881,52 +881,35 @@ FWorkersInHex ABasePlayerController::GetWorkersInAttachment(BuildingAttachments 
 
 TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 {
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	TArray<FBuildingDisplay> buildings;
-	if (!hex) return buildings;
-
-	//TArray<TerrainType> nonBuildableTerrain = UnitActions::GetNonBuildableTerrain();
-	//if (nonBuildableTerrain.Contains(hex->hexTerrain)) return buildings;
 
 	for (auto& building : AGlobalSpawner::spawnerObject->buildingCosts)
 	{
 		if (building.Key == SpawnableBuildings::Capitol && firstBuildPerformed) continue;
 		if (building.Key != SpawnableBuildings::Capitol && !firstBuildPerformed) continue;
 
-		FText name = building.Value.name;
-		FText production = FText::AsNumber(building.Value.productionCost);
-		FText workers = FText::AsNumber(building.Value.workerCost);
-		FText buildTime = FText::AsNumber(building.Value.timeToBuild);
-		UTexture2D* buildingIcon = building.Value.buildingIcon;
-
-		buildings.Add(FBuildingDisplay{name, production, workers, buildTime, buildingIcon});
+		buildings.Add(GetBuildingDisplay(building.Key));
 	}
 
 	return buildings;
 }
 
-FBuildingDisplay ABasePlayerController::GetBuildingDisplay(ABuilding* building)
+FBuildingDisplay ABasePlayerController::GetBuildingDisplay(SpawnableBuildings building)
 {
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	FBuildingDisplay attachmentDisplay;
-	if (!hex->building) return attachmentDisplay;
+	FBuildingCost* costs;
 
-	SpawnableBuildings selectedBuilding = building->GetBuildingType();
+	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(building))
+		costs = &AGlobalSpawner::spawnerObject->buildingCosts[building];
+	else
+		return attachmentDisplay;
 
-	FBuildingCost costs;
-	FBuildingStats stats;
-	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(selectedBuilding))
-	{
-		costs = AGlobalSpawner::spawnerObject->buildingCosts[selectedBuilding];
-	}
-
-	if (!AGlobalSpawner::spawnerObject->buildingStats.Contains(selectedBuilding)) return attachmentDisplay;
-
-	attachmentDisplay.name = AGlobalSpawner::spawnerObject->buildingStats[selectedBuilding].name;
-	attachmentDisplay.productionCost = FText::AsNumber(costs.productionCost);
-	attachmentDisplay.workerCost = FText::AsNumber(costs.workerCost);
-	attachmentDisplay.buildTime = FText::AsNumber(costs.timeToBuild);
-	attachmentDisplay.buildingIcon = AGlobalSpawner::spawnerObject->buildingStats[selectedBuilding].buildingIcon;
+	attachmentDisplay.name = costs->name;
+	attachmentDisplay.productionCost = FText::AsNumber(costs->productionCost);
+	attachmentDisplay.workerCost = FText::AsNumber(costs->workerCost);
+	attachmentDisplay.buildTime = FText::AsNumber(costs->timeToBuild);
+	attachmentDisplay.buildingIcon = costs->buildingIcon;
+	attachmentDisplay.buildingType = building;
 
 	return attachmentDisplay;
 }
@@ -1299,9 +1282,10 @@ bool ABasePlayerController::AttachmentIsActive(FText attachmentName)
 bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 {
 	FBuildingOnHex buildingOnHex = GetBuildingOnHex();
-	if (buildingOnHex.farmland)
+	if (buildingOnHex.buildingType == SpawnableBuildings::Farmland)
 	{
-		buildingOnHex.farmland->ToggleResourcesProduced(produceFood);
+		if (AFarmland* farm = Cast<AFarmland>(buildingOnHex.baseBuilding))
+			farm->ToggleResourcesProduced(produceFood);
 	}
 
 	return produceFood;
@@ -1310,9 +1294,10 @@ bool ABasePlayerController::ToggleFarmlandYield(bool produceFood)
 bool ABasePlayerController::FarmlandYieldsFood()
 {
 	FBuildingOnHex buildingOnHex = GetBuildingOnHex();
-	if (buildingOnHex.farmland)
+	if (buildingOnHex.buildingType == SpawnableBuildings::Farmland)
 	{
-		return buildingOnHex.farmland->producingFood;
+		if (AFarmland* farm = Cast<AFarmland>(buildingOnHex.baseBuilding))
+			farm->producingFood;
 	}
 
 	return false;
@@ -1331,7 +1316,7 @@ bool ABasePlayerController::AttachmentIsBuilt(BuildingAttachments attachment)
 
 FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 {
-	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, FText{}, nullptr, nullptr, nullptr, nullptr, nullptr};
+	FBuildingOnHex hexBuilding = FBuildingOnHex{ SpawnableBuildings::None, FText{}, nullptr};
 
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	if (!hex) return hexBuilding;
@@ -1340,49 +1325,10 @@ FBuildingOnHex ABasePlayerController::GetBuildingOnHex()
 	if (!building) return hexBuilding;
 
 	hexBuilding.baseBuilding = building;
+	hexBuilding.buildingType = building->GetBuildingType();
+	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(hexBuilding.buildingType))
+		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[hexBuilding.buildingType].name;
 
-	if (AFarmland* farmland = Cast<AFarmland>(hex->building))
-	{
-		hexBuilding.buildingType = SpawnableBuildings::Farmland;
-		hexBuilding.farmland = farmland;
-		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Farmland].name;
-		return hexBuilding;
-	}
-
-	if (APowerPlant* powerplant = Cast<APowerPlant>(hex->building))
-	{
-		hexBuilding.buildingType = SpawnableBuildings::PowerPlant;
-		hexBuilding.powerplant = powerplant;
-		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::PowerPlant].name;
-		return hexBuilding;
-	}
-
-	if (AMiningStation* miningStation = Cast<AMiningStation>(hex->building))
-	{
-		hexBuilding.buildingType = SpawnableBuildings::MiningStation;
-		hexBuilding.miningStation = miningStation;
-		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::MiningStation].name;
-		return hexBuilding;
-	}
-
-	if (ACapitalHub* hub = Cast<ACapitalHub>(hex->building))
-	{
-		hexBuilding.buildingType = SpawnableBuildings::Capitol;
-		hexBuilding.hub = hub;
-		hexBuilding.outpost = hub;
-		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Capitol].name;
-		return hexBuilding;
-	}
-
-	if (AOutpost* outpost = Cast<AOutpost>(hex->building))
-	{
-		hexBuilding.buildingType = SpawnableBuildings::Outpost;
-		hexBuilding.outpost = outpost;
-		hexBuilding.name = AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Outpost].name;
-		return hexBuilding;
-	}
-
-	hexBuilding.buildingType = SpawnableBuildings::None;
 	return hexBuilding;
 }
 
@@ -1417,57 +1363,39 @@ void ABasePlayerController::ChangeArmyName(FString newName)
 	UnitActions::GenerateArmyName(Factions::Human, troop, newName);
 }
 
-FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(FText buildingName)
+FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(SpawnableBuildings buildingName)
 {
 	FBuildingTTInfo buildingInfo;
-	FBuildingStats buildingStats;
+	FBuildingStats* buildingStats = nullptr;
 
-	bool statsFound = false;
-
-	for (auto& building : AGlobalSpawner::spawnerObject->buildingStats)
+	if (AGlobalSpawner::spawnerObject->buildingStats.Contains(buildingName))
+		buildingStats = &AGlobalSpawner::spawnerObject->buildingStats[buildingName];
+	else
 	{
-		if (buildingName.EqualTo(building.Value.name))
-		{
-			buildingStats = building.Value;
-			statsFound = true;
-			break;
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("No tooltip data found"));
+		return buildingInfo;
 	}
 
-	if (!statsFound)
-	{
-		for (auto& building : AGlobalSpawner::spawnerObject->attachmentStats)
-		{
-			if (buildingName.EqualTo(building.Value.name))
-			{
-				buildingStats = building.Value;
-				statsFound = true;
-				break;
-			}
-		}
-	}
-	if (!statsFound) return buildingInfo;
+	buildingInfo.titleTT = buildingStats->name;
+	buildingInfo.descTT = buildingStats->description;
 
-	buildingInfo.titleTT = buildingStats.name;
-	buildingInfo.descTT = buildingStats.description;
+	buildingInfo.energyMod = FText::AsNumber(buildingStats->energyYield);
+	buildingInfo.foodMod = FText::AsNumber(buildingStats->foodYield);
+	buildingInfo.prodMod = FText::AsNumber(buildingStats->productionYield);
+	buildingInfo.wealthMod = FText::AsNumber(buildingStats->wealthYield);
 
-	buildingInfo.energyMod = FText::AsNumber(buildingStats.energyYield);
-	buildingInfo.foodMod = FText::AsNumber(buildingStats.foodYield);
-	buildingInfo.prodMod = FText::AsNumber(buildingStats.productionYield);
-	buildingInfo.wealthMod = FText::AsNumber(buildingStats.wealthYield);
+	buildingInfo.resourceStorageMod = FText::AsNumber(buildingStats->resourceCapIncrease);
+	buildingInfo.robotStorageMod = FText::AsNumber(buildingStats->robotStorage);
 
-	buildingInfo.resourceStorageMod = FText::AsNumber(buildingStats.resourceCapIncrease);
-	buildingInfo.robotStorageMod = FText::AsNumber(buildingStats.robotStorage);
+	buildingInfo.diploMod = FText::AsNumber(buildingStats->diplomacy);
+	buildingInfo.tradeMod = FText::AsNumber(buildingStats->trade);
 
-	buildingInfo.diploMod = FText::AsNumber(buildingStats.diplomacy);
-	buildingInfo.tradeMod = FText::AsNumber(buildingStats.trade);
+	buildingInfo.siegeDamage = FText::AsNumber(buildingStats->siegeDamage);
+	buildingInfo.siegeHP = FText::AsNumber(buildingStats->HP);
 
-	buildingInfo.siegeDamage = FText::AsNumber(buildingStats.siegeDamage);
-	buildingInfo.siegeHP = FText::AsNumber(buildingStats.HP);
-
-	buildingInfo.unrestMod = FText::AsNumber(buildingStats.unrestMod);
-	buildingInfo.energyUpkeepCost = FText::AsNumber(buildingStats.energyUpkeepCost);
-	buildingInfo.maxWorkers = FText::AsNumber(buildingStats.maxWorkers);
+	buildingInfo.unrestMod = FText::AsNumber(buildingStats->unrestMod);
+	buildingInfo.energyUpkeepCost = FText::AsNumber(buildingStats->energyUpkeepCost);
+	buildingInfo.maxWorkers = FText::AsNumber(buildingStats->maxWorkers);
 
 	return buildingInfo;
 }

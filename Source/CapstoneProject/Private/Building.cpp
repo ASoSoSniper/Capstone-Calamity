@@ -221,8 +221,8 @@ void ABuilding::UpdateResources()
 		{
 			int ownerPortion = FMath::RoundToInt((float)value - (float)value * occupyResourcePercent);
 			int siegePortion = FMath::RoundToInt((float)value * occupyResourcePercent);
-			hex->UpdateResourceYield(resource.Key, ownerPortion);
-			hex->UpdateResourceYield(resource.Key, siegePortion);
+			hex->UpdateResourceYield(resource.Key, ownerPortion, unitStats->faction);
+			hex->UpdateResourceYield(resource.Key, siegePortion, occupyingFaction);
 		}
 		else
 		{
@@ -516,6 +516,8 @@ void ABuilding::HealOverTime()
 
 int ABuilding::GetHexLayersToOccupy() const
 {
+	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return 0;
+
 	return AGlobalSpawner::spawnerObject->buildingCosts[buildingType].hexLayers;
 }
 

@@ -110,7 +110,7 @@ public:
 	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInAttachment(BuildingAttachments attachment);
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetBuildingDisplays();
 	UPROPERTY(VisibleAnywhere) bool firstBuildPerformed = false;
-	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(ABuilding* building);
+	UFUNCTION(BlueprintCallable) FBuildingDisplay GetBuildingDisplay(SpawnableBuildings building);
 	UFUNCTION(BlueprintCallable) TArray<FTroopDisplay> GetTroopDisplays();
 	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();
 	UFUNCTION(BlueprintCallable) FBuildingDisplay GetAttachmentDisplay(FText attachmentName);
@@ -151,7 +151,7 @@ public:
 
 	UFUNCTION(BlueprintCallable) void ResourceCheats(int resourceToChange, int val);
 	UFUNCTION(BlueprintCallable) void ChangeArmyName(FString newName);
-	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(FText buildingName);
+	UFUNCTION(BlueprintCallable) FBuildingTTInfo GetBuildingTTDisplay(SpawnableBuildings buildingName);
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
 
 	UFUNCTION(BlueprintCallable) void PlayUISound(USoundBase* sound);

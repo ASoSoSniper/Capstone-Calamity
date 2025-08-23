@@ -22,51 +22,7 @@ class AAlienCity;
 class ARockCity;
 class UBuildingAttachment;
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FFactionPersonality
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int xenophilia;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int spirituality;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int compliance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int violence;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FPlayerWorkers
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int available;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int working;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FCinematicObject
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) AActor* object;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FVector position;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float travelTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float lingerTime;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FSiegeBuildingInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingHealthPercent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingDamage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildingName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
-};
-
+#pragma region UI
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopUIData
 {
@@ -76,147 +32,6 @@ struct FTroopUIData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float healthPercent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float moralePercent;
 };
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FUnitComposition
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float compPercent = 0.f;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FVisibilityMaterials
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* hiddenTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelHiddenTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelVisibleTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelSelectedTexture;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FTroopMaterials
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
-};
-
-UENUM(BlueprintType)
-enum class ShapesOfMap
-{
-	None,
-	Square,
-	Rectangle,
-	Catan,
-	Circle
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FBuildingCost
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int hexLayers = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
-};
-USTRUCT(BlueprintType, Blueprintable)
-struct FBuildingDisplay
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FBuildingStats
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceCapIncrease;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robotStorage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float diplomacy;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float trade;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegeDamage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float unrestMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
-};
-USTRUCT(BlueprintType, Blueprintable)
-struct FBuildingTTInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText titleTT;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText descTT;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText foodMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText prodMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText wealthMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText resourceStorageMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText robotStorageMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText diploMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText tradeMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeDamage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeHP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText unrestMod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText maxWorkers;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FBuildingOnHex
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) AFarmland* farmland;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) APowerPlant* powerplant;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) AMiningStation* miningStation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) AOutpost* outpost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) ACapitalHub* hub;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) ABuilding* baseBuilding;
-};
-USTRUCT(BlueprintType, Blueprintable)
-struct FTroopCost
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
-};
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopDisplay
 {
@@ -228,40 +43,6 @@ struct FTroopDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText timeToBuild;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText populationCost;
 };
-USTRUCT(BlueprintType, Blueprintable)
-struct FTroopStats
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText desc;
-	UnitTypes type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* iconHovered;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegePower;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int vision;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int reinforceRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsInfantry;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsCavalry;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsRanged;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsShielder;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsScout;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsSettler;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsInfantry;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsCavalry;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsRanged;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsShielder;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsScout;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsSettler;
-};
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopTTInfo
 {
@@ -291,7 +72,6 @@ struct FTroopTTInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsScout;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText defendvsSettler;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FArmyDisplay
 {
@@ -313,7 +93,7 @@ USTRUCT(BlueprintType, Blueprintable)
 struct FArmyMenuInfo
 {
 	GENERATED_USTRUCT_BODY()
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 
@@ -349,7 +129,6 @@ struct FArmyMenuInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int scoutNum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerNum;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopArmyDisplay
 {
@@ -371,16 +150,106 @@ struct FTroopArmyDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int shielderQuantity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int settlerQuantity;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
-struct FCuedTroop
+struct FBuildingDisplay
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FTroopCost troopInfo;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText workerCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
 };
+USTRUCT(BlueprintType, Blueprintable)
+struct FBuildingTTInfo
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText titleTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText descTT;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText foodMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText prodMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText wealthMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText resourceStorageMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText robotStorageMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText diploMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText tradeMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText siegeHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText unrestMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText energyUpkeepCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText maxWorkers;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FSiegeBuildingInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingHealthPercent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int currentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildingDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText buildingName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
+};
+#pragma endregion
+#pragma region Visuals
+UENUM(BlueprintType)
+enum class ShapesOfMap
+{
+	None,
+	Square,
+	Rectangle,
+	Catan,
+	Circle
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FCinematicObject
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AActor* object;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FVector position;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float travelTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float lingerTime;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FVisibilityMaterials
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* hiddenTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelHiddenTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelVisibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* modelSelectedTexture;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopMaterials
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* visibleTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UMaterialInterface* selectedTexture;
+};
+#pragma endregion
+#pragma region Factions
+USTRUCT(BlueprintType, Blueprintable)
+struct FFactionPersonality
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int xenophilia;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int spirituality;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int compliance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int violence;
+};
 USTRUCT(BlueprintType, Blueprintable)
 struct FResourcesPerTick
 {
@@ -391,7 +260,6 @@ struct FResourcesPerTick
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealth = 0;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FResourceGainLoss
 {
@@ -409,7 +277,16 @@ struct FResourceGainLoss
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionGain = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionLoss = 0;
 };
+USTRUCT(BlueprintType, Blueprintable)
+struct FPlayerWorkers
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int available;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int working;
+};
+#pragma endregion
+#pragma region Hexes
 USTRUCT(BlueprintType, Blueprintable)
 struct FWorkerSliders
 {
@@ -430,7 +307,6 @@ struct FWorkerSliders
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableRobots = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int availableAliens = 0;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FWorkersInHex
 {
@@ -441,36 +317,54 @@ struct FWorkersInHex
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers = 0;
 };
+#pragma endregion
+#pragma region Buildings
 USTRUCT(BlueprintType, Blueprintable)
-struct FTroopQuantity
+struct FBuildingOnHex
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UnitTypes unitType = UnitTypes::None;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) SpawnableBuildings buildingType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) ABuilding* baseBuilding;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
-struct FAttachmentBuildProgress
+struct FBuildingCost
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentProgress;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool isBuilding;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int hexLayers = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
-struct FAttachmentTTBuildInfo
+struct FBuildingStats
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceCapIncrease;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robotStorage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float diplomacy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float trade;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegeDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float unrestMod;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -482,7 +376,6 @@ struct FRobotFactoryStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyCost;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FRobotStorageStats
 {
@@ -494,7 +387,6 @@ struct FRobotStorageStats
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxRobotStorage;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FMaterialStorageStats
 {
@@ -506,7 +398,6 @@ struct FMaterialStorageStats
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceIncrease;
 };
-
 USTRUCT(BlueprintType, Blueprintable)
 struct FDefenseStationStats
 {
@@ -519,6 +410,93 @@ struct FDefenseStationStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
 };
+#pragma endregion
+#pragma region Attachments
+USTRUCT(BlueprintType, Blueprintable)
+struct FAttachmentBuildProgress
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentProgress;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool isBuilding;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FAttachmentTTBuildInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildTime;
+};
+#pragma endregion
+#pragma region Troops and Armies
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopCost
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int populationCost = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FTroopStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText desc;
+	UnitTypes type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* iconHovered;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegePower;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int vision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int morale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int reinforceRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int attackvsSettler;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsInfantry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsCavalry;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsRanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsShielder;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsScout;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defendvsSettler;
+};
+USTRUCT(BlueprintType, Blueprintable)
+struct FUnitComposition
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float compPercent = 0.f;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FCuedTroop
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FTroopCost troopInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
+};
+#pragma endregion
 
 UCLASS()
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
@@ -586,14 +564,7 @@ private:
 	UPROPERTY(EditAnywhere) int hexSeedSize = 5;
 	UPROPERTY(EditAnywhere) int hexRandToMaintain = 5;
 
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> miningStationPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> farmlandPrefab;
-
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> powerPlantPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> outpostPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> capitalPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> alienCityPrefab;
-	UPROPERTY(EditAnywhere, Category = "Building") TSubclassOf<class ABuilding> rockCityPrefab;
+	UPROPERTY(EditAnywhere, Category = "Building") TMap <SpawnableBuildings, TSubclassOf<class ABuilding>> buildingPrefabs;
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;

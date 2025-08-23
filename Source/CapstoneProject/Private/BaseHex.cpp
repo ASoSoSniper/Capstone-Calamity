@@ -355,20 +355,25 @@ ABuilding* ABaseHex::GetBuilding()
 
 void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
 {
+	//Toggle the hex's natural models, if existing, 
+	//depending on the coming or going of the building
 	if (attachmentCanBeVisible)
 	{
 		hexMeshAttachment->SetVisibility(setBuilding == nullptr);
 	}
 
-	TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
+	//Affect hexes in the building's influence with the same come/go command
 	if (layers > 0)
 	{
+		TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
+
 		for (ABaseHex* hex : hexes)
 		{
 			hex->SetBuilding(setBuilding);
 		}
 	}
 
+	//If a new building exists, set up connection to this hex
 	if (setBuilding)
 	{
 		setBuilding->hexNav->SetCurrentHex(this);
@@ -376,11 +381,12 @@ void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
 		SetHexOwner(setBuilding->unitStats->faction);
 
 		CheckForHostility(setBuilding);
-	}	
-
-	//Reset worker capacity if building removed
-	if (building && !setBuilding)
+	}
+	//If a building is being destroyed, cut connections to this hex and clamp worker count
+	else if (building && !setBuilding)
 	{
+		building = nullptr;
+
 		SetMaxWorkers(maxWorkersDefault);
 		int totalWorkers = 0;
 		for (auto& worker : workersInHex)
