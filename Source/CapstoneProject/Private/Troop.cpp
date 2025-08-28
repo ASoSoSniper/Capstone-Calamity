@@ -3,6 +3,7 @@
 
 #include "Troop.h"
 #include "MergedArmy.h"
+#include "TroopStorage.h"
 #include "UnitActions.h"
 #include "Kismet/GameplayStatics.h"
 #include "CapstoneProjectGameModeBase.h"
@@ -63,11 +64,12 @@ void ATroop::MergeOnTile()
 	case ObjectTypes::Building:
 		if (hexNav->GetCurrentHex() == objectType.building->hexNav->GetCurrentHex() && objectType.building->unitStats->faction == unitStats->faction)
 		{
-			if (AOutpost* outpost = Cast<AOutpost>(objectType.building))
+			if (objectType.building->GetBuildingType() == SpawnableBuildings::RobotBarracks)
 			{
-				if (!outpost->BuildingAttachmentIsActive(BuildingAttachments::Storage)) return;
-
-				outpost->StoreTroop(this);
+				if (ATroopStorage* storage = Cast<ATroopStorage>(objectType.building))
+				{
+					storage->StoreTroop(this);
+				}
 			}
 		}
 	}

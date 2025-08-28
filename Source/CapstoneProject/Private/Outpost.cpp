@@ -11,6 +11,7 @@
 #include "Troop.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
+#include "TroopFactory.h"
 
 AOutpost::AOutpost()
 {
@@ -44,24 +45,6 @@ AOutpost::AOutpost()
 void AOutpost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (currentTroopBuildTime > 0)
-	{
-		currentTroopBuildTime -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
-	}
-	else
-	{
-		if (!cuedUnits.IsEmpty() && AGlobalSpawner::spawnerObject)
-		{
-			BuildTroop();
-
-			cuedUnits.RemoveAt(0);
-			if (!cuedUnits.IsEmpty())
-			{
-				currentTroopBuildTime = AGlobalSpawner::spawnerObject->troopCosts[cuedUnits[0]].timeToBuild;
-			}
-		}
-	}
 
 	if (BuildingAttachmentIsActive(BuildingAttachments::RobotBarracks))
 	{
@@ -198,70 +181,6 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 	return false;
 }
 
-void AOutpost::QueueTroopBuild(UnitTypes unit)
-{
-	if (!AGlobalSpawner::spawnerObject) return;
-	if (!troopFactoryBuilding->AttachmentIsActive()) return;
-
-	//Temp line to remove troop cueing
-	//if (!cuedUnits.IsEmpty()) return;
-
-	if (AGlobalSpawner::spawnerObject->troopCosts.Contains(unit))
-	{
-		bool purchased = AGlobalSpawner::spawnerObject->PurchaseTroop(unitStats->faction, unit, this);
-		if (purchased)
-		{
-			cuedUnits.Add(unit);
-			if (cuedUnits.Num() == 1) currentTroopBuildTime = AGlobalSpawner::spawnerObject->troopCosts[unit].timeToBuild;
-		}
-	}
-}
-
-float AOutpost::GetTroopBuildTime()
-{
-	return currentTroopBuildTime;
-}
-
-UnitTypes AOutpost::GetQueuedTroop()
-{
-	if (cuedUnits.IsEmpty()) return UnitTypes::None;
-
-	return cuedUnits[0];
-}
-
-void AOutpost::BuildTroop()
-{
-	ABaseHex* hex = hexNav->GetCurrentHex();
-
-	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(unitStats->faction, cuedUnits[0], hex);
-
-	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->troopCompleteSound);
-
-	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex, troop))
-	{
-		for (int i = 0; i < hex->troopsInHex.Num(); i++)
-		{
-			if (hex->troopsInHex[i]->unitStats->faction == unitStats->faction)
-			{
-				if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->GetArmyCap())
-				{
-					troop->SphereCheck(20.f);
-					troop->CommandTroopToMerge(hex->troopsInHex[i]);
-				}
-				else
-				{
-					TArray<ABaseHex*> ignoredHexes;
-					ABaseHex* freeHex = hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes);
-
-					troop->SetActorLocation(freeHex->troopAnchor->GetComponentLocation());
-				}
-
-				break;
-			}
-		}
-	}
-}
-
 void AOutpost::StoreTroop(ATroop* troop)
 {
 	if (!BuildingAttachmentIsActive(BuildingAttachments::Storage)) return;
@@ -275,7 +194,7 @@ void AOutpost::StoreTroop(ATroop* troop)
 TArray<ATroop*> AOutpost::ReleaseTroops()
 {
 	TArray<ATroop*> spawnedTroops;
-	TArray<ABaseHex*> usedHexes;
+	TSet<ABaseHex*> usedHexes;
 	ABaseHex* hex = hexNav->GetCurrentHex();
 
 	for (int i = 0; i < troopsInStorage.Num(); ++i)
@@ -322,7 +241,7 @@ void AOutpost::HealTroops(float& DeltaTime)
 
 void AOutpost::Action1()
 {
-	QueueTroopBuild(UnitTypes::Infantry);
+	
 }
 
 void AOutpost::Action2()

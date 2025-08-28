@@ -42,6 +42,7 @@ struct FTroopDisplay
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText productionCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText timeToBuild;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText populationCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UnitTypes unitType;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopTTInfo
@@ -525,7 +526,7 @@ public:
 	AActor* SpawnSmoke(AActor* object);
 	AActor* SpawnEndParticle(AActor* object, GameStates state);
 
-	bool PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost);
+	bool PurchaseTroop(Factions faction, UnitTypes unit);
 	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
 	ATroop* BuildArmy(Factions faction, ABaseHex* hex);
 	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);

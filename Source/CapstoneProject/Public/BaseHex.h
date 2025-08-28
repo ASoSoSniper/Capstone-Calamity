@@ -153,7 +153,7 @@ public:
 
 	FHexDisplay GetDisplayInfo();
 
-	ABaseHex* FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes);
+	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes);
 	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1) const;
 
 	float GetTargetVolume();

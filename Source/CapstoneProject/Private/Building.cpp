@@ -501,6 +501,11 @@ SpawnableBuildings ABuilding::GetBuildingType()
 	return buildingType;
 }
 
+bool ABuilding::ConstructionComplete() const
+{
+	return buildState == BuildStates::Complete || buildState == BuildStates::Upgraded;
+}
+
 void ABuilding::HealOverTime()
 {
 	if (ABaseHex* hex = hexNav->GetCurrentHex())

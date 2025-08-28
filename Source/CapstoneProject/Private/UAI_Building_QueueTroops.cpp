@@ -2,7 +2,7 @@
 
 
 #include "UAI_Building_QueueTroops.h"
-#include "Outpost.h"
+#include "TroopFactory.h"
 #include "GlobalSpawner.h"
 
 void UUAI_Building_QueueTroops::ExecuteAction(IUAI_Controller* controller)
@@ -11,7 +11,7 @@ void UUAI_Building_QueueTroops::ExecuteAction(IUAI_Controller* controller)
 
 	using Unit = TPair<UnitTypes, int>;
 
-	AOutpost* outpost = Cast<AOutpost>(controller);
+	ATroopFactory* outpost = Cast<ATroopFactory>(controller);
 	if (!outpost) return;
 
 	TArray<Unit> orderedQueue;

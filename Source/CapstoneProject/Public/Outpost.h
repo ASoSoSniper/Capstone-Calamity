@@ -32,10 +32,6 @@ public:
 	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
 	void BuildAttachment(BuildingAttachments attachment);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
-
-	void QueueTroopBuild(UnitTypes unit);
-	float GetTroopBuildTime();
-	UnitTypes GetQueuedTroop();
 	
 	void StoreTroop(ATroop* troop);
 
@@ -64,16 +60,11 @@ private:
 	TArray<UnitActions::UnitData> troopsInStorage;
 
 	TArray<ABaseHex*> ClaimLand();
-
 	TArray<ABaseHex*> ScanHex(ABaseHex* hex);
 
 	void BuildingAction() override;
-	void BuildTroop();
 	virtual void SetToFinishedModel();
 	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
-
-	TArray<UnitTypes> cuedUnits;
-	float currentTroopBuildTime;
 
 	void HealTroops(float& DeltaTime);
 	UPROPERTY(EditAnywhere) float healRate = 1.f;

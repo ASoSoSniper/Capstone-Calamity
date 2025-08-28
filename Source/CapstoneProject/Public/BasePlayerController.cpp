@@ -4,6 +4,7 @@
 #include "BasePlayerController.h"
 #include "HexNav.h"
 #include "UnitActions.h"
+#include "TroopFactory.h"
 #include "MergedArmy.h"
 #include "SiegeObject.h"
 #include "CapstoneProjectGameModeBase.h"
@@ -927,8 +928,9 @@ TArray<FTroopDisplay> ABasePlayerController::GetTroopDisplays()
 		FText production = FText::AsNumber(troop.Value.productionCost);
 		FText buildTime = FText::AsNumber(troop.Value.timeToBuild);
 		FText population = FText::AsNumber(troop.Value.populationCost);
+		UnitTypes unitType = troop.Key;
 
-		troops.Add(FTroopDisplay{ name, icon, production, buildTime, population });
+		troops.Add(FTroopDisplay{ name, icon, production, buildTime, population, unitType });
 	}
 
 	return troops;
@@ -1020,29 +1022,25 @@ bool ABasePlayerController::IsInBuildMode()
 }
 
 //FOR BLUEPRINT: Triggered when a building is selected from the UI, identifies which building was selected and builds it accordingly
-void ABasePlayerController::SelectBuilding(FText buildingName)
+void ABasePlayerController::SelectBuilding(SpawnableBuildings buildingName)
 {
-	for (auto& buildings : AGlobalSpawner::spawnerObject->buildingCosts)
+	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingName)) return;
+
+	//Fail if attempting to build a non-outpost building on foreign soil
+	if (buildingName != SpawnableBuildings::Outpost && selectedHex->GetHexOwner() != playerFaction)
 	{
-		if (buildingName.EqualTo(buildings.Value.name))
-		{
-			if (selectedHex->GetHexOwner() != Factions::Human && buildings.Key != SpawnableBuildings::Outpost)
-			{
-				PlayUISound(selectFailSound);
-				return;
-			}
-
-			if (buildings.Key == SpawnableBuildings::Capitol)
-			{
-				if (selectedHex->GetHexTerrain() == TerrainType::Ship) firstBuildPerformed = true;
-				else return;
-			}
-
-			Build(buildings.Key);
-
-			return;
-		}
+		PlayUISound(selectFailSound);
+		return;
 	}
+
+	//Trigger first build logic if building is the capitol
+	if (buildingName == SpawnableBuildings::Capitol)
+	{
+		if (selectedHex->GetHexTerrain() == TerrainType::Ship) firstBuildPerformed = true;
+		else return;
+	}
+
+	Build(buildingName);
 }
 void ABasePlayerController::DestroyBuilding()
 {
@@ -1080,21 +1078,13 @@ void ABasePlayerController::SelectBuildingAttachment(FText attachmentName)
 	}
 }
 //FOR BLUEPRINT: Triggered when a troop is selected from the UI, identifies which troop was selected and builds it accordingly
-void ABasePlayerController::SelectTroop(FText troopName)
+void ABasePlayerController::SelectTroop(UnitTypes troopName)
 {
-	for (auto& troop : AGlobalSpawner::spawnerObject->troopCosts)
+	FBuildingOnHex building = GetBuildingOnHex();
+
+	if (building.buildingType == SpawnableBuildings::RobotFactory)
 	{
-		if (troopName.EqualTo(troop.Value.name))
-		{
-			AOutpost* outpost = GetOutpost();
-
-			if (outpost)
-			{
-				outpost->QueueTroopBuild(troop.Key);
-			}
-
-			return;
-		}
+		Cast<ATroopFactory>(building.baseBuilding)->QueueTroopBuild(troopName);
 	}
 }
 
@@ -1153,11 +1143,14 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 {
 	FCuedTroop troop = FCuedTroop{ FTroopCost{0,0,0}, 0 };
 
-	AOutpost* outpost = GetOutpost();
-	if (!outpost) return troop;
+	FBuildingOnHex building = GetBuildingOnHex();
+	if (building.buildingType != SpawnableBuildings::RobotFactory) return troop;
 
-	troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[outpost->GetQueuedTroop()];
-	troop.currentTime = outpost->GetTroopBuildTime();
+	if (ATroopFactory* factory = Cast<ATroopFactory>(building.baseBuilding))
+	{
+		troop.troopInfo = AGlobalSpawner::spawnerObject->troopCosts[factory->GetQueuedTroop()];
+		troop.currentTime = factory->GetTroopBuildTime();
+	}
 
 	return troop;
 }

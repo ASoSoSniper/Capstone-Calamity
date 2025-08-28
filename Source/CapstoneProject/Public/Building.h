@@ -65,6 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
 	UFUNCTION(BlueprintCallable) SpawnableBuildings GetBuildingType();
+	UFUNCTION(BlueprintCallable) bool ConstructionComplete() const;
 
 protected:
 	enum BuildStates

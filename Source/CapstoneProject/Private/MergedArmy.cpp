@@ -65,7 +65,7 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
 	ABaseHex* hex = hexNav->GetCurrentHex();
-	TArray<ABaseHex*> ignoredHexes;
+	TSet<ABaseHex*> usedHexes;
 
 	hex->troopsInHex.Remove(this);
 
@@ -73,12 +73,12 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmy(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), groupData, hpPercent);
+		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmy(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), groupData, hpPercent);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), groupData[0], hpPercent);
+		spawnTroop = AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), groupData[0], hpPercent);
 
 		return spawnTroop;
 	}
@@ -130,12 +130,12 @@ void AMergedArmy::ExtractOneUnit(UnitTypes type)
 	if (!UnitActions::ArmyContainsUnit(this, type, unitIndex)) return;
 
 	ABaseHex* hex = hexNav->GetCurrentHex();
-	TArray<ABaseHex*> ignoredHexes;
+	TSet<ABaseHex*> usedHexes;
 
 	UnitActions::UnitData unit = UnitActions::ExtractUnit(unitStats, unitIndex);
 	if (unit.unitType == UnitTypes::None) return;
 
-	AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, ignoredHexes), unit);
+	AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), unit);
 }
 
 void AMergedArmy::Action1()

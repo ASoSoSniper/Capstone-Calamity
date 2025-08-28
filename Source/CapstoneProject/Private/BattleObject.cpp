@@ -402,7 +402,7 @@ void ABattleObject::SetSelected(bool selected)
 TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnAtOutpost)
 {
 	TArray<ATroop*> spawnedTroops;
-	TArray<ABaseHex*> usedHexes;
+	TSet<ABaseHex*> usedHexes;
 
 	if (factionsInBattle[faction].IsEmpty() || !armies.Contains(faction)) return spawnedTroops;
 	if (!hex) return spawnedTroops;
@@ -414,7 +414,6 @@ TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnA
 		
 		ATroop* spawn = nullptr;
 		ABaseHex* spawnPoint = spawnAtOutpost ? UnitActions::GetClosestOutpostHex(faction, hex)->FindFreeAdjacentHex(faction, usedHexes) : hex->FindFreeAdjacentHex(faction, usedHexes);
-		if (!spawnPoint) usedHexes.Add(spawnPoint);
 
 		switch (factionsInBattle[faction][i].unitType)
 		{

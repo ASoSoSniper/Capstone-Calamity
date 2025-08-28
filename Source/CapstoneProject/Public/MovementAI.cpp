@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "stdlib.h"
 
 // Sets default values
 AMovementAI::AMovementAI()
@@ -186,7 +187,7 @@ ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex)
 		//Get hex's angle to target
 		if (hexNav->GetTargetHex())
 		{
-			float angle = INFINITY;
+			float angle = std::numeric_limits<float>::infinity();
 			if (foundHex && traversable)
 			{
 				angle = AngleBetweenVectors(traceEnd - traceStart, GetVectorToTarget(hex->GetActorLocation()));
@@ -199,7 +200,7 @@ ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex)
 	}
 
 	ABaseHex* closestHexToTarget = nullptr;
-	float smallestAngle = INFINITY;
+	float smallestAngle = std::numeric_limits<float>::infinity();
 	for (int i = 0; i < 6; i++)
 	{
 		if (anglesToTarget[i] < smallestAngle)
@@ -264,7 +265,7 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 
 	auto GetCheapestNode = [&hexesToSearch]()
 		{
-			float cheapest = INFINITY;
+			float cheapest = std::numeric_limits<float>::infinity();
 			FNodeData* cheapestNode = nullptr;
 
 			for (int i = 0; i < hexesToSearch.Num(); i++)

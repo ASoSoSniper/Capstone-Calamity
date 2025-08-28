@@ -431,52 +431,37 @@ float ABaseHex::GetOutputPercent()
 	return (float)GetNumberOfWorkers() / (float)maxWorkers;
 }
 
-ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TArray<ABaseHex*> ignoredHexes)
+ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes)
 {
-	//if (this == nullptr) return nullptr;
-	//Return this hex if no troops in this faction are positioned on it
-	bool factionInThis = false;
-	for (int j = 0; j < troopsInHex.Num(); j++)
+	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1);
+
+	for (ABaseHex* hex : hexesInRadius)
 	{
-		if (troopsInHex[j]->unitStats->faction == faction) factionInThis = true;
-	}
-	if (!factionInThis)
-	{
-		for (int i = 0; i < ignoredHexes.Num(); i++)
+		if (usedHexes.Contains(hex)) continue;
+		if (!hex->IsTraversableTerrain())
 		{
-			if (ignoredHexes[i] == this) factionInThis = true;
-		}
-		if (!factionInThis) return this;
-	}
-
-	//Otherwise, check surrounding hexes for a free spot and return the first available
-	TArray<AActor*> adjacentHexes;
-	TArray<AActor*> actorsToIgnore;
-	actorsToIgnore.Add(this);
-
-	bool found = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), 50.f, TArray<TEnumAsByte<EObjectTypeQuery>>(), ABaseHex::StaticClass(), actorsToIgnore, adjacentHexes);
-	if (!found) return this;
-
-	for (int i = 0; i < adjacentHexes.Num(); i++)
-	{
-		ABaseHex* hex = Cast<ABaseHex>(adjacentHexes[i]);
-
-		for (int k = 0; k < ignoredHexes.Num(); k++)
-		{
-			if (ignoredHexes[k] == adjacentHexes[i]) continue;
+			usedHexes.Add(hex);
+			continue;
 		}
 
-		if (hex->hexTerrain == TerrainType::Mountains || hex->hexTerrain == TerrainType::Border) continue;
-
-		bool factionInHex = false;
-		for (int j = 0; j < hex->troopsInHex.Num(); j++)
+		bool occupied = false;
+		for (int i = 0; i < hex->troopsInHex.Num(); i++)
 		{
-			if (hex->troopsInHex[j]->unitStats->faction == faction) factionInHex = true;
+			if (hex->troopsInHex[i]->unitStats->faction == faction)
+			{
+				occupied = true;
+				break;
+			}
 		}
-		//GEngine->AddOnScreenDebugMessage(-1, 6.f, FColor::Orange, TEXT("WEEEEEEEEEEEEEE"));
-		if (!factionInHex) return hex;
+
+		usedHexes.Add(hex);
+
+		if (occupied) continue;
+
+		return hex;
 	}
-	return this;
+
+	return nullptr;
 }
 
 TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers) const

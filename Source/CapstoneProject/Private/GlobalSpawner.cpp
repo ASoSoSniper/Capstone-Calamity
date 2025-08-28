@@ -13,6 +13,8 @@
 #include "Farmland.h"
 #include "PowerPlant.h"
 #include "MaterialStorage.h"
+#include "TroopFactory.h"
+#include "TroopStorage.h"
 #include "Outpost.h"
 #include "CapitalHub.h"
 #include "AlienCity.h"
@@ -30,178 +32,29 @@ AGlobalSpawner::AGlobalSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	buildingCosts.Add(SpawnableBuildings::MiningStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Mining Station"),
+	using SB = SpawnableBuildings;
+
+#pragma region Building Costs
+	buildingCosts.Add(SB::MiningStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Mining Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Farmland, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Farmland"),
+	buildingCosts.Add(SB::Farmland, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Farmland"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
-	buildingCosts.Add(SpawnableBuildings::PowerPlant, FBuildingCost{ 150, 10, 60, 1, FText::FromString("Power Plant"),
+	buildingCosts.Add(SB::PowerPlant, FBuildingCost{ 150, 10, 60, 1, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
-	buildingCosts.Add(SpawnableBuildings::Storage, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Material Storage"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	buildingCosts.Add(SpawnableBuildings::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	buildingCosts.Add(SpawnableBuildings::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
-
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Storage"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Defense Station"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Factory"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Barracks"),
+	buildingCosts.Add(SB::Storage, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Material Storage"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
-
-	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
-	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
-	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 90 });
-
-	troopCosts.Add(UnitTypes::None, FTroopCost{ 0, 0, 0, FText::FromString("No Troops Building"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Troop_Icon_None.Troop_Icon_None'")) });
-	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 25, 24, 0, FText::FromString("Infantry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
-	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 25, 24, 0, FText::FromString("Cavalry"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Cavalry_Nail.Cavalry_Nail'")) });
-	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 25, 24, 0, FText::FromString("Ranged"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Ranged_Nail.Ranged_Nail'")) });
-	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 25, 24, 0, FText::FromString("Shielder"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Shielder_Nail.Shielder_Nail'")) });
-	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 25, 12, 0, FText::FromString("Scout"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Scout_Nail.Scout_Nail'")) });
-	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 200, 48, 10, FText::FromString("Settler"), 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Settler_Nail.Settler_Nail'")) });
-	troopCosts.Add(UnitTypes::Army, FTroopCost{ 0, 24, 0, FText::FromString("Army"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Troop_Icon_None.Troop_Icon_None'")) });
-
-	//Infantry Unit Stats
-	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/InfButton.InfButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredInfButton.HoveredInfButton'")),
-		240, 15, 16, 12, 1, 100, 1, 2,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 150,
-		/*Scout*/ 100, 
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Cavalry Unit Stats
-	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/CavalryButton.CavalryButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredCavalryButton.HoveredCavalryButton'")),
-		180, 11, 20, 8, 1, 100, 1, 2,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 150,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Ranged Unit Stats
-	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/RangedButton.RangedButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredRangedButton.HoveredRangedButton'")),
-		160, 20, 12, 20, 2, 100, 1, 2,
-		/*** Attacking ***/
-		/*Infantry*/ 150,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Shielder Unit Stats
-	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ShielderButton.ShielderButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredShielderButton.HoveredShielderButton'")),
-		280, 19, 8, 16, 1, 100, 1, 2,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 150,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Scout Unit Stats
-	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ScoutButton.ScoutButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredScoutButton.HoveredScoutButton'")),
-		140, 7, 4, 4, 3, 100, 1, 2,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-	//Settler Unit Stats
-	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts. Outposts can be created on any tile a building can be built on OUTSIDE of your zone of control."), UnitTypes::Settler, 
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/SettlerButton.SettlerButton'")),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredSettlerButton.HoveredSettlerButton'")),
-		200, 15, 0, 0, 1, 100, 1, 3,
-		/*** Attacking ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100,
-
-		/*** Defending ***/
-		/*Infantry*/ 100,
-		/*Cavalry*/ 100,
-		/*Ranged*/ 100,
-		/*Shielder*/ 100,
-		/*Scout*/ 100,
-		/*Settler*/ 100
-		});
-
+	buildingCosts.Add(SB::RobotFactory, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Robot Factory"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
+	buildingCosts.Add(SB::RobotBarracks, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Robot Barracks"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
+	buildingCosts.Add(SB::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
+	buildingCosts.Add(SB::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
+#pragma endregion
+#pragma region Building Stats
 	//Mining Station Stats
-	buildingStats.Add(SpawnableBuildings::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("A drilling station that extracts resources necessary for building troops and new facilities."),
+	buildingStats.Add(SB::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("A drilling station that extracts resources necessary for building troops and new facilities."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -231,7 +84,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'"))
 		});
 	//Farm Stats
-	buildingStats.Add(SpawnableBuildings::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Plots of land dedicated to provided the colony with food or cash crops."),
+	buildingStats.Add(SB::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Plots of land dedicated to provided the colony with food or cash crops."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -261,7 +114,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))
 		});
 	//Power Plant Stats
-	buildingStats.Add(SpawnableBuildings::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("A rudamentory fission reactor that produces energy to power troops and facilities."),
+	buildingStats.Add(SB::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("A rudamentory fission reactor that produces energy to power troops and facilities."),
 		/*Energy Yield*/
 		2,
 		/*Food Yield*/
@@ -291,7 +144,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'"))
 		});
 	//Material Storage Stats
-	buildingStats.Add(SpawnableBuildings::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
+	buildingStats.Add(SB::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -318,10 +171,70 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*Max Workers*/
 		10,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'"))
+		});
+	//Robot Factory Stats
+	buildingStats.Add(SB::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("A highly industrialized factory capable of creating robotic armies."),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		400,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		0,
+		/*Max Workers*/
+		10,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'"))
+		});
+	//Robot Storage Stats
+	buildingStats.Add(SB::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An building that allows for robot units to be repaired when on the tile."),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		400,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		0,
+		/*Max Workers*/
+		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'"))
 		});
 	//Outpost Stats
-	buildingStats.Add(SpawnableBuildings::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
+	buildingStats.Add(SB::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
 		/*Energy Yield*/
 		2,
 		/*Food Yield*/
@@ -351,7 +264,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	//Capitol Hub
-	buildingStats.Add(SpawnableBuildings::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+	buildingStats.Add(SB::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
 		1,
 		/*Food Yield*/
@@ -380,7 +293,7 @@ AGlobalSpawner::AGlobalSpawner()
 		15,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'"))
 		});
-	buildingStats.Add(SpawnableBuildings::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+	buildingStats.Add(SB::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
 		1,
 		/*Food Yield*/
@@ -409,7 +322,7 @@ AGlobalSpawner::AGlobalSpawner()
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
-	buildingStats.Add(SpawnableBuildings::RockCity, FBuildingStats{ FText::FromString("Rock City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
+	buildingStats.Add(SB::RockCity, FBuildingStats{ FText::FromString("Rock City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
 		/*Energy Yield*/
 		3,
 		/*Food Yield*/
@@ -438,6 +351,23 @@ AGlobalSpawner::AGlobalSpawner()
 		15,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
+#pragma endregion
+
+#pragma region Attachment Costs
+	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Storage"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
+	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Defense Station"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
+	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Factory"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
+	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Barracks"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
+
+	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
+	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
+	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 90 });
+#pragma endregion
+#pragma region Attachment Stats
 	//Material Storage Stats
 	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
 		/*Energy Yield*/
@@ -641,7 +571,156 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Max Workers*/
 		10
 		});
+#pragma endregion
 
+#pragma region Troop Costs
+	troopCosts.Add(UnitTypes::None, FTroopCost{ 0, 0, 0, FText::FromString("No Troops Building"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Troop_Icon_None.Troop_Icon_None'")) });
+	troopCosts.Add(UnitTypes::Infantry, FTroopCost{ 25, 24, 0, FText::FromString("Infantry"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Infantry_Nail.Infantry_Nail'")) });
+	troopCosts.Add(UnitTypes::Cavalry, FTroopCost{ 25, 24, 0, FText::FromString("Cavalry"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Cavalry_Nail.Cavalry_Nail'")) });
+	troopCosts.Add(UnitTypes::Ranged, FTroopCost{ 25, 24, 0, FText::FromString("Ranged"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Ranged_Nail.Ranged_Nail'")) });
+	troopCosts.Add(UnitTypes::Shielder, FTroopCost{ 25, 24, 0, FText::FromString("Shielder"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Shielder_Nail.Shielder_Nail'")) });
+	troopCosts.Add(UnitTypes::Scout, FTroopCost{ 25, 12, 0, FText::FromString("Scout"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Scout_Nail.Scout_Nail'")) });
+	troopCosts.Add(UnitTypes::Settler, FTroopCost{ 200, 48, 10, FText::FromString("Settler"), 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Settler_Nail.Settler_Nail'")) });
+	troopCosts.Add(UnitTypes::Army, FTroopCost{ 0, 24, 0, FText::FromString("Army"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/Battle_Icons_Nails/Troop_Icon_None.Troop_Icon_None'")) });
+#pragma endregion
+#pragma region Troop Stats
+	//Infantry Unit Stats
+	troopStats.Add(UnitTypes::Infantry, FTroopStats{ FText::FromString("Infantry"), FText::FromString("Standard robots equiped with melee fuctionality and a short ranged scatterlaser."), UnitTypes::Infantry,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/InfButton.InfButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredInfButton.HoveredInfButton'")),
+		240, 15, 16, 12, 1, 100, 1, 2,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 150,
+		/*Scout*/ 100, 
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Cavalry Unit Stats
+	troopStats.Add(UnitTypes::Cavalry, FTroopStats{ FText::FromString("Cavalry"), FText::FromString("Streamlined robots riding hoverbikes that are equiped with titanium tipped lances and laser pistols."), UnitTypes::Cavalry, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/CavalryButton.CavalryButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredCavalryButton.HoveredCavalryButton'")),
+		180, 11, 20, 8, 1, 100, 1, 2,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 150,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Ranged Unit Stats
+	troopStats.Add(UnitTypes::Ranged, FTroopStats{ FText::FromString("Ranged"), FText::FromString("Lighty armored robots that use long ranged laser rifles to devastating effect."), UnitTypes::Ranged,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/RangedButton.RangedButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredRangedButton.HoveredRangedButton'")),
+		160, 20, 12, 20, 2, 100, 1, 2,
+		/*** Attacking ***/
+		/*Infantry*/ 150,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Shielder Unit Stats
+	troopStats.Add(UnitTypes::Shielder, FTroopStats{ FText::FromString("Shielder"), FText::FromString("Heavily armored robots with thick riot shields and short ranged laser weaponry."), UnitTypes::Shielder,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ShielderButton.ShielderButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredShielderButton.HoveredShielderButton'")),
+		280, 19, 8, 16, 1, 100, 1, 2,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 150,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Scout Unit Stats
+	troopStats.Add(UnitTypes::Scout, FTroopStats{ FText::FromString("Scout"), FText::FromString("Lightly armored quick robots with enhanced visual capabilities."), UnitTypes::Scout,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/ScoutButton.ScoutButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredScoutButton.HoveredScoutButton'")),
+		140, 7, 4, 4, 3, 100, 1, 2,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+	//Settler Unit Stats
+	troopStats.Add(UnitTypes::Settler, FTroopStats{ FText::FromString("Settler"), FText::FromString("A colony on legs, settlers carry materials and workers to create new outposts. Outposts can be created on any tile a building can be built on OUTSIDE of your zone of control."), UnitTypes::Settler, 
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/SettlerButton.SettlerButton'")),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Buttons/HoveredSettlerButton.HoveredSettlerButton'")),
+		200, 15, 0, 0, 1, 100, 1, 3,
+		/*** Attacking ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100,
+
+		/*** Defending ***/
+		/*Infantry*/ 100,
+		/*Cavalry*/ 100,
+		/*Ranged*/ 100,
+		/*Shielder*/ 100,
+		/*Scout*/ 100,
+		/*Settler*/ 100
+		});
+#pragma endregion
+
+#pragma region Terrain Materials
 	terrainTileMaterials.Add(TerrainType::None, FVisibilityMaterials{
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/UNDISCOVERED")),
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/UNDISCOVERED")),
@@ -694,22 +773,27 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
+#pragma endregion
 
+#pragma region Faction Materials
 	troopFactionMaterials.Add(Factions::Human, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HumanTroopMat01")), 
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
 	troopFactionMaterials.Add(Factions::Alien1, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienTroopMat01")), 
 		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
+#pragma endregion
 
-	using SB = SpawnableBuildings;
-
+#pragma region Building Default Prefabs
 	buildingPrefabs.Add(SB::MiningStation, AMiningStation::StaticClass());
 	buildingPrefabs.Add(SB::Farmland, AFarmland::StaticClass());
 	buildingPrefabs.Add(SB::PowerPlant, APowerPlant::StaticClass());
 	buildingPrefabs.Add(SB::Storage, AMaterialStorage::StaticClass());
+	buildingPrefabs.Add(SB::RobotFactory, ATroopFactory::StaticClass());
+	buildingPrefabs.Add(SB::RobotBarracks, ATroopStorage::StaticClass());
 	buildingPrefabs.Add(SB::Outpost, AOutpost::StaticClass());
 	buildingPrefabs.Add(SB::Capitol, ACapitalHub::StaticClass());
 	buildingPrefabs.Add(SB::AlienCity, AAlienCity::StaticClass());
 	buildingPrefabs.Add(SB::RockCity, ARockCity::StaticClass());
+#pragma endregion
 }
 
 // Called when the game starts or when spawned
@@ -1340,7 +1424,7 @@ AActor* AGlobalSpawner::SpawnEndParticle(AActor* object, GameStates state)
 
 	return particleSystem;
 }
-bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit, AOutpost* outpost)
+bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
 {
 	bool canAfford = false;
 

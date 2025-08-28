@@ -4,6 +4,7 @@
 #include "Faction.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
+#include "TroopFactory.h"
 
 
 Faction::Faction()
@@ -316,7 +317,7 @@ void Faction::SpawnEnemy()
 	{
 		if (building->GetOccupier() != Factions::None) continue;
 
-		if (building->GetBuildingType() == SpawnableBuildings::AlienCity)
+		if (building->GetBuildingType() == SpawnableBuildings::RobotFactory)
 		{
 			spawnableBuildings.Add(building);
 		}
@@ -325,7 +326,7 @@ void Faction::SpawnEnemy()
 	if (!spawnableBuildings.IsEmpty()) return;
 	if (allUnits.Num() >= spawnableBuildings.Num()) return;
 
-	AOutpost* randBuilding = Cast<AOutpost>(spawnableBuildings[FMath::RandRange(0, spawnableBuildings.Num() - 1)]);
+	ATroopFactory* randBuilding = Cast<ATroopFactory>(spawnableBuildings[FMath::RandRange(0, spawnableBuildings.Num() - 1)]);
 
 	randBuilding->QueueTroopBuild(UnitTypes::Army);
 
