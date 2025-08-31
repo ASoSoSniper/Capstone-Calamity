@@ -14,6 +14,7 @@
 #include "BuildingAttachment.h"
 #include "GlobalSpawner.h"
 #include "Faction.h"
+#include "stdlib.h"
 
 
 bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
@@ -596,7 +597,7 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
         if (outpost) outposts.Add(outpost);
     }
 
-    float shortestDistance = INFINITY;
+    float shortestDistance = std::numeric_limits<float>::infinity();
     AOutpost* closestOutpost = nullptr;
     for (int i = 0; i < outposts.Num(); i++)
     {
@@ -718,46 +719,18 @@ TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(ATroop* army)
     TMap<UnitTypes, FUnitComposition> units;
     if (!army) return units;
 
-    units.Add(UnitTypes::Infantry, FUnitComposition{});
-    units.Add(UnitTypes::Cavalry, FUnitComposition{});
-    units.Add(UnitTypes::Scout, FUnitComposition{});
-    units.Add(UnitTypes::Ranged, FUnitComposition{});
-    units.Add(UnitTypes::Shielder, FUnitComposition{});
-    units.Add(UnitTypes::Settler, FUnitComposition{});
+    UnitData data = CollectUnitData(army->unitStats);
 
-    int totalUnits = 0;
-
-    for (int i = 0; i < army->unitStats->savedUnits.Num(); i++)
-    {
-        ++units[army->unitStats->savedUnits[i].unitType].quantity;
-        ++totalUnits;
-    }
-
-    for (auto& unit : units)
-    {
-        unit.Value.compPercent = (float)unit.Value.quantity / (float)totalUnits;
-    }
-
-    return units;
+    return data.GetUnitComposition();
 }
 
 UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
 {
-    TMap<UnitTypes, FUnitComposition> composition = GetArmyComposition(army);
+    if (!army) return UnitTypes::None;
 
-    UnitTypes highestType = UnitTypes::None;
-    int best = 0;
+    UnitData data = CollectUnitData(army->unitStats);
 
-    for (auto& unit : composition)
-    {
-        if (unit.Value.quantity > best)
-        {
-            best = unit.Value.quantity;
-            highestType = unit.Key;
-        }
-    }
-
-    return highestType;
+    return data.GetLargestUnitQuantity();
 }
 
 //Called every scan tick, adds found hex to TargetList if hex contains hostile target, removes if target of interest is no longer found there
@@ -1090,4 +1063,51 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     }
 
     return Results;
+}
+
+TMap<UnitTypes, FUnitComposition> UnitActions::UnitData::GetUnitComposition() const
+{
+    TMap<UnitTypes, FUnitComposition> units;
+
+    units.Add(UnitTypes::Infantry, FUnitComposition{});
+    units.Add(UnitTypes::Cavalry, FUnitComposition{});
+    units.Add(UnitTypes::Scout, FUnitComposition{});
+    units.Add(UnitTypes::Ranged, FUnitComposition{});
+    units.Add(UnitTypes::Shielder, FUnitComposition{});
+    units.Add(UnitTypes::Settler, FUnitComposition{});
+
+    int totalUnits = 0;
+
+    for (int i = 0; i < savedUnits.Num(); i++)
+    {
+        ++units[savedUnits[i].unitType].quantity;
+        ++totalUnits;
+    }
+
+    for (auto& unit : units)
+    {
+        unit.Value.compPercent = (float)unit.Value.quantity / (float)totalUnits;
+    }
+
+    return units;
+}
+
+
+UnitTypes UnitActions::UnitData::GetLargestUnitQuantity() const
+{
+    TMap<UnitTypes, FUnitComposition> composition = GetUnitComposition();
+
+    UnitTypes highestType = UnitTypes::None;
+    int best = 0;
+
+    for (auto& unit : composition)
+    {
+        if (unit.Value.quantity > best)
+        {
+            best = unit.Value.quantity;
+            highestType = unit.Key;
+        }
+    }
+
+    return highestType;
 }

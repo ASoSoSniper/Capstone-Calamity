@@ -6,6 +6,7 @@
 #include "BaseHex.h"
 #include "Building.h"
 #include "Faction.h"
+#include "stdlib.h"
 
 // Sets default values for this component's properties
 UAITroopComponent::UAITroopComponent()
@@ -127,7 +128,7 @@ AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 	if (targetList.IsEmpty()) return nullptr;
 
 	ABaseHex* closestTarget = nullptr;
-	float closestDistance = INFINITY;
+	float closestDistance = std::numeric_limits<float>::infinity();
 	for (auto& target : targetList)
 	{
 		if (!target.Key) continue;

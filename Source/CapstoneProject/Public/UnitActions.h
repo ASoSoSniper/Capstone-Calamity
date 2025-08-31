@@ -163,6 +163,9 @@ public:
 		int energyUpkeep;
 
 		TArray<UnitData> savedUnits;
+
+		TMap<UnitTypes, FUnitComposition> GetUnitComposition() const;
+		UnitTypes GetLargestUnitQuantity() const;
 	};
 
 	static UnitData CollectUnitData(UUnitStats* unit);

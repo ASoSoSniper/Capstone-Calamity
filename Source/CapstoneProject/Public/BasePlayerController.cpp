@@ -162,40 +162,54 @@ FArmyDisplay ABasePlayerController::DisplaySelectedUnit()
 
 	if (!troop) return display;
 
-	FTroopStats stats;
+	display = DisplayUnit(troop->unitStats);
+	return display;
+}
 
-	if (AGlobalSpawner::spawnerObject->troopStats.Contains(troop->unitStats->unitType))
+FArmyDisplay ABasePlayerController::DisplayUnit(const UnitActions::UnitData& unit) const
+{
+	FArmyDisplay display;
+	FTroopStats* stats = new FTroopStats();
+
+	if (AGlobalSpawner::spawnerObject->troopStats.Contains(unit.unitType))
 	{
-		stats = AGlobalSpawner::spawnerObject->troopStats[troop->unitStats->unitType];
+		stats = &AGlobalSpawner::spawnerObject->troopStats[unit.unitType];
 	}
 
-	if (troop->unitStats->unitType != UnitTypes::Army)
+	if (unit.unitType != UnitTypes::Army)
 	{
-		display.name = stats.title;
-		display.icon = stats.icon;
-		display.iconHovered = stats.iconHovered;
-	}	
+		display.name = stats->title;
+		display.icon = stats->icon;
+		display.iconHovered = stats->iconHovered;
+	}
 	else
 	{
-		UnitTypes chosenType = UnitActions::GetLargestUnitQuantity(troop);
+		UnitTypes chosenType = unit.GetLargestUnitQuantity();
 
-		display.name = FText::FromString(troop->unitStats->GetUnitName());
+		//display.name = FText::FromString(troop->unitStats->GetUnitName());
 		display.icon = AGlobalSpawner::spawnerObject->troopStats[chosenType].icon;
 		display.iconHovered = AGlobalSpawner::spawnerObject->troopStats[chosenType].iconHovered;
 	}
 
-	display.HP = troop->unitStats->currentHP;
-	display.HPMax = troop->unitStats->maxHP;
-	display.morale = troop->unitStats->currentMorale;
-	display.moraleMax = troop->unitStats->maxMorale;
+	display.HP = unit.currentHP;
+	display.HPMax = unit.maxHP;
+	display.morale = unit.currentMorale;
+	display.moraleMax = unit.maxMorale;
 
-	display.damage = troop->unitStats->damage;
-	display.buildingDamage = troop->unitStats->siegePower;
+	display.damage = unit.damage;
+	display.buildingDamage = unit.siegePower;
 
-	display.speed = troop->unitStats->speed;
-	display.energyCost = troop->unitStats->energyUpkeep;
+	display.speed = unit.speed;
+	display.energyCost = unit.energyUpkeep;
 
 	return display;
+}
+
+FArmyDisplay ABasePlayerController::DisplayUnit(UUnitStats* stats) const
+{
+	UnitActions::UnitData data = UnitActions::CollectUnitData(stats);
+
+	return DisplayUnit(data);
 }
 
 FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
@@ -604,17 +618,6 @@ bool ABasePlayerController::CheckIfArmy()
 
 	return false;
 }
-
-/*bool ABasePlayerController::ToggleBuildingUI()
-{
-	if (toggleBuildingUI)
-	{
-		toggleBuildingUI = false;
-		return true;
-	}
-
-	return false;
-}*/
 
 void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 {

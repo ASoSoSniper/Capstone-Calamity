@@ -188,4 +188,8 @@ public:
 
 	UFUNCTION(BlueprintCallable) FString GetTroopNameRaw();
 	UFUNCTION(BlueprintCallable) bool CheckIfArmy();
+
+private:
+	FArmyDisplay DisplayUnit(const UnitActions::UnitData& unit) const;
+	FArmyDisplay DisplayUnit(UUnitStats* stats) const;
 };

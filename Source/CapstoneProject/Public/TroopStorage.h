@@ -19,10 +19,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void StoreTroop(ATroop* troop);
-	TArray<ATroop*> ReleaseTroops();
+
+	TArray<ATroop*> ReleaseAllTroops();
+	ATroop* ReleaseOneTroop(int index);
+
+	const UnitActions::UnitData* GetStoredTroopInfo(int index) const;
 
 private:
 	TArray<UnitActions::UnitData> troopsInStorage;
+	ATroop* ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& usedHexes);
 
 	void HealTroops(float& DeltaTime);
 	UPROPERTY(EditAnywhere) float healRate = 1.f;

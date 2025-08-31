@@ -30,7 +30,7 @@ void ATroopStorage::StoreTroop(ATroop* troop)
 	troop->Destroy();
 }
 
-TArray<ATroop*> ATroopStorage::ReleaseTroops()
+TArray<ATroop*> ATroopStorage::ReleaseAllTroops()
 {
 	TArray<ATroop*> spawnedTroops;
 	TSet<ABaseHex*> usedHexes;
@@ -38,25 +38,46 @@ TArray<ATroop*> ATroopStorage::ReleaseTroops()
 
 	for (int i = 0; i < troopsInStorage.Num(); ++i)
 	{
-		ATroop* spawn = nullptr;
-		ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
-		usedHexes.Add(spawnPoint);
-
-		switch (troopsInStorage[i].unitType)
-		{
-		case UnitTypes::Army:
-			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[i].savedUnits);
-			break;
-
-		default:
-			spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, troopsInStorage[i]);
-			break;
-		}
-
+		ATroop* spawn = ReleaseTroop(i, hex, usedHexes);
 		spawnedTroops.Add(spawn);
 	}
 	troopsInStorage.Empty();
 	return spawnedTroops;
+}
+
+ATroop* ATroopStorage::ReleaseOneTroop(int index)
+{
+	TSet<ABaseHex*> usedHexes;
+	ATroop* spawn = ReleaseTroop(index, hexNav->GetCurrentHex(), usedHexes);
+	troopsInStorage.RemoveAt(index);
+
+	return spawn;
+}
+
+ATroop* ATroopStorage::ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& usedHexes)
+{
+	ATroop* spawn = nullptr;
+	ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
+
+	switch (troopsInStorage[index].unitType)
+	{
+	case UnitTypes::Army:
+		spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[index].savedUnits);
+		break;
+
+	default:
+		spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, troopsInStorage[index]);
+		break;
+	}
+
+	return spawn;
+}
+
+const UnitActions::UnitData* ATroopStorage::GetStoredTroopInfo(int index) const
+{
+	if (!troopsInStorage.IsValidIndex(index)) return nullptr;
+
+	return &troopsInStorage[index];
 }
 
 void ATroopStorage::HealTroops(float& DeltaTime)
