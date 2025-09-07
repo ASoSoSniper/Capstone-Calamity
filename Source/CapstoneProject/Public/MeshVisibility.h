@@ -62,10 +62,12 @@ public:
 	bool VisibleToFaction(Factions factionToCheck);
 	bool DiscoveredByFaction(Factions factionToCheck);
 
+	void SetupComponent(FUnitData* data);
+	void SetupComponentInHex(Factions setFaction);
 private:
 	
 	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
-	UPROPERTY() UUnitStats* unitStats;
+	FUnitData* unitData;
 	UPROPERTY() UHexNav* hexNav;
 	
 	UPROPERTY(VisibleAnywhere) bool selected;
@@ -74,7 +76,6 @@ private:
 	UPROPERTY(EditAnywhere) bool infiniteRange;
 	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 
-	void FindFactionOfOwner();
 	void Scan(float radius);
 	void InSight(Factions thisFaction);
 	void SetVisibility();

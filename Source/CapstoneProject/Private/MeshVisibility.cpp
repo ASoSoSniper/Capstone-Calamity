@@ -26,7 +26,6 @@ void UMeshVisibility::BeginPlay()
 	objectType = UnitActions::DetermineObjectType(GetOwner()).type;
 	if (objectType == ObjectTypes::MoveAI || objectType == ObjectTypes::Building)
 	{
-		unitStats = GetOwner()->GetComponentByClass<UUnitStats>();
 		hexNav = GetOwner()->GetComponentByClass<UHexNav>();
 	}
 	else if (objectType == ObjectTypes::Hex)
@@ -39,8 +38,6 @@ void UMeshVisibility::BeginPlay()
 	{
 		skeletalMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
 	}
-
-	FindFactionOfOwner();
 
 	for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
@@ -60,8 +57,6 @@ void UMeshVisibility::BeginPlay()
 void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (faction == Factions::None) FindFactionOfOwner();
 
 	if (factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num())
 	{
@@ -86,7 +81,7 @@ void UMeshVisibility::Scan(float radius)
 	if (objectType != ObjectTypes::Hex) actorsToIgnore.Add(GetOwner());
 	TArray<FHitResult> results;
 
-	int visionMulti = unitStats ? unitStats->vision : 1;
+	int visionMulti = (unitData != nullptr) ? unitData->GetVision() : 1;
 	float hexVisionMod = (hexNav && hexNav->GetCurrentHex()) ? hexNav->GetCurrentHex()->GetVision() : 0;
 
 	bool zeroVision = ((radius * visionMulti) + (radius * hexVisionMod) == 0);
@@ -299,28 +294,6 @@ void UMeshVisibility::SetVisibility()
 	}
 }
 
-void UMeshVisibility::FindFactionOfOwner()
-{
-	ABaseHex* hex;
-	UUnitStats* unit;
-	switch (objectType)
-	{
-	case ObjectTypes::Hex:
-		hex = Cast<ABaseHex>(GetOwner());
-		faction = hex->GetHexOwner();
-		otherMesh = hex->hexMeshAttachment;
-		break;
-	case ObjectTypes::MoveAI:
-		unit = GetOwner()->GetComponentByClass<UUnitStats>();
-		faction = unit->faction;
-		break;
-	case ObjectTypes::Building:
-		unit = GetOwner()->GetComponentByClass<UUnitStats>();
-		faction = unit->faction;
-		break;
-	}
-}
-
 void UMeshVisibility::SetSelected(bool active)
 {
 	selected = active;
@@ -344,4 +317,16 @@ bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck)
 	default:
 		return true;
 	}
+}
+
+void UMeshVisibility::SetupComponent(FUnitData* data)
+{
+	unitData = data;
+	faction = unitData->GetFaction();
+}
+
+void UMeshVisibility::SetupComponentInHex(Factions setFaction)
+{
+	faction = setFaction;
+	hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
 }

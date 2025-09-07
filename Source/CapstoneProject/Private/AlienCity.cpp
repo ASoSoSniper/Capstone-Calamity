@@ -18,6 +18,7 @@ AAlienCity::AAlienCity()
 	cityTradeOutpost = CreateDefaultSubobject<UCityTradeOutpost>(TEXT("Trade Outpost"));
 
 	builtAtStart = true;
+	preAssignedFaction = Factions::Alien1;
 
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienNormalCityMat01"));
 	if (visibleMat)

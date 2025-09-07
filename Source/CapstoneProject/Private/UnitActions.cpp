@@ -19,12 +19,15 @@
 
 bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 {
-    if (unit->unitStats && target->unitStats)
+    if (unit->GetUnitData() && target->GetUnitData())
     {
-        Faction* factionObject = GetFaction(unit->unitStats->faction);
+        Factions a = unit->GetUnitData()->GetFaction();
+        Factions b = target->GetUnitData()->GetFaction();
+
+        Faction* factionObject = GetFaction(a);
         if (!factionObject) return false;
 
-        if (factionObject->GetFactionRelationship(target->unitStats->faction) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(b) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -33,20 +36,12 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
     return false;
 }
 
-bool UnitActions::IsHostileTarget(AMovementAI* unit, AActor* target)
+bool UnitActions::IsHostileTarget(const Factions& a, const Factions& b)
 {
-    if (unit->unitStats)
-    {
-        Faction* factionObject = GetFaction(unit->unitStats->faction);
-        if (!factionObject) return false;
+    Faction* aFaction = GetFaction(a);
+    if (!aFaction) return false;
 
-        if (factionObject->GetFactionRelationship(target) == FactionRelationship::Enemy)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return aFaction->GetFactionRelationship(b) == FactionRelationship::Enemy;
 }
 
 bool UnitActions::IsAllyToFaction(FactionRelationship relationship)
@@ -172,176 +167,6 @@ EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, 
     }
 
     return EngagementSelect::DoNotJoin;
-}
-
-UnitActions::UnitData UnitActions::CollectUnitData(UUnitStats* unit)
-{
-    UnitData data{
-        unit->faction,
-        unit->unitType, 
-        unit->upgraded,
-
-        unit->currentHP, 
-        unit->maxHP, 
-        unit->currentMorale,
-        unit->maxMorale,
-
-        unit->vision, 
-        unit->speed, 
-        
-        unit->damage,
-        unit->siegePower,
-
-        unit->reinforceRate,
-        unit->energyUpkeep};
-    
-    if (data.unitType == UnitTypes::Army)
-    {
-        for (int i = 0; i < unit->savedUnits.Num(); ++i)
-        {
-            data.savedUnits.Add(unit->savedUnits[i]);
-        }
-    }
-    
-    return data;
-}
-
-void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, UnitData& data)
-{
-    unit->faction = data.faction;
-    unit->unitType = data.unitType;
-    unit->upgraded = data.upgraded;
-
-    unit->currentHP = data.currentHP;
-    unit->maxHP = data.maxHP;
-    unit->currentMorale = data.currentMorale;
-    unit->maxMorale = data.maxMorale;
-
-    unit->vision = data.vision;
-    unit->speed = data.speed;
-
-    unit->damage = data.damage;
-    unit->siegePower = data.siegePower;
-
-    unit->reinforceRate = data.reinforceRate;
-    unit->energyUpkeep = data.energyUpkeep;
-}
-
-void UnitActions::ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data)
-{
-    unit->unitType = data.type;
-
-    unit->currentHP = data.HP;
-    unit->maxHP = data.HP;
-    unit->currentMorale = data.morale;
-    unit->maxMorale = data.morale;
-
-    unit->vision = data.vision;
-    unit->speed = data.speed;
-
-    unit->damage = data.damage;
-    unit->siegePower = data.siegePower;
-
-    unit->reinforceRate = data.reinforceRate;
-    unit->energyUpkeep = data.energyUpkeepCost;
-}
-
-void UnitActions::AddUnitData(UUnitStats* unit, UnitData& data)
-{
-    unit->currentHP += data.currentHP;
-    unit->maxHP += data.maxHP;
-    unit->currentMorale += data.currentMorale;
-    unit->maxMorale += data.maxMorale;
-
-    int speed = 0;
-    int bestVision = 0;
-    for (int i = 0; i < unit->savedUnits.Num(); i++)
-    {
-        speed += unit->savedUnits[i].speed;
-
-        if (unit->savedUnits[i].vision > bestVision)
-            bestVision = unit->savedUnits[i].vision;
-    }
-    speed = FMath::RoundToInt((float)speed / (float)unit->savedUnits.Num());
-
-    unit->speed = speed;
-    unit->vision = bestVision;
-
-    unit->damage += data.damage;
-    unit->siegePower += data.siegePower;
-
-    unit->reinforceRate += data.reinforceRate;
-    unit->energyUpkeep += data.energyUpkeep;
-}
-
-UnitActions::UnitData UnitActions::AddUnitData(UnitData& unit, UnitData& data)
-{
-    unit.currentHP += data.currentHP;
-    unit.maxHP += data.maxHP;
-    unit.currentMorale += data.currentMorale;
-    unit.maxMorale += data.maxMorale;
-
-    int speed = 0;
-    int bestVision = 0;
-    for (int i = 0; i < unit.savedUnits.Num(); i++)
-    {
-        speed += unit.savedUnits[i].speed;
-
-        if (unit.savedUnits[i].vision > bestVision)
-            bestVision = unit.savedUnits[i].vision;
-    }
-    speed = FMath::RoundToInt((float)speed / (float)unit.savedUnits.Num());
-
-    unit.speed = speed;
-    unit.vision = bestVision;
-
-    unit.damage += data.damage;
-    unit.siegePower += data.siegePower;
-
-    unit.reinforceRate += data.reinforceRate;
-    unit.energyUpkeep += data.energyUpkeep;
-
-    return unit;
-}
-
-UnitActions::UnitData UnitActions::ExtractUnit(UUnitStats* army, int32 unitIndex)
-{
-    UnitData unit;
-
-    if (!army->savedUnits.IsValidIndex(unitIndex)) return unit;
-
-    unit = army->savedUnits[unitIndex];
-    army->savedUnits.RemoveAt(unitIndex);
-
-    float hpPercent = (float)army->currentHP / (float)army->maxHP;
-    float moralePercent = (float)army->currentMorale / (float)army->maxMorale;
-
-    army->maxHP -= unit.maxHP;
-    army->currentHP = FMath::RoundToInt((float)army->maxHP * hpPercent);
-    army->maxMorale -= unit.maxMorale;
-    army->currentMorale = FMath::RoundToInt((float)army->maxMorale * moralePercent);
-
-    int speed = 0;
-    int bestVision = 0;
-    for (int i = 0; i < army->savedUnits.Num(); i++)
-    {
-        speed += army->savedUnits[i].speed;
-
-        if (army->savedUnits[i].vision > bestVision)
-            bestVision = army->savedUnits[i].vision;
-    }
-    speed = FMath::RoundToInt((float)speed / (float)army->savedUnits.Num());
-
-    army->damage -= unit.damage;
-    army->siegePower -= unit.siegePower;
-
-    army->reinforceRate -= unit.reinforceRate;
-    army->energyUpkeep -= unit.energyUpkeep;
-
-    unit.currentHP = FMath::RoundToInt((float)unit.maxHP * hpPercent);
-    unit.currentMorale = FMath::RoundToInt((float)unit.maxMorale * hpPercent);
-
-    return unit;
 }
 
 int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
@@ -625,7 +450,7 @@ bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* ref
 
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
-        if (hexActor->troopsInHex[i]->unitStats->faction == faction)
+        if (hexActor->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
         {
             if (referenceTroop)
             {
@@ -647,7 +472,7 @@ bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
 
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
-        if (factionObject->GetFactionRelationship(hexActor->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(hexActor->troopsInHex[i]->GetUnitData()->GetFaction()) == FactionRelationship::Enemy)
         {
             return true;
         }
@@ -714,25 +539,6 @@ void UnitActions::AddResources(Factions faction, TMap<StratResources, int> resou
     }
 }
 
-TMap<UnitTypes, FUnitComposition> UnitActions::GetArmyComposition(ATroop* army)
-{
-    TMap<UnitTypes, FUnitComposition> units;
-    if (!army) return units;
-
-    UnitData data = CollectUnitData(army->unitStats);
-
-    return data.GetUnitComposition();
-}
-
-UnitTypes UnitActions::GetLargestUnitQuantity(ATroop* army)
-{
-    if (!army) return UnitTypes::None;
-
-    UnitData data = CollectUnitData(army->unitStats);
-
-    return data.GetLargestUnitQuantity();
-}
-
 //Called every scan tick, adds found hex to TargetList if hex contains hostile target, removes if target of interest is no longer found there
 void UnitActions::SetTargetListElement(Factions faction, AActor* target)
 {
@@ -776,9 +582,9 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     if (ABuilding* building = objectType.hex->building)
     {
         if (GetFaction(faction)->GetFactionRelationship(building) != FactionRelationship::Enemy) return;
-        if (building->GetOccupier() != faction && building->unitStats->currentHP > 0.f)
+        if (building->GetOccupier() != faction && building->GetUnitData()->IsAlive())
         {
-            targetList.Add(objectType.hex, building->unitStats->faction);
+            targetList.Add(objectType.hex, building->GetUnitData()->GetFaction());
             return;
         }
     }
@@ -815,11 +621,13 @@ TMap<ABaseHex*, Factions> UnitActions::GetTargetList(Factions faction)
 
 bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex)
 {
-    if (troop->unitStats->unitType == type) return true;
+    if (troop->GetUnitData()->GetUnitType() == type) return true;
 
-    for (int i = 0; i < troop->unitStats->savedUnits.Num(); i++)
+    TArray<FUnitData*> units = troop->GetUnitData()->GetSavedUnits();
+
+    for (int i = 0; i < units.Num(); i++)
     {
-        if (troop->unitStats->savedUnits[i].unitType == type)
+        if (units[i]->GetUnitType() == type)
         {
             unitIndex = i;
             return true;
@@ -829,85 +637,17 @@ bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unit
     return false;
 }
 
-void UnitActions::GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName)
-{
-    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(namingFaction)) return;
-
-    TMap<FString, TArray<int32>>& names = unit->unitStats->faction == Factions::Human ?
-        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesHuman :
-        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesAlien;
-
-    int32& cap = ACapstoneProjectGameModeBase::activeFactions[namingFaction]->maxNameShare;
-
-    if (!names.Contains(newName)) names.Add(newName, TArray<int32>());
-
-    if (newName != TEXT(""))
-    {
-        if (names[newName].Num() < cap)
-        {
-            int32 num = 0;
-            for (int i = 1; i < cap; i++)
-            {
-                if (!names[newName].Contains(i))
-                {
-                    num = i;
-                    names[newName].Add(i);
-                    break;
-                }
-            }
-
-            unit->unitStats->name = newName;
-            unit->unitStats->nameInstance = num;
-            if (num != 0) return;
-        }
-    }
-    
-    for (auto& name : names)
-    {
-        if (name.Value.Num() < cap)
-        {
-            int32 num = 0;
-            for (int i = 1; i < cap; i++)
-            {
-                if (!name.Value.Contains(i))
-                {
-                    num = i;
-                    name.Value.Add(i);
-                    break;
-                }
-            }
-
-            unit->unitStats->name = name.Key;
-            unit->unitStats->nameInstance = num;
-            
-            if (num != 0) break;
-        }
-    }
-}
-
-void UnitActions::RemoveArmyName(Factions namingFaction, AMovementAI* unit)
-{
-    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(namingFaction)) return;
-
-    TMap<FString, TArray<int32>>& names = unit->unitStats->faction == Factions::Human ?
-        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesHuman :
-        ACapstoneProjectGameModeBase::activeFactions[namingFaction]->armyNamesAlien;
-
-    if (names.Contains(unit->unitStats->name) && names[unit->unitStats->name].Contains(unit->unitStats->nameInstance))
-    {
-        names[unit->unitStats->name].Remove(unit->unitStats->nameInstance);
-    }
-}
-
 Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABaseHex* hex)
 {
     Faction* factionObject = GetFaction(referenceFaction);
 
     for (int i = 0; i < hex->troopsInHex.Num(); i++)
     {
-        if (factionObject->GetFactionRelationship(hex->troopsInHex[i]->unitStats->faction) == FactionRelationship::Enemy)
+        Factions targetFaction = hex->troopsInHex[i]->GetUnitData()->GetFaction();
+
+        if (factionObject->GetFactionRelationship(targetFaction) == FactionRelationship::Enemy)
         {
-            return hex->troopsInHex[i]->unitStats->faction;
+            return targetFaction;
         }
     }
 
@@ -941,70 +681,7 @@ Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject
     return Factions::None;
 }
 
-void UnitActions::AssignFaction(Factions faction, AActor* target)
-{   
-    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
-    {
-        ATroop* testForAI = Cast<ATroop>(target);
-        if (testForAI)
-        {
-            testForAI->unitStats->faction = faction;
-            ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Add(testForAI);
-
-            return;
-        }
-        
-        ABuilding* testForBuilding = Cast<ABuilding>(target);
-        if (testForBuilding)
-        {
-            testForBuilding->unitStats->faction = faction;
-            ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Add(testForBuilding);
-            
-            return;
-        }
-    }
-}
-
-void UnitActions::RemoveFromFaction(Factions faction, AActor* target)
-{
-    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
-    {
-        ATroop* testForAI = Cast<ATroop>(target);
-        if (testForAI)
-        {
-            if (ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Contains(testForAI))
-            {
-                ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Remove(testForAI);
-            }
-
-            return;
-        }
-
-        ABuilding* testForBuilding = Cast<ABuilding>(target);
-        if (testForBuilding)
-        {
-            if (ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Contains(testForBuilding))
-            {
-                ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Remove(testForBuilding);
-            }
-
-            return;
-        }
-
-        ABaseHex* testForHex = Cast<ABaseHex>(target);
-        if (testForHex)
-        {
-            if (ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(testForHex))
-            {
-                ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Remove(testForHex);
-            }
-
-            return;
-        }
-    }
-}
-
-Faction* UnitActions::GetFaction(Factions faction)
+Faction* UnitActions::GetFaction(const Factions& faction)
 {
     if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return nullptr;
 
@@ -1063,51 +740,4 @@ UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)
     }
 
     return Results;
-}
-
-TMap<UnitTypes, FUnitComposition> UnitActions::UnitData::GetUnitComposition() const
-{
-    TMap<UnitTypes, FUnitComposition> units;
-
-    units.Add(UnitTypes::Infantry, FUnitComposition{});
-    units.Add(UnitTypes::Cavalry, FUnitComposition{});
-    units.Add(UnitTypes::Scout, FUnitComposition{});
-    units.Add(UnitTypes::Ranged, FUnitComposition{});
-    units.Add(UnitTypes::Shielder, FUnitComposition{});
-    units.Add(UnitTypes::Settler, FUnitComposition{});
-
-    int totalUnits = 0;
-
-    for (int i = 0; i < savedUnits.Num(); i++)
-    {
-        ++units[savedUnits[i].unitType].quantity;
-        ++totalUnits;
-    }
-
-    for (auto& unit : units)
-    {
-        unit.Value.compPercent = (float)unit.Value.quantity / (float)totalUnits;
-    }
-
-    return units;
-}
-
-
-UnitTypes UnitActions::UnitData::GetLargestUnitQuantity() const
-{
-    TMap<UnitTypes, FUnitComposition> composition = GetUnitComposition();
-
-    UnitTypes highestType = UnitTypes::None;
-    int best = 0;
-
-    for (auto& unit : composition)
-    {
-        if (unit.Value.quantity > best)
-        {
-            best = unit.Value.quantity;
-            highestType = unit.Key;
-        }
-    }
-
-    return highestType;
 }

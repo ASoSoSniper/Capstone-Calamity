@@ -24,7 +24,7 @@ void ATroopStorage::Tick(float DeltaTime)
 
 void ATroopStorage::StoreTroop(ATroop* troop)
 {
-	UnitActions::UnitData troopData = UnitActions::CollectUnitData(troop->unitStats);
+	FUnitData* troopData = troop->GetUnitData();
 	troopsInStorage.Add(troopData);
 
 	troop->Destroy();
@@ -59,10 +59,10 @@ ATroop* ATroopStorage::ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& u
 	ATroop* spawn = nullptr;
 	ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
 
-	switch (troopsInStorage[index].unitType)
+	switch (troopsInStorage[index]->GetUnitType())
 	{
 	case UnitTypes::Army:
-		spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[index].savedUnits);
+		spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[index]->GetSavedUnits());
 		break;
 
 	default:
@@ -73,11 +73,11 @@ ATroop* ATroopStorage::ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& u
 	return spawn;
 }
 
-const UnitActions::UnitData* ATroopStorage::GetStoredTroopInfo(int index) const
+const FUnitData* ATroopStorage::GetStoredTroopInfo(int index) const
 {
 	if (!troopsInStorage.IsValidIndex(index)) return nullptr;
 
-	return &troopsInStorage[index];
+	return troopsInStorage[index];
 }
 
 void ATroopStorage::HealTroops(float& DeltaTime)
@@ -95,6 +95,6 @@ void ATroopStorage::HealTroops(float& DeltaTime)
 
 	for (int i = 0; i < hex->troopsInHex.Num(); i++)
 	{
-		hex->troopsInHex[i]->unitStats->Heal(healAmount);
+		hex->troopsInHex[i]->GetUnitData()->HealHP(healAmount);
 	}
 }

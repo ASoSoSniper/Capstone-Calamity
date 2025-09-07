@@ -3,7 +3,7 @@
 
 #include "UAIA_Troop_StoreInStorage.h"
 #include "Troop.h"
-#include "Outpost.h"
+#include "TroopStorage.h"
 
 void UUAIA_Troop_StoreInStorage::ExecuteAction(IUAI_Controller* controller)
 {
@@ -13,8 +13,8 @@ void UUAIA_Troop_StoreInStorage::ExecuteAction(IUAI_Controller* controller)
 	UHexNav* targetNav = troop->GetTargetUnit();
 	if (!targetNav) return;
 
-	AOutpost* outpost = Cast<AOutpost>(targetNav->GetOwner());
-	if (!outpost) return;
+	ATroopStorage* storage = Cast<ATroopStorage>(targetNav->GetOwner());
+	if (!storage) return;
 
-	outpost->StoreTroop(troop);
+	storage->StoreTroop(troop);
 }

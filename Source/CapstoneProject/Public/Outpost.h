@@ -32,8 +32,6 @@ public:
 	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
 	void BuildAttachment(BuildingAttachments attachment);
 	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
-	
-	void StoreTroop(ATroop* troop);
 
 	virtual void Action1() override;
 	virtual void Action2() override;
@@ -54,22 +52,12 @@ protected:
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)
 		float traceLength = 50.f;
-	UPROPERTY(VisibleAnywhere) TArray<ABaseHex*> claimedHexes;
+	UPROPERTY(VisibleAnywhere) TSet<ABaseHex*> claimedHexes;
 
 private:
-	TArray<UnitActions::UnitData> troopsInStorage;
-
-	TArray<ABaseHex*> ClaimLand();
-	TArray<ABaseHex*> ScanHex(ABaseHex* hex);
+	TSet<ABaseHex*> ClaimLand();
 
 	void BuildingAction() override;
 	virtual void SetToFinishedModel();
 	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
-
-	void HealTroops(float& DeltaTime);
-	UPROPERTY(EditAnywhere) float healRate = 1.f;
-	float currentHealRate = 0;
-	UPROPERTY(EditAnywhere) int healAmount = 5;
-
-	TArray<ATroop*> ReleaseTroops();
 };

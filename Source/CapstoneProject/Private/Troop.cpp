@@ -16,6 +16,14 @@ ATroop::ATroop()
 void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (preAssignedFaction != Factions::None)
+	{
+		if (preAssignedUnitType == UnitTypes::None)
+			preAssignedUnitType = UnitTypes::Infantry;
+
+		InitTroop(preAssignedFaction, preAssignedUnitType);
+	}
 }
 
 void ATroop::Tick(float DeltaTime)
@@ -62,7 +70,7 @@ void ATroop::MergeOnTile()
 		}
 		break;
 	case ObjectTypes::Building:
-		if (hexNav->GetCurrentHex() == objectType.building->hexNav->GetCurrentHex() && objectType.building->unitStats->faction == unitStats->faction)
+		if (hexNav->GetCurrentHex() == objectType.building->hexNav->GetCurrentHex() && objectType.building->GetUnitData()->GetFaction() == unitData->GetFaction())
 		{
 			if (objectType.building->GetBuildingType() == SpawnableBuildings::RobotBarracks)
 			{
@@ -118,10 +126,10 @@ FTroopUIData ATroop::GetUIData()
 {
 	FTroopUIData data;
 
-	data.healthPercent = (float)unitStats->currentHP / (float)unitStats->maxHP;
-	data.moralePercent = (float)unitStats->currentMorale / (float)unitStats->maxMorale;
+	data.healthPercent = unitData->GetHPAlpha();
+	data.moralePercent = unitData->GetMoraleAlpha();
 
-	data.progressToMove = (float)currTimeTillHexMove / (float)unitStats->speed;
+	data.progressToMove = (float)currTimeTillHexMove / (float)unitData->GetSpeed();
 
 	return data;
 }
@@ -131,7 +139,7 @@ bool ATroop::CommandTroopToMerge(AActor* target)
 	UHexNav* targetHexNav = target->GetComponentByClass<UHexNav>();
 	UUnitStats* targetStats = target->GetComponentByClass<UUnitStats>();
 
-	if (unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > armyCap) return false;
+	//if (unitStats->savedUnits.Num() + targetStats->savedUnits.Num() > armyCap) return false;
 
 	if (targetHexNav->GetCurrentHex())
 	{
@@ -152,9 +160,31 @@ int ATroop::GetArmyCap()
 
 float ATroop::GetRemainingHexTraversalTime() const
 {
-	float remainingTime = unitStats->speed - currTimeTillHexMove;
+	float remainingTime = unitData->GetSpeed() - currTimeTillHexMove;
 
 	return remainingTime / hexNav->GetCurrentHex()->GetMovementMulti();
+}
+
+void ATroop::InitTroop(const Factions& faction, const UnitTypes& unitType)
+{
+	using GameMode = ACapstoneProjectGameModeBase;
+	if (!GameMode::activeFactions.Contains(faction)) return;
+
+	unitData = new FUnitData(faction, unitType);
+	InitTroop(unitData);
+}
+
+void ATroop::InitTroop(FUnitData* data)
+{
+	unitData = data;
+
+	using GameMode = ACapstoneProjectGameModeBase;
+	Factions faction = unitData->GetFaction();
+
+	if (GameMode::activeFactions.Contains(faction))
+		GameMode::activeFactions[faction]->allUnits.Add(this);
+
+	visibility->SetupComponent(unitData);
 }
 
 bool ATroop::SetUpTroop()
@@ -165,34 +195,41 @@ bool ATroop::SetUpTroop()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No global spawner, could not set up troop"));
 		return false;
 	}
-	else if (unitStats->faction == Factions::None || unitStats->unitType == UnitTypes::None)
+	if (!unitData || unitData->GetFaction() == Factions::None || unitData->GetUnitType() == UnitTypes::None)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction or UnitType not set, could not set up troop"));
 		return false;
 	}
-	else if (!AGlobalSpawner::spawnerObject->troopStats.Contains(unitStats->unitType) && unitStats->unitType != UnitTypes::Army)
+
+	UnitTypes unitType = unitData->GetUnitType();
+	Factions faction = unitData->GetFaction();
+
+	if (!AGlobalSpawner::spawnerObject->troopStats.Contains(unitType) && unitType != UnitTypes::Army)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Troop stats missing, could not set up troop"));
 		return false;
 	}
-	else if (!AGlobalSpawner::spawnerObject->troopFactionMaterials.Contains(unitStats->faction))
+	else if (!AGlobalSpawner::spawnerObject->troopFactionMaterials.Contains(faction))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction materials missing, could not set up troop"));
 		return false;
 	}
 
 	//If all data is present, perform setup
-	UnitActions::AssignFaction(unitStats->faction, this);
-	UnitActions::RobotIsActive(unitStats->faction, this);
-	if (unitStats->unitType != UnitTypes::Army) UnitActions::ApplyDataToUnitStats(unitStats, AGlobalSpawner::spawnerObject->troopStats[unitStats->unitType]);
+	UnitActions::RobotIsActive(faction, this);
+	if (unitType != UnitTypes::Army && !unitData->SetupComplete())
+	{
+		FTroopStats* stats = &AGlobalSpawner::spawnerObject->troopStats[unitType];
+		unitData->SetUnitValues(stats->HP, stats->morale, stats->vision, stats->speed, stats->damage, stats->siegePower, stats->reinforceRate, stats->energyUpkeepCost);
+	}
 
-	if (unitStats->faction != Factions::Human)
+	if (faction != Factions::Human)
 	{
 		if (!debug) AITroopComponent->EnableEnemyAI();
 	}
 
-	visibility->meshMaterials.visibleTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[unitStats->faction].visibleTexture;
-	visibility->meshMaterials.selectedTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[unitStats->faction].selectedTexture;
+	visibility->meshMaterials.visibleTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[faction].visibleTexture;
+	visibility->meshMaterials.selectedTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[faction].selectedTexture;
 
 	return true;
 }
@@ -200,6 +237,30 @@ bool ATroop::SetUpTroop()
 bool ATroop::DestinationReached() const
 {
 	return hexNav->CurrentEqualToTarget();
+}
+
+void ATroop::Destroyed()
+{
+	if (hexNav->GetCurrentHex())
+	{
+		Factions faction = unitData->GetFaction();
+
+		if (ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Contains(this))
+		{
+			ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Remove(this);
+		}
+		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
+
+		if (selectedByPlayer)
+		{
+			AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+			ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
+
+			if (controller) controller->Deselect();
+		}
+	}
+
+	Super::Destroyed();
 }
 
 void ATroop::AI_SetMovementAction(UAI_Action* action, const ABaseHex* target)
@@ -225,7 +286,7 @@ void ATroop::UpdateDestination()
 	{
 		if (ATroop* troop = Cast<ATroop>(targetUnit->GetOwner()))
 		{
-			if (!troop->VisibleToFaction(unitStats->faction))
+			if (!troop->VisibleToFaction(unitData->GetFaction()))
 			{
 				EndAction();
 				return;

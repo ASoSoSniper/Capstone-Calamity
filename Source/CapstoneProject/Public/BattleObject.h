@@ -42,10 +42,10 @@ public:
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
 	//Every troop participating in this battle, sorted into their factions
-	TMap<Factions, TArray<UnitActions::UnitData>> factionsInBattle;
+	TMap<Factions, TArray<FUnitData*>> factionsInBattle;
 
 	//The singular faction units created using the unit data from factionsInBattle
-	TMap<Factions, UnitActions::UnitData> armies;
+	TMap<Factions, FUnitData*> armies;
 
 	struct Battle
 	{
@@ -75,10 +75,9 @@ protected:
 	void CreateFactions();
 	void AddUnitToFaction(AMovementAI* troop);
 	virtual void GenerateModels();
-	void AddUnitToArmy(UnitActions::UnitData data);
+	void AddUnitToArmy(FUnitData* data);
 	void AssignFactionToGroup(Factions army);
 
-	bool IsAlive(UnitActions::UnitData& group);
 	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
 	void RemoveArmy(Factions faction);
 
@@ -90,7 +89,6 @@ protected:
 	int RollDie(int& groupDie);
 	float GetRollModifier(int& groupDie);
 
-	float GetMoralePercent(Factions faction);
 	float DecayMorale(Factions faction, float percentReduction);
 	void CalculateGroupDamage();
 

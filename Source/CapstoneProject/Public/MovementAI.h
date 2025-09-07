@@ -33,7 +33,6 @@ public:
 	UPROPERTY(EditAnywhere) UInteractable* interact;
 	UPROPERTY(VisibleAnywhere) UHexNav* hexNav;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* mesh;
-	UPROPERTY(EditAnywhere) UUnitStats* unitStats;
 	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 	bool selectedByPlayer;
 
@@ -44,15 +43,17 @@ public:
 
 	bool VisibleToFaction(Factions faction) const;
 
+	FUnitData* GetUnitData() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;
 	int hexPathIndex;
 	UPROPERTY(VisibleAnywhere) float currTimeTillHexMove = 0.f;
 
+	FUnitData* unitData;
+
 	void CountdownToMove(float& DeltaTime);
 	virtual void MoveToTarget(float& DeltaTime);
-	
-	virtual void Destroyed() override;
 
 private:
 	UPROPERTY(EditAnywhere) float traceStartOffset = 10.f;

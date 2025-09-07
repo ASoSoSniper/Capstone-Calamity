@@ -87,7 +87,7 @@ void UManageMode::AdvanceSelectCycle(ABaseHex* hex)
 
 	for (int i = 0; i < hex->troopsInHex.Num(); i++)
 	{
-		if (hex->troopsInHex[i]->unitStats->faction == Factions::Human)
+		if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == Factions::Human)
 		{
 			troopOnHex = hex->troopsInHex[i];
 		}

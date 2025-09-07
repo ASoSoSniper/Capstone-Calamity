@@ -52,23 +52,20 @@ void ASiegeObject::Attack()
 	//Apply damage to each group
 	for (int i = 0; i < currentBattle.Group1.Num(); ++i)
 	{
-		armies[currentBattle.Group1[i]].currentHP -= group2DamageTotal;
-		armies[currentBattle.Group1[i]].currentHP = FMath::Clamp(armies[currentBattle.Group1[i]].currentHP, 0, armies[currentBattle.Group1[i]].maxHP);
+		armies[currentBattle.Group1[i]]->DamageHP(group2DamageTotal);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]]->GetCurrentHP(), armies[currentBattle.Group1[i]]->GetCurrentMorale()));
 	}
 	for (int i = 0; i < currentBattle.Group2.Num(); ++i)
 	{
-		armies[currentBattle.Group2[i]].currentHP -= group1DamageTotal;
-		armies[currentBattle.Group2[i]].currentHP = FMath::Clamp(armies[currentBattle.Group2[i]].currentHP, 0, armies[currentBattle.Group2[i]].maxHP);
+		armies[currentBattle.Group2[i]]->DamageHP(group1DamageTotal);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]]->GetCurrentHP(), armies[currentBattle.Group2[i]]->GetCurrentMorale()));
 	}
 
 	//Apply damage to the building
-	building->unitStats->currentHP -= attackerSiegeDamage;
-	building->unitStats->currentHP = FMath::Clamp(building->unitStats->currentHP, 0, building->unitStats->maxHP);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Building took %d damage! %d health remaining!"), attackerSiegeDamage, building->unitStats->currentHP));
+	building->GetUnitData()->DamageHP(attackerSiegeDamage);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Building took %d damage! %d health remaining!"), attackerSiegeDamage, building->GetUnitData()->GetCurrentHP()));
 
 	//Created array of armies to remove this combat tick
 	TArray<Factions> armiesToRemove;
@@ -76,7 +73,7 @@ void ASiegeObject::Attack()
 	//Add armies to the remove list as they are killed or their morale is depleted
 	for (auto& army : armies)
 	{
-		if (!IsAlive(army.Value))
+		if (!army.Value->IsAlive())
 		{
 			armiesToRemove.Add(army.Key);
 			continue;
@@ -128,7 +125,7 @@ void ASiegeObject::EndBattle()
 
 	if (currentBattle.Group1.Contains(Factions::Human) || 
 		(currentBattle.Group2.Contains(Factions::Human) || 
-			(building->unitStats->faction == Factions::Human && BuildingIsAlive())))
+			(building->GetUnitData()->GetFaction() == Factions::Human && BuildingIsAlive())))
 	{
 		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleVictorySound);
 	}
@@ -157,7 +154,7 @@ void ASiegeObject::GenerateModels()
 		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
-	if (building->unitStats->faction == Factions::Human || building->GetOccupier() == Factions::Human)
+	if (building->GetUnitData()->GetFaction() == Factions::Human || building->GetOccupier() == Factions::Human)
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
 		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
@@ -171,13 +168,13 @@ void ASiegeObject::GenerateModels()
 
 void ASiegeObject::DestroyBattle()
 {
-	if (building->unitStats->faction == Factions::Human && !BuildingIsAlive()) building->Destroy();
+	if (building->GetUnitData()->GetFaction() == Factions::Human && !BuildingIsAlive()) building->Destroy();
 	Super::DestroyBattle();
 }
 
 void ASiegeObject::CalculateSiegeDamage()
 {
-	group2Damage += building->unitStats->damage;
+	group2Damage += building->GetUnitData()->GetDamage();
 
 	attackerSiegeDamage = 0;
 	for (auto& unit : groupCompositions[0])

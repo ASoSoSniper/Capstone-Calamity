@@ -362,6 +362,7 @@ struct FBuildingStats
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int siegeDamage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int vision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float unrestMod;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyUpkeepCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers;
@@ -497,6 +498,94 @@ struct FCuedTroop
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FTroopCost troopInfo;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
 };
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FUnitData
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FUnitData() : faction(Factions::None), unitType(UnitTypes::None) {};
+	FUnitData(Factions setFaction) : faction(setFaction), unitType(UnitTypes::None)
+	{
+		FUnitData(setFaction, UnitTypes::None);
+	};
+	FUnitData(Factions setFaction, UnitTypes setUnitType) : faction(setFaction), unitType(setUnitType)
+	{
+		if (unitType == UnitTypes::Army)
+			GenerateArmyName();
+	}
+
+	TMap<UnitTypes, FUnitComposition> GetUnitComposition() const;
+	UnitTypes GetLargestUnitQuantity() const;
+
+	Factions GetFaction() const;
+	UnitTypes GetUnitType() const;
+
+	void SetUnitValues(int setHealth, int setMorale, int setVision, int setSpeed, int setDamage, int setSiegePower, int setReinforceRate, int setEnergyUpKeep);
+	void AddUnitData(FUnitData* data);
+	FUnitData* ExtractUnitData(int32 index, bool killOnExtraction = false);
+	void SetBuildingValues(int setHealth, int setVision, int setSiegePower, int setEnergyUpkeep);
+
+	void GenerateArmyName(FString newName = TEXT(""));
+	FText GetArmyName() const;
+	FString GetNameRaw() const;
+	int GetNameInstance() const;
+
+	int GetCurrentHP() const;
+	int GetMaxHP() const;
+	void SetHP(float alpha);
+	int GetCurrentMorale() const;
+	int GetMaxMorale() const;
+	void SetMorale(float alpha);
+	float GetHPAlpha() const;
+	float GetMoraleAlpha() const;
+	bool IsAlive() const;
+	bool HasMorale() const;
+
+	int DamageHP(int amount);
+	int DamageMorale(int amount);
+	int HealHP(int amount);
+
+	int GetVision() const;
+	int GetSpeed() const;
+
+	int GetDamage() const;
+	int GetSiegePower() const;
+
+	int GetReinforceRate() const;
+	int GetEnergyUpkeep() const;
+
+	TArray<FUnitData*> GetSavedUnits() const;
+	int GetSavedUnitCount() const;
+
+	bool SetupComplete() const;
+
+private:
+	Factions faction;
+	UnitTypes unitType;
+
+	FString armyName = TEXT("");
+	int nameInstance = 0;
+
+	int currentHP = 0;
+	int maxHP = 0;
+	int currentMorale = 0;
+	int maxMorale = 0;
+
+	int vision = 0;
+	int speed = 0;
+
+	int damage = 0;
+	int siegePower = 0;
+
+	int reinforceRate = 0;
+	int energyUpkeep = 0;
+
+	TArray<FUnitData*> savedUnits;
+
+	void RemoveArmyName();
+};
 #pragma endregion
 
 UCLASS()
@@ -520,8 +609,8 @@ public:
 
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
 	void SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
-	ATroop* SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent = 1.f);
-	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent = 1.f);
+	ATroop* SpawnTroop(ABaseHex* hex, FUnitData* data, float parentHealthPercent = 1.f);
+	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 	AActor* SpawnSmoke(AActor* object);
 	AActor* SpawnEndParticle(AActor* object, GameStates state);
@@ -558,8 +647,6 @@ public:
 	bool BuildingOnHex(ABaseHex* hex);
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
 	ABasePlayerController* controller;
-
-	UnitActions::UnitData CreateTroopUnitData(Factions faction, UnitTypes unitType);
 
 private:
 	UPROPERTY(EditAnywhere) int hexSeedSize = 5;

@@ -40,7 +40,7 @@ void UAITroopComponent::EnableEnemyAI()
 {
 	isEnemy = true;
 
-	if (parentTroop->unitStats->unitType == UnitTypes::Army)
+	if (parentTroop->GetUnitData()->GetUnitType() == UnitTypes::Army)
 		GenerateArmy();
 }
 
@@ -95,7 +95,7 @@ bool UAITroopComponent::OccupyingBuilding()
 	ABaseHex* hex = parentTroop->hexNav->GetCurrentHex();
 	if (!hex->building) return false;
 
-	if (hex->building->GetOccupier() == parentTroop->unitStats->faction)
+	if (hex->building->GetOccupier() == parentTroop->GetUnitData()->GetFaction())
 	{
 		if (hex->building->GetOccupyingTroops() <= hex->building->GetOccupationMinCount())
 		{
@@ -123,7 +123,7 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 
 AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 {
-	TMap<ABaseHex*, Factions> targetList = UnitActions::GetTargetList(parentTroop->unitStats->faction);
+	TMap<ABaseHex*, Factions> targetList = UnitActions::GetTargetList(parentTroop->GetUnitData()->GetFaction());
 
 	if (targetList.IsEmpty()) return nullptr;
 
@@ -166,7 +166,7 @@ bool UAITroopComponent::IsViableTarget(ABaseHex* hex, ObjectTypes targetType)
 	{
 	case ObjectTypes::Building:
 		if (hex->building &&
-			hex->building->GetOccupier() == parentTroop->unitStats->faction &&
+			hex->building->GetOccupier() == parentTroop->GetUnitData()->GetFaction() &&
 			!hex->building->TroopOccupation())
 			return true;
 		else 
@@ -205,7 +205,7 @@ AActor* UAITroopComponent::FindRandomHex()
 
 AActor* UAITroopComponent::FindHexToSettle()
 {
-	Faction* factionObject = UnitActions::GetFaction(parentTroop->unitStats->faction);
+	Faction* factionObject = UnitActions::GetFaction(parentTroop->GetUnitData()->GetFaction());
 
 	ABaseHex* bestHex = nullptr;
 	int mostFreeHexes = 0;
@@ -217,7 +217,7 @@ AActor* UAITroopComponent::FindHexToSettle()
 
 		for (ABaseHex* foundHex : adjacentHexes)
 		{
-			if (foundHex->GetHexOwner() != parentTroop->unitStats->faction)
+			if (foundHex->GetHexOwner() != parentTroop->GetUnitData()->GetFaction())
 			{
 				freeHexes++;
 			}
@@ -235,16 +235,19 @@ AActor* UAITroopComponent::FindHexToSettle()
 
 void UAITroopComponent::GenerateArmy()
 {
-	troopsInArmy = UnitActions::GetFaction(parentTroop->unitStats->faction)->GetArmyTroopCount();
+	FUnitData* data = parentTroop->GetUnitData();
+
+	troopsInArmy = UnitActions::GetFaction(data->GetFaction())->GetArmyTroopCount();
 
 	for (int i = 0; i < troopsInArmy; i++)
 	{
 		UnitTypes randomType = UnitTypes(FMath::RandRange(1, 5));
 
-		UnitActions::UnitData troop = AGlobalSpawner::spawnerObject->CreateTroopUnitData(parentTroop->unitStats->faction, randomType);
+		FTroopStats* stats = &AGlobalSpawner::spawnerObject->troopStats[randomType];
+		FUnitData* troop = new FUnitData(data->GetFaction(), randomType);
+		troop->SetUnitValues(stats->HP, stats->morale, stats->vision, stats->speed, stats->damage, stats->siegePower, stats->reinforceRate, stats->energyUpkeepCost);
 
-		parentTroop->unitStats->savedUnits.Add(troop);
-		UnitActions::AddUnitData(parentTroop->unitStats, troop);
+		data->AddUnitData(troop);
 	}
 }
 
@@ -274,7 +277,7 @@ void UAITroopComponent::UpdateBehavior()
 {
 	if (!isEnemy || !parentTroop->hexNav->GetCurrentHex()) return;
 
-	if (parentTroop->unitStats->unitType == UnitTypes::Settler)
+	if (parentTroop->GetUnitData()->GetUnitType() == UnitTypes::Settler)
 	{
 		if (!parentTroop->hexNav->GetTargetHex() || parentTroop->hexNav->CurrentEqualToTarget())
 		{

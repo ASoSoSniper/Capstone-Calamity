@@ -27,6 +27,8 @@ public:
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	void InitTroop(const Factions& faction, const UnitTypes& unitType);
+	void InitTroop(FUnitData* data);
 	
 	virtual void MergeOnTile();
 	
@@ -47,17 +49,20 @@ protected:
 
 	virtual bool DestinationReached() const override;
 
+	virtual void Destroyed() override;
+
 private:
 	bool SetUpTroop();
 	bool setupComplete;
 	void RotateToFaceTarget(FVector direction, float& DeltaTime);
 
 	UPROPERTY(EditAnywhere) float rotateSpeedMultiplier = 3.f;
-
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
-	UPROPERTY(EditAnywhere) bool debug = false;
 	UPROPERTY(EditAnywhere) int armyCap = 20;
 	UPROPERTY(VisibleAnywhere) bool merging;
+	UPROPERTY(EditAnywhere, Category = "Debug") TEnumAsByte<Factions> preAssignedFaction = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Debug") TEnumAsByte<UnitTypes> preAssignedUnitType = UnitTypes::None;
+	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 
 #pragma region Utility AI
 public:

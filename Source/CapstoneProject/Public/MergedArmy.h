@@ -19,9 +19,8 @@ public:
 	AMergedArmy();
 
 	void ConsumeUnit(ATroop* mergedUnit);
-	void ConsumeArmy(AMergedArmy* mergedArmy);
-	void ConsumeData(TArray<UnitActions::UnitData>& groupData);
-	ATroop* SpawnUnit(TArray<UnitActions::UnitData>& groupData);
+	void ConsumeData(TArray<FUnitData*>& groupData);
+	ATroop* SpawnUnit(TArray<FUnitData*>& groupData);
 
 	void SplitInHalf();
 	void ExtractOneUnit(UnitTypes type);

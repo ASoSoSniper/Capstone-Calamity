@@ -152,16 +152,18 @@ void ABattleObject::CreateFactions()
 void ABattleObject::AddUnitToFaction(AMovementAI* troop)
 {
 	//Extract data from the troop
-	UnitActions::UnitData unitData = UnitActions::CollectUnitData(troop->unitStats);
+	FUnitData* unitData = troop->GetUnitData();
+
+	Factions unitFaction = unitData->GetFaction();
 
 	//If the troop's faction does not yet exist in the battle, create it and add it to the list
-	if (!factionsInBattle.Contains(unitData.faction))
+	if (!factionsInBattle.Contains(unitFaction))
 	{
-		TArray<UnitActions::UnitData> newArmy;
-		factionsInBattle.Add(unitData.faction, newArmy);
+		TArray<FUnitData*> newArmy;
+		factionsInBattle.Add(unitFaction, newArmy);
 
 		//If the newly joined unit is (an ally to) the player, set the battle to be visible to the player
-		if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(unitData.faction) == FactionRelationship::Ally)
+		if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(unitFaction) == FactionRelationship::Ally)
 		{
 			visibility->faction = Factions::Human;
 		}
@@ -204,20 +206,21 @@ void ABattleObject::GenerateModels()
 }
 
 //Adds the input unit to the faction unit list and its data to the faction army unit
-void ABattleObject::AddUnitToArmy(UnitActions::UnitData data)
+void ABattleObject::AddUnitToArmy(FUnitData* data)
 {
-	factionsInBattle[data.faction].Add(data);
+	Factions faction = data->GetFaction();
 
-	if (!armies.Contains(data.faction))
+	factionsInBattle[faction].Add(data);
+
+	if (!armies.Contains(faction))
 	{
-		UnitActions::UnitData army{ data.faction, UnitTypes::Army, false, 0, 0, 0, 0, 0, 0 };
-
-		armies.Add(data.faction, army);
+		FUnitData* army = new FUnitData(faction, UnitTypes::Army);
+		armies.Add(faction, army);
 	}
 
-	armies[data.faction] = UnitActions::AddUnitData(armies[data.faction], data);
+	armies[faction]->AddUnitData(data);
 
-	AssignFactionToGroup(data.faction);
+	AssignFactionToGroup(faction);
 }
 
 void ABattleObject::AssignFactionToGroup(Factions army)
@@ -271,17 +274,15 @@ void ABattleObject::Attack()
 	//Apply damage to each group
 	for (int i = 0; i < currentBattle.Group1.Num(); ++i)
 	{
-		armies[currentBattle.Group1[i]].currentHP -= group2DamageTotal;
-		armies[currentBattle.Group1[i]].currentHP = FMath::Clamp(armies[currentBattle.Group1[i]].currentHP, 0, armies[currentBattle.Group1[i]].maxHP);
+		armies[currentBattle.Group1[i]]->DamageHP(group2DamageTotal);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]]->GetCurrentHP(), armies[currentBattle.Group1[i]]->GetCurrentMorale()));
 	}
 	for (int i = 0; i < currentBattle.Group2.Num(); ++i)
 	{
-		armies[currentBattle.Group2[i]].currentHP -= group1DamageTotal;
-		armies[currentBattle.Group2[i]].currentHP = FMath::Clamp(armies[currentBattle.Group2[i]].currentHP, 0, armies[currentBattle.Group2[i]].maxHP);
+		armies[currentBattle.Group2[i]]->DamageHP(group1DamageTotal);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]].currentHP, armies[currentBattle.Group1[i]].currentMorale));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]]->GetCurrentHP(), armies[currentBattle.Group2[i]]->GetCurrentMorale()));
 	}
 
 	//Created array of armies to remove this combat tick
@@ -290,7 +291,7 @@ void ABattleObject::Attack()
 	//Add armies to the remove list as they are killed or their morale is depleted
 	for (auto& army : armies)
 	{
-		if (!IsAlive(army.Value))
+		if (!army.Value->IsAlive())
 		{
 			armiesToRemove.Add(army.Key);
 			continue;
@@ -365,16 +366,6 @@ void ABattleObject::DestroyBattle()
 	Destroy();
 }
 
-bool ABattleObject::IsAlive(UnitActions::UnitData& group)
-{
-	if (group.currentHP <= 0)
-	{
-		return false;
-	}
-
-	return true;
-}
-
 Factions ABattleObject::FleeFromBattle(Factions faction)
 {
 	if (!factionsInBattle.Contains(faction)) return Factions::None;
@@ -384,10 +375,7 @@ Factions ABattleObject::FleeFromBattle(Factions faction)
 	for (int i = 0; i < fleeingTroops.Num(); i++)
 	{
 		//Troop health reduced by 50%
-		float troopHP = fleeingTroops[i]->unitStats->currentHP;
-		troopHP *= 0.5f;
-		if (troopHP < 1.f) troopHP = 1.f;
-		fleeingTroops[i]->unitStats->currentHP = troopHP;
+		fleeingTroops[i]->GetUnitData()->SetHP(0.5f);
 	}
 
 	RemoveArmy(faction);
@@ -406,19 +394,17 @@ TArray<ATroop*> ABattleObject::ExtractFactionUnits(Factions faction, bool spawnA
 
 	if (factionsInBattle[faction].IsEmpty() || !armies.Contains(faction)) return spawnedTroops;
 	if (!hex) return spawnedTroops;
-	for (int i = 0; i < factionsInBattle[faction].Num(); ++i)
+	for (int i = 0; i < factionsInBattle[faction].Num(); i++)
 	{
-		float currHP = armies[faction].currentHP;
-		float maxHP = armies[faction].maxHP;
-		float hpPercent = (currHP / maxHP);
+		float hpPercent = armies[faction]->GetHPAlpha();
 		
 		ATroop* spawn = nullptr;
 		ABaseHex* spawnPoint = spawnAtOutpost ? UnitActions::GetClosestOutpostHex(faction, hex)->FindFreeAdjacentHex(faction, usedHexes) : hex->FindFreeAdjacentHex(faction, usedHexes);
 
-		switch (factionsInBattle[faction][i].unitType)
+		switch (factionsInBattle[faction][i]->GetUnitType())
 		{
 		case UnitTypes::Army:
-			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, factionsInBattle[faction][i].savedUnits, hpPercent);
+			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, factionsInBattle[faction][i]->GetSavedUnits(), hpPercent);
 			break;
 
 		default:
@@ -474,22 +460,15 @@ float ABattleObject::GetRollModifier(int& groupDie)
 	return 1.f;
 }
 
-float ABattleObject::GetMoralePercent(Factions faction)
-{
-	if (!armies.Contains(faction)) return 0.f;
-
-	return (float)armies[faction].currentMorale / (float)armies[faction].maxMorale;
-}
-
 float ABattleObject::DecayMorale(Factions faction, float percentReduction)
 {
 	if (!armies.Contains(faction)) return 0.f;
 
-	float newPercent = GetMoralePercent(faction) - percentReduction;
+	float alpha = armies[faction]->GetMoraleAlpha() - percentReduction;
 
-	armies[faction].currentMorale = FMath::RoundToInt(FMath::Clamp((float)armies[faction].maxMorale * newPercent, 0.f, (float)armies[faction].maxMorale));
+	armies[faction]->SetMorale(alpha);
 
-	return armies[faction].currentMorale;
+	return armies[faction]->GetCurrentMorale();
 }
 
 void ABattleObject::CalculateGroupDamage()
@@ -604,53 +583,29 @@ void ABattleObject::CalculateGroupDamage()
 TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TArray<Factions>& group)
 {
 	TMap<UnitTypes, FUnitComposition> unitsInArmy;
+	unitsInArmy.Add(UnitTypes::Infantry, FUnitComposition{});
+	unitsInArmy.Add(UnitTypes::Cavalry, FUnitComposition{});
+	unitsInArmy.Add(UnitTypes::Scout, FUnitComposition{});
+	unitsInArmy.Add(UnitTypes::Ranged, FUnitComposition{});
+	unitsInArmy.Add(UnitTypes::Shielder, FUnitComposition{});
+	unitsInArmy.Add(UnitTypes::Settler, FUnitComposition{});
+
+	int totalUnits = 0;
 
 	//For each faction in the group:
 	for (Factions& faction : group)
 	{
 		if (!factionsInBattle.Contains(faction)) continue;
 
-		//For each unit in the faction:
-		for (int i = 0; i < factionsInBattle[faction].Num(); i++)
+		for (FUnitData* data : factionsInBattle[faction])
 		{
-			//Special case for armies, don't include them in the TMap, rather get the units they're composed of
-			if (factionsInBattle[faction][i].unitType == UnitTypes::Army)
+			TMap<UnitTypes, FUnitComposition> unitComp = data->GetUnitComposition();
+			for (TPair<UnitTypes, FUnitComposition> unit : unitComp)
 			{
-				//For each unit in the army's saved units pool:
-				for (int j = 0; j < factionsInBattle[faction][i].savedUnits.Num(); j++)
-				{
-					//If the TMap doesn't already have this unit type, add it with an initial value of zero
-					if (!unitsInArmy.Contains(factionsInBattle[faction][i].savedUnits[j].unitType))
-					{
-						unitsInArmy.Add(factionsInBattle[faction][i].savedUnits[j].unitType, FUnitComposition{0, 0.f});
-					}
-
-					//Tally up this unit type in the total army composition
-					++unitsInArmy[factionsInBattle[faction][i].savedUnits[j].unitType].quantity;
-				}
-
-				//If an army, skip the steps applicable only to individual units
-				continue;
+				unitsInArmy[unit.Key].quantity += unit.Value.quantity;
+				totalUnits += unit.Value.quantity;
 			}
-
-			//For non-armies:
-
-			//If the TMap doesn't already have this unit type, add it with an initial value of zero
-			if (!unitsInArmy.Contains(factionsInBattle[faction][i].unitType))
-			{
-				unitsInArmy.Add(factionsInBattle[faction][i].unitType, FUnitComposition{ 0, 0.f });
-			}
-
-			//Tally up this unit type in the total army composition
-			++unitsInArmy[factionsInBattle[faction][i].unitType].quantity;
 		}
-	}
-
-	//After all units are collected, find the total number in the group
-	int totalUnits = 0;
-	for (auto& unit : unitsInArmy)
-	{
-		totalUnits += unit.Value.quantity;
 	}
 
 	//Use the total number to calculate what percent of the army each unit type occupies
@@ -671,14 +626,14 @@ float ABattleObject::DisplayBattleProgress()
 
 	for (int i = 0; i < currentBattle.Group1.Num(); i++)
 	{
-		group1CurrentHealth += armies[currentBattle.Group1[i]].currentHP;
-		group1TotalHealth += armies[currentBattle.Group1[i]].maxHP;
+		group1CurrentHealth += armies[currentBattle.Group1[i]]->GetCurrentHP();
+		group1TotalHealth += armies[currentBattle.Group1[i]]->GetMaxHP();
 	}
 
 	for (int i = 0; i < currentBattle.Group2.Num(); i++)
 	{
-		group2CurrentHealth += armies[currentBattle.Group2[i]].currentHP;
-		group2TotalHealth += armies[currentBattle.Group2[i]].maxHP;
+		group2CurrentHealth += armies[currentBattle.Group2[i]]->GetCurrentHP();
+		group2TotalHealth += armies[currentBattle.Group2[i]]->GetMaxHP();
 	}
 
 	float group1Percent = (float)group1CurrentHealth / (float)group1TotalHealth;

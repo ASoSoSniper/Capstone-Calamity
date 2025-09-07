@@ -153,7 +153,7 @@ void ABaseHex::SetHexOwner(Factions faction)
 		return;
 	}
 
-	visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
+	visibility->SetupComponentInHex(faction);
 
 	if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(this))
 	{
@@ -220,7 +220,7 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 {	
 	if (building)
 	{
-		if (UnitActions::IsHostileTarget(refTroop, building) && building->unitStats->currentHP > 0)
+		if (UnitActions::IsHostileTarget(refTroop->GetUnitData()->GetFaction(), building->GetUnitData()->GetFaction()) && building->GetUnitData()->IsAlive())
 		{
 			BeginBattle(refTroop);
 			return;
@@ -245,7 +245,7 @@ void ABaseHex::CheckForHostility(ABuilding* refBuilding)
 
 	for (int i = 0; i < troopsInHex.Num(); ++i)
 	{
-		if (UnitActions::IsHostileTarget(troopsInHex[i], refBuilding))
+		if (UnitActions::IsHostileTarget(troopsInHex[i]->GetUnitData()->GetFaction(), refBuilding->GetUnitData()->GetFaction()))
 		{
 			BeginBattle(troopsInHex[i]);
 			return;
@@ -283,7 +283,7 @@ void ABaseHex::BeginBattle(AMovementAI* attacker)
 
 Factions ABaseHex::GetAttackerFaction()
 {
-	Factions faction = attackingTroop->unitStats->faction;
+	Factions faction = attackingTroop->GetUnitData()->GetFaction();
 	attackingTroop = nullptr;
 
 	return faction;
@@ -378,7 +378,7 @@ void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
 	{
 		setBuilding->hexNav->SetCurrentHex(this);
 		building = setBuilding;
-		SetHexOwner(setBuilding->unitStats->faction);
+		SetHexOwner(setBuilding->GetUnitData()->GetFaction());
 
 		CheckForHostility(setBuilding);
 	}
@@ -402,7 +402,7 @@ void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
 			{
 				if (removedWorkers == workersToRemove) break;
 
-				int remove = UnitActions::RemoveWorkers(building->unitStats->faction, worker.Key, 1, this);
+				int remove = UnitActions::RemoveWorkers(building->GetUnitData()->GetFaction(), worker.Key, 1, this);
 
 				if (remove > 0)
 				{
@@ -447,7 +447,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 		bool occupied = false;
 		for (int i = 0; i < hex->troopsInHex.Num(); i++)
 		{
-			if (hex->troopsInHex[i]->unitStats->faction == faction)
+			if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
 			{
 				occupied = true;
 				break;

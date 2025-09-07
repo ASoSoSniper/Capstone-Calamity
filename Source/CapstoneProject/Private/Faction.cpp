@@ -514,12 +514,12 @@ int Faction::CalculateEnergyCost()
 	{
 		for (ATroop* troop : allUnits)
 		{
-			energyCost += troop->unitStats->energyUpkeep;
+			energyCost += troop->GetUnitData()->GetEnergyUpkeep();
 		}
 	}
 	for (ABuilding* building : allBuildings)
 	{
-		energyCost += building->unitStats->energyUpkeep;
+		energyCost += building->GetUnitData()->GetEnergyUpkeep();
 	}
 	for (ABaseHex* hex : ownedHexes)
 	{

@@ -22,6 +22,7 @@
 #include "BuildingAttachment.h"
 #include "BattleObject.h"
 #include "SiegeObject.h"
+#include "CapstoneProjectGameModeBase.h"
 
 // Sets default values
 
@@ -75,6 +76,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -105,6 +108,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -135,6 +140,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -165,6 +172,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -195,6 +204,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -225,6 +236,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		400,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -255,6 +268,8 @@ AGlobalSpawner::AGlobalSpawner()
 		6,
 		/*HP*/
 		400,
+		/*Vision*/
+		3,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -285,6 +300,8 @@ AGlobalSpawner::AGlobalSpawner()
 		8,
 		/*HP*/
 		600,
+		/*Vision*/
+		3,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -314,6 +331,8 @@ AGlobalSpawner::AGlobalSpawner()
 		8,
 		/*HP*/
 		600,
+		/*Vision*/
+		3,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -343,6 +362,8 @@ AGlobalSpawner::AGlobalSpawner()
 		10,
 		/*HP*/
 		1000,
+		/*Vision*/
+		3,
 		/*Unrest*/
 		0,
 		/*Energy Upkeep Cost*/
@@ -390,6 +411,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		0,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -419,6 +442,8 @@ AGlobalSpawner::AGlobalSpawner()
 		2,
 		/*HP*/
 		200,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -448,6 +473,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		0,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -477,6 +504,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		0,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -506,6 +535,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		0,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -535,6 +566,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		5,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		0.f,
 		/*Energy Upkeep Cost*/
@@ -564,6 +597,8 @@ AGlobalSpawner::AGlobalSpawner()
 		0,
 		/*HP*/
 		10,
+		/*Vision*/
+		1,
 		/*Unrest*/
 		-0.85f,
 		/*Energy Upkeep Cost*/
@@ -854,7 +889,7 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 	{
 		//If neither unit is an army, create a new army that consumes both units
 	case 0:
-		mergedArmy = Cast<AMergedArmy>(BuildArmy(seeker->unitStats->faction, hex));
+		mergedArmy = Cast<AMergedArmy>(BuildArmy(seeker->GetUnitData()->GetFaction(), hex));
 		mergedArmy->ConsumeUnit(seeker);
 		mergedArmy->ConsumeUnit(target);
 		break;
@@ -879,7 +914,7 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 
 		//If both units are armies, let the seeker be the dominant army and merge the other army into it
 	case 2:
-		testSeeker->ConsumeArmy(testTarget);
+		testSeeker->ConsumeUnit(testTarget);
 		break;
 	}
 }
@@ -952,14 +987,12 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
 		break;
 	case TerrainType::TheRock:		
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-		UnitActions::AssignFaction(Factions::Alien1, newBuilding);
 
 		break;
 	default:
@@ -1022,9 +1055,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
 {
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-
-	UnitActions::AssignFaction(faction, newTroop);	
-	UnitActions::GenerateArmyName(Factions::Human, newTroop);
+	newTroop->InitTroop(faction, UnitTypes::Army);
 
 	return newTroop;
 }
@@ -1168,29 +1199,6 @@ bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
 	return false;
 }
 
-UnitActions::UnitData AGlobalSpawner::CreateTroopUnitData(Factions faction, UnitTypes unitType)
-{
-	UnitActions::UnitData data;
-	FTroopStats troop = troopStats[unitType];
-
-	data.unitType = unitType;
-	data.faction = faction;
-
-	data.currentHP = troop.HP;
-	data.maxHP = troop.HP;
-	data.currentMorale = troop.morale;
-	data.maxMorale = troop.morale;
-
-	data.damage = troop.damage;
-	data.siegePower = troop.siegePower;
-	data.energyUpkeep = troop.energyUpkeepCost;
-
-	data.speed = troop.speed;
-	data.vision = troop.vision;
-
-	return data;
-}
-
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
 	FVector2D center = centerHex->GetHexCoordinates();
@@ -1285,7 +1293,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 				{
 					if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler, settlerIndex))
 					{
-						if (hex->troopsInHex[i]->unitStats->faction == faction)
+						if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
 						{
 							canAfford = true;
 							settlerOnHex = hex->troopsInHex[i];
@@ -1306,20 +1314,20 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	{
 		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 		UnitActions::ConsumeSpentResources(faction, resourceCosts, hex);
-		UnitActions::AssignFaction(faction, newBuilding);
+		newBuilding->InitBuilding(faction);
 
 		if (building == SpawnableBuildings::Outpost)
 		{
 			UnitActions::SetWorkers(faction, WorkerType::Human, troopCosts[UnitTypes::Settler].populationCost);
 			if (settlerOnHex)
 			{
-				if (settlerOnHex->unitStats->unitType == UnitTypes::Settler)
+				if (settlerOnHex->GetUnitData()->GetUnitType() == UnitTypes::Settler)
 				{
 					settlerOnHex->Destroy();
 				}
 				else
 				{
-					UnitActions::ExtractUnit(settlerOnHex->unitStats, settlerIndex);
+					settlerOnHex->GetUnitData()->ExtractUnitData(settlerIndex, true);
 				}
 			}
 		}
@@ -1336,27 +1344,23 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
 {
 	ABuilding* spawn = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(building), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(faction, spawn);
+	spawn->InitBuilding(faction);
 	spawn->SetBuildAtStart(buildAtStart);
 }
 
-ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, UnitActions::UnitData data, float parentHealthPercent)
+ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, FUnitData* data, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!troopPrefab) return nullptr;
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 
-	float result = (float)data.currentHP * parentHealthPercent;
-	if (result < 1.f) result = 1.f;
-	data.currentHP = result;
-
-	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, data);
+	newTroop->InitTroop(data);
 
 	return newTroop;
 }
 
-AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitData> groupData, float parentHealthPercent)
+AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!mergedArmyPrefab) return nullptr;
@@ -1365,14 +1369,11 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<UnitActions::UnitDa
 	
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
-		float result = (float)groupData[i].currentHP * parentHealthPercent;
-		if (result < 1.f) result = 1.f;
-		groupData[i].currentHP = result;
+		groupData[i]->SetHP(parentHealthPercent);
 	}
 
+	newTroop->InitTroop(groupData[0]->GetFaction(), UnitTypes::Army);
 	newTroop->ConsumeData(groupData);
-	UnitActions::AssignFaction(groupData[0].faction, newTroop);
-	UnitActions::GenerateArmyName(Factions::Human, newTroop);
 
 	return newTroop;
 }
@@ -1472,8 +1473,7 @@ ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* h
 	FTroopStats unitData = troopStats[unit];
 
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	UnitActions::AssignFaction(faction, newTroop);
-	UnitActions::ApplyDataToUnitStats(newTroop->unitStats, unitData);
+	newTroop->InitTroop(faction, unit);
 
 	return newTroop;
 }
@@ -1513,3 +1513,383 @@ void AGlobalSpawner::BuildAttachment(Factions faction, BuildingAttachments attac
 	}
 }
 
+#pragma region UnitData
+Factions FUnitData::GetFaction() const
+{
+	return faction;
+}
+UnitTypes FUnitData::GetUnitType() const
+{
+	return unitType;
+}
+
+void FUnitData::SetUnitValues(int setHealth, int setMorale, int setVision, int setSpeed, int setDamage, int setSiegePower, int setReinforceRate, int setEnergyUpKeep)
+{
+	currentHP = setHealth;
+	maxHP = setHealth;
+	currentMorale = setMorale;
+	maxMorale = setMorale;
+
+	vision = setVision;
+	speed = setSpeed;
+
+	damage = setDamage;
+	siegePower = setSiegePower;
+
+	reinforceRate = setReinforceRate;
+	energyUpkeep = setEnergyUpKeep;
+}
+void FUnitData::AddUnitData(FUnitData* data)
+{
+	if (unitType != UnitTypes::Army) return;
+
+	if (data->GetUnitType() == UnitTypes::Army)
+	{
+		TArray<FUnitData*> units = data->GetSavedUnits();
+		for (int i = 0; i < units.Num(); i++)
+		{
+			AddUnitData(units[i]);
+		}
+
+		return;
+	}
+
+	savedUnits.Add(data);
+	data->RemoveArmyName();
+
+	currentHP += data->currentHP;
+	maxHP += data->maxHP;
+	currentMorale += data->currentMorale;
+	maxMorale += data->maxMorale;
+
+	int setSpeed = 0;
+	int bestVision = 0;
+	for (int i = 0; i < savedUnits.Num(); i++)
+	{
+		setSpeed += savedUnits[i]->speed;
+
+		if (savedUnits[i]->vision > bestVision)
+			bestVision = savedUnits[i]->vision;
+	}
+	setSpeed = FMath::RoundToInt((float)setSpeed / (float)savedUnits.Num());
+
+	speed = setSpeed;
+	vision = bestVision;
+
+	damage += data->damage;
+	siegePower += data->siegePower;
+
+	reinforceRate += data->reinforceRate;
+	energyUpkeep += data->energyUpkeep;
+}
+FUnitData* FUnitData::ExtractUnitData(int32 index, bool killOnExtraction)
+{
+	if (!savedUnits.IsValidIndex(index)) return nullptr;
+
+	FUnitData* unit = savedUnits[index];
+	savedUnits.RemoveAt(index);
+
+	float hpPercent = (float)currentHP / (float)maxHP;
+	float moralePercent = (float)currentMorale / (float)maxMorale;
+
+	maxHP -= unit->maxHP;
+	currentHP = FMath::RoundToInt((float)maxHP * hpPercent);
+	maxMorale -= unit->maxMorale;
+	currentMorale = FMath::RoundToInt((float)maxMorale * moralePercent);
+
+	int setSpeed = 0;
+	int bestVision = 0;
+	for (int i = 0; i < savedUnits.Num(); i++)
+	{
+		setSpeed += savedUnits[i]->speed;
+
+		if (savedUnits[i]->vision > bestVision)
+			bestVision = savedUnits[i]->vision;
+	}
+	setSpeed = FMath::RoundToInt((float)setSpeed / (float)savedUnits.Num());
+
+	speed = setSpeed;
+	vision = bestVision;
+
+	damage -= unit->damage;
+	siegePower -= unit->siegePower;
+
+	reinforceRate -= unit->reinforceRate;
+	energyUpkeep -= unit->energyUpkeep;
+
+	if (killOnExtraction)
+	{
+		return nullptr;
+	}
+	else
+	{
+		unit->currentHP = FMath::RoundToInt((float)unit->maxHP * hpPercent);
+		unit->currentMorale = FMath::RoundToInt((float)unit->maxMorale * hpPercent);
+		GenerateArmyName();
+	}
+
+	return unit;
+}
+
+void FUnitData::SetBuildingValues(int setHealth, int setVision, int setSiegePower, int setEnergyUpkeep)
+{
+	currentHP = setHealth;
+	maxHP = setHealth;
+
+	vision = setVision;
+
+	siegePower = setSiegePower;
+	energyUpkeep = setEnergyUpkeep;
+}
+
+void FUnitData::GenerateArmyName(FString newName)
+{
+	using GameMode = ACapstoneProjectGameModeBase;
+
+	if (!GameMode::activeFactions.Contains(faction)) return;
+	if (armyName == newName && newName != TEXT("")) return;
+
+	TMap<FString, TArray<int32>>& names = faction == Factions::Human ?
+		GameMode::activeFactions[faction]->armyNamesHuman :
+		GameMode::activeFactions[faction]->armyNamesAlien;
+
+	int32& cap = GameMode::activeFactions[faction]->maxNameShare;
+
+	RemoveArmyName();
+	if (!names.Contains(newName)) names.Add(newName, TArray<int32>());
+
+	if (newName != TEXT(""))
+	{
+		if (names[newName].Num() < cap)
+		{
+			int32 num = 0;
+			for (int i = 1; i < cap; i++)
+			{
+				if (!names[newName].Contains(i))
+				{
+					num = i;
+					names[newName].Add(i);
+					break;
+				}
+			}
+
+			armyName = newName;
+			nameInstance = num;
+			if (num != 0) return;
+		}
+	}
+
+	for (auto& name : names)
+	{
+		if (name.Value.Num() < cap)
+		{
+			int32 num = 0;
+			for (int i = 1; i < cap; i++)
+			{
+				if (!name.Value.Contains(i))
+				{
+					num = i;
+					name.Value.Add(i);
+					break;
+				}
+			}
+
+			armyName = name.Key;
+			nameInstance = num;
+
+			if (num != 0) break;
+		}
+	}
+}
+void FUnitData::RemoveArmyName()
+{
+	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return;
+
+	TMap<FString, TArray<int32>>& names = faction == Factions::Human ?
+		ACapstoneProjectGameModeBase::activeFactions[faction]->armyNamesHuman :
+		ACapstoneProjectGameModeBase::activeFactions[faction]->armyNamesAlien;
+
+	if (names.Contains(armyName) && names[armyName].Contains(nameInstance))
+	{
+		names[armyName].Remove(nameInstance);
+	}
+}
+
+FText FUnitData::GetArmyName() const
+{
+	return FText::FromString(armyName + TEXT(" No. ") + FString::FromInt(nameInstance));
+}
+FString FUnitData::GetNameRaw() const
+{
+	return armyName;
+}
+int FUnitData::GetNameInstance() const
+{
+	return nameInstance;
+}
+
+int FUnitData::GetCurrentHP() const
+{
+	return currentHP;
+}
+int FUnitData::GetMaxHP() const
+{
+	return maxHP;
+}
+void FUnitData::SetHP(float alpha)
+{
+	alpha = FMath::Clamp(alpha, 0.f, 1.f);
+	currentHP = FMath::RoundToInt((float)maxHP * alpha);
+
+	currentHP = FMath::Max(currentHP, 1);
+}
+int FUnitData::GetCurrentMorale() const
+{
+	return currentMorale;
+}
+int FUnitData::GetMaxMorale() const
+{
+	return maxMorale;
+}
+void FUnitData::SetMorale(float alpha)
+{
+	alpha = FMath::Clamp(alpha, 0.f, 1.f);
+	currentMorale = FMath::RoundToInt((float)currentMorale * alpha);
+}
+float FUnitData::GetHPAlpha() const
+{
+	float curr = (float)currentHP;
+	float max = (float)maxHP;
+
+	return FMath::Clamp(curr / max, 0.f, 1.f);
+}
+float FUnitData::GetMoraleAlpha() const
+{
+	float curr = (float)currentMorale;
+	float max = (float)maxMorale;
+
+	return FMath::Clamp(curr / max, 0.f, 1.f);
+}
+bool FUnitData::IsAlive() const
+{
+	return currentHP > 0;
+}
+bool FUnitData::HasMorale() const
+{
+	return currentMorale > 0;
+}
+
+int FUnitData::DamageHP(int amount)
+{
+	currentHP -= amount;
+	currentHP = FMath::Clamp(currentHP, 0, maxHP);
+
+	return currentHP;
+}
+int FUnitData::DamageMorale(int amount)
+{
+	currentMorale -= amount;
+	currentMorale = FMath::Clamp(currentMorale, 0, maxMorale);
+
+	return currentMorale;
+}
+
+int FUnitData::HealHP(int amount)
+{
+	currentHP += amount;
+	currentHP = FMath::Clamp(currentHP, 0, maxHP);
+
+	return currentHP;
+}
+
+int FUnitData::GetVision() const
+{
+	return vision;
+}
+int FUnitData::GetSpeed() const
+{
+	return speed;
+}
+int FUnitData::GetDamage() const
+{
+	return damage;
+}
+int FUnitData::GetSiegePower() const
+{
+	return siegePower;
+}
+int FUnitData::GetReinforceRate() const
+{
+	return reinforceRate;
+}
+int FUnitData::GetEnergyUpkeep() const
+{
+	return energyUpkeep;
+}
+TArray<FUnitData*> FUnitData::GetSavedUnits() const
+{
+	return savedUnits;
+}
+int FUnitData::GetSavedUnitCount() const
+{
+	return savedUnits.Num();
+}
+
+bool FUnitData::SetupComplete() const
+{
+	return maxHP > 0;
+}
+
+TMap<UnitTypes, FUnitComposition> FUnitData::GetUnitComposition() const
+{
+	TMap<UnitTypes, FUnitComposition> units;
+
+	units.Add(UnitTypes::Infantry, FUnitComposition{});
+	units.Add(UnitTypes::Cavalry, FUnitComposition{});
+	units.Add(UnitTypes::Scout, FUnitComposition{});
+	units.Add(UnitTypes::Ranged, FUnitComposition{});
+	units.Add(UnitTypes::Shielder, FUnitComposition{});
+	units.Add(UnitTypes::Settler, FUnitComposition{});
+
+	if (unitType != UnitTypes::Army)
+	{
+		units[unitType].quantity++;
+		units[unitType].compPercent = 1.f;
+
+		return units;
+	}
+
+	int totalUnits = 0;
+
+	for (int i = 0; i < savedUnits.Num(); i++)
+	{
+		++units[savedUnits[i]->unitType].quantity;
+		++totalUnits;
+	}
+
+	for (auto& unit : units)
+	{
+		unit.Value.compPercent = (float)unit.Value.quantity / (float)totalUnits;
+	}
+
+	return units;
+}
+UnitTypes FUnitData::GetLargestUnitQuantity() const
+{
+	TMap<UnitTypes, FUnitComposition> composition = GetUnitComposition();
+
+	UnitTypes highestType = UnitTypes::None;
+	int best = 0;
+
+	for (auto& unit : composition)
+	{
+		if (unit.Value.quantity > best)
+		{
+			best = unit.Value.quantity;
+			highestType = unit.Key;
+		}
+	}
+
+	return highestType;
+}
+#pragma endregion

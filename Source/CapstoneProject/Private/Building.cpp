@@ -23,7 +23,6 @@ ABuilding::ABuilding()
 
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
-	unitStats = CreateDefaultSubobject<UUnitStats>(TEXT("Unit Stats"));
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
 	visibility->enableScan = false;
 
@@ -43,7 +42,8 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
+	if (preAssignedFaction != Factions::None)
+		InitBuilding(preAssignedFaction);
 }
 
 // Called every frame
@@ -70,6 +70,24 @@ void ABuilding::Tick(float DeltaTime)
 	}
 }
 
+FUnitData* ABuilding::GetUnitData() const
+{
+	return unitData;
+}
+
+void ABuilding::InitBuilding(const Factions& faction)
+{
+	using GameMode = ACapstoneProjectGameModeBase;
+	if (!GameMode::activeFactions.Contains(faction)) return;
+
+	unitData = new FUnitData(faction);
+	if (GameMode::activeFactions.Contains(faction))
+		GameMode::activeFactions[faction]->allBuildings.Add(this);
+
+	visibility->SetupComponent(unitData);
+	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
+}
+
 bool ABuilding::SetupBuilding(SpawnableBuildings type)
 {
 	if (!AGlobalSpawner::spawnerObject)
@@ -77,14 +95,14 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No global spawner, could not set up building"));
 		return false;
 	}
-	if (unitStats->faction == Factions::None)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No faction set, could not set up building"));
-		return false;
-	}
 	if (!AGlobalSpawner::spawnerObject->buildingStats.Contains(type))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No building stats found, could not set up building"));
+		return false;
+	}
+	if (!unitData || unitData->GetFaction() == Factions::None)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No faction set, could not set up building"));
 		return false;
 	}
 	
@@ -101,18 +119,10 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		return false;
 	}
 
-	//Assign the faction, if not spawned through spawnerObject
-	UnitActions::AssignFaction(unitStats->faction, this);
-
 	//Get the building data
 	FBuildingStats stats = AGlobalSpawner::spawnerObject->buildingStats[type];
 
-	unitStats->currentHP = stats.HP;
-	unitStats->maxHP = stats.HP;
-
-	unitStats->damage = stats.siegeDamage;
-
-	unitStats->energyUpkeep = stats.energyUpkeepCost;
+	unitData->SetBuildingValues(stats.HP, stats.vision, stats.siegeDamage, stats.energyUpkeepCost);
 
 	resourceYields[StratResources::Energy] = stats.energyYield;
 	resourceYields[StratResources::Food] = stats.foodYield;
@@ -134,7 +144,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	int hexWorkers = 0;
 	int availableWorkers = 0;
-	TMap<WorkerType, int> factionWorkers = UnitActions::GetFactionWorkers(unitStats->faction);
+	TMap<WorkerType, int> factionWorkers = UnitActions::GetFactionWorkers(unitData->GetFaction());
 	for (auto& worker : hex->workersInHex)
 	{
 		hexWorkers += worker.Value;
@@ -148,7 +158,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	{
 		for (auto& worker : factionWorkers)
 		{
-			int addedWorker = UnitActions::AddWorkers(unitStats->faction, worker.Key, 1, hex);
+			int addedWorker = UnitActions::AddWorkers(unitData->GetFaction(), worker.Key, 1, hex);
 
 			hex->workersInHex[worker.Key] += addedWorker;
 			hexWorkers += addedWorker;
@@ -198,7 +208,7 @@ void ABuilding::SetBuildState()
 		BuildingAction();
 		SetToFinishedModel();
 		visibility->enableScan = true;
-		if (unitStats->faction == Factions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
+		if (unitData->GetFaction() == Factions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
 		break;
 	case Complete:
 		
@@ -221,7 +231,7 @@ void ABuilding::UpdateResources()
 		{
 			int ownerPortion = FMath::RoundToInt((float)value - (float)value * occupyResourcePercent);
 			int siegePortion = FMath::RoundToInt((float)value * occupyResourcePercent);
-			hex->UpdateResourceYield(resource.Key, ownerPortion, unitStats->faction);
+			hex->UpdateResourceYield(resource.Key, ownerPortion, unitData->GetFaction());
 			hex->UpdateResourceYield(resource.Key, siegePortion, occupyingFaction);
 		}
 		else
@@ -230,7 +240,7 @@ void ABuilding::UpdateResources()
 		}
 	}
 
-	UnitActions::UpdateResourceCapacity(unitStats->faction, resourceCapIncrease);
+	UnitActions::UpdateResourceCapacity(unitData->GetFaction(), resourceCapIncrease);
 }
 
 void ABuilding::RevertResources()
@@ -354,15 +364,20 @@ void ABuilding::Destroyed()
 
 	if (hex)
 	{
-		UnitActions::UpdateResourceCapacity(unitStats->faction, -resourceCapIncrease);
+		Factions faction = unitData->GetFaction();
 
-		UnitActions::RemoveFromFaction(unitStats->faction, this);
+		UnitActions::UpdateResourceCapacity(faction, -resourceCapIncrease);
+
+		if (ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Contains(this))
+		{
+			ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Remove(this);
+		}
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
 			TMap<StratResources, int> addResources;
 			addResources.Add(StratResources::Production, AGlobalSpawner::spawnerObject->buildingCosts[buildingType].productionCost * 0.25f);
-			UnitActions::AddResources(unitStats->faction, addResources);
+			UnitActions::AddResources(faction, addResources);
 		}
 
 		hex->SetBuilding(nullptr, GetHexLayersToOccupy());
@@ -380,7 +395,7 @@ void ABuilding::Destroyed()
 bool ABuilding::IsDisabled()
 {
 	if (occupied) return true;
-	if (unitStats->currentHP > 0) return false;
+	if (unitData->IsAlive()) return false;
 
 	return true;
 }
@@ -438,11 +453,13 @@ int ABuilding::GetOccupyingTroops()
 
 	for (int i = 0; i < hex->troopsInHex.Num(); i++)
 	{
-		if (hex->troopsInHex[i]->unitStats->faction == occupyingFaction)
+		FUnitData* unit = hex->troopsInHex[i]->GetUnitData();
+
+		if (unit->GetFaction() == occupyingFaction)
 		{
-			if (hex->troopsInHex[i]->unitStats->unitType == UnitTypes::Army)
+			if (unit->GetUnitType() == UnitTypes::Army)
 			{
-				occupyingTroops += hex->troopsInHex[i]->unitStats->savedUnits.Num();
+				occupyingTroops += unit->GetSavedUnitCount();
 			}
 			else
 			{
@@ -510,11 +527,9 @@ void ABuilding::HealOverTime()
 {
 	if (ABaseHex* hex = hexNav->GetCurrentHex())
 	{
-		if (!hex->battle && unitStats->currentHP < unitStats->maxHP)
+		if (!hex->battle)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Healing"));
-			unitStats->currentHP += FMath::RoundToInt(unitStats->maxHP * healPercent);
-			unitStats->currentHP = FMath::Clamp(unitStats->currentHP, 0, unitStats->maxHP);
+			unitData->HealHP(FMath::RoundToInt(unitData->GetMaxHP() * healPercent));
 		}
 	}
 }

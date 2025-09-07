@@ -28,4 +28,7 @@ private:
 	Faction* faction;
 
 	void DateUpdateTick();
+
+	UPROPERTY(EditAnywhere, Category = "Actions") TMap<EActionType, FActionSelection> troopActions;
+	UPROPERTY(EditAnywhere, Category = "Actions") TMap<EActionType, FActionSelection> buildingActions;
 };

@@ -23,10 +23,10 @@ public:
 	TArray<ATroop*> ReleaseAllTroops();
 	ATroop* ReleaseOneTroop(int index);
 
-	const UnitActions::UnitData* GetStoredTroopInfo(int index) const;
+	const FUnitData* GetStoredTroopInfo(int index) const;
 
 private:
-	TArray<UnitActions::UnitData> troopsInStorage;
+	TArray<FUnitData*> troopsInStorage;
 	ATroop* ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& usedHexes);
 
 	void HealTroops(float& DeltaTime);

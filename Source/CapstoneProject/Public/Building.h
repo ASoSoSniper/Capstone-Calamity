@@ -35,7 +35,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
-	UPROPERTY(VisibleAnywhere)UUnitStats* unitStats;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 
 	virtual void Action1();
@@ -49,6 +48,8 @@ public:
 	virtual void Action9();
 	virtual void Action10();
 	
+	FUnitData* GetUnitData() const;
+	void InitBuilding(const Factions& faction);
 	virtual void BeginDestroying();
 	virtual bool IsDisabled();
 
@@ -80,9 +81,11 @@ protected:
 	BuildStates buildState = None;
 
 	UPROPERTY(VisibleAnywhere) SpawnableBuildings buildingType;
+	FUnitData* unitData;
 	TMap<StratResources, int> resourceYields;
 	int resourceCapIncrease = 0;
 	UPROPERTY(EditAnywhere, Category = "Initialization") bool builtAtStart = false;
+	UPROPERTY(EditAnywhere, Category = "Initialization") TEnumAsByte<Factions> preAssignedFaction = Factions::None;
 
 	virtual void UpdateResources();
 	virtual void RevertResources();

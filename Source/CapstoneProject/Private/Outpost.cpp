@@ -37,96 +37,33 @@ AOutpost::AOutpost()
 	}
 
 	buildingType = SpawnableBuildings::Outpost;
-
-	unitStats->vision = 2;
-	range = 2;
+	range = 3;
 }
 
 void AOutpost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (BuildingAttachmentIsActive(BuildingAttachments::RobotBarracks))
-	{
-		HealTroops(DeltaTime);
-	}
 }
 
-TArray<ABaseHex*> AOutpost::ClaimLand()
+TSet<ABaseHex*> AOutpost::ClaimLand()
 {
-	TArray<ABaseHex*> hexesToClaim;
+	TSet<ABaseHex*> hexesToClaim;
 
-	if (unitStats->faction == Factions::None)
+	Factions faction = GetUnitData()->GetFaction();
+
+	if (faction == Factions::None)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("No faction assigned, cannot claim land"));
 		return hexesToClaim;
 	}
 
-	ABaseHex* startHex = hexNav->GetCurrentHex();
-
-	startHex->SetHexOwner(unitStats->faction);
-	hexesToClaim.Add(startHex);
-
-	for (int i = 0; i < range; ++i)
+	hexesToClaim = hexNav->GetCurrentHex()->GetHexesInRadius(range);
+	for (ABaseHex* hex : hexesToClaim)
 	{
-		TArray<ABaseHex*> currentLayer;
-
-		for (int j = 0; j < hexesToClaim.Num(); ++j)
-		{
-			TArray<ABaseHex*> tempList;
-			tempList = ScanHex(hexesToClaim[j]);
-			for (int k = 0; k < tempList.Num(); ++k)
-			{
-				currentLayer.Add(tempList[k]);
-			}
-		}
-
-		for (int j = 0; j < currentLayer.Num(); ++j)
-		{
-			hexesToClaim.Add(currentLayer[j]);
-		}
+		hex->SetHexOwner(faction);
 	}
-
-	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString::Printf(TEXT("%d hexes claimed"), hexesToClaim.Num()));
-
+	
 	return hexesToClaim;
-}
-
-TArray<ABaseHex*> AOutpost::ScanHex(ABaseHex* hex)
-{
-	FCollisionQueryParams queryParams;
-	queryParams.AddIgnoredActor(hex);
-	TArray<AActor*> objectsInHex = Cast<ABaseHex>(hex)->GetObjectsInHex();
-	if (objectsInHex.Num() > 0) queryParams.AddIgnoredActors(objectsInHex);
-
-	TArray<ABaseHex*> foundHexes;
-
-	for (int i = 0; i < 6; ++i)
-	{
-		//Establish direction
-		FVector traceStart = hex->GetActorLocation() + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * traceStartOffset;
-		FVector traceEnd = traceStart + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * traceLength;
-		FHitResult hit;
-
-		//Trace
-		bool found = GetWorld()->LineTraceSingleByChannel(hit, traceStart, traceEnd, ECC_Visibility, queryParams, FCollisionResponseParams::DefaultResponseParam);
-
-		//Check for hex actor class
-		ABaseHex* foundHex = found ? Cast<ABaseHex>(hit.GetActor()) : nullptr;
-
-		//Check found hex for neutrality
-		if (foundHex)
-		{
-			if (foundHex->GetHexOwner() == Factions::None)
-			{
-				//Add hex to list of found hexes
-				foundHex->SetHexOwner(unitStats->faction);
-				foundHexes.Add(foundHex);
-			}
-		}
-	}
-
-	return foundHexes;
 }
 
 void AOutpost::BuildingAction()
@@ -181,64 +118,6 @@ bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
 	return false;
 }
 
-void AOutpost::StoreTroop(ATroop* troop)
-{
-	if (!BuildingAttachmentIsActive(BuildingAttachments::Storage)) return;
-
-	UnitActions::UnitData troopData = UnitActions::CollectUnitData(troop->unitStats);
-	troopsInStorage.Add(troopData);
-
-	troop->Destroy();
-}
-
-TArray<ATroop*> AOutpost::ReleaseTroops()
-{
-	TArray<ATroop*> spawnedTroops;
-	TSet<ABaseHex*> usedHexes;
-	ABaseHex* hex = hexNav->GetCurrentHex();
-
-	for (int i = 0; i < troopsInStorage.Num(); ++i)
-	{
-		ATroop* spawn = nullptr;
-		ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
-		usedHexes.Add(spawnPoint);
-
-		switch (troopsInStorage[i].unitType)
-		{
-		case UnitTypes::Army:
-			spawn = AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, troopsInStorage[i].savedUnits);
-			break;
-
-		default:
-			spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, troopsInStorage[i]);
-			break;
-		}
-
-		spawnedTroops.Add(spawn);
-	}
-	troopsInStorage.Empty();
-	return spawnedTroops;
-}
-
-void AOutpost::HealTroops(float& DeltaTime)
-{
-	if (currentHealRate > 0)
-	{
-		currentHealRate -= DeltaTime * ACapstoneProjectGameModeBase::timeScale;
-		return;
-	}
-
-	currentHealRate = healRate;
-	ABaseHex* hex = hexNav->GetCurrentHex();
-
-	if (hex->troopsInHex.IsEmpty()) return;
-
-	for (int i = 0; i < hex->troopsInHex.Num(); i++)
-	{
-		hex->troopsInHex[i]->unitStats->Heal(healAmount);
-	}
-}
-
 void AOutpost::Action1()
 {
 	
@@ -246,7 +125,7 @@ void AOutpost::Action1()
 
 void AOutpost::Action2()
 {
-	ReleaseTroops();
+	
 }
 
 void AOutpost::Action3()
@@ -269,9 +148,9 @@ void AOutpost::Destroyed()
 			buildingAttachment->DisableAttachment();
 		}
 	}
-	for (int i = 0; i < claimedHexes.Num(); i++)
+	for (ABaseHex* hex : claimedHexes)
 	{
-		claimedHexes[i]->SetHexOwner(Factions::None);
+		hex->SetHexOwner(Factions::None);
 	}
 
 	Super::Destroyed();

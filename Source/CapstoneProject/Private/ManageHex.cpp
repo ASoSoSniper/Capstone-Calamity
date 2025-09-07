@@ -69,161 +69,57 @@ void UManageHex::Reset()
 
 void UManageHex::Action1()
 {
-	switch (subSelect)
-	{
-	case None:
-		subSelect = Build;
-		break;
-	case Build:
-		if (controller->selectedHex->GetHexOwner() == controller->playerFaction)
-			controller->Build(SpawnableBuildings::Farmland);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action2()
 {
-	switch (subSelect)
-	{
-	case None:
-		controller->selectedHex->building->BeginDestroying();
-		break;
-	case Build:
-		if (controller->selectedHex->GetHexOwner() == controller->playerFaction)
-			controller->Build(SpawnableBuildings::MiningStation);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action3()
 {
-	switch (subSelect)
-	{
-	case None:
-		if (controller->selectedHex->GetHexOwner() == controller->playerFaction)
-			AddWorkersToHex(WorkerType::Human, 2);
-		break;
-	case Build:
-		if (controller->selectedHex->GetHexOwner() == controller->playerFaction)
-			controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action4()
 {
-	switch (subSelect)
-	{
-	case None:
-		if (controller->selectedHex->GetHexOwner() == controller->playerFaction)
-			RemoveWorkers(WorkerType::Human, 2);
-		break;
-	case Build:
-		controller->Build(SpawnableBuildings::Outpost);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action5()
 {
-	switch (subSelect)
-	{
-	case None:
-		
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::Storage);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action6()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action7()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action8()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action9()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action10()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action11()
 {
-	switch (subSelect)
-	{
-	case None:
-
-		break;
-	case Build:
-		//controller->Build(SpawnableBuildings::PowerPlant);
-		Reset();
-		break;
-	}
+	
 }
 
 void UManageHex::Action12()

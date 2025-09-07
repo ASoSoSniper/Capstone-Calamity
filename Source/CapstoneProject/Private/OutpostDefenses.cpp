@@ -10,18 +10,18 @@ UOutpostDefenses::UOutpostDefenses()
 
 void UOutpostDefenses::UpdateResources()
 {
-	outpost->unitStats->currentHP += HPIncrease;
-	outpost->unitStats->maxHP += HPIncrease;
-	outpost->unitStats->siegePower += siegeIncrease;
+	/*outpost->GetUnitData()->currentHP += HPIncrease;
+	outpost->GetUnitData()->maxHP += HPIncrease;
+	outpost->GetUnitData()->siegePower += siegeIncrease;*/
 }
 
 bool UOutpostDefenses::DisableAttachment()
 {
 	if (!Super::DisableAttachment()) return false;
 
-	outpost->unitStats->currentHP -= HPIncrease;
-	outpost->unitStats->maxHP -= HPIncrease;
-	outpost->unitStats->siegePower -= siegeIncrease;
+	/*outpost->GetUnitData()->currentHP -= HPIncrease;
+	outpost->GetUnitData()->maxHP -= HPIncrease;
+	outpost->GetUnitData()->siegePower -= siegeIncrease;*/
 
 	return true;
 }

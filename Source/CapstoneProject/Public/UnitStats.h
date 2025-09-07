@@ -37,7 +37,7 @@ public:
 	FString GetUnitName();
 	UPROPERTY(VisibleAnywhere) bool upgraded;
 	//Exclusive property for armies
-	TArray<UnitActions::UnitData> savedUnits;
+	TArray<FUnitData> savedUnits;
 
 	//Health and Morale
 	UPROPERTY(EditAnywhere) int currentHP = 10;

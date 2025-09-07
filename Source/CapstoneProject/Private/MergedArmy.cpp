@@ -5,62 +5,31 @@
 
 AMergedArmy::AMergedArmy()
 {
-	unitStats->unitType = UnitTypes::Army;
-	unitStats->currentHP = 0;
-	unitStats->maxHP = 0;
-	unitStats->currentMorale = 0;
-	unitStats->maxMorale = 0;
 	
-	unitStats->vision = 0;
-	unitStats->speed = 0;
-
-	unitStats->damage = 0;
-	unitStats->siegePower = 0;
-
-	unitStats->reinforceRate = 0;
-	unitStats->energyUpkeep = 0;
 }
 
 void AMergedArmy::ConsumeUnit(ATroop* mergedUnit)
 {
-	UnitActions::UnitData newData = UnitActions::CollectUnitData(mergedUnit->unitStats);
+	FUnitData* newData = mergedUnit->GetUnitData();
 	
-	unitStats->savedUnits.Add(newData);
-
-	UnitActions::AddUnitData(unitStats, newData);
+	unitData->AddUnitData(newData);
 
 	mergedUnit->Destroy();
 }
 
-void AMergedArmy::ConsumeArmy(AMergedArmy* mergedArmy)
+void AMergedArmy::ConsumeData(TArray<FUnitData*>& groupData)
 {
-	for (int i = 0; i < mergedArmy->unitStats->savedUnits.Num(); ++i)
+	for (int i = 0; i < groupData.Num(); i++)
 	{
-		unitStats->savedUnits.Add(mergedArmy->unitStats->savedUnits[i]);
-
-		UnitActions::AddUnitData(unitStats, mergedArmy->unitStats->savedUnits[i]);
-	}
-
-	mergedArmy->Destroy();
-}
-
-void AMergedArmy::ConsumeData(TArray<UnitActions::UnitData>& groupData)
-{
-	for (int i = 0; i < groupData.Num(); ++i)
-	{
-		unitStats->savedUnits.Add(groupData[i]);
-
-		UnitActions::AddUnitData(unitStats, groupData[i]);
+		unitData->AddUnitData(groupData[i]);
 	}
 }
 
-ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
+ATroop* AMergedArmy::SpawnUnit(TArray<FUnitData*>& groupData)
 {
 	if (groupData.IsEmpty()) return nullptr;
 
-	float currHP = unitStats->currentHP;
-	float maxHP = unitStats->maxHP;
-	float hpPercent = currHP / maxHP;
+	float hpPercent = unitData->GetHPAlpha();
 
 	ATroop* spawnTroop;
 	AMergedArmy* spawnArmy;
@@ -73,12 +42,12 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmy(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), groupData, hpPercent);
+		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmy(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData, hpPercent);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), groupData[0], hpPercent);
+		spawnTroop = AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData[0], hpPercent);
 
 		return spawnTroop;
 	}
@@ -88,25 +57,27 @@ ATroop* AMergedArmy::SpawnUnit(TArray<UnitActions::UnitData>& groupData)
 
 void AMergedArmy::SplitInHalf()
 {
-	TArray<UnitActions::UnitData> group1;
-	TArray<UnitActions::UnitData> group2;
+	TArray<FUnitData*> group1;
+	TArray<FUnitData*> group2;
+
+	TArray<FUnitData*> units = unitData->GetSavedUnits();
 
 	//Sort from highest to lowest max damage in each unit
-	unitStats->savedUnits.Sort([&](const UnitActions::UnitData& A, const UnitActions::UnitData& B)
+	units.Sort([&](const FUnitData& A, const FUnitData& B)
 		{
-			return A.damage > B.damage;
+			return A.GetDamage() > B.GetDamage();
 		});
 	
 	//Add even-numbered elements to group 1 and odd-numbered to group 2
-	for (int i = 0; i < unitStats->savedUnits.Num(); ++i)
+	for (int i = 0; i < units.Num(); ++i)
 	{
 		if (i % 2 == 0)
 		{
-			group1.Add(unitStats->savedUnits[i]);
+			group1.Add(units[i]);
 		}
 		else
 		{
-			group2.Add(unitStats->savedUnits[i]);
+			group2.Add(units[i]);
 		}
 	}
 
@@ -121,7 +92,7 @@ void AMergedArmy::ExtractOneUnit(UnitTypes type)
 {
 	int32 unitIndex = -1;
 
-	if (unitStats->savedUnits.Num() <= 2)
+	if (unitData->GetSavedUnits().Num() <= 2)
 	{
 		SplitInHalf();
 		return;
@@ -132,10 +103,10 @@ void AMergedArmy::ExtractOneUnit(UnitTypes type)
 	ABaseHex* hex = hexNav->GetCurrentHex();
 	TSet<ABaseHex*> usedHexes;
 
-	UnitActions::UnitData unit = UnitActions::ExtractUnit(unitStats, unitIndex);
-	if (unit.unitType == UnitTypes::None) return;
+	FUnitData* unit = unitData->ExtractUnitData(unitIndex);
+	if (!unit) return;
 
-	AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitStats->faction, usedHexes), unit);
+	AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), unit);
 }
 
 void AMergedArmy::Action1()

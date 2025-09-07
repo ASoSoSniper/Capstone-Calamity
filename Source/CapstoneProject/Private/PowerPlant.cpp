@@ -29,7 +29,7 @@ void APowerPlant::SetToFinishedModel()
 {
 	UStaticMesh* meshAsset = nullptr;
 
-	if (unitStats->faction == Factions::Human)
+	if (unitData->GetFaction() == Factions::Human)
 	{
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingEnergyStationPlains.BuildingEnergyStationPlains'"));
 	}

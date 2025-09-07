@@ -5,7 +5,7 @@
 
 void UOutpostStorage::UpdateResources()
 {
-	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, storageIncrease);
+	UnitActions::UpdateResourceCapacity(outpost->GetUnitData()->GetFaction(), storageIncrease);
 }
 
 UOutpostStorage::UOutpostStorage()
@@ -22,7 +22,7 @@ bool UOutpostStorage::DisableAttachment()
 {
 	if (!Super::DisableAttachment()) return false;
 
-	UnitActions::UpdateResourceCapacity(outpost->unitStats->faction, -storageIncrease);
+	UnitActions::UpdateResourceCapacity(outpost->GetUnitData()->GetFaction(), -storageIncrease);
 	return true;
 }
 

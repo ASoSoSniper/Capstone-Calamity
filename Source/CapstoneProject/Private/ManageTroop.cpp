@@ -16,7 +16,7 @@ void UManageTroop::Select(AActor* selectedObject)
 	if (!selectedObject) return;
 
 	selectedTroop = Cast<ATroop>(selectedObject);
-	controller->PlayUITroopSelectionSound(selectedTroop->unitStats->faction);
+	controller->PlayUITroopSelectionSound(selectedTroop->GetUnitData()->GetFaction());
 
 	if (selectedObject)
 	{
@@ -29,7 +29,6 @@ void UManageTroop::SwitchState()
 {
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->selectedWorldObject);
 
-	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, objectType.actor);
 	UHexNav* hexNav = objectType.actor->GetComponentByClass<UHexNav>();
 
 	//Current selected object type:
@@ -51,7 +50,7 @@ void UManageTroop::SwitchState()
 
 		//If building (and hostile), set troop's destination to that building's current hex
 	case ObjectTypes::Building:
-		if (hostileTarget)
+		if (UnitActions::IsHostileTarget(selectedTroop->GetUnitData()->GetFaction(), objectType.building->GetUnitData()->GetFaction()))
 		{
 			if (hexNav)
 				selectedTroop->SetDestination(hexNav->GetCurrentHex());
@@ -66,7 +65,7 @@ void UManageTroop::SwitchState()
 		break;
 
 	case ObjectTypes::Battle:
-		//EngagementSelect engage = UnitActions::DetermineConflictAlignment(selectedTroop->unitStats->faction, objectType.battle->currentBattle.Group1, objectType.battle->currentBattle.Group2);
+		//EngagementSelect engage = UnitActions::DetermineConflictAlignment(selectedTroop->GetUnitData()->faction, objectType.battle->currentBattle.Group1, objectType.battle->currentBattle.Group2);
 		CueActionState(ActionStates::BattleManage, objectType.actor);
 		break;
 	}
@@ -142,10 +141,9 @@ void UManageTroop::Action4()
 
 void UManageTroop::CommandAction()
 {
-	if (!controller->hoveredWorldObject || !selectedTroop || !controller->IsHumanControlled(selectedTroop)) return;
+	if (!controller->hoveredWorldObject || !selectedTroop || selectedTroop->GetUnitData()->GetFaction() != Factions::Human) return;
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
-	bool hostileTarget = UnitActions::IsHostileTarget(selectedTroop, objectType.actor);
 	UHexNav* hexNav = objectType.actor->GetComponentByClass<UHexNav>();
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Command Action Triggered"));
@@ -166,7 +164,7 @@ void UManageTroop::CommandAction()
 		if (hexNav)
 			selectedTroop->SetDestination(hexNav->GetCurrentHex());
 	case ObjectTypes::MoveAI:
-		if (hostileTarget)
+		if (UnitActions::IsHostileTarget(selectedTroop->GetUnitData()->GetFaction(), objectType.building->GetUnitData()->GetFaction()))
 		{
 			if (hexNav)
 				selectedTroop->SetDestination(hexNav->GetCurrentHex());

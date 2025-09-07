@@ -15,7 +15,6 @@ AMovementAI::AMovementAI()
 	
 	interact = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	hexNav = CreateDefaultSubobject<UHexNav>(TEXT("Hex Nav"));
-	unitStats = CreateDefaultSubobject<UUnitStats>("Faction Stats");
 	visibility = CreateDefaultSubobject<UMeshVisibility>("Mesh Visibility");
 	mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
@@ -83,7 +82,7 @@ void AMovementAI::CreatePath()
 	//Continue moving toward destination if new hex path is created while moving toward previous destination
 	const ABaseHex* prevStep = nullptr;
 	if (!hexPath.IsEmpty() && moveState == Move
-		&& currTimeTillHexMove >= unitStats->speed)
+		&& currTimeTillHexMove >= unitData->GetSpeed())
 	{
 		prevStep = hexPath[hexPathIndex];
 	}
@@ -104,7 +103,7 @@ void AMovementAI::CreatePath()
 		anims->isWalking = true;
 	}
 
-	if ((currTimeTillHexMove < unitStats->speed) && (hexPath[0] != prevStep))
+	if ((currTimeTillHexMove < unitData->GetSpeed()) && (hexPath[0] != prevStep))
 	{
 		currTimeTillHexMove = 0.f;
 	}
@@ -391,7 +390,7 @@ void AMovementAI::CountdownToMove(float& DeltaTime)
 	if (!targetHex) return;
 
 	currTimeTillHexMove += DeltaTime * targetHex->GetMovementMulti() * ACapstoneProjectGameModeBase::timeScale;
-	currTimeTillHexMove = FMath::Clamp(currTimeTillHexMove, 0.f, unitStats->speed);
+	currTimeTillHexMove = FMath::Clamp(currTimeTillHexMove, 0.f, unitData->GetSpeed());
 }
 
 void AMovementAI::MoveToTarget(float& DeltaTime)
@@ -402,7 +401,7 @@ void AMovementAI::MoveToTarget(float& DeltaTime)
 		return;
 	}
 
-	if (currTimeTillHexMove < unitStats->speed)
+	if (currTimeTillHexMove < unitData->GetSpeed())
 	{
 		return;
 	}
@@ -439,7 +438,7 @@ void AMovementAI::CancelPath()
 {
 	if (hexPath.IsEmpty() || hexNav->CurrentEqualToTarget()) return;
 
-	if (currTimeTillHexMove >= unitStats->speed)
+	if (currTimeTillHexMove >= unitData->GetSpeed())
 	{
 		SetDestination(hexPath[hexPathIndex]);
 	}
@@ -455,25 +454,9 @@ bool AMovementAI::VisibleToFaction(Factions faction) const
 	return visibility->VisibleToFaction(faction);
 }
 
-void AMovementAI::Destroyed()
+FUnitData* AMovementAI::GetUnitData() const
 {
-	if (hexNav->GetCurrentHex())
-	{
-		UnitActions::RemoveFromFaction(unitStats->faction, this);
-		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
-
-		UnitActions::RemoveArmyName(Factions::Human, this);
-
-		if (selectedByPlayer)
-		{
-			AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
-			ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
-
-			if (controller) controller->Deselect();
-		}
-	}
-
-	Super::Destroyed();
+	return unitData;
 }
 
 float AMovementAI::FNodeData::GetG() const

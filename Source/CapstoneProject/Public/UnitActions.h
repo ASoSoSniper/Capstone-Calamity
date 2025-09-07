@@ -5,7 +5,6 @@
 #include "StratResources.h"
 #include "TerrainEnum.h"
 #include "CoreMinimal.h"
-//#include "GlobalSpawner.h"
 
 /**
  * 
@@ -118,16 +117,13 @@ class CAPSTONEPROJECT_API UnitActions
 public:
 
 	static bool IsHostileTarget(AMovementAI* unit, AMovementAI* target);
-	static bool IsHostileTarget(AMovementAI* unit, AActor* target);
+	static bool IsHostileTarget(const Factions& a, const Factions& b);
 
 	static bool IsAllyToFaction(FactionRelationship relationship);
 
 	static EngagementSelect DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2);
 
-	static void AssignFaction(Factions faction, AActor* target);
-	static void RemoveFromFaction(Factions faction, AActor* target);
-
-	static Faction* GetFaction(Factions faction);
+	static Faction* GetFaction(const Factions& faction);
 	static TMap<Factions, Faction*> GetFactions();
 	
 	struct SelectionIdentity
@@ -141,39 +137,6 @@ public:
 	};
 
 	static SelectionIdentity DetermineObjectType(AActor* object);
-
-	struct UnitData
-	{
-		Factions faction;
-		UnitTypes unitType;
-		bool upgraded;
-
-		int currentHP;
-		int maxHP;
-		int currentMorale;
-		int maxMorale;
-
-		int vision;
-		int speed;
-
-		int damage;
-		int siegePower;
-
-		int reinforceRate;
-		int energyUpkeep;
-
-		TArray<UnitData> savedUnits;
-
-		TMap<UnitTypes, FUnitComposition> GetUnitComposition() const;
-		UnitTypes GetLargestUnitQuantity() const;
-	};
-
-	static UnitData CollectUnitData(UUnitStats* unit);
-	static void ApplyDataToUnitStats(UUnitStats* unit, UnitData& data);
-	static void ApplyDataToUnitStats(UUnitStats* unit, FTroopStats& data);
-	static void AddUnitData(UUnitStats* unit, UnitData& data);
-	static UnitData AddUnitData(UnitData& unit, UnitData& data);
-	static UnitData ExtractUnit(UUnitStats* army, int32 unitIndex);
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
@@ -210,17 +173,11 @@ public:
 	static void RobotIsActive(Factions faction, ATroop* robot);
 	static void AddResources(Factions faction, TMap<StratResources, int> resources);
 
-	static TMap<UnitTypes, FUnitComposition> GetArmyComposition(ATroop* army);
-	static UnitTypes GetLargestUnitQuantity(ATroop* army);
-
 	static void SetTargetListElement(Factions faction, AActor* target);
 	static void RemoveFromAllTargetLists(ABaseHex* target);
 	static TMap<ABaseHex*, Factions> GetTargetList(Factions faction);
 
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
-
-	static void GenerateArmyName(Factions namingFaction, AMovementAI* unit, FString newName = TEXT(""));
-	static void RemoveArmyName(Factions namingFaction, AMovementAI* unit);
 
 	static Factions FindHostileTarget(Factions referenceFaction, ABaseHex* hex);
 	static Factions FindHostileTarget(Factions referenceFaction, ABattleObject* battle);

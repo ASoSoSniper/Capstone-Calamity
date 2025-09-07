@@ -26,7 +26,7 @@ void ATroopFactory::QueueTroopBuild(UnitTypes unit)
 
 	if (AGlobalSpawner::spawnerObject->troopCosts.Contains(unit))
 	{
-		bool purchased = AGlobalSpawner::spawnerObject->PurchaseTroop(unitStats->faction, unit);
+		bool purchased = AGlobalSpawner::spawnerObject->PurchaseTroop(unitData->GetFaction(), unit);
 		if (purchased)
 		{
 			EnqueueTroop(unit);
@@ -76,22 +76,23 @@ void ATroopFactory::BuildTroop(const float& DeltaTime)
 void ATroopFactory::SpawnTroop()
 {
 	ABaseHex* hex = hexNav->GetCurrentHex();
+	Factions faction = unitData->GetFaction();
 
 	//Build the troop, play a build sound
 	UnitTypes unit = DequeueTroop();
 	if (unit == UnitTypes::None) return;
-	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(unitStats->faction, unit, hex);
+	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(faction, unit, hex);
 	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->troopCompleteSound);
 
 	//If the hex has a friendly troop, automatically merge if army cap not exceeded,
 	//otherwise place on free adjacent hex
-	if (UnitActions::HexHasFriendlyTroop(unitStats->faction, hex, troop))
+	if (UnitActions::HexHasFriendlyTroop(faction, hex, troop))
 	{
 		for (int i = 0; i < hex->troopsInHex.Num(); i++)
 		{
-			if (hex->troopsInHex[i]->unitStats->faction == unitStats->faction)
+			if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
 			{
-				if (hex->troopsInHex[i]->unitStats->savedUnits.Num() < Cast<ATroop>(hex->troopsInHex[i])->GetArmyCap())
+				if (hex->troopsInHex[i]->GetUnitData()->GetSavedUnitCount() < Cast<ATroop>(hex->troopsInHex[i])->GetArmyCap())
 				{
 					troop->SphereCheck(20.f);
 					troop->CommandTroopToMerge(hex->troopsInHex[i]);
@@ -99,7 +100,7 @@ void ATroopFactory::SpawnTroop()
 				else
 				{
 					TSet<ABaseHex*> usedHexes;
-					ABaseHex* freeHex = hex->FindFreeAdjacentHex(unitStats->faction, usedHexes);
+					ABaseHex* freeHex = hex->FindFreeAdjacentHex(faction, usedHexes);
 
 					troop->SetActorLocation(freeHex->troopAnchor->GetComponentLocation());
 				}
