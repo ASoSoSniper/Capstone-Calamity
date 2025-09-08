@@ -23,13 +23,6 @@ public:
 	virtual void Reset() override;
 	virtual void CheckSelection() override;
 	virtual AActor* GetSelectedObject() override;
-	
-	enum SubSelections
-	{
-		None,
-		Merge
-	};
-	SubSelections subSelect;
 
 	//Commands
 	void CommandToMerge(ATroop* selectedTroop, AActor* target);

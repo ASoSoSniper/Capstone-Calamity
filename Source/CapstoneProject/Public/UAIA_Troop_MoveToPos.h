@@ -17,5 +17,5 @@ class CAPSTONEPROJECT_API UUAIA_Troop_MoveToPos : public UAI_Action
 public:
 	virtual void ExecuteAction(IUAI_Controller* controller) override;
 	virtual void SetDestination(IUAI_Controller* controller) override;
-	virtual bool IsMovementAction() const override;
+	virtual bool IsMovementAction(IUAI_Controller* controller = nullptr) const override;
 };

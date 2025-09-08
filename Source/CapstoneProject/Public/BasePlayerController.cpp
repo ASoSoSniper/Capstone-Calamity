@@ -909,10 +909,7 @@ void ABasePlayerController::SplitArmyInHalf()
 	ATroop* troop = Cast<ATroop>(actor);
 	if (!troop) return;
 
-	if (troop->GetUnitData()->GetUnitType() != UnitTypes::Army) return;
-	AMergedArmy* army = Cast<AMergedArmy>(troop);
-
-	if (army) army->SplitInHalf();
+	troop->SetBestAction(troop_HalveArmy);
 }
 void ABasePlayerController::ExtractUnitFromArmy(UnitTypes unitType)
 {

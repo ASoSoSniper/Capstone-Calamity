@@ -80,4 +80,13 @@ protected:
 	void SetDestinationUpdateTimer(const float& duration);
 	virtual TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
 	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
+
+public:
+	void SetCompositeAction(UAI_Action* action);
+	void ResetCompositeAction();
+	int GetCompositeActionIndex() const;
+	bool AdvanceCompositeActionIndex(int maxLength);
+private:
+	UAI_Action* compositeAction;
+	int compositeActionIndex = 0;
 };

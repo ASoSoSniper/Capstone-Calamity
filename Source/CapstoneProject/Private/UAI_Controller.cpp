@@ -18,9 +18,9 @@ void IUAI_Controller::SetBestAction(UAI_Action* action, EActionType actionType)
     bestAction = action;
     currentActionType = actionType != EActionType::None ? actionType : action->GetDefaultActionType();
 
-    if (bestAction->CanAbandon()) abandonTime = bestAction->GetAbandonTime();
+    if (bestAction->CanAbandon(this)) abandonTime = bestAction->GetAbandonTime(this);
 
-    if (bestAction->IsMovementAction())
+    if (bestAction->IsMovementAction(this))
     {
         bestAction->SetDestination(this);
         FSM_State = DestinationReached() ? EDecisionState::Executing : EDecisionState::Moving;
@@ -54,6 +54,12 @@ EActionType IUAI_Controller::DecideBestActionType(TMap<EActionType, FActionSelec
 
 bool IUAI_Controller::DecideBestAction()
 {
+    if (compositeAction)
+    {
+        SetBestAction(compositeAction);
+        return true;
+    }
+
     TMap<EActionType, FActionSelection>& actionTypes = GetActions();
     EActionType selectedType = DecideBestActionType(actionTypes);
 
@@ -105,7 +111,7 @@ bool IUAI_Controller::UpdateTimer(const float& DeltaTime)
 bool IUAI_Controller::AbandonTimer(const float& DeltaTime)
 {
     if (!bestAction) return true;
-    if (!bestAction->CanAbandon()) return false;
+    if (!bestAction->CanAbandon(this)) return false;
 
     abandonTime -= DeltaTime;
     if (abandonTime > 0.f) return false;
@@ -115,14 +121,14 @@ bool IUAI_Controller::AbandonTimer(const float& DeltaTime)
 
 void IUAI_Controller::SetDestinationUpdateTimer(const float& duration)
 {
-    if (!bestAction->CanUpdateDestination()) return;
+    if (!bestAction->CanUpdateDestination(this)) return;
 
     destinationUpdateTime = duration;
 }
 
 bool IUAI_Controller::DestinationUpdateTimer(const float& DeltaTime)
 {
-    if (!bestAction->CanUpdateDestination()) return false;
+    if (!bestAction->CanUpdateDestination(this)) return false;
 
     destinationUpdateTime -= DeltaTime;
     if (destinationUpdateTime > 0.f) return false;
@@ -137,13 +143,16 @@ void IUAI_Controller::FSM_Tick(const float& DeltaTime)
     switch (FSM_State)
     {
     case EDecisionState::Deciding:
-        if (!IsAIControlled()) return;
+        if (!IsAIControlled() && !compositeAction) return;
         if (UpdateTimer(scaledDeltaTime))
             DecideBestAction();
         break;
     case EDecisionState::Moving:
         if (AbandonTimer(scaledDeltaTime))
-            FSM_Reset();
+        {
+            FSM_Reset(); 
+            ResetCompositeAction();
+        }
         if (DestinationUpdateTimer(scaledDeltaTime))
             bestAction->SetDestination(this);
         if (DestinationReached())
@@ -178,4 +187,27 @@ float IUAI_Controller::GetDefaultScore() const
 float IUAI_Controller::GetUpdateRate() const
 {
     return 0.0f;
+}
+
+void IUAI_Controller::SetCompositeAction(UAI_Action* action)
+{
+    compositeAction = action;
+}
+
+void IUAI_Controller::ResetCompositeAction()
+{
+    compositeAction = nullptr;
+    compositeActionIndex = 0;
+}
+
+int IUAI_Controller::GetCompositeActionIndex() const
+{
+    return compositeActionIndex;
+}
+
+bool IUAI_Controller::AdvanceCompositeActionIndex(int maxLength)
+{
+    compositeActionIndex++;
+
+    return compositeActionIndex < maxLength;
 }

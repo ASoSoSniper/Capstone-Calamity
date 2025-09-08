@@ -236,7 +236,10 @@ bool ATroop::SetUpTroop()
 
 bool ATroop::DestinationReached() const
 {
-	return hexNav->CurrentEqualToTarget();
+	if (!targetUnit)
+		return hexNav->CurrentEqualToTarget();
+	else
+		return hexNav->GetCurrentHex() == targetUnit->GetCurrentHex();
 }
 
 void ATroop::Destroyed()
@@ -265,8 +268,9 @@ void ATroop::Destroyed()
 
 void ATroop::AI_SetMovementAction(UAI_Action* action, const ABaseHex* target)
 {
-	hexNav->SetTargetHex(target);
+	targetUnit = nullptr;
 
+	hexNav->SetTargetHex(target);
 	SetBestAction(action);
 }
 
@@ -275,7 +279,9 @@ void ATroop::AI_SetMovementAction(UAI_Action* action, UHexNav* target)
 	targetUnit = target;
 
 	const ABaseHex* targetHex = targetUnit->GetTargetHex();
-	AI_SetMovementAction(action, targetHex ? targetHex : targetUnit->GetCurrentHex());
+
+	hexNav->SetTargetHex(targetHex);
+	SetBestAction(action);
 }
 
 void ATroop::UpdateDestination()
@@ -311,7 +317,7 @@ void ATroop::UpdateDestination()
 
 void ATroop::EndAction()
 {
-	targetUnit = nullptr;
+	//targetUnit = nullptr;
 	IUAI_Controller::EndAction();
 }
 

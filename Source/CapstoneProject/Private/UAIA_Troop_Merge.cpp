@@ -16,6 +16,8 @@ void UUAIA_Troop_Merge::ExecuteAction(IUAI_Controller* controller)
 	ATroop* target = Cast<ATroop>(targetNav->GetOwner());
 	if (!target) return;
 
+	if (troop == target) return;
+
 	if (AGlobalSpawner::spawnerObject)
 		AGlobalSpawner::spawnerObject->MergeArmies(troop, target, troop->hexNav->GetCurrentHex());
 }

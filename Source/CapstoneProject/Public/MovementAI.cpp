@@ -451,6 +451,8 @@ void AMovementAI::CancelPath()
 
 bool AMovementAI::VisibleToFaction(Factions faction) const
 {
+	if (faction == unitData->GetFaction()) return true;
+
 	return visibility->VisibleToFaction(faction);
 }
 

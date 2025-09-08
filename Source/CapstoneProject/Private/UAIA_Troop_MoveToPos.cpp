@@ -18,7 +18,7 @@ void UUAIA_Troop_MoveToPos::SetDestination(IUAI_Controller* controller)
 	}
 }
 
-bool UUAIA_Troop_MoveToPos::IsMovementAction() const
+bool UUAIA_Troop_MoveToPos::IsMovementAction(IUAI_Controller* controller) const
 {
 	return true;
 }

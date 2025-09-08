@@ -120,11 +120,11 @@ void UManageTroop::Action2()
 {
 	switch (subSelect)
 	{
-	case Merge:
+	case Build:
 		subSelect = None;
 		break;
 	default:
-		subSelect = Merge;
+		subSelect = Build;
 		break;
 	}
 }
@@ -144,51 +144,15 @@ void UManageTroop::CommandAction()
 	if (!controller->hoveredWorldObject || !selectedTroop || selectedTroop->GetUnitData()->GetFaction() != Factions::Human) return;
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
-	UHexNav* hexNav = objectType.actor->GetComponentByClass<UHexNav>();
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Command Action Triggered"));
 	switch (objectType.type)
 	{
 	case ObjectTypes::Hex:
-		//if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, objectType.actor))
-		selectedTroop->SetDestination(objectType.actor);
+		controller->CommandTroop(selectedTroop, objectType.hex);
 		break;
-	case ObjectTypes::Building:
-		if (hexNav)
-		{
-			if (!UnitActions::HexHasFriendlyTroop(controller->playerFaction, hexNav->GetCurrentHex()))
-				selectedTroop->SetDestination(hexNav->GetCurrentHex());
-		}
-		break;
-	case ObjectTypes::Battle:
-		if (hexNav)
-			selectedTroop->SetDestination(hexNav->GetCurrentHex());
 	case ObjectTypes::MoveAI:
-		if (UnitActions::IsHostileTarget(selectedTroop->GetUnitData()->GetFaction(), objectType.building->GetUnitData()->GetFaction()))
-		{
-			if (hexNav)
-				selectedTroop->SetDestination(hexNav->GetCurrentHex());
-		}
-		else
-		{
-			//Check subselection mode
-			switch (subSelect)
-			{
-			case Merge:
-				//Move toward friendly troop with the intent to merge
-				if (hexNav && selectedTroop != objectType.actor)
-				{
-					CommandToMerge(selectedTroop, objectType.moveAI);
-					//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Merging"));
-					return;
-				}
-				else
-				{
-					return;
-				}
-				break;
-			}
-
-		}
+		controller->CommandTroop(selectedTroop, objectType.moveAI);
+		break;
 	}
 }

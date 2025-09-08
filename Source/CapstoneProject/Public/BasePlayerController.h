@@ -21,6 +21,7 @@
 #include "ManageBattle.h"
 #include "GlobalSpawner.h"
 #include "PlayerMovement.h"
+#include "stdlib.h"
 #include "BasePlayerController.generated.h"
 
 
@@ -218,8 +219,39 @@ public:
 
 #pragma region Utility AI Hacks
 public:
+	template<typename T>
+	inline void CommandTroop(ATroop* troop, T* target)
+	{
+		if constexpr (std::is_same<ABaseHex, T>::value)
+			troop->AI_SetMovementAction(troop_MoveToPos, Cast<ABaseHex>(target));
+		else if constexpr (std::is_same<ATroop, T>::value)
+		{
+			ATroop* targetTroop = Cast<ATroop>(target);
+			Factions targetFaction = targetTroop->GetUnitData()->GetFaction();
+
+			if (targetFaction == playerFaction && IsInBuildMode())
+				troop->AI_SetMovementAction(troop_Merge, targetTroop->hexNav);
+			else
+			{
+				Faction* factionObject = UnitActions::GetFaction(playerFaction);
+				FactionRelationship relation = factionObject->GetFactionRelationship(targetFaction);
+
+				switch (relation)
+				{
+				case FactionRelationship::Enemy:
+					troop->AI_SetMovementAction(troop_ChaseTarget, targetTroop->hexNav);
+					break;
+				default:
+					troop->AI_SetMovementAction(troop_MoveToPos, targetTroop->hexNav->GetCurrentHex());
+					break;
+				}
+			}
+		}
+	}
 private:
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_MoveToPos;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Merge;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_ChaseTarget;
+	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_HalveArmy;
+#pragma endregion
 };

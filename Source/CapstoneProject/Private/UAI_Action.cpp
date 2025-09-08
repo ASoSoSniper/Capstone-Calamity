@@ -13,7 +13,7 @@ EActionType UAI_Action::GetDefaultActionType() const
     return defaultActionType;
 }
 
-bool UAI_Action::IsMovementAction() const
+bool UAI_Action::IsMovementAction(IUAI_Controller* controller) const
 {
     return false;
 }
@@ -22,17 +22,17 @@ void UAI_Action::SetDestination(IUAI_Controller* controller)
 {
 }
 
-bool UAI_Action::CanAbandon() const
+bool UAI_Action::CanAbandon(IUAI_Controller* controller) const
 {
     return canAbandon;
 }
 
-float UAI_Action::GetAbandonTime() const
+float UAI_Action::GetAbandonTime(IUAI_Controller* controller) const
 {
     return abandonTime;
 }
 
-bool UAI_Action::CanUpdateDestination() const
+bool UAI_Action::CanUpdateDestination(IUAI_Controller* controller) const
 {
     return updateDestination;
 }

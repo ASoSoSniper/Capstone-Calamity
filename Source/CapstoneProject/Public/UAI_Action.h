@@ -18,12 +18,12 @@ public:
 	TArray<UAI_Condition*>& GetConditions();
 	EActionType GetDefaultActionType() const;
 
-	virtual bool IsMovementAction() const;
+	virtual bool IsMovementAction(IUAI_Controller* controller = nullptr) const;
 	virtual void SetDestination(IUAI_Controller* controller);
 
-	bool CanAbandon() const;
-	float GetAbandonTime() const;
-	bool CanUpdateDestination() const;
+	virtual bool CanAbandon(IUAI_Controller* controller = nullptr) const;
+	virtual float GetAbandonTime(IUAI_Controller* controller = nullptr) const;
+	virtual bool CanUpdateDestination(IUAI_Controller* controller = nullptr) const;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Conditions") TEnumAsByte<EActionType> defaultActionType;
