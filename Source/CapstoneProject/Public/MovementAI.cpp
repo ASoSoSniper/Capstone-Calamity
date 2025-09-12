@@ -41,7 +41,7 @@ void AMovementAI::BeginPlay()
 
 	anims = Cast<UExploreAnims>(mesh->GetAnimInstance());
 
-	SphereCheck(20.f);
+	//SphereCheck(20.f);
 }
 
 // Called every frame

@@ -24,6 +24,9 @@ public:
 	ATroop* ReleaseOneTroop(int index);
 
 	const FUnitData* GetStoredTroopInfo(int index) const;
+	TArray<FUnitData*> GetAllStoredTroops() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool UpdateUI();
 
 private:
 	TArray<FUnitData*> troopsInStorage;
@@ -33,4 +36,7 @@ private:
 	UPROPERTY(EditAnywhere) float healRate = 1.f;
 	float currentHealRate = 0;
 	UPROPERTY(EditAnywhere) int healAmount = 5;
+
+	void SetUpdateUI();
+	bool updateUI = false;
 };

@@ -154,5 +154,8 @@ void UManageTroop::CommandAction()
 	case ObjectTypes::MoveAI:
 		controller->CommandTroop(selectedTroop, objectType.moveAI);
 		break;
+	case ObjectTypes::Building:
+		controller->CommandTroop(selectedTroop, objectType.building->hexNav->GetCurrentHex());
+		break;
 	}
 }

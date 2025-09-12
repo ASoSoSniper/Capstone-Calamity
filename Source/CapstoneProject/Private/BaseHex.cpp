@@ -434,31 +434,37 @@ float ABaseHex::GetOutputPercent()
 ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes)
 {
 	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1);
+	
+	auto EvaluateHex = [&usedHexes, &faction](ABaseHex* hex) -> ABaseHex*
+		{
+			if (usedHexes.Contains(hex)) return nullptr;
+			if (!hex->IsTraversableTerrain())
+			{
+				usedHexes.Add(hex);
+				return nullptr;
+			}
 
+			bool occupied = false;
+			for (int i = 0; i < hex->troopsInHex.Num(); i++)
+			{
+				if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
+				{
+					occupied = true;
+					break;
+				}
+			}
+
+			usedHexes.Add(hex);
+
+			if (occupied) return nullptr;
+
+			return hex;
+		};
+
+	if (EvaluateHex(this) != nullptr) return this;
 	for (ABaseHex* hex : hexesInRadius)
 	{
-		if (usedHexes.Contains(hex)) continue;
-		if (!hex->IsTraversableTerrain())
-		{
-			usedHexes.Add(hex);
-			continue;
-		}
-
-		bool occupied = false;
-		for (int i = 0; i < hex->troopsInHex.Num(); i++)
-		{
-			if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
-			{
-				occupied = true;
-				break;
-			}
-		}
-
-		usedHexes.Add(hex);
-
-		if (occupied) continue;
-
-		return hex;
+		if (EvaluateHex(hex) != nullptr) return hex;
 	}
 
 	return nullptr;

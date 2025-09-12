@@ -7,6 +7,7 @@
 #include "TroopFactory.h"
 #include "MergedArmy.h"
 #include "SiegeObject.h"
+#include "TroopStorage.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -409,6 +410,53 @@ FCuedTroop ABasePlayerController::GetCuedTroop()
 	}
 
 	return troop;
+}
+void ABasePlayerController::ReleaseStoredTroop(int index)
+{
+	FBuildingOnHex building = GetBuildingOnHex();
+	if (building.buildingType != SpawnableBuildings::RobotBarracks) return;
+
+	if (ATroopStorage* storage = Cast<ATroopStorage>(building.baseBuilding))
+	{
+		storage->ReleaseOneTroop(index);
+	}
+}
+void ABasePlayerController::ReleaseAllStoredTroops()
+{
+	FBuildingOnHex building = GetBuildingOnHex();
+	if (building.buildingType != SpawnableBuildings::RobotBarracks) return;
+
+	if (ATroopStorage* storage = Cast<ATroopStorage>(building.baseBuilding))
+	{
+		storage->ReleaseAllTroops();
+	}
+}
+TArray<FTroopUIData> ABasePlayerController::GetAllStoredTroops(ATroopStorage* setStorage)
+{
+	TArray<FTroopUIData> data;
+	ATroopStorage* storage;
+
+	if (setStorage) storage = setStorage;
+	else
+	{
+		FBuildingOnHex building = GetBuildingOnHex();
+		if (building.buildingType != SpawnableBuildings::RobotBarracks) return data;
+
+		storage = Cast<ATroopStorage>(building.baseBuilding);
+	}
+
+	if (storage)
+	{
+		TArray<FUnitData*> units = storage->GetAllStoredTroops();
+
+		for (int i = 0; i < units.Num(); i++)
+		{
+			FTroopUIData UIData = GetSimpleTroopUI(units[i]);
+			data.Add(UIData);
+		}
+	}
+
+	return data;
 }
 #pragma endregion
 
@@ -1135,6 +1183,18 @@ FArmyMenuInfo ABasePlayerController::DisplayArmyMenu()
 	return display;
 }
 
+FTroopUIData ABasePlayerController::GetSimpleTroopUI(FUnitData* data)
+{
+	FTroopUIData display;
+
+	display.troopName = data->GetArmyName();
+	display.healthPercent = data->GetHPAlpha();
+	display.moralePercent = data->GetMoraleAlpha();
+	display.icon = GetTroopIcon(data);
+
+	return display;
+}
+
 FTroopTTInfo ABasePlayerController::GetTroopTTDisplay(FText troopName)
 {
 	FTroopTTInfo info = FTroopTTInfo{};
@@ -1189,14 +1249,46 @@ void ABasePlayerController::ChangeArmyName(FString newName)
 }
 FString ABasePlayerController::GetTroopNameRaw()
 {
-	AActor* Actor = GetActionStateSelection();
+	AActor* actor = GetActionStateSelection();
 
-	if (ATroop* Troop = Cast<ATroop>(Actor))
+	if (ATroop* troop = Cast<ATroop>(actor))
 	{
-		return Troop->GetUnitData()->GetNameRaw();
+		return troop->GetUnitData()->GetNameRaw();
 	}
 
 	return "";
+}
+float ABasePlayerController::GetTroopHPAlpha(FUnitData* unit)
+{
+	if (unit) return unit->GetHPAlpha();
+
+	AActor* actor = GetActionStateSelection();
+
+	if (ATroop* troop = Cast<ATroop>(actor))
+	{
+		return troop->GetUnitData()->GetHPAlpha();
+	}
+
+	return 0.0f;
+}
+float ABasePlayerController::GetTroopMoraleAlpha(FUnitData* unit)
+{
+	if (unit) return unit->GetMoraleAlpha();
+
+	AActor* actor = GetActionStateSelection();
+
+	if (ATroop* troop = Cast<ATroop>(actor))
+	{
+		return troop->GetUnitData()->GetMoraleAlpha();
+	}
+
+	return 0.0f;
+}
+UTexture2D* ABasePlayerController::GetTroopIcon(FUnitData* unit)
+{
+	UnitTypes chosenUnit = unit->GetLargestUnitQuantity();
+
+	return AGlobalSpawner::spawnerObject->troopStats[chosenUnit].icon;
 }
 #pragma endregion
 

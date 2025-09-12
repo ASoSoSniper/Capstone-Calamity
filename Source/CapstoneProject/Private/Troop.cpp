@@ -185,6 +185,7 @@ void ATroop::InitTroop(FUnitData* data)
 		GameMode::activeFactions[faction]->allUnits.Add(this);
 
 	visibility->SetupComponent(unitData);
+	SphereCheck(20.f);
 }
 
 bool ATroop::SetUpTroop()

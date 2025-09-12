@@ -31,6 +31,9 @@ struct FTroopUIData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float progressToMove;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float healthPercent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float moralePercent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText troopName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 };
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopDisplay
@@ -560,6 +563,7 @@ public:
 	int GetSavedUnitCount() const;
 
 	bool SetupComplete() const;
+	void DestroyData();
 
 private:
 	Factions faction;

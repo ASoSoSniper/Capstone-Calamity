@@ -1351,11 +1351,14 @@ void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings buil
 ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, FUnitData* data, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
-	if (!troopPrefab) return nullptr;
+	if (!troopPrefab || !mergedArmyPrefab) return nullptr;
 
-	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+	UClass* prefab = data->GetUnitType() == UnitTypes::Army ? mergedArmyPrefab : troopPrefab;
+
+	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(prefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 
 	newTroop->InitTroop(data);
+	data->SetHP(parentHealthPercent);
 
 	return newTroop;
 }
@@ -1717,6 +1720,9 @@ void FUnitData::RemoveArmyName()
 
 FText FUnitData::GetArmyName() const
 {
+	if (unitType != UnitTypes::Army)
+		return AGlobalSpawner::spawnerObject->troopStats[unitType].title;
+
 	return FText::FromString(armyName + TEXT(" No. ") + FString::FromInt(nameInstance));
 }
 FString FUnitData::GetNameRaw() const
@@ -1839,6 +1845,10 @@ bool FUnitData::SetupComplete() const
 {
 	return maxHP > 0;
 }
+void FUnitData::DestroyData()
+{
+	RemoveArmyName();
+}
 
 TMap<UnitTypes, FUnitComposition> FUnitData::GetUnitComposition() const
 {
@@ -1876,6 +1886,8 @@ TMap<UnitTypes, FUnitComposition> FUnitData::GetUnitComposition() const
 }
 UnitTypes FUnitData::GetLargestUnitQuantity() const
 {
+	if (unitType != UnitTypes::Army) return unitType;
+
 	TMap<UnitTypes, FUnitComposition> composition = GetUnitComposition();
 
 	UnitTypes highestType = UnitTypes::None;

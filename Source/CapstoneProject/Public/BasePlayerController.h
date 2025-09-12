@@ -125,6 +125,10 @@ public:
 	UFUNCTION(BlueprintCallable) bool FarmlandYieldsFood();
 	UFUNCTION(BlueprintCallable) FCuedTroop GetCuedTroop();
 
+	UFUNCTION(BlueprintCallable) void ReleaseStoredTroop(int index);
+	UFUNCTION(BlueprintCallable) void ReleaseAllStoredTroops();
+	UFUNCTION(BlueprintCallable) TArray<FTroopUIData> GetAllStoredTroops(ATroopStorage* setStorage = nullptr);
+
 private:
 	UPROPERTY() bool firstBuildPerformed = false;
 #pragma endregion
@@ -196,10 +200,15 @@ public:
 	UFUNCTION(BlueprintCallable) FArmyDisplay DisplaySelectedUnit();
 	UFUNCTION(BlueprintCallable) FArmyMenuInfo DisplayArmyMenu();
 
+	FTroopUIData GetSimpleTroopUI(FUnitData* data);
 	UFUNCTION(BlueprintCallable) FTroopTTInfo GetTroopTTDisplay(FText troopName);
 
 	UFUNCTION(BlueprintCallable) void ChangeArmyName(FString newName);
 	UFUNCTION(BlueprintCallable) FString GetTroopNameRaw();
+
+	float GetTroopHPAlpha(FUnitData* unit = nullptr);
+	float GetTroopMoraleAlpha(FUnitData* unit = nullptr);
+	UTexture2D* GetTroopIcon(FUnitData* unit = nullptr);
 private:
 	FArmyDisplay DisplayUnit(FUnitData* unit) const;
 #pragma endregion
@@ -223,7 +232,18 @@ public:
 	inline void CommandTroop(ATroop* troop, T* target)
 	{
 		if constexpr (std::is_same<ABaseHex, T>::value)
-			troop->AI_SetMovementAction(troop_MoveToPos, Cast<ABaseHex>(target));
+		{
+			ABaseHex* hex = Cast<ABaseHex>(target);
+			if (hex->building && 
+				hex->building->GetBuildingType() == SpawnableBuildings::RobotBarracks &&
+				hex->GetHexOwner() == playerFaction &&
+				IsInBuildMode())
+			{
+				troop->AI_SetMovementAction(troop_Store, hex->building->hexNav);
+			}
+			else
+				troop->AI_SetMovementAction(troop_MoveToPos, hex);
+		}
 		else if constexpr (std::is_same<ATroop, T>::value)
 		{
 			ATroop* targetTroop = Cast<ATroop>(target);
@@ -253,5 +273,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Merge;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_ChaseTarget;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_HalveArmy;
+	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Store;
 #pragma endregion
 };
