@@ -2,11 +2,6 @@
 
 
 #include "Outpost.h"
-#include "OutpostStorage.h"
-#include "OutpostBarracks.h"
-#include "OutpostTroopFactory.h"
-#include "OutpostDefenses.h"
-#include "BuildingAttachment.h"
 #include "MergedArmy.h"
 #include "Troop.h"
 #include "CapstoneProjectGameModeBase.h"
@@ -15,11 +10,6 @@
 
 AOutpost::AOutpost()
 {
-	storageBuilding = CreateDefaultSubobject<UOutpostStorage>(TEXT("Storage"));
-	barracksBuilding = CreateDefaultSubobject<UOutpostBarracks>(TEXT("Barracks"));
-	troopFactoryBuilding = CreateDefaultSubobject<UOutpostTroopFactory>(TEXT("Troop Factory"));
-	defenseBuilding = CreateDefaultSubobject<UOutpostDefenses>(TEXT("Defense Station"));
-
 	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/OutpostMat01"));
 	if (visibleMat)
 	{
@@ -81,43 +71,6 @@ void AOutpost::SetToFinishedModel()
 	}
 }
 
-UBuildingAttachment* AOutpost::GetAttachment(BuildingAttachments attachment)
-{
-	switch (attachment)
-	{
-	case BuildingAttachments::Storage:
-		return storageBuilding;
-	case BuildingAttachments::RobotFactory:
-		return troopFactoryBuilding;
-	case BuildingAttachments::RobotBarracks:
-		return barracksBuilding;
-	case BuildingAttachments::DefenseStation:
-		return defenseBuilding;
-	default:
-		return nullptr;
-	}
-}
-
-void AOutpost::BuildAttachment(BuildingAttachments attachment)
-{	
-	UBuildingAttachment* attachmentType = GetAttachment(attachment);
-	if (attachmentType) attachmentType->ActivateAttachment();
-}
-
-void AOutpost::AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value)
-{
-	UBuildingAttachment* attachmentType = GetAttachment(attachment);
-	if (attachmentType) attachmentType->workersInAttachment[worker] += value;
-}
-
-bool AOutpost::BuildingAttachmentIsActive(BuildingAttachments attachment)
-{
-	UBuildingAttachment* attachmentType = GetAttachment(attachment);
-	if (attachmentType) return attachmentType->AttachmentIsActive();
-
-	return false;
-}
-
 void AOutpost::Action1()
 {
 	
@@ -138,16 +91,6 @@ void AOutpost::Action4()
 
 void AOutpost::Destroyed()
 {
-	TArray<UActorComponent*> attachments;
-	GetComponents(UBuildingAttachment::StaticClass(), attachments);
-
-	for (UActorComponent* attachment : attachments)
-	{
-		if (UBuildingAttachment* buildingAttachment = Cast<UBuildingAttachment>(attachment))
-		{
-			buildingAttachment->DisableAttachment();
-		}
-	}
 	for (ABaseHex* hex : claimedHexes)
 	{
 		hex->SetHexOwner(Factions::None);

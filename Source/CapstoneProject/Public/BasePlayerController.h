@@ -17,7 +17,6 @@
 #include "ManageHex.h"
 #include "ManageTroop.h"
 #include "ManageBuilding.h"
-#include "BuildingAttachment.h"
 #include "ManageBattle.h"
 #include "GlobalSpawner.h"
 #include "PlayerMovement.h"
@@ -96,7 +95,6 @@ public:
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
 	UFUNCTION(BlueprintCallable) void PlayUITroopSelectionSound(Factions faction);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
-	UFUNCTION(BlueprintCallable) void PlayUIAttachmentSound(BuildingAttachments attachmentType);
 	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType, ABaseHex* hex = nullptr);
 
 	void SetCinematicObject(AActor* object, GameStates gameState = GameStates::None);
@@ -106,7 +104,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<Factions, USoundBase*> UITroopSelectionSounds;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
-	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<BuildingAttachments, USoundBase*> UIAttachmentSounds;
 	UPROPERTY(EditAnywhere, Category = "Hex Sounds") TMap<TerrainType, USoundBase*> UIHexSounds;
 #pragma endregion
 
@@ -131,28 +128,6 @@ public:
 
 private:
 	UPROPERTY() bool firstBuildPerformed = false;
-#pragma endregion
-
-#pragma region Attachment Commands
-public:
-	UFUNCTION(BlueprintCallable) void SelectBuildingAttachment(FText buildingName);
-	UFUNCTION(BlueprintCallable) FWorkerSliders SetAttachmentWorkerCount(FWorkerSliders sliders, BuildingAttachments attachmentType);
-	UFUNCTION(BlueprintCallable) FWorkersInHex GetWorkersInAttachment(BuildingAttachments attachment);
-
-	UFUNCTION(BlueprintCallable) bool AttachmentIsActive(FText attachmentName);
-	UFUNCTION(BlueprintCallable) bool AttachmentIsBuilt(BuildingAttachments attachment);
-
-	UFUNCTION(BlueprintCallable) FBuildingDisplay GetAttachmentDisplay(FText attachmentName);
-	UFUNCTION(BlueprintCallable) TArray<FBuildingDisplay> GetAttachmentDisplays();
-	UFUNCTION(BlueprintCallable) FAttachmentBuildProgress GetAttachmentBuildProgress(BuildingAttachments attachment);
-	UFUNCTION(BlueprintCallable) FAttachmentTTBuildInfo GetAttachmentBuildInfo(BuildingAttachments attachment);
-
-	UFUNCTION(BlueprintCallable) FMaterialStorageStats GetMaterialStorageStats();
-	UFUNCTION(BlueprintCallable) FRobotFactoryStats GetRobotFactoryStats();
-	UFUNCTION(BlueprintCallable) FRobotStorageStats GetRobotStorageStats();
-	UFUNCTION(BlueprintCallable) FDefenseStationStats GetDefenseStationStats();
-private:
-	AOutpost* GetOutpost();
 #pragma endregion
 
 #pragma region Hex Commands

@@ -284,7 +284,7 @@ bool ABuilding::SphereCheck()
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
 					SetActorLocation(hexActor->buildingAnchor->GetComponentLocation());
-					hexActor->SetBuilding(this, GetHexLayersToOccupy());
+					hexActor->AddBuildingToHex(this, GetHexLayersToOccupy());
 
 					return true;
 				}
@@ -380,7 +380,7 @@ void ABuilding::Destroyed()
 			UnitActions::AddResources(faction, addResources);
 		}
 
-		hex->SetBuilding(nullptr, GetHexLayersToOccupy());
+		hex->RemoveBuildingFromHex(GetHexLayersToOccupy());
 	}
 
 	if (smokeEffect)

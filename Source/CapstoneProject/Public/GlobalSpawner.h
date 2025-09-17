@@ -416,29 +416,7 @@ struct FDefenseStationStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int HP;
 };
 #pragma endregion
-#pragma region Attachments
-USTRUCT(BlueprintType, Blueprintable)
-struct FAttachmentBuildProgress
-{
-	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentProgress;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float buildTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool isBuilding;
-};
-USTRUCT(BlueprintType, Blueprintable)
-struct FAttachmentTTBuildInfo
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText title;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int buildTime;
-};
-#pragma endregion
 #pragma region Troops and Armies
 USTRUCT(BlueprintType, Blueprintable)
 struct FTroopCost
@@ -503,6 +481,44 @@ struct FCuedTroop
 };
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FStatusEffect
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FStatusEffect() {};
+	FStatusEffect(FString name, Factions faction, FactionRelationship affected, int hp, int morale, int vision, int speed, int damage, int siegePower) :
+		effectName(name), originFaction(faction), factionsToAffect(affected),
+		hpMod(hp), moraleMod(morale), visionMod(vision), speedMod(speed), damageMod(damage), siegePowerMod(siegePower) {		
+	};
+
+	FString GetEffectName() const;
+	Factions GetOriginFaction() const;
+	FactionRelationship GetFactionsToAffect() const;
+
+	int GetHPMod() const;
+	int GetMoraleMod() const;
+	int GetVisionMod() const;
+	int GetSpeedMod() const;
+	int GetDamageMod() const;
+	int GetSiegePowerMod() const;
+
+private:
+	FString effectName = TEXT("");
+	Factions originFaction = Factions::None;
+	FactionRelationship factionsToAffect = FactionRelationship::Neutral;
+
+	int hpMod = 0;
+	int moraleMod = 0;
+
+	int visionMod = 0;
+	int speedMod = 0;
+
+	int damageMod = 0;
+	int siegePowerMod = 0;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FUnitData
 {
 	GENERATED_USTRUCT_BODY()
@@ -563,7 +579,11 @@ public:
 	int GetSavedUnitCount() const;
 
 	bool SetupComplete() const;
-	void DestroyData();
+	void DestroyWorldData();
+
+	void AddStatusEffect(FStatusEffect* effect);
+	void RemoveStatusEffect(FStatusEffect* effect);
+	void ClearStatusEffects();
 
 private:
 	Factions faction;
@@ -587,8 +607,10 @@ private:
 	int energyUpkeep = 0;
 
 	TArray<FUnitData*> savedUnits;
+	TSet<FStatusEffect*> statusEffects;
 
 	void RemoveArmyName();
+	void SetEffectValues(FStatusEffect* effect, bool applyEffect);
 };
 #pragma endregion
 
@@ -622,16 +644,13 @@ public:
 	bool PurchaseTroop(Factions faction, UnitTypes unit);
 	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
 	ATroop* BuildArmy(Factions faction, ABaseHex* hex);
-	void BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost);
 
 	UClass* DetermineBuildingType(SpawnableBuildings building);
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
-	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingCost> attachmentCosts;
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingStats> buildingStats;
-	UPROPERTY(EditAnywhere) TMap<BuildingAttachments, FBuildingStats> attachmentStats;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
 	UPROPERTY(EditAnywhere) TMap<TerrainType, FVisibilityMaterials> terrainTileMaterials;

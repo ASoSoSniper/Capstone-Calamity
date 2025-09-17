@@ -8,12 +8,6 @@
 #include "GlobalSpawner.h"
 #include "Outpost.generated.h"
 
-class UOutpostDefenses;
-class UOutpostStorage;
-class UOutpostBarracks;
-class UOutpostTroopFactory;
-class UBuildingAttachment;
-
 /**
  * 
  */
@@ -29,10 +23,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment);
-	void BuildAttachment(BuildingAttachments attachment);
-	bool BuildingAttachmentIsActive(BuildingAttachments attachment);
-
 	virtual void Action1() override;
 	virtual void Action2() override;
 	virtual void Action3() override;
@@ -40,11 +30,6 @@ public:
 
 	virtual void Destroyed() override;
 protected:
-
-	UPROPERTY(EditAnywhere) UOutpostStorage* storageBuilding;
-	UPROPERTY(EditAnywhere) UOutpostBarracks* barracksBuilding;
-	UPROPERTY(EditAnywhere) UOutpostTroopFactory* troopFactoryBuilding;
-	UPROPERTY(EditAnywhere) UOutpostDefenses* defenseBuilding;
 
 	UPROPERTY(EditAnywhere) int range = 2;
 
@@ -59,5 +44,4 @@ private:
 
 	void BuildingAction() override;
 	virtual void SetToFinishedModel();
-	void AddWorkersToAttachment(BuildingAttachments attachment, WorkerType worker, int value);
 };

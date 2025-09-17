@@ -15,11 +15,11 @@
 #include "MaterialStorage.h"
 #include "TroopFactory.h"
 #include "TroopStorage.h"
+#include "DefenseStation.h"
 #include "Outpost.h"
 #include "CapitalHub.h"
 #include "AlienCity.h"
 #include "RockCity.h"
-#include "BuildingAttachment.h"
 #include "BattleObject.h"
 #include "SiegeObject.h"
 #include "CapstoneProjectGameModeBase.h"
@@ -48,6 +48,8 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
 	buildingCosts.Add(SB::RobotBarracks, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Robot Barracks"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
+	buildingCosts.Add(SB::DefenseStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Defense Station"),
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Defense_Station.Building_Icon_Defense_Station'")) });
 	buildingCosts.Add(SB::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
 	buildingCosts.Add(SB::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
@@ -215,7 +217,7 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'"))
 		});
 	//Robot Storage Stats
-	buildingStats.Add(SB::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An building that allows for robot units to be repaired when on the tile."),
+	buildingStats.Add(SB::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("A building that allows for robot units to be repaired when on the tile."),
 		/*Energy Yield*/
 		0,
 		/*Food Yield*/
@@ -245,6 +247,38 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Max Workers*/
 		10,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'"))
+		});
+	//Defense Station Stats
+	buildingStats.Add(SB::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("A fortress extension that greatly enhances defensive capabilities."),
+		/*Energy Yield*/
+		0,
+		/*Food Yield*/
+		0,
+		/*Production Yield*/
+		0,
+		/*Wealth Yield*/
+		0,
+		/*Resource Cap Increase*/
+		0,
+		/*Robot Storage*/
+		0,
+		/*Diplomacy*/
+		0,
+		/*Trade*/
+		0,
+		/*Damage*/
+		2,
+		/*HP*/
+		400,
+		/*Vision*/
+		1,
+		/*Unrest*/
+		0,
+		/*Energy Upkeep Cost*/
+		0,
+		/*Max Workers*/
+		10,
+		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Defense_Station.Building_Icon_Defense_Station'"))
 		});
 	//Outpost Stats
 	buildingStats.Add(SB::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
@@ -371,240 +405,6 @@ AGlobalSpawner::AGlobalSpawner()
 		/*Max Workers*/
 		15,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
-		});
-#pragma endregion
-
-#pragma region Attachment Costs
-	attachmentCosts.Add(BuildingAttachments::Storage, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Storage"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	attachmentCosts.Add(BuildingAttachments::DefenseStation, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Defense Station"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotFactory, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Factory"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	attachmentCosts.Add(BuildingAttachments::RobotBarracks, FBuildingCost{ 75, 5, 48, 0, FText::FromString("Robot Barracks"),
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
-
-	attachmentCosts.Add(BuildingAttachments::TradeOutpost, FBuildingCost{ 50, 5, 48 });
-	attachmentCosts.Add(BuildingAttachments::Embassy, FBuildingCost{ 50, 5, 48 });
-	attachmentCosts.Add(BuildingAttachments::PoliceStation, FBuildingCost{ 100, 10, 90 });
-#pragma endregion
-#pragma region Attachment Stats
-	//Material Storage Stats
-	attachmentStats.Add(BuildingAttachments::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		500,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		0,
-		/*HP*/
-		0,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		5,
-		/*Max Workers*/
-		5
-		});
-	//Defense Station Stats
-	attachmentStats.Add(BuildingAttachments::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("A fortress extension that greatly enhances defensive capabilities."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		2,
-		/*HP*/
-		200,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		5,
-		/*Max Workers*/
-		5
-		});
-	//Robot Factory Stats
-	attachmentStats.Add(BuildingAttachments::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("A highly industrialized factory capable of creating robotic armies."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		0,
-		/*HP*/
-		0,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		5,
-		/*Max Workers*/
-		5
-		});
-	//Robot Barracks Stats
-	attachmentStats.Add(BuildingAttachments::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("An extension that allows for robot units to be repaired when on the tile."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		100,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		0,
-		/*HP*/
-		0,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		5,
-		/*Max Workers*/
-		5
-		});
-	//Trade Outpost Stats
-	attachmentStats.Add(BuildingAttachments::TradeOutpost, FBuildingStats{ FText::FromString("Trade Outpost"), FText::FromString("A trading entrepot that allows for more favorable trading terms."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		1.15f,
-		/*Damage*/
-		0,
-		/*HP*/
-		0,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		2,
-		/*Max Workers*/
-		5
-		});
-	//Embassy Stats
-	attachmentStats.Add(BuildingAttachments::Embassy, FBuildingStats{ FText::FromString("Embassy"), FText::FromString("An embassy helps establish more favorable diplomatic ties with alien civilizations."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		1.15f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		0,
-		/*HP*/
-		5,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		0.f,
-		/*Energy Upkeep Cost*/
-		2,
-		/*Max Workers*/
-		5
-		});
-	//Police Station Stats
-	attachmentStats.Add(BuildingAttachments::PoliceStation, FBuildingStats{ FText::FromString("Police Station"), FText::FromString("The police station decreases alien unrest and prevents the need for robotic armies to remain in the city to suppress revolts."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
-		/*Resource Cap Increase*/
-		0,
-		/*Robot Storage*/
-		0,
-		/*Diplomacy*/
-		0.f,
-		/*Trade*/
-		0.f,
-		/*Damage*/
-		0,
-		/*HP*/
-		10,
-		/*Vision*/
-		1,
-		/*Unrest*/
-		-0.85f,
-		/*Energy Upkeep Cost*/
-		2,
-		/*Max Workers*/
-		10
 		});
 #pragma endregion
 
@@ -824,6 +624,7 @@ AGlobalSpawner::AGlobalSpawner()
 	buildingPrefabs.Add(SB::Storage, AMaterialStorage::StaticClass());
 	buildingPrefabs.Add(SB::RobotFactory, ATroopFactory::StaticClass());
 	buildingPrefabs.Add(SB::RobotBarracks, ATroopStorage::StaticClass());
+	buildingPrefabs.Add(SB::DefenseStation, ADefenseStation::StaticClass());
 	buildingPrefabs.Add(SB::Outpost, AOutpost::StaticClass());
 	buildingPrefabs.Add(SB::Capitol, ACapitalHub::StaticClass());
 	buildingPrefabs.Add(SB::AlienCity, AAlienCity::StaticClass());
@@ -1481,41 +1282,6 @@ ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* h
 	return newTroop;
 }
 
-void AGlobalSpawner::BuildAttachment(Factions faction, BuildingAttachments attachment, AOutpost* outpost)
-{
-	if (faction == Factions::None) return;
-
-	UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
-
-	bool canAfford = false;
-
-	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
-	TMap<WorkerType, int> workerCosts = TMap<WorkerType, int>();
-
-	if (!attachmentCosts.Contains(attachment)) return;
-
-	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
-	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(faction);
-
-	if (resources[StratResources::Production] >= attachmentCosts[attachment].workerCost && workers[WorkerType::Human] > attachmentCosts[attachment].workerCost)
-	{
-		canAfford = true;
-	}
-
-	resourceCosts.Add(StratResources::Production, attachmentCosts[attachment].productionCost);
-	workerCosts.Add(WorkerType::Human, attachmentCosts[attachment].workerCost - selectedAttachment->GetNumberOfWorkers());
-
-	if (canAfford)
-	{
-		outpost->BuildAttachment(attachment);
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, workerCosts, outpost, attachment);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford attachment"));
-	}
-}
-
 #pragma region UnitData
 Factions FUnitData::GetFaction() const
 {
@@ -1558,7 +1324,7 @@ void FUnitData::AddUnitData(FUnitData* data)
 	}
 
 	savedUnits.Add(data);
-	data->RemoveArmyName();
+	data->DestroyWorldData();
 
 	currentHP += data->currentHP;
 	maxHP += data->maxHP;
@@ -1845,9 +1611,49 @@ bool FUnitData::SetupComplete() const
 {
 	return maxHP > 0;
 }
-void FUnitData::DestroyData()
+void FUnitData::DestroyWorldData()
 {
 	RemoveArmyName();
+	ClearStatusEffects();
+}
+
+void FUnitData::AddStatusEffect(FStatusEffect* effect)
+{
+	statusEffects.Add(effect);
+
+	SetEffectValues(effect, true);
+}
+void FUnitData::RemoveStatusEffect(FStatusEffect* effect)
+{
+	if (!statusEffects.Contains(effect)) return;
+
+	statusEffects.Remove(effect);
+
+	SetEffectValues(effect, false);
+}
+void FUnitData::ClearStatusEffects()
+{
+	for (FStatusEffect* effect : statusEffects)
+	{
+		SetEffectValues(effect, false);
+	}
+
+	statusEffects.Empty();
+}
+void FUnitData::SetEffectValues(FStatusEffect* effect, bool applyEffect)
+{
+	int dir = applyEffect ? 1 : -1;
+
+	currentHP = FMath::Max(currentHP + (effect->GetHPMod() * dir), 1);
+	maxHP = FMath::Max(maxHP + (effect->GetHPMod() * dir), 1);
+	currentMorale = FMath::Max(currentMorale + (effect->GetMoraleMod() * dir), 1);
+	maxMorale = FMath::Max(maxMorale + (effect->GetMoraleMod() * dir), 1);
+
+	vision = FMath::Max(vision + (effect->GetVisionMod() * dir), 0);
+	speed = FMath::Max(speed + (effect->GetSpeedMod() * dir), 1);
+
+	damage = FMath::Max(damage + (effect->GetDamageMod() * dir), 0);
+	siegePower = FMath::Max(siegePower + (effect->GetSiegePowerMod() * dir), 0);
 }
 
 TMap<UnitTypes, FUnitComposition> FUnitData::GetUnitComposition() const
@@ -1903,5 +1709,44 @@ UnitTypes FUnitData::GetLargestUnitQuantity() const
 	}
 
 	return highestType;
+}
+#pragma endregion
+
+#pragma region Status Effects
+FString FStatusEffect::GetEffectName() const
+{
+	return effectName;
+}
+Factions FStatusEffect::GetOriginFaction() const
+{
+	return originFaction;
+}
+FactionRelationship FStatusEffect::GetFactionsToAffect() const
+{
+	return factionsToAffect;
+}
+int FStatusEffect::GetHPMod() const
+{
+	return hpMod;
+}
+int FStatusEffect::GetMoraleMod() const
+{
+	return moraleMod;
+}
+int FStatusEffect::GetVisionMod() const
+{
+	return visionMod;
+}
+int FStatusEffect::GetSpeedMod() const
+{
+	return speedMod;
+}
+int FStatusEffect::GetDamageMod() const
+{
+	return damageMod;
+}
+int FStatusEffect::GetSiegePowerMod() const
+{
+	return siegePowerMod;
 }
 #pragma endregion

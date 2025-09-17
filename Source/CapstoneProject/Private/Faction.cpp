@@ -238,7 +238,7 @@ TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minVa
 
 	for (ABaseHex* hex : ownedHexes)
 	{
-		if (!includeHexesWithBuildings && hex->GetBuilding()) continue;
+		if (!includeHexesWithBuildings && hex->building) continue;
 		if (hex->GetNumberOfWorkers() > 0) continue;
 		if (!hex->IsBuildableTerrain()) continue;
 

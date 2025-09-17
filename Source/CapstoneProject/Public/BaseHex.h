@@ -74,98 +74,33 @@ class CAPSTONEPROJECT_API ABaseHex : public AActor
 {
 	GENERATED_BODY()
 	
+#pragma region General Logic
 public:	
-	// Sets default values for this actor's properties
 	ABaseHex();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-//Components created upon initialization
-#pragma region Components
-
-	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
-	UPROPERTY(VisibleAnywhere, Category = "Components") UMeshVisibility* visibility;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
-
-	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
-	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;
-	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexBase;
-	UPROPERTY(VisibleAnywhere, Category = "Components") UAudioComponent* audioComponent;
-
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
 #pragma endregion
 
-//Variables that change depending on the hex's interaction with the world
-#pragma region Variables
-
-	UPROPERTY(VisibleAnywhere) ABuilding* building;
-
-	UPROPERTY(VisibleAnywhere) ABattleObject* battle;
-
-#pragma endregion
-
-//Variables that change depending on the hex's identity
 #pragma region Identity
-
+public:
 	Factions GetHexOwner();
 	void SetHexOwner(Factions faction);
 
 	FVector2D GetHexCoordinates() const;
 	void SetHexCoordinates(int x, int y);
 
+	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes);
+	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1, bool includeSelf = true) const;
+
+	TerrainType GetHexTerrain();
 	int GetMovementMulti() const;
 	int GetAttritionMulti() const;
 	int GetDefenderBonus() const;
 	int GetVision() const;
-#pragma endregion
-
-	TArray<AActor*> GetObjectsInHex() const;
-
-	void CheckForHostility(AMovementAI* refTroop);
-	void CheckForHostility(ABuilding* refBuilding);
-	void AddTroopToHex(AMovementAI* troop);
-	void RemoveTroopFromHex(AMovementAI* troop);
-	int GetNumberOfWorkers();
-	float GetOutputPercent();
-
-	void BeginBattle(AMovementAI* attacker = nullptr);
-	Factions GetAttackerFaction();
-	bool ActiveBattleOnHex();
-
-	TMap<WorkerType, int> workersInHex;
-	int GetMaxWorkers();
-	void SetMaxWorkers(int newMax);
-	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
-
-	bool ActiveHarvesting();
-
-	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
-	void ToggleResourceYield();
-
-	ABuilding* GetBuilding();
-	void SetBuilding(ABuilding* setBuilding, int layers = 0);
-
-	FHexDisplay GetDisplayInfo();
-
-	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes);
-	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1) const;
-
-	float GetTargetVolume();
-	void SetTargetVolume(float volume);
-	void SetInSoundBoxRadius(bool inRadius);
-
-	TerrainType GetHexTerrain();
-	TSet<ABaseHex*> GetSurroundingHexes();
-	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
-	void SetHexTerrain(TerrainType terrain);
-	void SetHexModel();
-	void SetAttachmentCanBeVisible(bool canBeVisible);
 
 	bool IsStaticBuildingTerrain();
 	bool IsTraversableTerrain() const;
@@ -173,37 +108,123 @@ public:
 	bool IsPlayerHex();
 	bool CanPutWorkersOnHex();
 
-	FCurrentResourceYields GetCurrentResourceYields();
-
-	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
-
 private:
-
-	FVector2D hexCoordinates;
-
-	AMovementAI* attackingTroop;
-	TerrainType hexTerrain = TerrainType::Plains;
-	int seedIndex = 0;
-	bool harvesting;
-	float outputPercent;
-
-	TMap<StratResources, int> resourceBonuses;
-
 	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
+	TerrainType hexTerrain = TerrainType::Plains;
+	FVector2D hexCoordinates;
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") float moveMultiplier = 1.f;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") float attritionMultiplier = 1.f;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int defenderBonus = 0;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int vision = 0;
+#pragma endregion
+
+#pragma region Workers
+public:
+	int GetMaxWorkers();
+	void SetMaxWorkers(int newMax);
+	int GetNumberOfWorkers();
+
+	TMap<WorkerType, int> workersInHex;
+private:
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkers = 15;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkersDefault = 15;
+#pragma endregion
 
+#pragma region Troops and Buildings
+public:
+	void AddTroopToHex(AMovementAI* troop);
+	void RemoveTroopFromHex(AMovementAI* troop);
+	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
+
+	void AddBuildingToHex(ABuilding* setBuilding, int layers = 0);
+	void RemoveBuildingFromHex(int layers = 0);
+	UPROPERTY(VisibleAnywhere) ABuilding* building;
+
+	TArray<AActor*> GetObjectsInHex() const;
+
+private:
+#pragma endregion
+
+#pragma region Battles
+public:
+	void BeginBattle(AMovementAI* attacker = nullptr);
+
+	void CheckForHostility(AMovementAI* refTroop);
+	void CheckForHostility(ABuilding* refBuilding);
+	
+	Factions GetAttackerFaction();
+	bool ActiveBattleOnHex();
+
+	UPROPERTY(VisibleAnywhere) ABattleObject* battle;
+
+private:
+	AMovementAI* attackingTroop;
+#pragma endregion
+	
+#pragma region Resources and Harvesting
+public:
+	bool ActiveHarvesting();
+	float GetOutputPercent();
+
+	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
+	void ToggleResourceYield();
+	FCurrentResourceYields GetCurrentResourceYields();
+private:
+	TMap<StratResources, int> resourceBonuses;
+	bool harvesting;
+	float outputPercent;
+#pragma endregion
+
+#pragma region Visuals
+public:
+	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
+	void SetHexTerrain(TerrainType terrain);
+	void SetHexModel();
+	void SetAttachmentCanBeVisible(bool canBeVisible);
+
+	FHexDisplay GetDisplayInfo();
+	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
+
+	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexBase;
+	UPROPERTY(VisibleAnywhere, Category = "Components") UMeshVisibility* visibility;
+private:
+	int seedIndex = 0;
+
+	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
+	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
+#pragma endregion
+
+#pragma region Sounds
+public:
+	float GetTargetVolume();
+	void SetTargetVolume(float volume);
+	void SetInSoundBoxRadius(bool inRadius);
+
+	UPROPERTY(VisibleAnywhere, Category = "Components") UAudioComponent* audioComponent;
+private:
 	UPROPERTY(EditAnywhere, Category = "Sound") float volumeSpeed = 1.5f;
 	UPROPERTY(VisibleAnywhere, Category = "Sound") float targetVolume = 0.f;
 	void SetToTargetVolume(float& DeltaTime);
 	bool inSoundboxRadius = false;
+#pragma endregion
 
-	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
+#pragma region Status Effects
+public:
+	void AddEffectToHex(FStatusEffect* effect);
+	void RemoveEffectFromHex(FStatusEffect* effect);
 
-	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
+private:
+	void AddEffectToUnit(FUnitData* data, FStatusEffect* effect, Faction* factionObject);
+
+	void AddEffectToAllUnits(FStatusEffect* effect);
+	void RemoveEffectFromAllUnits(FStatusEffect* effect);
+
+	void AddAllEffectsToUnit(FUnitData* data);
+	void RemoveAllEffectsFromUnit(FUnitData* data);
+
+	TSet<FStatusEffect*> statusEffects;
+#pragma endregion
 };

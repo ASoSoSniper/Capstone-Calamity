@@ -10,7 +10,7 @@
 #include "GlobalSpawner.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
+#pragma region General Logic
 ABaseHex::ABaseHex()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -102,14 +102,6 @@ ABaseHex::ABaseHex()
 	resourceBonuses.Add(StratResources::Production, 1);
 	resourceBonuses.Add(StratResources::Food, 1);
 }
-
-// Called when the game starts or when spawned
-void ABaseHex::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
 void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -131,12 +123,13 @@ void ABaseHex::Tick(float DeltaTime)
 
 	SetToTargetVolume(DeltaTime);
 }
+#pragma endregion
 
+#pragma region Identity
 Factions ABaseHex::GetHexOwner()
 {
 	return hexOwner;
 }
-
 void ABaseHex::SetHexOwner(Factions faction)
 {
 	if (hexOwner != Factions::None)
@@ -165,276 +158,15 @@ FVector2D ABaseHex::GetHexCoordinates() const
 {
 	return hexCoordinates;
 }
-
 void ABaseHex::SetHexCoordinates(int x, int y)
 {
 	hexCoordinates = FVector2D(x, y);
 }
 
-int ABaseHex::GetMovementMulti() const
-{
-	return moveMultiplier;
-}
-
-int ABaseHex::GetAttritionMulti() const
-{
-	return attritionMultiplier;
-}
-
-int ABaseHex::GetDefenderBonus() const
-{
-	return defenderBonus;
-}
-
-int ABaseHex::GetVision() const
-{
-	return vision;
-}
-
-TArray<AActor*> ABaseHex::GetObjectsInHex() const
-{
-	TArray<AActor*> actors;
-
-	if (building) 
-	{
-		actors.Add(building);
-	}
-
-	if (battle)
-	{
-		actors.Add(battle);
-	}
-
-	if (troopsInHex.Num() > 0)
-	{
-		for (int i = 0; i < troopsInHex.Num(); ++i)
-		{
-			actors.Add(troopsInHex[i]);
-		}
-	}
-	
-	return actors;
-}
-
-void ABaseHex::CheckForHostility(AMovementAI* refTroop)
-{	
-	if (building)
-	{
-		if (UnitActions::IsHostileTarget(refTroop->GetUnitData()->GetFaction(), building->GetUnitData()->GetFaction()) && building->GetUnitData()->IsAlive())
-		{
-			BeginBattle(refTroop);
-			return;
-		}
-	}
-	for (int i = 0; i < troopsInHex.Num(); ++i)
-	{
-		if (troopsInHex[i] != refTroop)
-		{
-			if (UnitActions::IsHostileTarget(refTroop, troopsInHex[i]))
-			{
-				BeginBattle(refTroop);
-				return;
-			}
-		}
-	}
-}
-
-void ABaseHex::CheckForHostility(ABuilding* refBuilding)
-{
-	if (refBuilding->IsOccupied()) return;
-
-	for (int i = 0; i < troopsInHex.Num(); ++i)
-	{
-		if (UnitActions::IsHostileTarget(troopsInHex[i]->GetUnitData()->GetFaction(), refBuilding->GetUnitData()->GetFaction()))
-		{
-			BeginBattle(troopsInHex[i]);
-			return;
-		}
-	}
-}
-
-void ABaseHex::AddTroopToHex(AMovementAI* troop)
-{
-	troop->hexNav->SetCurrentHex(this);
-	troopsInHex.Add(troop);
-
-	CheckForHostility(troop);
-}
-
-void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
-{
-	if (troopsInHex.Contains(troop))
-	{
-		troopsInHex.Remove(troop);
-	}
-}
-
-void ABaseHex::BeginBattle(AMovementAI* attacker)
-{
-	if (attacker && !attackingTroop && !ActiveBattleOnHex())
-	{
-		attackingTroop = attacker;
-	}
-
-	if (battle) return;
-
-	if (attackingTroop) AGlobalSpawner::spawnerObject->SpawnBattle(this);
-}
-
-Factions ABaseHex::GetAttackerFaction()
-{
-	Factions faction = attackingTroop->GetUnitData()->GetFaction();
-	attackingTroop = nullptr;
-
-	return faction;
-}
-
-bool ABaseHex::ActiveBattleOnHex()
-{
-	if (!battle) return false;
-
-	return battle->IsAttacking();
-}
-
-int ABaseHex::GetMaxWorkers()
-{
-	return maxWorkers;
-}
-
-void ABaseHex::SetMaxWorkers(int newMax)
-{
-	maxWorkers = newMax > 0 ? newMax : 0;
-}
-
-bool ABaseHex::ActiveHarvesting()
-{
-	bool alreadyHarvesting = harvesting;
-	bool workersExist = false;
-
-	if (GetNumberOfWorkers() >= 1) workersExist = true;
-
-	harvesting = workersExist;
-
-	if (harvesting != alreadyHarvesting)
-	{
-		if (building) building->visibility->enableScan = harvesting;
-	}
-
-	if (GetOutputPercent() != outputPercent)
-	{
-		ToggleResourceYield();
-	}
-
-	return workersExist;
-}
-
-void ABaseHex::ToggleResourceYield()
-{
-	if (hexOwner == Factions::None) return;
-
-	float newOutputPercent = GetOutputPercent();
-
-	for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory)
-	{
-		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key];
-		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key];
-
-		resource.Value.resourcePerTick -= FMath::RoundToInt(originalOutput);
-		resource.Value.resourcePerTick += FMath::RoundToInt(newOutput);
-	}
-
-	if (debug) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, FString::Printf(TEXT("Output Percent: %f"), newOutputPercent));
-
-	outputPercent = newOutputPercent;
-}
-
-ABuilding* ABaseHex::GetBuilding()
-{
-	return building;
-}
-
-void ABaseHex::SetBuilding(ABuilding* setBuilding, int layers)
-{
-	//Toggle the hex's natural models, if existing, 
-	//depending on the coming or going of the building
-	if (attachmentCanBeVisible)
-	{
-		hexMeshAttachment->SetVisibility(setBuilding == nullptr);
-	}
-
-	//Affect hexes in the building's influence with the same come/go command
-	if (layers > 0)
-	{
-		TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
-
-		for (ABaseHex* hex : hexes)
-		{
-			hex->SetBuilding(setBuilding);
-		}
-	}
-
-	//If a new building exists, set up connection to this hex
-	if (setBuilding)
-	{
-		setBuilding->hexNav->SetCurrentHex(this);
-		building = setBuilding;
-		SetHexOwner(setBuilding->GetUnitData()->GetFaction());
-
-		CheckForHostility(setBuilding);
-	}
-	//If a building is being destroyed, cut connections to this hex and clamp worker count
-	else if (building && !setBuilding)
-	{
-		building = nullptr;
-
-		SetMaxWorkers(maxWorkersDefault);
-		int totalWorkers = 0;
-		for (auto& worker : workersInHex)
-		{
-			totalWorkers += worker.Value;
-		}
-		int workersToRemove = totalWorkers > maxWorkersDefault ? totalWorkers - maxWorkersDefault : 0;
-
-		int removedWorkers = 0;
-		while (removedWorkers < workersToRemove)
-		{
-			for (auto& worker : workersInHex)
-			{
-				if (removedWorkers == workersToRemove) break;
-
-				int remove = UnitActions::RemoveWorkers(building->GetUnitData()->GetFaction(), worker.Key, 1, this);
-
-				if (remove > 0)
-				{
-					removedWorkers++;
-					workersInHex[worker.Key]--;
-				}
-			}
-		}
-	}
-}
-
-int ABaseHex::GetNumberOfWorkers()
-{
-	int totalWorkers = 0;
-
-	for (auto& worker : workersInHex)
-	{
-		totalWorkers += worker.Value;
-	}
-
-	return totalWorkers;
-}
-
-float ABaseHex::GetOutputPercent()
-{
-	return (float)GetNumberOfWorkers() / (float)maxWorkers;
-}
-
 ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes)
 {
 	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1);
-	
+
 	auto EvaluateHex = [&usedHexes, &faction](ABaseHex* hex) -> ABaseHex*
 		{
 			if (usedHexes.Contains(hex)) return nullptr;
@@ -469,8 +201,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 
 	return nullptr;
 }
-
-TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers) const
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers, bool includeSelf) const
 {
 	TSet<ABaseHex*> hexes;
 	TQueue<const ABaseHex*> found;
@@ -518,54 +249,281 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers) const
 		}
 	}
 
+	if (!includeSelf)
+	{
+		if (hexes.Contains(this))
+			hexes.Remove(this);
+	}
+
 	return hexes;
 }
 
-float ABaseHex::GetTargetVolume()
+TerrainType ABaseHex::GetHexTerrain()
 {
-	return targetVolume;
+	return hexTerrain;
+}
+int ABaseHex::GetMovementMulti() const
+{
+	return moveMultiplier;
+}
+int ABaseHex::GetAttritionMulti() const
+{
+	return attritionMultiplier;
+}
+int ABaseHex::GetDefenderBonus() const
+{
+	return defenderBonus;
+}
+int ABaseHex::GetVision() const
+{
+	return vision;
 }
 
-void ABaseHex::SetTargetVolume(float volume)
+bool ABaseHex::IsStaticBuildingTerrain()
 {
-	targetVolume = volume > 0 ? volume : 0;
+	return hexTerrain == TerrainType::Ship ||
+		hexTerrain == TerrainType::TheRock ||
+		hexTerrain == TerrainType::AlienCity;
 }
-
-void ABaseHex::SetInSoundBoxRadius(bool inRadius)
+bool ABaseHex::IsTraversableTerrain() const
 {
-	inSoundboxRadius = inRadius;
+	return hexTerrain != TerrainType::Border &&
+		hexTerrain != TerrainType::Mountains;
 }
-
-FHexDisplay ABaseHex::GetDisplayInfo()
+bool ABaseHex::IsBuildableTerrain()
 {
-	FHexDisplay display;
+	return hexTerrain != TerrainType::Border &&
+		hexTerrain != TerrainType::Mountains &&
+		hexTerrain != TerrainType::Jungle;
+}
+bool ABaseHex::IsPlayerHex()
+{
+	return hexOwner == Factions::Human;
+}
+bool ABaseHex::CanPutWorkersOnHex()
+{
+	return IsTraversableTerrain() && IsPlayerHex();
+}
+#pragma endregion
 
-	display.name = hexInfo[hexTerrain].name;
-	display.description = hexInfo[hexTerrain].description;
+#pragma region Workers
+int ABaseHex::GetMaxWorkers()
+{
+	return maxWorkers;
+}
+void ABaseHex::SetMaxWorkers(int newMax)
+{
+	maxWorkers = newMax > 0 ? newMax : 0;
+}
+int ABaseHex::GetNumberOfWorkers()
+{
+	int totalWorkers = 0;
 
-	display.food = FText::AsNumber(resourceBonuses[StratResources::Food]);
-	display.production = FText::AsNumber(resourceBonuses[StratResources::Production]);
-	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy]);
-	display.wealth = FText::AsNumber(resourceBonuses[StratResources::Wealth]);
-
-	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
-	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
-	display.attritionBonus = FText::AsNumber(hexInfo[hexTerrain].attritionMultiplier);
-	display.visionModifier = FText::AsNumber(hexInfo[hexTerrain].visionModifier);
-
-	display.icon = hexInfo[hexTerrain].icon;
-
-	int workers = 0;
 	for (auto& worker : workersInHex)
 	{
-		workers += worker.Value;
+		totalWorkers += worker.Value;
 	}
-	TArray<FStringFormatArg> Args;
-	Args.Add(workers);
-	Args.Add(maxWorkers);
-	display.workerCount = FText::FromString(FString::Format(TEXT("{0}/{1}"), Args));
 
-	return display;
+	return totalWorkers;
+}
+#pragma endregion
+
+#pragma region Troops and Buildings
+void ABaseHex::AddTroopToHex(AMovementAI* troop)
+{
+	troop->hexNav->SetCurrentHex(this);
+	troopsInHex.Add(troop);
+
+	AddAllEffectsToUnit(troop->GetUnitData());
+
+	CheckForHostility(troop);
+}
+void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
+{
+	if (troopsInHex.Contains(troop))
+	{
+		troopsInHex.Remove(troop);
+
+		RemoveAllEffectsFromUnit(troop->GetUnitData());
+	}
+}
+void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
+{
+	//Toggle the hex's natural models, if existing, 
+	//depending on the coming or going of the building
+	if (attachmentCanBeVisible)
+	{
+		hexMeshAttachment->SetVisibility(setBuilding == nullptr);
+	}
+
+	//Affect hexes in the building's influence with the same come/go command
+	if (layers > 0)
+	{
+		TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
+
+		for (ABaseHex* hex : hexes)
+		{
+			hex->AddBuildingToHex(setBuilding);
+		}
+	}
+
+	//If a new building exists, set up connection to this hex
+	if (setBuilding)
+	{
+		setBuilding->hexNav->SetCurrentHex(this);
+		building = setBuilding;
+		SetHexOwner(setBuilding->GetUnitData()->GetFaction());
+
+		CheckForHostility(setBuilding);
+	}
+	//If a building is being destroyed, cut connections to this hex and clamp worker count
+	else if (building && !setBuilding)
+	{
+		building = nullptr;
+
+		SetMaxWorkers(maxWorkersDefault);
+		int totalWorkers = 0;
+		for (auto& worker : workersInHex)
+		{
+			totalWorkers += worker.Value;
+		}
+		int workersToRemove = totalWorkers > maxWorkersDefault ? totalWorkers - maxWorkersDefault : 0;
+
+		int removedWorkers = 0;
+		while (removedWorkers < workersToRemove)
+		{
+			for (auto& worker : workersInHex)
+			{
+				if (removedWorkers == workersToRemove) break;
+
+				int remove = UnitActions::RemoveWorkers(building->GetUnitData()->GetFaction(), worker.Key, 1, this);
+
+				if (remove > 0)
+				{
+					removedWorkers++;
+					workersInHex[worker.Key]--;
+				}
+			}
+		}
+	}
+}
+void ABaseHex::RemoveBuildingFromHex(int layers)
+{
+	AddBuildingToHex(nullptr, layers);
+}
+TArray<AActor*> ABaseHex::GetObjectsInHex() const
+{
+	TArray<AActor*> actors;
+
+	if (building)
+	{
+		actors.Add(building);
+	}
+
+	if (battle)
+	{
+		actors.Add(battle);
+	}
+
+	if (troopsInHex.Num() > 0)
+	{
+		for (int i = 0; i < troopsInHex.Num(); ++i)
+		{
+			actors.Add(troopsInHex[i]);
+		}
+	}
+
+	return actors;
+}
+#pragma endregion
+
+#pragma region Battles
+void ABaseHex::BeginBattle(AMovementAI* attacker)
+{
+	if (attacker && !attackingTroop && !ActiveBattleOnHex())
+	{
+		attackingTroop = attacker;
+	}
+
+	if (battle) return;
+
+	if (attackingTroop) AGlobalSpawner::spawnerObject->SpawnBattle(this);
+}
+void ABaseHex::CheckForHostility(AMovementAI* refTroop)
+{
+	if (building)
+	{
+		if (UnitActions::IsHostileTarget(refTroop->GetUnitData()->GetFaction(), building->GetUnitData()->GetFaction()) && building->GetUnitData()->IsAlive())
+		{
+			BeginBattle(refTroop);
+			return;
+		}
+	}
+	for (int i = 0; i < troopsInHex.Num(); ++i)
+	{
+		if (troopsInHex[i] != refTroop)
+		{
+			if (UnitActions::IsHostileTarget(refTroop, troopsInHex[i]))
+			{
+				BeginBattle(refTroop);
+				return;
+			}
+		}
+	}
+}
+void ABaseHex::CheckForHostility(ABuilding* refBuilding)
+{
+	if (refBuilding->IsOccupied()) return;
+
+	for (int i = 0; i < troopsInHex.Num(); ++i)
+	{
+		if (UnitActions::IsHostileTarget(troopsInHex[i]->GetUnitData()->GetFaction(), refBuilding->GetUnitData()->GetFaction()))
+		{
+			BeginBattle(troopsInHex[i]);
+			return;
+		}
+	}
+}
+Factions ABaseHex::GetAttackerFaction()
+{
+	Factions faction = attackingTroop->GetUnitData()->GetFaction();
+	attackingTroop = nullptr;
+
+	return faction;
+}
+bool ABaseHex::ActiveBattleOnHex()
+{
+	if (!battle) return false;
+
+	return battle->IsAttacking();
+}
+#pragma endregion
+
+#pragma region Resources and Harvesting
+bool ABaseHex::ActiveHarvesting()
+{
+	bool alreadyHarvesting = harvesting;
+	bool workersExist = false;
+
+	if (GetNumberOfWorkers() >= 1) workersExist = true;
+
+	harvesting = workersExist;
+
+	if (harvesting != alreadyHarvesting)
+	{
+		if (building) building->visibility->enableScan = harvesting;
+	}
+
+	if (GetOutputPercent() != outputPercent)
+	{
+		ToggleResourceYield();
+	}
+
+	return workersExist;
+}
+float ABaseHex::GetOutputPercent()
+{
+	return (float)GetNumberOfWorkers() / (float)maxWorkers;
 }
 
 void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions faction)
@@ -583,32 +541,49 @@ void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions 
 	if (harvesting)
 		ACapstoneProjectGameModeBase::activeFactions[selectedFaction]->resourceInventory[resource].resourcePerTick += value;
 }
-
-void ABaseHex::SetToTargetVolume(float& DeltaTime)
+void ABaseHex::ToggleResourceYield()
 {
-	int increase = audioComponent->VolumeMultiplier < targetVolume ? 1 : -1;
+	if (hexOwner == Factions::None) return;
 
-	float step = audioComponent->VolumeMultiplier + (DeltaTime * increase * volumeSpeed);
-	step = increase == 1 ? FMath::Clamp(step, audioComponent->VolumeMultiplier, targetVolume) : FMath::Clamp(step, targetVolume, audioComponent->VolumeMultiplier);
+	float newOutputPercent = GetOutputPercent();
 
-	audioComponent->VolumeMultiplier = step;
-	audioComponent->AdjustVolume(0.f, audioComponent->VolumeMultiplier);
+	for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory)
+	{
+		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key];
+		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key];
 
-	if (audioComponent->VolumeMultiplier <= 0.f && !inSoundboxRadius) audioComponent->Stop();
+		resource.Value.resourcePerTick -= FMath::RoundToInt(originalOutput);
+		resource.Value.resourcePerTick += FMath::RoundToInt(newOutput);
+	}
+
+	if (debug) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, FString::Printf(TEXT("Output Percent: %f"), newOutputPercent));
+
+	outputPercent = newOutputPercent;
 }
 
-TerrainType ABaseHex::GetHexTerrain()
+FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 {
-	return hexTerrain;
-}
+	FCurrentResourceYields yields;
 
+	//float outputPercent = GetOutputPercent();
+
+	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food]);
+	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy]);
+	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production]);
+	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth]);
+
+	return yields;
+}
+#pragma endregion
+
+#pragma region Visuals
 void ABaseHex::SetHexTerrain(int maxSeedSize, int randToMaintain)
 {
 	//Declare variable to use as return value
 	TerrainType terrainToSet = TerrainType::None;
 
 	//Get surrounding hexes
-	TSet<ABaseHex*> surroundingHexes = GetSurroundingHexes();
+	TSet<ABaseHex*> surroundingHexes = GetHexesInRadius(1, false);
 
 	bool randTerrain = false;
 	int highestSeed = 0;
@@ -658,7 +633,6 @@ void ABaseHex::SetHexTerrain(int maxSeedSize, int randToMaintain)
 	//Set the hex to the resulting terrain value
 	SetHexTerrain(terrainToSet);
 }
-
 void ABaseHex::SetHexTerrain(TerrainType terrain)
 {
 	hexTerrain = terrain;
@@ -682,7 +656,6 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 
 	SetHexModel();
 }
-
 void ABaseHex::SetHexModel()
 {
 	if (!visibility->factionVisibility.Contains(Factions::Human)) return;
@@ -696,83 +669,129 @@ void ABaseHex::SetHexModel()
 		AGlobalSpawner::spawnerObject->CreateHexModel(hexTerrain, this);
 	}
 }
-
 void ABaseHex::SetAttachmentCanBeVisible(bool canBeVisible)
 {
 	attachmentCanBeVisible = canBeVisible;
 }
 
-bool ABaseHex::IsStaticBuildingTerrain()
+FHexDisplay ABaseHex::GetDisplayInfo()
 {
-	return hexTerrain == TerrainType::Ship ||
-		hexTerrain == TerrainType::TheRock ||
-		hexTerrain == TerrainType::AlienCity;
-}
+	FHexDisplay display;
 
-bool ABaseHex::IsTraversableTerrain() const
-{
-	return hexTerrain != TerrainType::Border && 
-		hexTerrain != TerrainType::Mountains;
-}
+	display.name = hexInfo[hexTerrain].name;
+	display.description = hexInfo[hexTerrain].description;
 
-bool ABaseHex::IsBuildableTerrain()
-{
-	return hexTerrain != TerrainType::Border && 
-		hexTerrain != TerrainType::Mountains && 
-		hexTerrain != TerrainType::Jungle;
-}
+	display.food = FText::AsNumber(resourceBonuses[StratResources::Food]);
+	display.production = FText::AsNumber(resourceBonuses[StratResources::Production]);
+	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy]);
+	display.wealth = FText::AsNumber(resourceBonuses[StratResources::Wealth]);
 
-bool ABaseHex::IsPlayerHex()
-{
-	return hexOwner == Factions::Human;
-}
+	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
+	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
+	display.attritionBonus = FText::AsNumber(hexInfo[hexTerrain].attritionMultiplier);
+	display.visionModifier = FText::AsNumber(hexInfo[hexTerrain].visionModifier);
 
-bool ABaseHex::CanPutWorkersOnHex()
-{
-	return IsTraversableTerrain() && IsPlayerHex();
-}
+	display.icon = hexInfo[hexTerrain].icon;
 
-FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
-{
-	FCurrentResourceYields yields;
-
-	//float outputPercent = GetOutputPercent();
-
-	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food]);
-	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy]);
-	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production]);
-	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth]);
-
-	return yields;
-}
-
-TSet<ABaseHex*> ABaseHex::GetSurroundingHexes()
-{
-	FCollisionQueryParams queryParams;
-	queryParams.AddIgnoredActor(this);
-	TArray<AActor*> objectsInHex = GetObjectsInHex();
-	if (objectsInHex.Num() > 0) queryParams.AddIgnoredActors(objectsInHex);
-
-	TSet<ABaseHex*> hexesFound;
-
-	//For each of the 6 directions:
-	for (int i = 0; i < 6; i++)
+	int workers = 0;
+	for (auto& worker : workersInHex)
 	{
-		//Establish trace direction
-		FVector traceStart = GetActorLocation() + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * 10;
-		FVector traceEnd = traceStart + FRotationMatrix(FRotator(0, 30 + (i * 60), 0)).GetUnitAxis(EAxis::X) * 30;
-		FHitResult hit;
-
-		//Trace
-		bool found = GetWorld()->LineTraceSingleByChannel(hit, traceStart, traceEnd, ECC_Visibility, queryParams, FCollisionResponseParams::DefaultResponseParam);
-
-		//Check for hex actor class
-		ABaseHex* foundHex = found ? Cast<ABaseHex>(hit.GetActor()) : nullptr;
-
-		//Add found hex to set
-		if (foundHex)
-			hexesFound.Add(foundHex);
+		workers += worker.Value;
 	}
+	TArray<FStringFormatArg> Args;
+	Args.Add(workers);
+	Args.Add(maxWorkers);
+	display.workerCount = FText::FromString(FString::Format(TEXT("{0}/{1}"), Args));
 
-	return hexesFound;
+	return display;
 }
+#pragma endregion
+
+#pragma region Sounds
+float ABaseHex::GetTargetVolume()
+{
+	return targetVolume;
+}
+void ABaseHex::SetTargetVolume(float volume)
+{
+	targetVolume = volume > 0 ? volume : 0;
+}
+void ABaseHex::SetInSoundBoxRadius(bool inRadius)
+{
+	inSoundboxRadius = inRadius;
+}
+
+void ABaseHex::SetToTargetVolume(float& DeltaTime)
+{
+	int increase = audioComponent->VolumeMultiplier < targetVolume ? 1 : -1;
+
+	float step = audioComponent->VolumeMultiplier + (DeltaTime * increase * volumeSpeed);
+	step = increase == 1 ? FMath::Clamp(step, audioComponent->VolumeMultiplier, targetVolume) : FMath::Clamp(step, targetVolume, audioComponent->VolumeMultiplier);
+
+	audioComponent->VolumeMultiplier = step;
+	audioComponent->AdjustVolume(0.f, audioComponent->VolumeMultiplier);
+
+	if (audioComponent->VolumeMultiplier <= 0.f && !inSoundboxRadius) audioComponent->Stop();
+}
+#pragma endregion
+
+#pragma region Status Effects
+void ABaseHex::AddEffectToHex(FStatusEffect* effect)
+{
+	statusEffects.Add(effect);
+
+	AddEffectToAllUnits(effect);
+}
+void ABaseHex::RemoveEffectFromHex(FStatusEffect* effect)
+{
+	if (!statusEffects.Contains(effect)) return;
+
+	RemoveEffectFromAllUnits(effect);
+
+	statusEffects.Remove(effect);
+}
+
+void ABaseHex::AddEffectToUnit(FUnitData* data, FStatusEffect* effect, Faction* factionObject)
+{
+	FactionRelationship relWithHex = factionObject->GetFactionRelationship(data->GetFaction());
+	FactionRelationship relToAffect = effect->GetFactionsToAffect();
+
+	if (relWithHex == relToAffect)
+		data->AddStatusEffect(effect);
+}
+void ABaseHex::AddEffectToAllUnits(FStatusEffect* effect)
+{
+	Faction* factionObject = UnitActions::GetFaction(GetHexOwner());
+
+	for (int i = 0; i < troopsInHex.Num(); i++)
+		AddEffectToUnit(troopsInHex[i]->GetUnitData(), effect, factionObject);
+
+	if (building)
+		AddEffectToUnit(building->GetUnitData(), effect, factionObject);
+}
+void ABaseHex::RemoveEffectFromAllUnits(FStatusEffect* effect)
+{
+	for (int i = 0; i < troopsInHex.Num(); i++)
+		troopsInHex[i]->GetUnitData()->RemoveStatusEffect(effect);
+
+	if (building)
+		building->GetUnitData()->RemoveStatusEffect(effect);
+}
+
+void ABaseHex::AddAllEffectsToUnit(FUnitData* data)
+{
+	Faction* factionObject = UnitActions::GetFaction(GetHexOwner());
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		AddEffectToUnit(data, effect, factionObject);
+	}
+}
+void ABaseHex::RemoveAllEffectsFromUnit(FUnitData* data)
+{
+	for (FStatusEffect* effect : statusEffects)
+	{
+		data->RemoveStatusEffect(effect);
+	}
+}
+#pragma endregion

@@ -86,7 +86,7 @@ void AMergedArmy::SplitInHalf()
 	SpawnUnit(group1);
 	SpawnUnit(group2);	
 
-	unitData->DestroyData();
+	unitData->DestroyWorldData();
 	this->Destroy();
 }
 

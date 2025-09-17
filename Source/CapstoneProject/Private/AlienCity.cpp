@@ -2,21 +2,9 @@
 
 
 #include "AlienCity.h"
-#include "CityEmbassy.h"
-#include "CityPoliceStation.h"
-#include "CityTradeOutpost.h"
-#include "BuildingAttachment.h"
-#include "OutpostStorage.h"
-#include "OutpostBarracks.h"
-#include "OutpostTroopFactory.h"
-#include "OutpostDefenses.h"
 
 AAlienCity::AAlienCity()
 {
-	cityEmbassy = CreateDefaultSubobject<UCityEmbassy>(TEXT("Embassy"));
-	cityPoliceStation = CreateDefaultSubobject<UCityPoliceStation>(TEXT("Police Station"));
-	cityTradeOutpost = CreateDefaultSubobject<UCityTradeOutpost>(TEXT("Trade Outpost"));
-
 	builtAtStart = true;
 	preAssignedFaction = Factions::Alien1;
 
@@ -39,26 +27,6 @@ AAlienCity::AAlienCity()
 	buildingType = SpawnableBuildings::AlienCity;
 }
 
-UBuildingAttachment* AAlienCity::GetAttachment(BuildingAttachments attachment)
-{
-	if (UBuildingAttachment* attachmentType = Super::GetAttachment(attachment))
-	{
-		return attachmentType;
-	}
-
-	switch (attachment)
-	{
-	case BuildingAttachments::Embassy:
-		return cityEmbassy;
-	case BuildingAttachments::PoliceStation:
-		return cityPoliceStation;
-	case BuildingAttachments::TradeOutpost:
-		return cityTradeOutpost;
-	default:
-		return nullptr;
-	}
-}
-
 void AAlienCity::SetToFinishedModel()
 {
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingAlienCity.BuildingAlienCity'"));
@@ -66,9 +34,4 @@ void AAlienCity::SetToFinishedModel()
 	{
 		mesh->SetStaticMesh(meshAsset);
 	}
-
-	storageBuilding->ActivateAttachment(true);
-	barracksBuilding->ActivateAttachment(true);
-	troopFactoryBuilding->ActivateAttachment(true);
-	defenseBuilding->ActivateAttachment(true);
 }

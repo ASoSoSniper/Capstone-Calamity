@@ -6,15 +6,6 @@
 #include "Outpost.h"
 #include "AlienCity.generated.h"
 
-class UCityEmbassy;
-class UCityPoliceStation;
-class UCityTradeOutpost;
-class UOutpostDefenses;
-class UOutpostStorage;
-class UOutpostBarracks;
-class UOutpostTroopFactory;
-class UBuildingAttachment;
-
 UCLASS()
 class CAPSTONEPROJECT_API AAlienCity : public AOutpost
 {
@@ -22,12 +13,6 @@ class CAPSTONEPROJECT_API AAlienCity : public AOutpost
 	
 public:
 	AAlienCity();
-
-	UCityEmbassy* cityEmbassy;
-	UCityPoliceStation* cityPoliceStation;
-	UCityTradeOutpost* cityTradeOutpost;
-
-	virtual UBuildingAttachment* GetAttachment(BuildingAttachments attachment) override;
 
 	virtual void SetToFinishedModel() override;
 };

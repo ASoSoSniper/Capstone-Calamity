@@ -213,7 +213,7 @@ AActor* UAITroopComponent::FindHexToSettle()
 	for (ABaseHex* ownedHex : factionObject->ownedHexes)
 	{
 		int freeHexes = 0;
-		TSet<ABaseHex*> adjacentHexes = ownedHex->GetSurroundingHexes();
+		TSet<ABaseHex*> adjacentHexes = ownedHex->GetHexesInRadius();
 
 		for (ABaseHex* foundHex : adjacentHexes)
 		{

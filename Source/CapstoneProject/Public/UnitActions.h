@@ -58,17 +58,6 @@ enum class SpawnableBuildings : uint8
 };
 
 UENUM(BlueprintType)
-enum class BuildingAttachments : uint8
-{
-	Storage,
-	DefenseStation,
-	RobotFactory,
-	RobotBarracks,
-	TradeOutpost,
-	Embassy,
-	PoliceStation
-};
-UENUM(BlueprintType)
 enum class UnitTypes : uint8
 {
 	None,
@@ -107,7 +96,6 @@ class ABuilding;
 class UUnitStats;
 class ABattleObject;
 class AOutpost;
-class UBuildingAttachment;
 class AGlobalSpawner;
 struct FTroopStats;
 struct FUnitComposition;
@@ -141,12 +129,9 @@ public:
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
 	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 	static bool SetWorkers(Factions faction, WorkerType worker, int desiredWorkers);
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment);
 
 	static TArray<int> GetFactionResources(Factions faction);
 	static void SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal);
@@ -158,7 +143,6 @@ public:
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
 	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, ABaseHex* hex = nullptr);
-	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, AOutpost* outpost, BuildingAttachments attachment);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 

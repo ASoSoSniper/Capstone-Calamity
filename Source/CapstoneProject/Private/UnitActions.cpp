@@ -11,7 +11,6 @@
 #include "Building.h"
 #include "Outpost.h"
 #include "UnitStats.h"
-#include "BuildingAttachment.h"
 #include "GlobalSpawner.h"
 #include "Faction.h"
 #include "stdlib.h"
@@ -191,39 +190,9 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
     return workersToAdd;
 }
 
-int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment)
-{
-    int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
-    int workersInHex = 0;
-
-    UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
-
-    for (auto& workers : selectedAttachment->workersInAttachment)
-    {
-        workersInHex += workers.Value;
-    }
-    if (workersInHex >= selectedAttachment->GetMaxWorkers()) return 0;
-    int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
-
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working += workersToAdd;
-
-    return workersToAdd;
-}
-
 int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
     int workersToRemove = desiredWorkers <= hex->workersInHex[worker] ? desiredWorkers : hex->workersInHex[worker];
-
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
-
-    return workersToRemove;
-}
-
-int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment)
-{
-    int workersToRemove = desiredWorkers <= outpost->GetAttachment(attachment)->workersInAttachment[worker] ? desiredWorkers : outpost->GetAttachment(attachment)->workersInAttachment[worker];
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
@@ -251,22 +220,6 @@ int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWork
         return -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
     }
     
-    return 0;
-}
-
-int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, AOutpost* outpost, BuildingAttachments attachment)
-{
-    UBuildingAttachment* attachmentType = outpost->GetAttachment(attachment);
-
-    if (desiredWorkers > attachmentType->workersInAttachment[worker])
-    {
-        return AddWorkers(faction, worker, desiredWorkers - attachmentType->workersInAttachment[worker], outpost, attachment);
-    }
-    else if (desiredWorkers < attachmentType->workersInAttachment[worker])
-    {
-        return -RemoveWorkers(faction, worker, attachmentType->workersInAttachment[worker] - desiredWorkers, outpost, attachment);
-    }
-
     return 0;
 }
 
@@ -364,23 +317,6 @@ void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, i
     {
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
         ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources);
-    }
-}
-
-void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, TMap<WorkerType, int> workers, AOutpost* outpost, BuildingAttachments attachment)
-{
-    for (auto& resource : resources)
-    {
-        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
-    }
-
-    if (outpost)
-    {
-        UBuildingAttachment* selectedAttachment = outpost->GetAttachment(attachment);
-        for (auto& worker : workers)
-        {
-            selectedAttachment->workersInAttachment[worker.Key] += UnitActions::AddWorkers(faction, worker.Key, worker.Value, outpost, attachment);
-        }
     }
 }
 
