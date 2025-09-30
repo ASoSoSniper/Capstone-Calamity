@@ -1159,7 +1159,7 @@ ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, FUnitData* data, float parentH
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(prefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
 
 	newTroop->InitTroop(data);
-	data->SetHP(parentHealthPercent);
+	data->SetHPByAlpha(parentHealthPercent, false);
 
 	return newTroop;
 }
@@ -1173,7 +1173,7 @@ AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<FUnitData*> groupDa
 	
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
-		groupData[i]->SetHP(parentHealthPercent);
+		groupData[i]->SetHPByAlpha(parentHealthPercent, false);
 	}
 
 	newTroop->InitTroop(groupData[0]->GetFaction(), UnitTypes::Army);
@@ -1323,6 +1323,11 @@ void FUnitData::AddUnitData(FUnitData* data)
 		return;
 	}
 
+	for (FStatusEffect* effect : data->GetStatusEffects())
+	{
+		AddStatusEffect(effect);
+	}
+
 	savedUnits.Add(data);
 	data->DestroyWorldData();
 
@@ -1407,8 +1412,11 @@ void FUnitData::SetBuildingValues(int setHealth, int setVision, int setSiegePowe
 
 	vision = setVision;
 
+	damage = setSiegePower;
 	siegePower = setSiegePower;
 	energyUpkeep = setEnergyUpkeep;
+
+	isBuilding = true;
 }
 
 void FUnitData::GenerateArmyName(FString newName)
@@ -1502,43 +1510,75 @@ int FUnitData::GetNameInstance() const
 
 int FUnitData::GetCurrentHP() const
 {
-	return currentHP;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetHPMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(currentHP) * totalMulti);
 }
 int FUnitData::GetMaxHP() const
 {
-	return maxHP;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetHPMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(maxHP) * totalMulti);
 }
-void FUnitData::SetHP(float alpha)
+void FUnitData::SetHPByAlpha(float alpha, bool allowDeath)
 {
 	alpha = FMath::Clamp(alpha, 0.f, 1.f);
 	currentHP = FMath::RoundToInt((float)maxHP * alpha);
 
-	currentHP = FMath::Max(currentHP, 1);
+	currentHP = FMath::Max(currentHP, allowDeath ? 0 : 1);
 }
 int FUnitData::GetCurrentMorale() const
 {
-	return currentMorale;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetMoraleMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(currentMorale) * totalMulti);
 }
 int FUnitData::GetMaxMorale() const
 {
-	return maxMorale;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetMoraleMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(maxMorale) * totalMulti);
 }
-void FUnitData::SetMorale(float alpha)
+void FUnitData::SetMoraleByAlpha(float alpha)
 {
 	alpha = FMath::Clamp(alpha, 0.f, 1.f);
-	currentMorale = FMath::RoundToInt((float)currentMorale * alpha);
+	currentMorale = FMath::RoundToInt(static_cast<float>(maxMorale) * alpha);
+}
+void FUnitData::SetMoraleByValue(int value)
+{
+	currentMorale = FMath::Clamp(value, 0, maxMorale);
 }
 float FUnitData::GetHPAlpha() const
 {
-	float curr = (float)currentHP;
-	float max = (float)maxHP;
+	float curr = static_cast<float>(GetCurrentHP());
+	float max = static_cast<float>(GetMaxHP());
 
 	return FMath::Clamp(curr / max, 0.f, 1.f);
 }
 float FUnitData::GetMoraleAlpha() const
 {
-	float curr = (float)currentMorale;
-	float max = (float)maxMorale;
+	float curr = static_cast<float>(GetCurrentMorale());
+	float max = static_cast<float>(GetMaxMorale());
 
 	return FMath::Clamp(curr / max, 0.f, 1.f);
 }
@@ -1553,17 +1593,27 @@ bool FUnitData::HasMorale() const
 
 int FUnitData::DamageHP(int amount)
 {
-	currentHP -= amount;
-	currentHP = FMath::Clamp(currentHP, 0, maxHP);
+	int hp = GetCurrentHP();
+	int max = GetMaxHP();
 
-	return currentHP;
+	hp -= amount;
+	float alpha = static_cast<float>(hp) / static_cast<float>(max);
+
+	SetHPByAlpha(alpha);
+
+	return hp;
 }
 int FUnitData::DamageMorale(int amount)
 {
-	currentMorale -= amount;
-	currentMorale = FMath::Clamp(currentMorale, 0, maxMorale);
+	int morale = GetCurrentMorale();
+	int max = GetMaxMorale();
 
-	return currentMorale;
+	morale -= amount;
+	float alpha = static_cast<float>(morale) / static_cast<float>(max);
+
+	SetMoraleByAlpha(alpha);
+
+	return morale;
 }
 
 int FUnitData::HealHP(int amount)
@@ -1576,19 +1626,47 @@ int FUnitData::HealHP(int amount)
 
 int FUnitData::GetVision() const
 {
-	return vision;
+	int totalVisionMod = 0;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalVisionMod += effect->GetVisionMod();
+	}
+
+	return vision + totalVisionMod;
 }
 int FUnitData::GetSpeed() const
 {
-	return speed;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetSpeedMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(speed) * totalMulti);
 }
 int FUnitData::GetDamage() const
 {
-	return damage;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetDamageMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(damage) * totalMulti);
 }
 int FUnitData::GetSiegePower() const
 {
-	return siegePower;
+	float totalMulti = 1.f;
+
+	for (FStatusEffect* effect : statusEffects)
+	{
+		totalMulti *= effect->GetSiegePowerMod();
+	}
+
+	return FMath::RoundToInt(static_cast<float>(siegePower) * totalMulti);
 }
 int FUnitData::GetReinforceRate() const
 {
@@ -1598,7 +1676,11 @@ int FUnitData::GetEnergyUpkeep() const
 {
 	return energyUpkeep;
 }
-TArray<FUnitData*> FUnitData::GetSavedUnits() const
+bool FUnitData::IsBuilding() const 
+{
+	return isBuilding;
+}
+const TArray<FUnitData*>& FUnitData::GetSavedUnits() const
 {
 	return savedUnits;
 }
@@ -1617,43 +1699,23 @@ void FUnitData::DestroyWorldData()
 	ClearStatusEffects();
 }
 
+const TSet<FStatusEffect*>& FUnitData::GetStatusEffects() const
+{
+	return statusEffects;
+}
 void FUnitData::AddStatusEffect(FStatusEffect* effect)
 {
 	statusEffects.Add(effect);
-
-	SetEffectValues(effect, true);
 }
 void FUnitData::RemoveStatusEffect(FStatusEffect* effect)
 {
 	if (!statusEffects.Contains(effect)) return;
 
 	statusEffects.Remove(effect);
-
-	SetEffectValues(effect, false);
 }
 void FUnitData::ClearStatusEffects()
 {
-	for (FStatusEffect* effect : statusEffects)
-	{
-		SetEffectValues(effect, false);
-	}
-
 	statusEffects.Empty();
-}
-void FUnitData::SetEffectValues(FStatusEffect* effect, bool applyEffect)
-{
-	int dir = applyEffect ? 1 : -1;
-
-	currentHP = FMath::Max(currentHP + (effect->GetHPMod() * dir), 1);
-	maxHP = FMath::Max(maxHP + (effect->GetHPMod() * dir), 1);
-	currentMorale = FMath::Max(currentMorale + (effect->GetMoraleMod() * dir), 1);
-	maxMorale = FMath::Max(maxMorale + (effect->GetMoraleMod() * dir), 1);
-
-	vision = FMath::Max(vision + (effect->GetVisionMod() * dir), 0);
-	speed = FMath::Max(speed + (effect->GetSpeedMod() * dir), 1);
-
-	damage = FMath::Max(damage + (effect->GetDamageMod() * dir), 0);
-	siegePower = FMath::Max(siegePower + (effect->GetSiegePowerMod() * dir), 0);
 }
 
 TMap<UnitTypes, FUnitComposition> FUnitData::GetUnitComposition() const
@@ -1725,11 +1787,11 @@ FactionRelationship FStatusEffect::GetFactionsToAffect() const
 {
 	return factionsToAffect;
 }
-int FStatusEffect::GetHPMod() const
+float FStatusEffect::GetHPMod() const
 {
 	return hpMod;
 }
-int FStatusEffect::GetMoraleMod() const
+float FStatusEffect::GetMoraleMod() const
 {
 	return moraleMod;
 }
@@ -1737,15 +1799,15 @@ int FStatusEffect::GetVisionMod() const
 {
 	return visionMod;
 }
-int FStatusEffect::GetSpeedMod() const
+float FStatusEffect::GetSpeedMod() const
 {
 	return speedMod;
 }
-int FStatusEffect::GetDamageMod() const
+float FStatusEffect::GetDamageMod() const
 {
 	return damageMod;
 }
-int FStatusEffect::GetSiegePowerMod() const
+float FStatusEffect::GetSiegePowerMod() const
 {
 	return siegePowerMod;
 }

@@ -25,9 +25,9 @@ private:
 	void ClaimLand();
 
 	UPROPERTY(EditAnywhere, Category = "Buffs") int buffRadius = 2;
-	UPROPERTY(EditAnywhere, Category = "Buffs") int moraleBuff = 5;
-	UPROPERTY(EditAnywhere, Category = "Buffs") int damageBuff = 5;
-	UPROPERTY(EditAnywhere, Category = "Buffs") int siegeDamageBuff = 5;
+	UPROPERTY(EditAnywhere, Category = "Buffs") float moraleBuff = 1.5f;
+	UPROPERTY(EditAnywhere, Category = "Buffs") float damageBuff = 1.5f;
+	UPROPERTY(EditAnywhere, Category = "Buffs") float siegeDamageBuff = 1.5f;
 
 	FStatusEffect* buff;
 	TSet<ABaseHex*> buffedHexes;

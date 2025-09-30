@@ -163,11 +163,35 @@ void ABaseHex::SetHexCoordinates(int x, int y)
 	hexCoordinates = FVector2D(x, y);
 }
 
-ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes)
+ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf, EHexSearchRules occupancyFilter, bool includeBuildings)
 {
-	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1);
+	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1, includeSelf);
 
-	auto EvaluateHex = [&usedHexes, &faction](ABaseHex* hex) -> ABaseHex*
+	TMap<Factions, FactionRelationship> foundFactions;
+
+	auto ContainsFactionsToFilter = [&](const FUnitData* unit) -> bool
+		{
+			Factions unitFaction = unit->GetFaction();
+
+			if (!foundFactions.Contains(unitFaction))
+			{
+				Faction* factionObject = UnitActions::GetFaction(unitFaction);
+				foundFactions.Add(unitFaction, factionObject->GetFactionRelationship(faction));
+			}
+
+			switch (occupancyFilter)
+			{
+			case EHexSearchRules::ContainsAny:
+				return true;
+			case EHexSearchRules::ContainsAllies:
+				return foundFactions[unitFaction] == FactionRelationship::Ally;
+			case EHexSearchRules::ContainsEnemies:
+				return foundFactions[unitFaction] == FactionRelationship::Enemy;
+			}
+
+			return false;
+		};
+	auto EvaluateHex = [&](ABaseHex* hex) -> ABaseHex*
 		{
 			if (usedHexes.Contains(hex)) return nullptr;
 			if (!hex->IsTraversableTerrain())
@@ -179,11 +203,16 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 			bool occupied = false;
 			for (int i = 0; i < hex->troopsInHex.Num(); i++)
 			{
-				if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
+				if (ContainsFactionsToFilter(hex->troopsInHex[i]->GetUnitData()))
 				{
 					occupied = true;
 					break;
 				}
+			}
+			if (includeBuildings)
+			{
+				if (ContainsFactionsToFilter(hex->building->GetUnitData()))
+					occupied = true;
 			}
 
 			usedHexes.Add(hex);
@@ -193,7 +222,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 			return hex;
 		};
 
-	if (EvaluateHex(this) != nullptr) return this;
+	if (includeSelf && (EvaluateHex(this) != nullptr)) return this;
 	for (ABaseHex* hex : hexesInRadius)
 	{
 		if (EvaluateHex(hex) != nullptr) return hex;
@@ -374,11 +403,13 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 		building = setBuilding;
 		SetHexOwner(setBuilding->GetUnitData()->GetFaction());
 
+		AddAllEffectsToUnit(building->GetUnitData());
 		CheckForHostility(setBuilding);
 	}
 	//If a building is being destroyed, cut connections to this hex and clamp worker count
 	else if (building && !setBuilding)
 	{
+		RemoveAllEffectsFromUnit(building->GetUnitData());
 		building = nullptr;
 
 		SetMaxWorkers(maxWorkersDefault);
@@ -768,6 +799,22 @@ void ABaseHex::AddEffectToAllUnits(FStatusEffect* effect)
 
 	if (building)
 		AddEffectToUnit(building->GetUnitData(), effect, factionObject);
+
+	if (battle)
+	{
+		auto AddEffectToGroup = [&](TMap<Factions, FUnitData*>& group)
+			{
+				if (group.IsEmpty()) return;
+
+				for (TPair<Factions, FUnitData*>& army : group)
+				{
+					AddEffectToUnit(army.Value, effect, factionObject);
+				}
+			};
+		
+		AddEffectToGroup(battle->currentBattle.Group1);
+		AddEffectToGroup(battle->currentBattle.Group2);
+	}
 }
 void ABaseHex::RemoveEffectFromAllUnits(FStatusEffect* effect)
 {

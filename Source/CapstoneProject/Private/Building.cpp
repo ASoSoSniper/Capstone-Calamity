@@ -27,6 +27,7 @@ ABuilding::ABuilding()
 	visibility->enableScan = false;
 
 	buildingType = SpawnableBuildings::None;
+	preAssignedFaction = Factions::None;
 
 	resourceYields.Add(StratResources::Energy, 0);
 	resourceYields.Add(StratResources::Food, 0);

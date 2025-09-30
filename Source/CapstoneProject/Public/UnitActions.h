@@ -109,8 +109,6 @@ public:
 
 	static bool IsAllyToFaction(FactionRelationship relationship);
 
-	static EngagementSelect DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2);
-
 	static Faction* GetFaction(const Factions& faction);
 	static TMap<Factions, Faction*> GetFactions();
 	

@@ -69,6 +69,14 @@ struct FCurrentResourceYields
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
 };
 
+UENUM(BlueprintType)
+enum class EHexSearchRules : uint8
+{
+	ContainsAny,
+	ContainsAllies,
+	ContainsEnemies
+};
+
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
 {
@@ -93,7 +101,7 @@ public:
 	FVector2D GetHexCoordinates() const;
 	void SetHexCoordinates(int x, int y);
 
-	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes);
+	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf = true, EHexSearchRules occupancyFilter = EHexSearchRules::ContainsAny, bool includeBuildings = false);
 	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1, bool includeSelf = true) const;
 
 	TerrainType GetHexTerrain();

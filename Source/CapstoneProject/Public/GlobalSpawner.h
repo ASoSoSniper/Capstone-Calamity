@@ -487,7 +487,7 @@ struct FStatusEffect
 
 public:
 	FStatusEffect() {};
-	FStatusEffect(FString name, Factions faction, FactionRelationship affected, int hp, int morale, int vision, int speed, int damage, int siegePower) :
+	FStatusEffect(FString name, Factions faction, FactionRelationship affected, float hp, float morale, int vision, float speed, float damage, float siegePower) :
 		effectName(name), originFaction(faction), factionsToAffect(affected),
 		hpMod(hp), moraleMod(morale), visionMod(vision), speedMod(speed), damageMod(damage), siegePowerMod(siegePower) {		
 	};
@@ -496,26 +496,26 @@ public:
 	Factions GetOriginFaction() const;
 	FactionRelationship GetFactionsToAffect() const;
 
-	int GetHPMod() const;
-	int GetMoraleMod() const;
+	float GetHPMod() const;
+	float GetMoraleMod() const;
 	int GetVisionMod() const;
-	int GetSpeedMod() const;
-	int GetDamageMod() const;
-	int GetSiegePowerMod() const;
+	float GetSpeedMod() const;
+	float GetDamageMod() const;
+	float GetSiegePowerMod() const;
 
 private:
 	FString effectName = TEXT("");
 	Factions originFaction = Factions::None;
 	FactionRelationship factionsToAffect = FactionRelationship::Neutral;
 
-	int hpMod = 0;
-	int moraleMod = 0;
+	float hpMod = 1.f;
+	float moraleMod = 1.f;
 
 	int visionMod = 0;
-	int speedMod = 0;
+	float speedMod = 1.f;
 
-	int damageMod = 0;
-	int siegePowerMod = 0;
+	float damageMod = 1.f;
+	float siegePowerMod = 1.f;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -553,10 +553,11 @@ public:
 
 	int GetCurrentHP() const;
 	int GetMaxHP() const;
-	void SetHP(float alpha);
+	void SetHPByAlpha(float alpha, bool allowDeath = true);
 	int GetCurrentMorale() const;
 	int GetMaxMorale() const;
-	void SetMorale(float alpha);
+	void SetMoraleByAlpha(float alpha);
+	void SetMoraleByValue(int value);
 	float GetHPAlpha() const;
 	float GetMoraleAlpha() const;
 	bool IsAlive() const;
@@ -575,12 +576,15 @@ public:
 	int GetReinforceRate() const;
 	int GetEnergyUpkeep() const;
 
-	TArray<FUnitData*> GetSavedUnits() const;
+	bool IsBuilding() const;
+
+	const TArray<FUnitData*>& GetSavedUnits() const;
 	int GetSavedUnitCount() const;
 
 	bool SetupComplete() const;
 	void DestroyWorldData();
 
+	const TSet<FStatusEffect*>& GetStatusEffects() const;
 	void AddStatusEffect(FStatusEffect* effect);
 	void RemoveStatusEffect(FStatusEffect* effect);
 	void ClearStatusEffects();
@@ -606,11 +610,12 @@ private:
 	int reinforceRate = 0;
 	int energyUpkeep = 0;
 
+	bool isBuilding = false;
+
 	TArray<FUnitData*> savedUnits;
 	TSet<FStatusEffect*> statusEffects;
 
 	void RemoveArmyName();
-	void SetEffectValues(FStatusEffect* effect, bool applyEffect);
 };
 #pragma endregion
 

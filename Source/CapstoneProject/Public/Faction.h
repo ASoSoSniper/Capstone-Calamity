@@ -79,6 +79,7 @@ public:
 
 	UFUNCTION() void SetFaction(Factions newFaction);
 	UFUNCTION() Factions GetFaction();
+	UFUNCTION() FString GetFactionName() const;
 	UFUNCTION() bool IsAIControlled();
 
 	UFUNCTION() void UpdateResourceCosts();
@@ -99,6 +100,7 @@ public:
 private:
 
 	UPROPERTY() Factions faction;
+	UPROPERTY() FString factionName;
 	UPROPERTY() AIBehaviorStates behaviorState = AIBehaviorStates::AIInactive;
 	UFUNCTION() void DetermineBehaviorState();
 

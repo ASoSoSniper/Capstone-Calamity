@@ -58,116 +58,6 @@ bool UnitActions::IsAllyToFaction(FactionRelationship relationship)
     return false;
 }
 
-EngagementSelect UnitActions::DetermineConflictAlignment(Factions& unitFaction, TArray<Factions>& group1, TArray<Factions>& group2)
-{
-    //
-    //  EMPTY GROUPS:
-    //  If one or both groups are empty, perform a more complex relationship check:
-    // 
-    
-    //If Group 1 is empty, Group 2 is also empty, so this unit can join Group 1 to start things off
-    if (group1.IsEmpty())
-    {
-        return EngagementSelect::JoinGroup1;
-    }
-
-    Faction* factionObject = GetFaction(unitFaction);
-
-    //If Group 2 is empty, check whether Group 1 is composed entirely of enemies or allies, and assign accordingly
-    if (group2.IsEmpty())
-    {
-        //Declare variables to record each possible relationship in Group 1
-        int alliesInGroup1 = 0;
-        int neutralsInGroup1 = 0;
-        int enemiesInGroup1 = 0;
-
-        //Check Group 1 relationships to this unit's faction
-        for (int i = 0; i < group1.Num(); ++i)
-        {
-            if (group1[i] != unitFaction)
-            {
-                FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
-
-                //Record the faction's relationship
-                switch (factionAlignment)
-                {
-                case FactionRelationship::Ally:
-                    alliesInGroup1++;
-                    break;
-                case FactionRelationship::Neutral:
-                    neutralsInGroup1++;
-                    break;
-                case FactionRelationship::Enemy:
-                    enemiesInGroup1++;
-                    break;
-                }
-            }
-        }
-        //If Group 1 is composed entirely of enemies and Group 2 is empty, this unit joins Group 2
-        if (alliesInGroup1 == 0 && neutralsInGroup1 == 0 && enemiesInGroup1 > 0)
-        {
-            return EngagementSelect::JoinGroup2;
-        }
-        //If Group 1 is composed entirely of allies, join Group 1
-        else if (alliesInGroup1 > 0 && neutralsInGroup1 == 0 && enemiesInGroup1 == 0)
-        {
-            return EngagementSelect::JoinGroup1;
-        }
-
-        //Otherwise, do not join the conflict
-        return EngagementSelect::DoNotJoin;
-    }    
-
-    // 
-    //  NON-EMPTY GROUPS:
-    //  If both groups possess factions, perform a more streamlined check:
-    //
-
-    bool cannotJoinGroup1 = false;
-    bool cannotJoinGroup2 = false;
-
-    //Check Group 1 relationships to this unit's faction
-    for (int i = 0; i < group1.Num(); ++i)
-    {
-        if (group1[i] != unitFaction)
-        {
-            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
-
-            //If this faction not a direct ally, deny Group 1 as a possible selection
-            if (!IsAllyToFaction(factionAlignment))
-            {
-                cannotJoinGroup1 = true;
-            }
-        }
-    }
-
-    //Check Group 2 relationships to this unit's faction
-    for (int i = 0; i < group2.Num(); ++i)
-    {
-        if (group2[i] != unitFaction)
-        {
-            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(group1[i]);
-
-            //If this faction not a direct ally, deny Group 2 as a possible selection
-            if (!IsAllyToFaction(factionAlignment))
-            {
-                cannotJoinGroup2 = true;
-            }
-        }
-    }
-
-    if (!cannotJoinGroup1 && cannotJoinGroup2)
-    {
-        return EngagementSelect::JoinGroup1;
-    }
-    else if (cannotJoinGroup1 && !cannotJoinGroup2)
-    {
-        return EngagementSelect::JoinGroup2;
-    }
-
-    return EngagementSelect::DoNotJoin;
-}
-
 int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
@@ -594,27 +484,24 @@ Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject
 {
     Faction* factionObject = GetFaction(referenceFaction);
 
-    if (!battle->currentBattle.Group1.IsEmpty())
-    {
-        //Check Group 1 relationships to this unit's faction
-        for (int i = 0; i < battle->currentBattle.Group1.Num(); i++)
+    auto GetHostile = [&](TMap<Factions, FUnitData*>& group) -> Factions
         {
-            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group1[i]);
-            if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
-        }
-    }
+            if (group.IsEmpty()) return Factions::None;
 
-    if (!battle->currentBattle.Group2.IsEmpty())
-    {
-        //Check Group 2 relationships to this unit's faction
-        for (int i = 0; i < battle->currentBattle.Group2.Num(); i++)
-        {
-            FactionRelationship factionAlignment = factionObject->GetFactionRelationship(battle->currentBattle.Group2[i]);
-            if (factionAlignment == FactionRelationship::Enemy) return battle->currentBattle.Group1[i];
-        }
-    }
+            for (TPair<Factions, FUnitData*>& army : group)
+            {
+                FactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
+                if (factionAlignment == FactionRelationship::Enemy) return army.Key;
+            }
 
-    return Factions::None;
+            return Factions::None;
+        };
+
+    Factions foundHostile = GetHostile(battle->currentBattle.Group1);
+    if (foundHostile == Factions::None)
+        foundHostile = GetHostile(battle->currentBattle.Group2);
+
+    return foundHostile;
 }
 
 Faction* UnitActions::GetFaction(const Factions& faction)

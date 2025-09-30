@@ -17,20 +17,20 @@ class CAPSTONEPROJECT_API ABattleObject : public AActor
 {
 	GENERATED_BODY()
 	
+#pragma region General Logic
 public:	
-	// Sets default values for this actor's properties
 	ABattleObject();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere) UInteractable* interact;
+	void SetSelected(bool selected);
+	ABaseHex* GetHex();
+
 	UPROPERTY(EditAnywhere) UHexNav* hexNav;
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere) UInteractable* interact;
 	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group1Mesh;
@@ -41,79 +41,98 @@ public:
 
 	UPROPERTY(EditAnywhere) USceneComponent* baseRoot;
 
-	//Every troop participating in this battle, sorted into their factions
-	TMap<Factions, TArray<FUnitData*>> factionsInBattle;
+private:
+	ABaseHex* hex;
+	
+	UPROPERTY() bool selectedByPlayer;
+#pragma endregion
 
-	//The singular faction units created using the unit data from factionsInBattle
-	TMap<Factions, FUnitData*> armies;
-
-	struct Battle
-	{
-		TArray<Factions> Group1;
-		TArray<Factions> Group2;
-	};
-	Battle currentBattle;
-
-	TArray<TMap<UnitTypes, FUnitComposition>> groupCompositions;
-
+#pragma region Setup and Teardown
+public:
 	virtual void Start();
-
-	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
+	void CreateFactions();
 
 	bool IsEnding();
-	bool IsAttacking();
-
-	void SetSelected(bool selected);
-	int GetGroup1Die();
-	int GetGroup2Die();
-	ABaseHex* GetHex();
-
-	Factions FleeFromBattle(Factions faction);
 
 protected:
-
-	void CreateFactions();
-	void AddUnitToFaction(AMovementAI* troop);
 	virtual void GenerateModels();
-	void AddUnitToArmy(FUnitData* data);
-	void AssignFactionToGroup(Factions army);
 
-	TArray<ATroop*> ExtractFactionUnits(Factions faction, bool spawnAtOutpost = false);
-	void RemoveArmy(Factions faction);
-
-	virtual void Attack();
+	virtual bool EndCondition() const;
 	virtual void EndBattle();
 	virtual void DestroyBattle();
 	virtual void Destroyed() override;
 
+	Factions attackingFaction = Factions::None;
+
+private:
+	bool ending = false;
+	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
+#pragma endregion
+
+#pragma region Army Management
+public:
+	Factions FleeFromBattle(Factions faction);
+
+	void GetGroupHealthAndMorale(int groupIndex, int& HP, int& maxHP, int& morale, int& maxMorale) const;
+
+	//The specific number of each troop the armies are composed of, stored for convenience
+	TArray<TMap<UnitTypes, FUnitComposition>> groupCompositions;
+
+	struct Battle
+	{
+		TMap<Factions, FUnitData*> Group1;
+		TMap<Factions, FUnitData*> Group2;
+
+		bool AddUnit(FUnitData* data);
+		EngagementSelect DetermineConflictAlignment(Factions& unitFaction);
+		bool ContainsFaction(Factions faction) const;
+
+		ATroop* ExtractFaction(Factions& faction, ABaseHex* hex, TSet<ABaseHex*> usedHexes, bool spawnAtOutpost = false);
+		TArray<ATroop*> ExtractAllFactions(ABaseHex* hex);
+	};
+	Battle currentBattle;
+
+protected:
+	void AddUnitToFaction(AMovementAI* troop);
+	void DestroyArmy(Factions faction);
+
+private:
+	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TMap<Factions, FUnitData*>& group);
+#pragma endregion
+
+#pragma region Combat
+public:	
+	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
+
+	bool IsAttacking();
+
+	int GetGroup1Die();
+	int GetGroup2Die();
+
+protected:
+	void Attack();
+	virtual void CalculateGroupDamage(int& group1Damage, int& group2Damage);
+	virtual void ApplyGroupDamage(const int& group1Damage, const int& group2Damage);
+
 	int RollDie(int& groupDie);
 	float GetRollModifier(int& groupDie);
 
-	float DecayMorale(Factions faction, float percentReduction);
-	void CalculateGroupDamage();
+	float DecayMorale(FUnitData* faction, float percentReduction);
 
+	virtual bool Group1IsAlive(bool& containsHuman) const;
+	virtual bool Group2IsAlive(bool& containsHuman) const;
+
+private:
 	UPROPERTY(EditAnywhere) bool attacking;
-	bool ending;
-	ABaseHex* hex;
 
 	UPROPERTY(VisibleAnywhere) int group1Die = 0;
 	UPROPERTY(VisibleAnywhere) int group2Die = 0;
-	UPROPERTY(VisibleAnywhere) int group1Damage = 0;
-	UPROPERTY(VisibleAnywhere) int group2Damage = 0;
 
 	UPROPERTY(EditAnywhere) int ticksTillRoll = 5;
 	int currentTickTillRoll = 0;
 	UPROPERTY(EditAnywhere) float moraleDecayRate = 0.01f;
 
-private:
 	UPROPERTY(EditAnywhere) float attackRate = 2.f;
 	float currentAttackTime;
-	
-	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
-
-	Factions attackingFaction = Factions::None;
-
-	bool selectedByPlayer;
-
-	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TArray<Factions>& group);
+#pragma endregion
 };

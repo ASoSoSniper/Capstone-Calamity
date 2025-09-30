@@ -1062,12 +1062,7 @@ FTroopArmyDisplay ABasePlayerController::GetBattleUnit(int group)
 	if (battleObject->currentBattle.Group1.IsEmpty() && group == 0) return unit;
 	if (battleObject->currentBattle.Group2.IsEmpty() && group == 1) return unit;
 
-	Factions selectedFaction = group == 0 ? battleObject->currentBattle.Group1[0] : battleObject->currentBattle.Group2[0];
-
-	unit.HP = battleObject->armies[selectedFaction]->GetCurrentHP();
-	unit.maxHP = battleObject->armies[selectedFaction]->GetMaxHP();
-	unit.morale = battleObject->armies[selectedFaction]->GetCurrentMorale();
-	unit.maxMorale = battleObject->armies[selectedFaction]->GetMaxMorale();
+	battleObject->GetGroupHealthAndMorale(group, unit.HP, unit.maxHP, unit.morale, unit.maxMorale);
 
 	if (battleObject->groupCompositions[group].Contains(UnitTypes::Infantry))
 		unit.infantryQuantity = battleObject->groupCompositions[group][UnitTypes::Infantry].quantity;

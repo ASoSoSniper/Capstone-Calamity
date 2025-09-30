@@ -135,6 +135,9 @@ void Faction::SetFaction(Factions newFaction)
 	if (newFaction == Factions::None) return;
 
 	faction = newFaction;
+	const UEnum* factionEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("Factions"), true);
+	if (factionEnum)
+		factionName = factionEnum->GetNameStringByValue(static_cast<int64>(faction));
 
 	if (newFaction != Factions::Human) behaviorState = Expansion;
 }
@@ -142,6 +145,11 @@ void Faction::SetFaction(Factions newFaction)
 Factions Faction::GetFaction()
 {
 	return faction;
+}
+
+FString Faction::GetFactionName() const
+{
+	return factionName;
 }
 
 bool Faction::IsAIControlled()

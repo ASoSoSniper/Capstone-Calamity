@@ -7,15 +7,20 @@
 
 void ASiegeObject::Start()
 {
-	//Find hex the object is placed on
-	hex = hexNav->GetCurrentHex();
-	hex->battle = this;
-	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleStartSound);
+	if (ABaseHex* centerHex = hexNav->GetCurrentHex())
+	{
+		building = centerHex->building;
+		if (building)
+		{
+			TSet<ABaseHex*> surroundingHexes = centerHex->GetHexesInRadius(building->GetHexLayersToOccupy());
+			for (ABaseHex* adjHex : surroundingHexes)
+			{
+				adjHex->battle = this;
+			}
+		}
+	}
 
-	building = hex->building;
-
-	//Once created, begin organizing armies into factions
-	CreateFactions();
+	Super::Start();
 }
 
 ABuilding* ASiegeObject::GetBuilding()
@@ -23,119 +28,27 @@ ABuilding* ASiegeObject::GetBuilding()
 	return building;
 }
 
-void ASiegeObject::Attack()
+void ASiegeObject::CalculateGroupDamage(int& group1Damage, int& group2Damage)
 {
-	//End the battle if one group is completely wiped out
-	if (currentBattle.Group1.IsEmpty() || (currentBattle.Group2.IsEmpty() && !BuildingIsAlive()))
+	Super::CalculateGroupDamage(group1Damage, group2Damage);
+
+	if (!BuildingIsAlive()) return;
+
+	group2Damage += building->GetUnitData()->GetDamage();
+
+	group1SiegeDamage = 0;
+	for (auto& unit : groupCompositions[0])
 	{
-		EndBattle();
-		return;
-	}
-
-	CalculateGroupDamage();
-	if (BuildingIsAlive()) CalculateSiegeDamage();
-
-	++currentTickTillRoll;
-	if (currentTickTillRoll >= ticksTillRoll)
-	{
-		currentTickTillRoll = 0;
-		RollDie(group1Die);
-		RollDie(group2Die);
-		group1Die = FMath::Clamp(group1Die - hex->GetDefenderBonus(), 1, group1Die - hex->GetDefenderBonus());
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Group 1 rolled %d!\nGroup 2 rolled %d!"), group1Die, group2Die));
-	}
-
-	int group1DamageTotal = FMath::RoundToInt((float)group1Damage * GetRollModifier(group1Die));
-	int group2DamageTotal = FMath::RoundToInt((float)group2Damage * GetRollModifier(group2Die));
-
-	//Apply damage to each group
-	for (int i = 0; i < currentBattle.Group1.Num(); ++i)
-	{
-		armies[currentBattle.Group1[i]]->DamageHP(group2DamageTotal);
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 1 took %d damage! %d health remaining! %d morale remaining!"), group2DamageTotal, armies[currentBattle.Group1[i]]->GetCurrentHP(), armies[currentBattle.Group1[i]]->GetCurrentMorale()));
-	}
-	for (int i = 0; i < currentBattle.Group2.Num(); ++i)
-	{
-		armies[currentBattle.Group2[i]]->DamageHP(group1DamageTotal);
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Group 2 took %d damage! %d health remaining! %d morale remaining!"), group1DamageTotal, armies[currentBattle.Group2[i]]->GetCurrentHP(), armies[currentBattle.Group2[i]]->GetCurrentMorale()));
-	}
-
-	//Apply damage to the building
-	building->GetUnitData()->DamageHP(attackerSiegeDamage);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Building took %d damage! %d health remaining!"), attackerSiegeDamage, building->GetUnitData()->GetCurrentHP()));
-
-	//Created array of armies to remove this combat tick
-	TArray<Factions> armiesToRemove;
-
-	//Add armies to the remove list as they are killed or their morale is depleted
-	for (auto& army : armies)
-	{
-		if (!army.Value->IsAlive())
-		{
-			armiesToRemove.Add(army.Key);
-			continue;
-		}
-
-		if (DecayMorale(army.Key, moraleDecayRate) <= 0.f)
-		{
-			armiesToRemove.Add(FleeFromBattle(army.Key));
-		}
-	}
-
-	//Remove armies that satisfy removal requirements
-	if (!armiesToRemove.IsEmpty())
-	{
-		for (int i = 0; i < armiesToRemove.Num(); i++)
-		{
-			RemoveArmy(armiesToRemove[i]);
-		}
-	}
-
-	//End the battle if Group 1 is completely wiped out or Group 2 AND its building are wiped out
-	if (currentBattle.Group1.IsEmpty() || (currentBattle.Group2.IsEmpty() && !BuildingIsAlive()))
-	{
-		EndBattle();
+		group1SiegeDamage += AGlobalSpawner::spawnerObject->troopStats[unit.Key].siegePower * unit.Value.quantity;
 	}
 }
-
-void ASiegeObject::EndBattle()
+void ASiegeObject::ApplyGroupDamage(const int& group1Damage, const int& group2Damage)
 {
-	if (ending) return;
+	Super::ApplyGroupDamage(group1Damage, group2Damage);
 
-	if (currentBattle.Group1.IsEmpty())
-	{
-		group1Anims->isFightLost = true;
-	}
-	else
-	{
-		group1Anims->isFightWon = true;
-	}
+	building->GetUnitData()->DamageHP(group1SiegeDamage);
 
-	if (currentBattle.Group2.IsEmpty() && !BuildingIsAlive())
-	{
-		group2Anims->isFightLost = true;
-	}
-	else
-	{
-		group2Anims->isFightWon = true;
-	}
-
-	if (currentBattle.Group1.Contains(Factions::Human) || 
-		(currentBattle.Group2.Contains(Factions::Human) || 
-			(building->GetUnitData()->GetFaction() == Factions::Human && BuildingIsAlive())))
-	{
-		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleVictorySound);
-	}
-	else
-	{
-		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleDefeatSound);
-	}
-
-	attacking = false;
-	ending = true;
+	if (EndCondition()) EndBattle();
 }
 
 void ASiegeObject::GenerateModels()
@@ -169,30 +82,42 @@ void ASiegeObject::GenerateModels()
 void ASiegeObject::DestroyBattle()
 {
 	if (building->GetUnitData()->GetFaction() == Factions::Human && !BuildingIsAlive()) building->Destroy();
+
+	TSet<ABaseHex*> surroundingHexes = GetHex()->GetHexesInRadius(building->GetHexLayersToOccupy());
+	for (ABaseHex* adjHex : surroundingHexes)
+	{
+		adjHex->battle = nullptr;
+	}
+
 	Super::DestroyBattle();
 }
 
-void ASiegeObject::CalculateSiegeDamage()
+bool ASiegeObject::BuildingIsAlive() const
 {
-	group2Damage += building->GetUnitData()->GetDamage();
-
-	attackerSiegeDamage = 0;
-	for (auto& unit : groupCompositions[0])
-	{
-		attackerSiegeDamage += AGlobalSpawner::spawnerObject->troopStats[unit.Key].siegePower * unit.Value.quantity;
-	}
-}
-
-bool ASiegeObject::BuildingIsAlive()
-{
-	bool alive = building->IsDisabled();
-	if (alive)
+	bool disabled = building->IsDisabled();
+	if (disabled)
 	{
 		if (!currentBattle.Group1.IsEmpty())
 		{
-			building->SetSiegeState(true, currentBattle.Group1[0]);
+			building->SetSiegeState(true, attackingFaction);
 		}
 	}
 
 	return !building->IsOccupied();
+}
+bool ASiegeObject::EndCondition() const
+{
+	return currentBattle.Group1.IsEmpty() || (currentBattle.Group2.IsEmpty() && !BuildingIsAlive());
+}
+bool ASiegeObject::Group2IsAlive(bool& containsHuman) const
+{
+	bool humanTroops = false;
+	bool humanBuilding = false;
+
+	bool troopsAlive = Super::Group2IsAlive(humanTroops);
+	bool buildingAlive = building->GetUnitData()->IsAlive();
+
+	containsHuman = humanTroops || humanBuilding;
+
+	return troopsAlive || buildingAlive;
 }
