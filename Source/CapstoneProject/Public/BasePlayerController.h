@@ -228,7 +228,7 @@ public:
 				troop->AI_SetMovementAction(troop_Merge, targetTroop->hexNav);
 			else
 			{
-				Faction* factionObject = UnitActions::GetFaction(playerFaction);
+				UFaction* factionObject = UnitActions::GetFaction(playerFaction);
 				FactionRelationship relation = factionObject->GetFactionRelationship(targetFaction);
 
 				switch (relation)

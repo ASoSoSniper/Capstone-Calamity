@@ -205,7 +205,7 @@ AActor* UAITroopComponent::FindRandomHex()
 
 AActor* UAITroopComponent::FindHexToSettle()
 {
-	Faction* factionObject = UnitActions::GetFaction(parentTroop->GetUnitData()->GetFaction());
+	UFaction* factionObject = UnitActions::GetFaction(parentTroop->GetUnitData()->GetFaction());
 
 	ABaseHex* bestHex = nullptr;
 	int mostFreeHexes = 0;

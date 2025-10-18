@@ -13,6 +13,7 @@
 #include "UnitStats.h"
 #include "GlobalSpawner.h"
 #include "Faction.h"
+#include "FactionController.h"
 #include "stdlib.h"
 
 
@@ -23,7 +24,7 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
         Factions a = unit->GetUnitData()->GetFaction();
         Factions b = target->GetUnitData()->GetFaction();
 
-        Faction* factionObject = GetFaction(a);
+        UFaction* factionObject = GetFaction(a);
         if (!factionObject) return false;
 
         if (factionObject->GetFactionRelationship(b) == FactionRelationship::Enemy)
@@ -37,7 +38,7 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 
 bool UnitActions::IsHostileTarget(const Factions& a, const Factions& b)
 {
-    Faction* aFaction = GetFaction(a);
+    UFaction* aFaction = GetFaction(a);
     if (!aFaction) return false;
 
     return aFaction->GetFactionRelationship(b) == FactionRelationship::Enemy;
@@ -101,16 +102,22 @@ bool UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWor
 
 int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
+    if (!hex) return 0;
+
+    int changedWorkerCount = 0;
+
     if (desiredWorkers > hex->workersInHex[worker])
     {
-        return AddWorkers(faction, worker, desiredWorkers - hex->workersInHex[worker], hex);
+        changedWorkerCount = AddWorkers(faction, worker, desiredWorkers - hex->workersInHex[worker], hex);
     }
     else if (desiredWorkers < hex->workersInHex[worker])
     {
-        return -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
+        changedWorkerCount = -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
     }
+
+    hex->UpdateWorkerDisplay();
     
-    return 0;
+    return changedWorkerCount;
 }
 
 TArray<int> UnitActions::GetFactionResources(Factions faction)
@@ -123,7 +130,7 @@ TArray<int> UnitActions::GetFactionResources(Factions faction)
     return resources;
 }
 
-void UnitActions::SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal)
+void UnitActions::SetFactionResources(Factions faction, EStratResources resourceToChange, int desiredResourceVal)
 {
     ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resourceToChange].currentResources = desiredResourceVal;
 }
@@ -134,9 +141,9 @@ int UnitActions::GetFactionPopulation(Factions faction)
     return humanPop;
 }
 
-TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
+TMap<EStratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
 {
-    TMap<StratResources, int> resources;
+    TMap<EStratResources, int> resources;
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
         resources.Add(resource.Key, resource.Value.currentResources);
@@ -144,9 +151,9 @@ TMap<StratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions 
     return resources;
 }
 
-TMap<StratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
 {
-    TMap<StratResources, int> resources;
+    TMap<EStratResources, int> resources;
 
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
@@ -155,26 +162,26 @@ TMap<StratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
     return resources;
 }
 
-TMap<StratResources, int> UnitActions::GetResourceGains(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourceGains(Factions faction)
 {
-    TMap<StratResources, int> resources;
+    TMap<EStratResources, int> resources;
 
-    resources.Add(StratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Wealth].resourcePerTick);
-    resources.Add(StratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Energy].resourcePerTick);
-    resources.Add(StratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].resourcePerTick);
-    resources.Add(StratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Production].resourcePerTick);
+    resources.Add(EStratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Wealth].resourcePerTick);
+    resources.Add(EStratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Energy].resourcePerTick);
+    resources.Add(EStratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].resourcePerTick);
+    resources.Add(EStratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Production].resourcePerTick);
 
     return resources;
 }
 
-TMap<StratResources, int> UnitActions::GetResourceLosses(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourceLosses(Factions faction)
 {
-    TMap<StratResources, int> resources;
+    TMap<EStratResources, int> resources;
 
-    resources.Add(StratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Wealth].lossesPerDay);
-    resources.Add(StratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Energy].lossesPerDay);
-    resources.Add(StratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].lossesPerDay);
-    resources.Add(StratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Production].lossesPerDay);
+    resources.Add(EStratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Wealth].lossesPerDay);
+    resources.Add(EStratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Energy].lossesPerDay);
+    resources.Add(EStratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].lossesPerDay);
+    resources.Add(EStratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Production].lossesPerDay);
 
     return resources;
 }
@@ -201,7 +208,7 @@ TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
     return workers;
 }
 
-void UnitActions::ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, ABaseHex* hex)
+void UnitActions::ConsumeSpentResources(Factions faction, TMap<EStratResources, int> resources, ABaseHex* hex)
 {
     for (auto& resource : resources)
     {
@@ -235,7 +242,7 @@ void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
 
 int UnitActions::GetResourceCap(Factions faction)
 {
-    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[StratResources::Food].maxResources;
+    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].maxResources;
 }
 
 ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referencePoint)
@@ -294,7 +301,7 @@ bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
 {
     ABaseHex* hexActor = Cast<ABaseHex>(hex);
     if (!hexActor) return false;
-    Faction* factionObject = GetFaction(faction);
+    UFaction* factionObject = GetFaction(faction);
 
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
@@ -356,7 +363,7 @@ void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
     }
 }
 
-void UnitActions::AddResources(Factions faction, TMap<StratResources, int> resources)
+void UnitActions::AddResources(Factions faction, TMap<EStratResources, int> resources)
 {
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
@@ -372,7 +379,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     if (!target) return;
 
     //Get the faction object and return if it doesn't exist or is not AI-controlled
-    Faction* factionObject = GetFaction(faction);
+    UFaction* factionObject = GetFaction(faction);
     if (!factionObject) return;
     if (!factionObject->IsAIControlled()) return;
 
@@ -465,7 +472,7 @@ bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unit
 
 Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABaseHex* hex)
 {
-    Faction* factionObject = GetFaction(referenceFaction);
+    UFaction* factionObject = GetFaction(referenceFaction);
 
     for (int i = 0; i < hex->troopsInHex.Num(); i++)
     {
@@ -482,7 +489,7 @@ Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABaseHex* hex
 
 Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject* battle)
 {
-    Faction* factionObject = GetFaction(referenceFaction);
+    UFaction* factionObject = GetFaction(referenceFaction);
 
     auto GetHostile = [&](TMap<Factions, FUnitData*>& group) -> Factions
         {
@@ -504,16 +511,26 @@ Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject
     return foundHostile;
 }
 
-Faction* UnitActions::GetFaction(const Factions& faction)
+UFaction* UnitActions::GetFaction(const Factions& faction)
 {
     if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return nullptr;
 
     return ACapstoneProjectGameModeBase::activeFactions[faction];
 }
 
-TMap<Factions, Faction*> UnitActions::GetFactions()
+TMap<Factions, UFaction*> UnitActions::GetFactions()
 {
     return ACapstoneProjectGameModeBase::activeFactions;
+}
+
+AFactionController* UnitActions::GetFactionController(const Factions& faction)
+{
+    if (UFaction* factionObject = GetFaction(faction))
+    {
+        return factionObject->GetFactionController();
+    }
+
+    return nullptr;
 }
 
 UnitActions::SelectionIdentity UnitActions::DetermineObjectType(AActor* object)

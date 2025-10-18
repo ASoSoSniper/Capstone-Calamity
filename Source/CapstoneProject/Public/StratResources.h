@@ -8,7 +8,7 @@
  * 
  */
 UENUM(BlueprintType)
-enum class StratResources
+enum class EStratResources : uint8
 {
 	None,
 	Energy,

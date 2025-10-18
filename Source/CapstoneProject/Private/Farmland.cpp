@@ -31,9 +31,9 @@ void AFarmland::UpdateResources()
 	if (!hex) return;
 
 	if (producingFood)
-		hex->UpdateResourceYield(StratResources::Food, resourceYields[StratResources::Food]);
+		hex->UpdateResourceYield(EStratResources::Food, resourceYields[EStratResources::Food]);
 	else
-		hex->UpdateResourceYield(StratResources::Wealth, resourceYields[StratResources::Wealth]);
+		hex->UpdateResourceYield(EStratResources::Wealth, resourceYields[EStratResources::Wealth]);
 }
 
 void AFarmland::RevertResources()
@@ -42,9 +42,9 @@ void AFarmland::RevertResources()
 	if (!hex) return;
 
 	if (producingFood)
-		hex->UpdateResourceYield(StratResources::Food, -resourceYields[StratResources::Food]);
+		hex->UpdateResourceYield(EStratResources::Food, -resourceYields[EStratResources::Food]);
 	else
-		hex->UpdateResourceYield(StratResources::Wealth, -resourceYields[StratResources::Wealth]);
+		hex->UpdateResourceYield(EStratResources::Wealth, -resourceYields[EStratResources::Wealth]);
 }
 
 void AFarmland::SetToFinishedModel()

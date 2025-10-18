@@ -21,7 +21,7 @@ enum class Factions : uint8
 };
 
 UENUM(BlueprintType)
-enum class Race
+enum class Race : uint8
 {
 	None,
 	Human,
@@ -30,7 +30,7 @@ enum class Race
 };
 
 UENUM(BlueprintType)
-enum class FactionRelationship
+enum class FactionRelationship : uint8
 {
 	Neutral,
 	Ally,

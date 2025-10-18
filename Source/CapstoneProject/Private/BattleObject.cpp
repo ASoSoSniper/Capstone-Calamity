@@ -630,7 +630,7 @@ EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(Factions& uni
 		return EngagementSelect::JoinGroup1;
 	}
 
-	Faction* factionObject = UnitActions::GetFaction(unitFaction);
+	UFaction* factionObject = UnitActions::GetFaction(unitFaction);
 
 	//If Group 2 is empty, check whether Group 1 is composed entirely of enemies or allies, and assign accordingly
 	if (Group2.IsEmpty())

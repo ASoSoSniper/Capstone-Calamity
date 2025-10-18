@@ -679,7 +679,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere) int hexSeedSize = 5;
 	UPROPERTY(EditAnywhere) int hexRandToMaintain = 5;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Building") TMap <SpawnableBuildings, TSubclassOf<class ABuilding>> buildingPrefabs;
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;

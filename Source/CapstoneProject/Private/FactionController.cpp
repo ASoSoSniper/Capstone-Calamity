@@ -3,6 +3,7 @@
 
 #include "FactionController.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Faction.h"
 
 // Sets default values
 AFactionController::AFactionController()
@@ -24,11 +25,13 @@ void AFactionController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!faction) return;
+
 	DateUpdateTick();
 	FSM_Tick(DeltaTime);
 }
 
-void AFactionController::SetFaction(Faction* setFaction)
+void AFactionController::SetFaction(UFaction* setFaction)
 {
 	if (faction != nullptr) return;
 
@@ -37,12 +40,36 @@ void AFactionController::SetFaction(Faction* setFaction)
 
 bool AFactionController::IsAIControlled()
 {
+	if (!faction) return false;
+
 	return faction->GetFaction() != Factions::Human;
+}
+
+void AFactionController::TriggerUpdateDisplay()
+{
+	updateDecisionDisplay = true;
 }
 
 float AFactionController::GetUpdateRate() const
 {
 	return ACapstoneProjectGameModeBase::GetTimeTillNextTick();
+}
+
+void AFactionController::SetBestAction(FUAI_Decision& decision)
+{
+	IUAI_Controller::SetBestAction(decision);
+
+	updateDecisionDisplay = true;
+}
+
+const TMap<EActionType, FActionSelection>& AFactionController::GetActions()
+{
+	return actions;
+}
+
+bool AFactionController::DestinationReached() const
+{
+	return false;
 }
 
 void AFactionController::DateUpdateTick()
@@ -68,3 +95,47 @@ void AFactionController::DateUpdateTick()
 	}
 }
 
+bool AFactionController::UpdateDisplay()
+{
+	if (updateDecisionDisplay)
+	{ 
+		updateDecisionDisplay = false;
+		return true;
+	}
+
+	return false;
+}
+
+bool AFactionController::DecisionsMade() const
+{
+	return !GetDecisionHistory().IsEmpty();
+}
+
+const FUAI_Decision& AFactionController::GetDecisionFromHistory(int index) const
+{
+	const TArray<FUAI_Decision> history = GetDecisionHistory();
+
+	index = FMath::Clamp(index, 0, history.Num() - 1);
+
+	return history[index];
+}
+
+FText AFactionController::GetActionFromHistory(int decision, int index) const
+{
+	FUAI_ActionScore action = GetDecisionHistory()[decision].actionScores[index];
+
+	FString actionInfo = FString::Printf(TEXT("%s: %.2f"), *action.actionName.ToString(), action.score);
+
+	return FText::FromString(actionInfo);
+
+}
+
+FText AFactionController::GetActionUpdateCountdown() const
+{
+	return FText::FromString(FString::Printf(TEXT("Next Decision: %.2f"), GetTimeTillNextDecision()));
+}
+
+FText AFactionController::GetActionAbandonCountdown() const
+{
+	return FText::FromString(FString::Printf(TEXT("Abandon Action In: %.2f"), GetTimeTIllActionAbandon()));
+}

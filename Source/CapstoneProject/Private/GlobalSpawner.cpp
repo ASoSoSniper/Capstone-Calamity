@@ -1077,16 +1077,16 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	bool canAfford = false;
 
 	//Declare TMaps for resources and workers to spend on this building
-	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	TMap<EStratResources, int> resourceCosts = TMap<EStratResources, int>();
 	AMovementAI* settlerOnHex = nullptr;
 	int settlerIndex = -1;
 
 	//If the desired building exists in the 
 	if (buildingCosts.Contains(building))
 	{
-		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
 
-		if (resources[StratResources::Production] >= buildingCosts[building].productionCost)
+		if (resources[EStratResources::Production] >= buildingCosts[building].productionCost)
 		{
 			if (building == SpawnableBuildings::Outpost)
 			{
@@ -1108,7 +1108,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			}
 		}
 
-		resourceCosts.Add(StratResources::Production, buildingCosts[building].productionCost);
+		resourceCosts.Add(EStratResources::Production, buildingCosts[building].productionCost);
 	}
 
 	if (canAfford)
@@ -1233,12 +1233,12 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
 {
 	bool canAfford = false;
 
-	TMap<StratResources, int> resourceCosts = TMap<StratResources, int>();
+	TMap<EStratResources, int> resourceCosts = TMap<EStratResources, int>();
 	if (troopCosts.Contains(unit))
 	{
-		TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
 
-		if (resources[StratResources::Production] >= troopCosts[unit].productionCost)
+		if (resources[EStratResources::Production] >= troopCosts[unit].productionCost)
 		{
 			if (unit == UnitTypes::Settler)
 			{
@@ -1254,7 +1254,7 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
 			
 		}
 
-		resourceCosts.Add(StratResources::Production, troopCosts[unit].productionCost);
+		resourceCosts.Add(EStratResources::Production, troopCosts[unit].productionCost);
 	}
 
 	if (canAfford)

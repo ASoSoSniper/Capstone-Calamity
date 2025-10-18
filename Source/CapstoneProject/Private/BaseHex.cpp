@@ -97,10 +97,10 @@ ABaseHex::ABaseHex()
 	workersInHex.Add(WorkerType::Alien, 0);
 
 	//Initialize resource yields
-	resourceBonuses.Add(StratResources::Wealth, 1 );
-	resourceBonuses.Add(StratResources::Energy, 1);
-	resourceBonuses.Add(StratResources::Production, 1);
-	resourceBonuses.Add(StratResources::Food, 1);
+	resourceBonuses.Add(EStratResources::Wealth, 1 );
+	resourceBonuses.Add(EStratResources::Energy, 1);
+	resourceBonuses.Add(EStratResources::Production, 1);
+	resourceBonuses.Add(EStratResources::Food, 1);
 }
 void ABaseHex::Tick(float DeltaTime)
 {
@@ -175,7 +175,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 
 			if (!foundFactions.Contains(unitFaction))
 			{
-				Faction* factionObject = UnitActions::GetFaction(unitFaction);
+				UFaction* factionObject = UnitActions::GetFaction(unitFaction);
 				foundFactions.Add(unitFaction, factionObject->GetFactionRelationship(faction));
 			}
 
@@ -354,6 +354,13 @@ int ABaseHex::GetNumberOfWorkers()
 	}
 
 	return totalWorkers;
+}
+void ABaseHex::UpdateWorkerDisplay()
+{
+	int current = GetNumberOfWorkers();
+	int max = maxWorkers;
+	
+	SetWorkerDisplay(current, max);
 }
 #pragma endregion
 
@@ -557,7 +564,7 @@ float ABaseHex::GetOutputPercent()
 	return (float)GetNumberOfWorkers() / (float)maxWorkers;
 }
 
-void ABaseHex::UpdateResourceYield(StratResources resource, int value, Factions faction)
+void ABaseHex::UpdateResourceYield(EStratResources resource, int value, Factions faction)
 {
 	Factions selectedFaction = faction != Factions::None ? faction : hexOwner;
 
@@ -598,10 +605,10 @@ FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 
 	//float outputPercent = GetOutputPercent();
 
-	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Food]);
-	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Energy]);
-	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Production]);
-	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[StratResources::Wealth]);
+	yields.foodYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[EStratResources::Food]);
+	yields.energyYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[EStratResources::Energy]);
+	yields.productionYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[EStratResources::Production]);
+	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[EStratResources::Wealth]);
 
 	return yields;
 }
@@ -669,10 +676,10 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 	hexTerrain = terrain;
 
 	FHexInfo info = hexInfo[hexTerrain];
-	resourceBonuses[StratResources::Food] = info.food;
-	resourceBonuses[StratResources::Production] = info.production;
-	resourceBonuses[StratResources::Energy] = info.energy;
-	resourceBonuses[StratResources::Wealth] = info.wealth;
+	resourceBonuses[EStratResources::Food] = info.food;
+	resourceBonuses[EStratResources::Production] = info.production;
+	resourceBonuses[EStratResources::Energy] = info.energy;
+	resourceBonuses[EStratResources::Wealth] = info.wealth;
 
 	moveMultiplier = info.moveMultiplier;
 	attritionMultiplier = info.attritionMultiplier;
@@ -705,6 +712,11 @@ void ABaseHex::SetAttachmentCanBeVisible(bool canBeVisible)
 	attachmentCanBeVisible = canBeVisible;
 }
 
+bool ABaseHex::VisibleToPlayer() const
+{
+	return visibility->VisibleToFaction(Factions::Human);
+}
+
 FHexDisplay ABaseHex::GetDisplayInfo()
 {
 	FHexDisplay display;
@@ -712,10 +724,10 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 	display.name = hexInfo[hexTerrain].name;
 	display.description = hexInfo[hexTerrain].description;
 
-	display.food = FText::AsNumber(resourceBonuses[StratResources::Food]);
-	display.production = FText::AsNumber(resourceBonuses[StratResources::Production]);
-	display.energy = FText::AsNumber(resourceBonuses[StratResources::Energy]);
-	display.wealth = FText::AsNumber(resourceBonuses[StratResources::Wealth]);
+	display.food = FText::AsNumber(resourceBonuses[EStratResources::Food]);
+	display.production = FText::AsNumber(resourceBonuses[EStratResources::Production]);
+	display.energy = FText::AsNumber(resourceBonuses[EStratResources::Energy]);
+	display.wealth = FText::AsNumber(resourceBonuses[EStratResources::Wealth]);
 
 	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
 	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
@@ -782,7 +794,7 @@ void ABaseHex::RemoveEffectFromHex(FStatusEffect* effect)
 	statusEffects.Remove(effect);
 }
 
-void ABaseHex::AddEffectToUnit(FUnitData* data, FStatusEffect* effect, Faction* factionObject)
+void ABaseHex::AddEffectToUnit(FUnitData* data, FStatusEffect* effect, UFaction* factionObject)
 {
 	FactionRelationship relWithHex = factionObject->GetFactionRelationship(data->GetFaction());
 	FactionRelationship relToAffect = effect->GetFactionsToAffect();
@@ -792,7 +804,7 @@ void ABaseHex::AddEffectToUnit(FUnitData* data, FStatusEffect* effect, Faction* 
 }
 void ABaseHex::AddEffectToAllUnits(FStatusEffect* effect)
 {
-	Faction* factionObject = UnitActions::GetFaction(GetHexOwner());
+	UFaction* factionObject = UnitActions::GetFaction(GetHexOwner());
 
 	for (int i = 0; i < troopsInHex.Num(); i++)
 		AddEffectToUnit(troopsInHex[i]->GetUnitData(), effect, factionObject);
@@ -827,7 +839,7 @@ void ABaseHex::RemoveEffectFromAllUnits(FStatusEffect* effect)
 
 void ABaseHex::AddAllEffectsToUnit(FUnitData* data)
 {
-	Faction* factionObject = UnitActions::GetFaction(GetHexOwner());
+	UFaction* factionObject = UnitActions::GetFaction(GetHexOwner());
 
 	for (FStatusEffect* effect : statusEffects)
 	{

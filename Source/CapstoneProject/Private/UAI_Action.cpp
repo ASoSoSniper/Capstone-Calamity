@@ -13,6 +13,11 @@ EActionType UAI_Action::GetDefaultActionType() const
     return defaultActionType;
 }
 
+const FString UAI_Action::GetActionName() const
+{
+    return actionName;
+}
+
 bool UAI_Action::IsMovementAction(IUAI_Controller* controller) const
 {
     return false;

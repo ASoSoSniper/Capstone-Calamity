@@ -29,10 +29,10 @@ ABuilding::ABuilding()
 	buildingType = SpawnableBuildings::None;
 	preAssignedFaction = Factions::None;
 
-	resourceYields.Add(StratResources::Energy, 0);
-	resourceYields.Add(StratResources::Food, 0);
-	resourceYields.Add(StratResources::Production, 0);
-	resourceYields.Add(StratResources::Wealth, 0);
+	resourceYields.Add(EStratResources::Energy, 0);
+	resourceYields.Add(EStratResources::Food, 0);
+	resourceYields.Add(EStratResources::Production, 0);
+	resourceYields.Add(EStratResources::Wealth, 0);
 
 	cinematicComponent = CreateDefaultSubobject<UCinematicPosition>(TEXT("Cinematic Component"));
 	cinematicComponent->cinematicVars = FCinematicObject{ this, FVector::Zero(), 1.5f, 1.5f};
@@ -125,10 +125,10 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	unitData->SetBuildingValues(stats.HP, stats.vision, stats.siegeDamage, stats.energyUpkeepCost);
 
-	resourceYields[StratResources::Energy] = stats.energyYield;
-	resourceYields[StratResources::Food] = stats.foodYield;
-	resourceYields[StratResources::Production] = stats.productionYield;
-	resourceYields[StratResources::Wealth] = stats.wealthYield;
+	resourceYields[EStratResources::Energy] = stats.energyYield;
+	resourceYields[EStratResources::Food] = stats.foodYield;
+	resourceYields[EStratResources::Production] = stats.productionYield;
+	resourceYields[EStratResources::Wealth] = stats.wealthYield;
 
 	FBuildingCost costs;
 	ABaseHex* hex = hexNav->GetCurrentHex();
@@ -168,6 +168,8 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 			if (hexWorkers >= hex->GetMaxWorkers() || availableWorkers <= 0) break;
 		}
 	}
+
+	hex->UpdateWorkerDisplay();
 
 	resourceCapIncrease = stats.resourceCapIncrease;
 
@@ -376,8 +378,8 @@ void ABuilding::Destroyed()
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
-			TMap<StratResources, int> addResources;
-			addResources.Add(StratResources::Production, AGlobalSpawner::spawnerObject->buildingCosts[buildingType].productionCost * 0.25f);
+			TMap<EStratResources, int> addResources;
+			addResources.Add(EStratResources::Production, AGlobalSpawner::spawnerObject->buildingCosts[buildingType].productionCost * 0.25f);
 			UnitActions::AddResources(faction, addResources);
 		}
 

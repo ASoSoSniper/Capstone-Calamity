@@ -573,7 +573,7 @@ void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int e
 {
 	int canAfford = 0;
 
-	TMap<StratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
+	TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
 	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
 
 	//if (foodCost >= 0 || resources[StratResources::Food] < foodCost) canAfford++;
@@ -584,11 +584,11 @@ void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int e
 
 	//if (canAfford < 5 || !overrideCosts) return;
 
-	TMap<StratResources, int> costs;
-	costs.Add(StratResources::Food, -foodCost);
-	costs.Add(StratResources::Production, -prodCost);
-	costs.Add(StratResources::Energy, -energyCost);
-	costs.Add(StratResources::Wealth, -wealthCost);
+	TMap<EStratResources, int> costs;
+	costs.Add(EStratResources::Food, -foodCost);
+	costs.Add(EStratResources::Production, -prodCost);
+	costs.Add(EStratResources::Energy, -energyCost);
+	costs.Add(EStratResources::Wealth, -wealthCost);
 	UnitActions::ConsumeSpentResources(playerFaction, costs);
 
 	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available += popCost;
@@ -647,12 +647,12 @@ int ABasePlayerController::GetResourceCap()
 FResourcesPerTick ABasePlayerController::GetResourcesPerTick()
 {
 	FResourcesPerTick resources;
-	TMap<StratResources, int> playerInventory = UnitActions::GetResourcesPerTick(playerFaction);
+	TMap<EStratResources, int> playerInventory = UnitActions::GetResourcesPerTick(playerFaction);
 
-	resources.energy = playerInventory[StratResources::Energy];
-	resources.production = playerInventory[StratResources::Production];
-	resources.food = playerInventory[StratResources::Food];
-	resources.wealth = playerInventory[StratResources::Wealth];
+	resources.energy = playerInventory[EStratResources::Energy];
+	resources.production = playerInventory[EStratResources::Production];
+	resources.food = playerInventory[EStratResources::Food];
+	resources.wealth = playerInventory[EStratResources::Wealth];
 
 	return resources;
 }
@@ -687,7 +687,7 @@ void ABasePlayerController::ResourceCheats(int resourceToChange, int val)
 {
 	if (0 < resourceToChange && resourceToChange < 5)
 	{
-		UnitActions::SetFactionResources(playerFaction, StratResources(resourceToChange), val);
+		UnitActions::SetFactionResources(playerFaction, EStratResources(resourceToChange), val);
 	}
 }
 #pragma endregion

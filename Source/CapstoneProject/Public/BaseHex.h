@@ -133,7 +133,11 @@ public:
 	void SetMaxWorkers(int newMax);
 	int GetNumberOfWorkers();
 
+	void UpdateWorkerDisplay();
+
 	TMap<WorkerType, int> workersInHex;
+protected:
+	UFUNCTION(BlueprintImplementableEvent) void SetWorkerDisplay(const int& current, const int& max);
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkers = 15;
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkersDefault = 15;
@@ -175,11 +179,11 @@ public:
 	bool ActiveHarvesting();
 	float GetOutputPercent();
 
-	void UpdateResourceYield(StratResources resource, int value, Factions faction = Factions::None);
+	void UpdateResourceYield(EStratResources resource, int value, Factions faction = Factions::None);
 	void ToggleResourceYield();
 	FCurrentResourceYields GetCurrentResourceYields();
 private:
-	TMap<StratResources, int> resourceBonuses;
+	TMap<EStratResources, int> resourceBonuses;
 	bool harvesting;
 	float outputPercent;
 #pragma endregion
@@ -190,6 +194,8 @@ public:
 	void SetHexTerrain(TerrainType terrain);
 	void SetHexModel();
 	void SetAttachmentCanBeVisible(bool canBeVisible);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool VisibleToPlayer() const;
 
 	FHexDisplay GetDisplayInfo();
 	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
@@ -225,7 +231,7 @@ public:
 	void RemoveEffectFromHex(FStatusEffect* effect);
 
 private:
-	void AddEffectToUnit(FUnitData* data, FStatusEffect* effect, Faction* factionObject);
+	void AddEffectToUnit(FUnitData* data, FStatusEffect* effect, UFaction* factionObject);
 
 	void AddEffectToAllUnits(FStatusEffect* effect);
 	void RemoveEffectFromAllUnits(FStatusEffect* effect);

@@ -208,11 +208,20 @@ Factions ACapstoneProjectGameModeBase::CreateNewFaction()
 	Factions selectedFaction = static_cast<Factions>(factionCount);
 
 	//Create a new Faction instance
-	Faction* newFaction = new Faction();
+	UFaction* newFaction = NewObject<UFaction>();
+	newFaction->AddToRoot();
+
+	AFactionController* factionController = selectedFaction == Factions::Human ? nullptr :
+		GetWorld()->SpawnActor<AFactionController>(factionControllerPrefab ? factionControllerPrefab : AFactionController::StaticClass());
 
 	//Make the new Faction instance aware of the faction it's assigned to
 	newFaction->SetFaction(selectedFaction);
 	newFaction->SetFoodAndDeathCosts(foodPerNonWorkers, foodPerWorkers, popDeathsPerFoodMissing, popDeathsPerPowerMissing);
+	if (factionController)
+	{
+		newFaction->SetFactionController(factionController);
+		factionController->SetFaction(newFaction);
+	}
 
 	//In the global faction dictionary, add the selected faction as a new key and the Faction instance as its value
 	activeFactions.Add(selectedFaction, newFaction);
@@ -333,7 +342,7 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 
 void ACapstoneProjectGameModeBase::CheckHumanPop()
 {
-	Faction::WorkerStats workers = activeFactions[Factions::Human]->availableWorkers[WorkerType::Human];
+	FWorkerStats workers = activeFactions[Factions::Human]->availableWorkers[WorkerType::Human];
 
 	if (workers.available + workers.working < 25)
 	{

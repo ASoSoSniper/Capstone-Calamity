@@ -29,17 +29,30 @@ void IUAI_Controller::SetBestAction(UAI_Action* action, EActionType actionType)
         FSM_State = EDecisionState::Executing;
 }
 
+void IUAI_Controller::SetBestAction(FUAI_Decision& decision)
+{
+    decisionHistory.Insert(decision, 0);
+    if (decisionHistory.Num() > 10)
+    {
+        decisionHistory.SetNum(10, true);
+    }
+
+    PrintDecisionResults();
+
+    SetBestAction(decision.bestAction);
+}
+
 void IUAI_Controller::EndAction()
 {
     FSM_Reset();
 }
 
-EActionType IUAI_Controller::DecideBestActionType(TMap<EActionType, FActionSelection>& actionTypes)
+EActionType IUAI_Controller::DecideBestActionType(const TMap<EActionType, FActionSelection>& actionTypes)
 {
     EActionType selectedAction = EActionType::None;
     float bestScore = GetDefaultScore();
 
-    for (TPair<EActionType, FActionSelection>& action : actionTypes)
+    for (const TPair<EActionType, FActionSelection>& action : actionTypes)
     {
         float score = ScoreAction(action.Value.conditions);
         if (score > bestScore)
@@ -60,24 +73,49 @@ bool IUAI_Controller::DecideBestAction()
         return true;
     }
 
-    TMap<EActionType, FActionSelection>& actionTypes = GetActions();
+    FUAI_Decision decision;
+
+    const TMap<EActionType, FActionSelection>& actionTypes = GetActions();
     EActionType selectedType = DecideBestActionType(actionTypes);
 
-    UAI_Action* selectedAction = nullptr;
-    float bestScore = GetDefaultScore();
+    decision.bestActionType = selectedType;
+
+    decision.bestAction = nullptr;
+    decision.bestScore = GetDefaultScore();
 
     for (int i = 0; i < actionTypes[selectedType].actions.Num(); i++)
     {
         float score = ScoreAction(actionTypes[selectedType].actions[i]->GetConditions());
-        if (score > bestScore)
+        if (score > decision.bestScore)
         {
-            bestScore = score;
-            selectedAction = actionTypes[selectedType].actions[i];
+            decision.bestScore = score;
+            decision.bestAction = actionTypes[selectedType].actions[i];
+            decision.actionName = FText::FromString(decision.bestAction->GetActionName());
         }
+
+        FUAI_ActionScore actionScore;
+        actionScore.actionName = FText::FromString(actionTypes[selectedType].actions[i]->GetActionName());
+        actionScore.score = score;
+
+        decision.actionScores.Add(actionScore);
     }
 
-    SetBestAction(selectedAction);
-    return selectedAction != nullptr;
+    SetBestAction(decision);
+    return bestAction != nullptr;
+}
+
+void IUAI_Controller::PrintDecisionResults()
+{
+    FUAI_Decision& decision = decisionHistory[0];
+
+    FString message = FString::Printf(TEXT("Best Action: %s\n\nActions:\n"), *decision.actionName.ToString());
+
+    for (const FUAI_ActionScore& action : decision.actionScores)
+    {
+        message.Append(FString::Printf(TEXT("%s: %f\n"), *action.actionName.ToString(), action.score));
+    }
+
+    GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, message);
 }
 
 float IUAI_Controller::ScoreAction(const TArray<UAI_Condition*>& conditions)
@@ -152,6 +190,7 @@ void IUAI_Controller::FSM_Tick(const float& DeltaTime)
         {
             FSM_Reset(); 
             ResetCompositeAction();
+            break;
         }
         if (DestinationUpdateTimer(scaledDeltaTime))
             bestAction->SetDestination(this);
@@ -210,4 +249,19 @@ bool IUAI_Controller::AdvanceCompositeActionIndex(int maxLength)
     compositeActionIndex++;
 
     return compositeActionIndex < maxLength;
+}
+
+const TArray<FUAI_Decision>& IUAI_Controller::GetDecisionHistory() const
+{
+    return decisionHistory;
+}
+
+const float IUAI_Controller::GetTimeTillNextDecision() const
+{
+    return updateTime;
+}
+
+const float IUAI_Controller::GetTimeTIllActionAbandon() const
+{
+    return abandonTime;
 }

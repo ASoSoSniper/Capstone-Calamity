@@ -82,7 +82,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere) SpawnableBuildings buildingType;
 	FUnitData* unitData;
-	TMap<StratResources, int> resourceYields;
+	TMap<EStratResources, int> resourceYields;
 	int resourceCapIncrease = 0;
 	UPROPERTY(EditAnywhere, Category = "Initialization") bool builtAtStart = false;
 	UPROPERTY(EditAnywhere, Category = "Initialization") TEnumAsByte<Factions> preAssignedFaction = Factions::None;

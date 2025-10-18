@@ -35,6 +35,31 @@ struct FActionSelection
 	UPROPERTY(EditAnywhere) TArray<UAI_Condition*> conditions;
 };
 
+USTRUCT(BlueprintType)
+struct FUAI_ActionScore
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite) FText actionName;
+	UPROPERTY(BlueprintReadWrite) float score;
+};
+
+USTRUCT(BlueprintType)
+struct FUAI_Decision
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite) UAI_Action* bestAction;
+	UPROPERTY(BlueprintReadWrite) FText actionName;
+	UPROPERTY(BlueprintReadWrite) float bestScore = 0;
+	UPROPERTY(BlueprintReadWrite) EActionType bestActionType = EActionType::None;
+	UPROPERTY(BlueprintReadWrite) FString affectedObject = TEXT("None");
+
+	UPROPERTY(BlueprintReadWrite) TArray<FUAI_ActionScore> actionScores;
+};
+
 UINTERFACE(MinimalAPI)
 class UUAI_Controller : public UInterface
 {
@@ -48,6 +73,7 @@ class CAPSTONEPROJECT_API IUAI_Controller
 public:
 	UAI_Action* GetBestAction() const;
 	void SetBestAction(UAI_Action* action, EActionType actionType = EActionType::None);
+	virtual void SetBestAction(FUAI_Decision& decision);
 
 	virtual void EndAction();
 protected:
@@ -62,8 +88,10 @@ private:
 	EDecisionState FSM_State = EDecisionState::Deciding;
 	float updateTime = 0.f;
 
-	EActionType DecideBestActionType(TMap<EActionType, FActionSelection>& actionTypes);
+	EActionType DecideBestActionType(const TMap<EActionType, FActionSelection>& actionTypes);
 	bool DecideBestAction();
+
+	void PrintDecisionResults();
 
 	float ScoreAction(const TArray<UAI_Condition*>& conditions);
 
@@ -78,14 +106,22 @@ protected:
 	virtual float GetDefaultScore() const;
 	virtual float GetUpdateRate() const;
 	void SetDestinationUpdateTimer(const float& duration);
-	virtual TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
+	virtual const TMap<EActionType, FActionSelection>& GetActions() PURE_VIRTUAL(IUAI_Controller::GetActions, static TMap<EActionType, FActionSelection> emptyMap; return emptyMap;);
 	virtual bool DestinationReached() const PURE_VIRTUAL(IUAI_Controller::DestinationReached, return false;);
+
+public:
+	const TArray<FUAI_Decision>& GetDecisionHistory() const;
+	const float GetTimeTillNextDecision() const;
+	const float GetTimeTIllActionAbandon() const;
+private:
+	TArray<FUAI_Decision> decisionHistory;
 
 public:
 	void SetCompositeAction(UAI_Action* action);
 	void ResetCompositeAction();
 	int GetCompositeActionIndex() const;
 	bool AdvanceCompositeActionIndex(int maxLength);
+
 private:
 	UAI_Action* compositeAction;
 	int compositeActionIndex = 0;

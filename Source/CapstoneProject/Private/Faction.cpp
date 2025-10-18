@@ -7,17 +7,17 @@
 #include "TroopFactory.h"
 
 
-Faction::Faction()
+UFaction::UFaction()
 {
 	faction = Factions::None;
-	resourceInventory.Add(StratResources::Energy, InventoryStat{ 300,300,0, 0 });
-	resourceInventory.Add(StratResources::Production, InventoryStat{ 300,300,0, 0 });
-	resourceInventory.Add(StratResources::Food, InventoryStat{ 300,300,0, 0 });
-	resourceInventory.Add(StratResources::Wealth, InventoryStat{ 000, 300, 0, 0 });
+	resourceInventory.Add(EStratResources::Energy, FInventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(EStratResources::Production, FInventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
+	resourceInventory.Add(EStratResources::Wealth, FInventoryStat{ 000, 300, 0, 0 });
 
-	availableWorkers.Add(WorkerType::Human, WorkerStats{ 0,500, 0,1,0 });
-	availableWorkers.Add(WorkerType::Robot, WorkerStats{ 0,10, 1,0,0 });
-	availableWorkers.Add(WorkerType::Alien, WorkerStats{ 0,0, 0,1,0 });
+	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,500, 0,1,0 });
+	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,10, 1,0,0 });
+	availableWorkers.Add(WorkerType::Alien, FWorkerStats{ 0,0, 0,1,0 });
 
 	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
 	armyNamesHuman.Add(TEXT("Asswipes"), TArray<int32>());
@@ -34,11 +34,7 @@ Faction::Faction()
 	armyNamesAlien.Add(TEXT("Lucky Charms"), TArray<int32>());
 }
 
-Faction::~Faction()
-{
-}
-
-void Faction::FindActiveFactions()
+void UFaction::FindActiveFactions()
 {
 	for (auto& currentFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
@@ -46,13 +42,13 @@ void Faction::FindActiveFactions()
 		{
 			FactionRelationship relationShip = FactionRelationship::Neutral;
 
-			factionRelationships.Add(currentFaction.Key, FRelationshipStats{ relationShip });
+			factionRelationships.Add(currentFaction.Key, FRelationshipStats{ currentFaction.Key, relationShip });
 		}
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Faction found %d other factions!"), factionRelationships.Num()));
 }
 
-void Faction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
+void UFaction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
 {
 	foodPerNonWorkers = foodPerNonWorkersVar;
 	foodPerWorkers = foodPerWorkersVar;
@@ -61,7 +57,7 @@ void Faction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersV
 	popDeathsPerPowerMissing = popDeathsPerPowerMissingVar;
 }
 
-FactionRelationship Faction::GetFactionRelationship(Factions targetFaction)
+FactionRelationship UFaction::GetFactionRelationship(Factions targetFaction)
 {
 	//If comparing unit faction to itself, return Ally.
 	if (faction == targetFaction) return FactionRelationship::Ally;
@@ -76,7 +72,7 @@ FactionRelationship Faction::GetFactionRelationship(Factions targetFaction)
 	return FactionRelationship::Neutral;
 }
 
-FactionRelationship Faction::GetFactionRelationship(AActor* target)
+FactionRelationship UFaction::GetFactionRelationship(AActor* target)
 {
 	UUnitStats* stats = target->FindComponentByClass<UUnitStats>();
 
@@ -85,7 +81,7 @@ FactionRelationship Faction::GetFactionRelationship(AActor* target)
 	return FactionRelationship::Neutral;
 }
 
-void Faction::SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship)
+void UFaction::SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship)
 {
 	//If this faction does not exist in the relationship index, return
 	if (!factionRelationships.Contains(targetFaction)) return;
@@ -102,7 +98,7 @@ void Faction::SetFactionRelationship(Factions targetFaction, FactionRelationship
 	UnitActions::GetFaction(targetFaction)->SetFactionRelationship(faction, newRelationship);
 }
 
-void Faction::IncreaseHostility(Factions targetFaction, float& amount)
+void UFaction::IncreaseHostility(Factions targetFaction, float amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
 	if (!IsAIControlled() || amount <= 0.f) return;
@@ -114,9 +110,11 @@ void Faction::IncreaseHostility(Factions targetFaction, float& amount)
 
 	//If hostility reaches 1, set relationship to enemy
 	if (hostility == 1.f) SetFactionRelationship(targetFaction, FactionRelationship::Enemy);
+
+	controller->TriggerUpdateDisplay();
 }
 
-void Faction::LowerHostility(Factions targetFaction, float& amount)
+void UFaction::LowerHostility(Factions targetFaction, float amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
 	if (!IsAIControlled() || amount <= 0.f) return;
@@ -128,36 +126,33 @@ void Faction::LowerHostility(Factions targetFaction, float& amount)
 
 	//If hostility reaches 0, set relationship to ally
 	if (hostility == 0.f) SetFactionRelationship(targetFaction, FactionRelationship::Ally);
+
+	controller->TriggerUpdateDisplay();
 }
 
-void Faction::SetFaction(Factions newFaction)
+void UFaction::SetFaction(Factions newFaction)
 {
 	if (newFaction == Factions::None) return;
 
 	faction = newFaction;
-	const UEnum* factionEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("Factions"), true);
-	if (factionEnum)
-		factionName = factionEnum->GetNameStringByValue(static_cast<int64>(faction));
-
-	if (newFaction != Factions::Human) behaviorState = Expansion;
 }
 
-Factions Faction::GetFaction()
+Factions UFaction::GetFaction()
 {
 	return faction;
 }
 
-FString Faction::GetFactionName() const
+FString UFaction::GetFactionName() const
 {
 	return factionName;
 }
 
-bool Faction::IsAIControlled()
+bool UFaction::IsAIControlled()
 {
-	return behaviorState != AIInactive;
+	return faction != Factions::Human;
 }
 
-void Faction::FeedPop()
+void UFaction::FeedPop()
 {
 	if (IsAIControlled()) return;
 
@@ -166,48 +161,48 @@ void Faction::FeedPop()
 
 	CalculateFoodCost(workerAvailableCost, workerFoodCost);
 
-	int totalCost = resourceInventory[StratResources::Food].lossesPerDay;
+	int totalCost = resourceInventory[EStratResources::Food].lossesPerDay;
 
 	//Enter full starvation if unaffordable non-working food cost
-	if (resourceInventory[StratResources::Food].currentResources < workerAvailableCost)
+	if (resourceInventory[EStratResources::Food].currentResources < workerAvailableCost)
 	{
 		StarvePop(totalCost);
 		return;
 	}
-	resourceInventory[StratResources::Food].currentResources -= workerAvailableCost;
+	resourceInventory[EStratResources::Food].currentResources -= workerAvailableCost;
 
 	//Enter worker starvation if unaffordable working food cost
-	if (resourceInventory[StratResources::Food].currentResources < workerFoodCost)
+	if (resourceInventory[EStratResources::Food].currentResources < workerFoodCost)
 	{
 		StarvePop(totalCost);
 		return;
 	}
-	resourceInventory[StratResources::Food].currentResources -= workerFoodCost;
+	resourceInventory[EStratResources::Food].currentResources -= workerFoodCost;
 
 	currStarveDays = 0;
 	starving = false;
 }
 
-void Faction::ConsumeEnergy()
+void UFaction::ConsumeEnergy()
 {
 	if (IsAIControlled()) return;
 
-	int energyCost = resourceInventory[StratResources::Energy].lossesPerDay;
+	int energyCost = resourceInventory[EStratResources::Energy].lossesPerDay;
 
-	if (energyCost > resourceInventory[StratResources::Energy].currentResources)
+	if (energyCost > resourceInventory[EStratResources::Energy].currentResources)
 	{
 		PowerOutage(energyCost);
 		RemoveWorkers(WorkerType::Robot);
 		return;
 	}
 
-	resourceInventory[StratResources::Energy].currentResources -= energyCost;
+	resourceInventory[EStratResources::Energy].currentResources -= energyCost;
 	currPowerDays = 0;
 	powerOutage = false;
 	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
 }
 
-void Faction::BuildRandomBuilding()
+void UFaction::BuildRandomBuilding()
 {
 	if (!IsAIControlled() || ownedHexes.IsEmpty()) return;
 
@@ -240,7 +235,7 @@ void Faction::BuildRandomBuilding()
 	}
 }
 
-TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minValue, bool includeHexesWithBuildings)
+TArray<ABaseHex*> UFaction::GetHexesOfResource(EStratResources resource, int minValue, bool includeHexesWithBuildings)
 {
 	TArray<ABaseHex*> hexes = TArray<ABaseHex*>();
 
@@ -255,16 +250,16 @@ TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minVa
 
 		switch (resource)
 		{
-		case StratResources::Food:
+		case EStratResources::Food:
 			yield = hexYields.foodYield;
 			break;
-		case StratResources::Production:
+		case EStratResources::Production:
 			yield = hexYields.productionYield;
 			break;
-		case StratResources::Energy:
+		case EStratResources::Energy:
 			yield = hexYields.energyYield;
 			break;
-		case StratResources::Wealth:
+		case EStratResources::Wealth:
 			yield = hexYields.wealthYield;
 			break;
 		}
@@ -275,7 +270,7 @@ TArray<ABaseHex*> Faction::GetHexesOfResource(StratResources resource, int minVa
 	return hexes;
 }
 
-TArray<AOutpost*> Faction::GetFactionOutposts()
+TArray<AOutpost*> UFaction::GetFactionOutposts()
 {
 	TArray<AOutpost*> outposts;
 
@@ -292,7 +287,7 @@ TArray<AOutpost*> Faction::GetFactionOutposts()
 	return outposts;
 }
 
-void Faction::SpawnEnemy()
+void UFaction::SpawnEnemy()
 {
 	if (!IsAIControlled()) return;
 
@@ -341,16 +336,16 @@ void Faction::SpawnEnemy()
 	currentDaysTillArmySpawn = daysTillArmySpawn;
 }
 
-int Faction::GetArmyTroopCount()
+int UFaction::GetArmyTroopCount()
 {
 	return troopsInArmy;
 }
 
-void Faction::StarvePop(int foodCost)
+void UFaction::StarvePop(int foodCost)
 {
-	int missingFood = foodCost - resourceInventory[StratResources::Food].currentResources;
+	int missingFood = foodCost - resourceInventory[EStratResources::Food].currentResources;
 
-	resourceInventory[StratResources::Food].currentResources = 0;
+	resourceInventory[EStratResources::Food].currentResources = 0;
 
 	if (!starving)
 	{
@@ -366,14 +361,14 @@ void Faction::StarvePop(int foodCost)
 	KillPopulation(missingFood, popDeathsPerFoodMissing);
 }
 
-void Faction::PowerOutage(int energyCost)
+void UFaction::PowerOutage(int energyCost)
 {
-	int missingEnergy = energyCost - resourceInventory[StratResources::Energy].currentResources;
+	int missingEnergy = energyCost - resourceInventory[EStratResources::Energy].currentResources;
 
 	if (!powerOutage)
 	{
 		powerOutage = true;
-		resourceInventory[StratResources::Energy].currentResources = 0;
+		resourceInventory[EStratResources::Energy].currentResources = 0;
 		if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, false);
 	}
 
@@ -387,7 +382,7 @@ void Faction::PowerOutage(int energyCost)
 	KillPopulation(missingEnergy, popDeathsPerPowerMissing);
 }
 
-void Faction::RemoveWorkers(WorkerType workerType)
+void UFaction::RemoveWorkers(WorkerType workerType)
 {
 	for (ABaseHex* hex : ownedHexes)
 	{
@@ -396,7 +391,7 @@ void Faction::RemoveWorkers(WorkerType workerType)
 	}
 }
 
-void Faction::KillPopulation(int cost, int deathsPerResource)
+void UFaction::KillPopulation(int cost, int deathsPerResource)
 {
 	int remainingCost = 0;
 
@@ -450,19 +445,60 @@ void Faction::KillPopulation(int cost, int deathsPerResource)
 		availableWorkers[WorkerType::Human].working = 0;
 }
 
-void Faction::SetDaysToTroopBuild(unsigned int days)
+void UFaction::SetDaysToTroopBuild(unsigned int days)
 {
 	daysTillArmySpawn = days;
 	currentDaysTillArmySpawn = FMath::Clamp(currentDaysTillArmySpawn, 0, daysTillArmySpawn);
 }
 
-void Faction::SetDaysToBuildingBuild(unsigned int days)
+void UFaction::SetDaysToBuildingBuild(unsigned int days)
 {
 	daysTillBuildingSpawn = days;
 	currentDaysTillBuildingSpawn = FMath::Clamp(currentDaysTillBuildingSpawn, 0, daysTillBuildingSpawn);
 }
 
-void Faction::UpdateResourceCosts()
+const TArray<FRelationshipStats> UFaction::GetFactionRelationships() const
+{
+	TArray<FRelationshipStats> relationValues;
+
+	for (const TPair<Factions, FRelationshipStats>& relation : factionRelationships)
+	{
+		relationValues.Add(relation.Value);
+	}
+
+	return relationValues;
+}
+
+TMap<EStratResources, int> UFaction::GetAvailableResources() const
+{
+	TMap<EStratResources, int> resources;
+
+	for (const TPair<EStratResources, FInventoryStat>& resource : resourceInventory)
+	{
+		resources.Add(resource.Key, resource.Value.currentResources);
+	}
+
+	return resources;
+}
+
+int UFaction::GetResourceMax() const
+{
+	return resourceInventory[EStratResources::Food].maxResources;
+}
+
+AFactionController* UFaction::GetFactionController() const
+{
+	return controller;
+}
+
+void UFaction::SetFactionController(AFactionController* setController)
+{
+	if (controller) return;
+
+	controller = setController;
+}
+
+void UFaction::UpdateResourceCosts()
 {
 	if (IsAIControlled()) return;
 
@@ -471,34 +507,34 @@ void Faction::UpdateResourceCosts()
 	int workerFoodCost = 0;
 
 	CalculateFoodCost(workerAvailableCost, workerFoodCost);
-	resourceInventory[StratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
+	resourceInventory[EStratResources::Food].lossesPerDay = workerAvailableCost + workerFoodCost;
 
 	//Energy
 	int energyCost = CalculateEnergyCost();
 
-	resourceInventory[StratResources::Energy].lossesPerDay = energyCost;
+	resourceInventory[EStratResources::Energy].lossesPerDay = energyCost;
 }
 
-FResourceGainLoss Faction::GetResourceRates()
+FResourceGainLoss UFaction::GetResourceRates()
 {
 	FResourceGainLoss result;
 
-	TMap<StratResources, int> resourceGains = UnitActions::GetResourcesPerTick(faction);
-	TMap<StratResources, int> resourceLosses = UnitActions::GetResourceLosses(faction);
+	TMap<EStratResources, int> resourceGains = UnitActions::GetResourcesPerTick(faction);
+	TMap<EStratResources, int> resourceLosses = UnitActions::GetResourceLosses(faction);
 
-	result.wealthGain = resourceGains[StratResources::Wealth];
-	result.wealthLoss = resourceLosses[StratResources::Wealth];
-	result.energyGain = resourceGains[StratResources::Energy];
-	result.energyLoss = resourceLosses[StratResources::Energy];
-	result.foodGain = resourceGains[StratResources::Food];
-	result.foodLoss = resourceLosses[StratResources::Food];
-	result.productionGain = resourceGains[StratResources::Production];
-	result.productionLoss = resourceLosses[StratResources::Production];
+	result.wealthGain = resourceGains[EStratResources::Wealth];
+	result.wealthLoss = resourceLosses[EStratResources::Wealth];
+	result.energyGain = resourceGains[EStratResources::Energy];
+	result.energyLoss = resourceLosses[EStratResources::Energy];
+	result.foodGain = resourceGains[EStratResources::Food];
+	result.foodLoss = resourceLosses[EStratResources::Food];
+	result.productionGain = resourceGains[EStratResources::Production];
+	result.productionLoss = resourceLosses[EStratResources::Production];
 
 	return result;
 }
 
-void Faction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
+void UFaction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
 {
 	int remainder = availableWorkers[WorkerType::Human].available % foodPerNonWorkers;
 	availableWorkerCost = availableWorkers[WorkerType::Human].available / foodPerNonWorkers;
@@ -514,7 +550,7 @@ void Faction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost
 	}
 }
 
-int Faction::CalculateEnergyCost()
+int UFaction::CalculateEnergyCost()
 {
 	int energyCost = 0;
 
@@ -537,15 +573,7 @@ int Faction::CalculateEnergyCost()
 	return energyCost;
 }
 
-void Faction::DetermineBehaviorState()
-{
-	for (auto& relationShip : factionRelationships)
-	{
-		
-	}
-}
-
-void Faction::CleanTargetPool()
+void UFaction::CleanTargetPool()
 {
 	if (!IsAIControlled()) return;
 
@@ -567,7 +595,7 @@ void Faction::CleanTargetPool()
 	}
 }
 
-void Faction::GetTargetsOfAllies()
+void UFaction::GetTargetsOfAllies()
 {
 	if (!IsAIControlled()) return;
 
@@ -583,11 +611,11 @@ void Faction::GetTargetsOfAllies()
 	}
 }
 
-void Faction::TargetBuildingsOfFaction(Factions targetFaction)
+void UFaction::TargetBuildingsOfFaction(Factions targetFaction)
 {
 	if (!IsAIControlled() || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
 
-	Faction* factionObject = UnitActions::GetFaction(targetFaction);
+	UFaction* factionObject = UnitActions::GetFaction(targetFaction);
 
 	for (auto& building : factionObject->allBuildings)
 	{

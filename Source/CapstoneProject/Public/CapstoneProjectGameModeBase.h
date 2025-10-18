@@ -43,7 +43,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	static inline TMap<Factions, Faction*> activeFactions;
+	static inline TMap<Factions, UFaction*> activeFactions;
 	static inline TMap<Factions, UMaterialInterface*> factionColors;
 
 	static inline TMap<AActor*, FCinematicObject> cinematicObjects;
@@ -127,7 +127,7 @@ private:
 	void SpawnEnemies();
 	void SpawnBuildings();
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
-
+	UPROPERTY(EditAnywhere, Category = "Faction") TSubclassOf<class AFactionController> factionControllerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;

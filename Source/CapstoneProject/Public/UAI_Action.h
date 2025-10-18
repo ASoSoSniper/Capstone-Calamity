@@ -17,6 +17,7 @@ public:
 	virtual void ExecuteAction(IUAI_Controller* controller) PURE_VIRTUAL(UAI_Action::ExecuteAction, );
 	TArray<UAI_Condition*>& GetConditions();
 	EActionType GetDefaultActionType() const;
+	UFUNCTION(BlueprintCallable) const FString GetActionName() const;
 
 	virtual bool IsMovementAction(IUAI_Controller* controller = nullptr) const;
 	virtual void SetDestination(IUAI_Controller* controller);
@@ -26,6 +27,7 @@ public:
 	virtual bool CanUpdateDestination(IUAI_Controller* controller = nullptr) const;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Display") FString actionName = TEXT("None");
 	UPROPERTY(EditAnywhere, Category = "Conditions") TEnumAsByte<EActionType> defaultActionType;
 	UPROPERTY(EditAnywhere, Category = "Conditions") TArray<UAI_Condition*> conditions;
 

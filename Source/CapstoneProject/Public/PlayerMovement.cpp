@@ -168,22 +168,22 @@ void APlayerMovement::Action8Input()
 
 void APlayerMovement::Action9Input()
 {
-	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien1, FactionRelationship::Ally);
+	UnitActions::GetFaction(Factions::Alien1)->LowerHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action10Input()
 {
-	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien1, FactionRelationship::Enemy);
+	UnitActions::GetFaction(Factions::Alien1)->IncreaseHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action11Input()
 {
-	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
+	UnitActions::GetFaction(Factions::Alien2)->LowerHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action12Input()
 {
-	UnitActions::GetFaction(controller->playerFaction)->SetFactionRelationship(Factions::Alien2, FactionRelationship::Enemy);
+	UnitActions::GetFaction(Factions::Alien2)->IncreaseHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::DeselectInput()

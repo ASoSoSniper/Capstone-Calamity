@@ -5,6 +5,7 @@
 #include "StratResources.h"
 #include "TerrainEnum.h"
 #include "CoreMinimal.h"
+#include "UnitActions.generated.h"
 
 /**
  * 
@@ -86,7 +87,8 @@ enum class EngagementSelect
 	JoinGroup2
 };
 
-class Faction;
+class UFaction;
+class AFactionController;
 class ABaseHex;
 class ATroop;
 class AMergedArmy;
@@ -100,8 +102,11 @@ class AGlobalSpawner;
 struct FTroopStats;
 struct FUnitComposition;
 
-class CAPSTONEPROJECT_API UnitActions
+UCLASS()
+class CAPSTONEPROJECT_API UnitActions : public UObject
 {
+	GENERATED_BODY()
+
 public:
 
 	static bool IsHostileTarget(AMovementAI* unit, AMovementAI* target);
@@ -109,8 +114,9 @@ public:
 
 	static bool IsAllyToFaction(FactionRelationship relationship);
 
-	static Faction* GetFaction(const Factions& faction);
-	static TMap<Factions, Faction*> GetFactions();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static UFaction* GetFaction(const Factions& faction);
+	static TMap<Factions, UFaction*> GetFactions();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static AFactionController* GetFactionController(const Factions& faction);
 	
 	struct SelectionIdentity
 	{
@@ -132,15 +138,15 @@ public:
 	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
 
 	static TArray<int> GetFactionResources(Factions faction);
-	static void SetFactionResources(Factions faction, StratResources resourceToChange, int desiredResourceVal);
+	static void SetFactionResources(Factions faction, EStratResources resourceToChange, int desiredResourceVal);
 	static int GetFactionPopulation(Factions faction);
-	static TMap<StratResources, int> GetMoreSpecificFactionResources(Factions faction);
-	static TMap<StratResources, int> GetResourcesPerTick(Factions faction);
-	static TMap<StratResources, int> GetResourceGains(Factions faction);
-	static TMap<StratResources, int> GetResourceLosses(Factions faction);
+	static TMap<EStratResources, int> GetMoreSpecificFactionResources(Factions faction);
+	static TMap<EStratResources, int> GetResourcesPerTick(Factions faction);
+	static TMap<EStratResources, int> GetResourceGains(Factions faction);
+	static TMap<EStratResources, int> GetResourceLosses(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
-	static void ConsumeSpentResources(Factions faction, TMap<StratResources, int> resources, ABaseHex* hex = nullptr);
+	static void ConsumeSpentResources(Factions faction, TMap<EStratResources, int> resources, ABaseHex* hex = nullptr);
 	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
@@ -153,7 +159,7 @@ public:
 
 	static void EnableRobots(Factions faction, bool enable);
 	static void RobotIsActive(Factions faction, ATroop* robot);
-	static void AddResources(Factions faction, TMap<StratResources, int> resources);
+	static void AddResources(Factions faction, TMap<EStratResources, int> resources);
 
 	static void SetTargetListElement(Factions faction, AActor* target);
 	static void RemoveFromAllTargetLists(ABaseHex* target);
