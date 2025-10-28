@@ -245,6 +245,14 @@ struct FTroopMaterials
 #pragma endregion
 #pragma region Factions
 USTRUCT(BlueprintType, Blueprintable)
+struct FFactionDisplay
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString displayName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FColor tileColor;
+};
+USTRUCT(BlueprintType, Blueprintable)
 struct FFactionPersonality
 {
 	GENERATED_BODY()
@@ -658,8 +666,6 @@ public:
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingStats> buildingStats;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
-	UPROPERTY(EditAnywhere) TMap<TerrainType, FVisibilityMaterials> terrainTileMaterials;
-	UPROPERTY(EditAnywhere) TMap<Factions, FTroopMaterials> troopFactionMaterials;
 
 	//Hex models
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HexModel") TSubclassOf<class UStaticMesh> plainsModel;
@@ -676,11 +682,14 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<class ABaseHex> hexActor;
 	ABasePlayerController* controller;
 
+	FFactionDisplay* GetFactionDisplayPreset(Factions faction);
 private:
 	UPROPERTY(EditAnywhere) int hexSeedSize = 5;
 	UPROPERTY(EditAnywhere) int hexRandToMaintain = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Factions") TMap<Factions, FFactionDisplay> factionDisplayPresets;
 	
-	UPROPERTY(EditAnywhere, Category = "Building") TMap <SpawnableBuildings, TSubclassOf<class ABuilding>> buildingPrefabs;
+	UPROPERTY(EditAnywhere, Category = "Building") TMap<SpawnableBuildings, TSubclassOf<class ABuilding>> buildingPrefabs;
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;

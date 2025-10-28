@@ -199,6 +199,7 @@ public:
 
 	FHexDisplay GetDisplayInfo();
 	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
+	UFUNCTION(BlueprintImplementableEvent) void ToggleUI(bool active);
 
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMesh;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexMeshAttachment;

@@ -90,6 +90,7 @@ protected:
 	virtual void UpdateResources();
 	virtual void RevertResources();
 	virtual void BuildingAction();
+	virtual UStaticMesh* LoadFinishedModel();
 	virtual void SetToFinishedModel();
 	virtual void Destroyed() override;
 	virtual void DestroyingBuilding(float& DeltaTime);

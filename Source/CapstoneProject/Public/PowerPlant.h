@@ -16,5 +16,5 @@ class CAPSTONEPROJECT_API APowerPlant : public ABuilding
 public:
 	APowerPlant();
 
-	virtual void SetToFinishedModel() override;
+	virtual UStaticMesh* LoadFinishedModel() override;
 };

@@ -555,68 +555,6 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 #pragma endregion
 
-#pragma region Terrain Materials
-	terrainTileMaterials.Add(TerrainType::None, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/UNDISCOVERED")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/UNDISCOVERED")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/UNDISCOVERED")) });
-	terrainTileMaterials.Add(TerrainType::Plains, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainPlainsMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Hills, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainHillMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainHillMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainHillMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Mountains, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainMntMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainMntMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainMntMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::SporeField, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainToxicMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainToxicMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainToxicMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Forest, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TileForestFloor_Mat_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TileForestFloor_Mat_HL")),
-
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainForestMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainForestMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainForestMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Jungle, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TileForestHeavyFloor_Mat_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileForestHeavyFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TileForestHeavyFloor_Mat_HL")),
-
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainJungleMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TerrainJungleMat01")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainJungleMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Ship, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::AlienCity, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::TheRock, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
-	terrainTileMaterials.Add(TerrainType::Border, FVisibilityMaterials{
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/TerrainPlainsMat01_Hidden")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TilePlainsFloor_Mat")),
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/TerrainPlainsMat01_HL")) });
-#pragma endregion
-
-#pragma region Faction Materials
-	troopFactionMaterials.Add(Factions::Human, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HumanTroopMat01")), 
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
-	troopFactionMaterials.Add(Factions::Alien1, FTroopMaterials{ LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienTroopMat01")), 
-		LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/HLHumanTroopMat")) });
-#pragma endregion
-
 #pragma region Building Default Prefabs
 	buildingPrefabs.Add(SB::MiningStation, AMiningStation::StaticClass());
 	buildingPrefabs.Add(SB::Farmland, AFarmland::StaticClass());
@@ -727,71 +665,46 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 	ABuilding* newBuilding = nullptr;
 
-	if (terrainTileMaterials.Contains(terrainType))
-	{
-		FVisibilityMaterials materials = terrainTileMaterials[terrainType];
-
-		if (materials.visibleTexture) hex->visibility->meshMaterials.visibleTexture = materials.visibleTexture;
-		if (materials.hiddenTexture) hex->visibility->meshMaterials.hiddenTexture = materials.hiddenTexture;
-		if (materials.selectedTexture) hex->visibility->meshMaterials.selectedTexture = materials.selectedTexture;
-
-		if (materials.modelVisibleTexture) hex->visibility->meshMaterials.modelVisibleTexture = materials.modelVisibleTexture;
-		if (materials.modelHiddenTexture) hex->visibility->meshMaterials.modelHiddenTexture = materials.modelHiddenTexture;
-		if (materials.modelSelectedTexture) hex->visibility->meshMaterials.modelSelectedTexture = materials.modelSelectedTexture;
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("TerrainType not found"));
-	}
-
 	switch (terrainType)
 	{
 	case TerrainType::None:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
-		
 		break;
 	case TerrainType::Plains:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TilePlains.TilePlains'"));
-
 		break;
 	case TerrainType::Hills:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileHills.TileHills'"));
-		
 		break;
 	case TerrainType::Mountains:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileMountainModel.TileMountainModel'"));
-
 		break;
 	case TerrainType::Forest:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForest.TileForest'"));
 		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_TileForest.TileForestModel_TileForest'"));
-
 		break;
 	case TerrainType::Jungle:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_TileForestThick.TileJungleModel_TileForestThick'"));
-
 		break;
 	case TerrainType::SporeField:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileSporefieldModel.TileSporefieldModel'"));
-
 		break;
 	case TerrainType::Border:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 		break;
 	case TerrainType::Ship:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForestModel_HexagonPlains.TileForestModel_HexagonPlains'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileForest.TileForest'"));
 		extraAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingCapitolShip2.BuildingCapitolShip2'"));
-
 		break;
 	case TerrainType::AlienCity:
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 
 		break;
 	case TerrainType::TheRock:		
-		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungleModel_Hexagon.TileJungleModel_Hexagon'"));
+		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 
@@ -804,11 +717,13 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	if (meshAsset)
 	{
 		hex->hexMesh->SetStaticMesh(meshAsset);
+		hex->hexMesh->EmptyOverrideMaterials();
 	}
 
 	if (extraAsset)
 	{
 		hex->hexMeshAttachment->SetStaticMesh(extraAsset);
+		hex->hexMeshAttachment->EmptyOverrideMaterials();
 		float randomRot = FMath::RandRange(0.f, 360.f);
 
 		switch (terrainType)
@@ -851,6 +766,13 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 	hex->hexMeshAttachment->SetVisibility(extraAsset != nullptr);
 	hex->SetAttachmentCanBeVisible(extraAsset != nullptr);
+
+	Factions owner = hex->GetHexOwner();
+
+	hex->visibility->ResetComponent();
+	hex->visibility->SetupComponent(owner, hex->hexMesh);
+	hex->visibility->SetupComponent(owner, hex->hexMeshAttachment);
+	hex->visibility->SetupFactionComponent(hex->hexBase);
 }
 
 ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
@@ -998,6 +920,13 @@ bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
 	}
 
 	return false;
+}
+
+FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(Factions faction)
+{
+	if (!factionDisplayPresets.Contains(faction)) return nullptr;
+
+	return &factionDisplayPresets[faction];
 }
 
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)

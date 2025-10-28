@@ -18,7 +18,7 @@ public:
 
 	virtual void UpdateResources() override;
 	virtual void RevertResources() override;
-	virtual void SetToFinishedModel() override;
+	virtual UStaticMesh* LoadFinishedModel() override;
 	UFUNCTION(BlueprintCallable) bool ToggleResourcesProduced(bool produceFood);
 
 	bool producingFood = true;

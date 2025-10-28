@@ -125,6 +125,7 @@ void ATroop::MoveToTarget(float& DeltaTime)
 FTroopUIData ATroop::GetUIData()
 {
 	FTroopUIData data;
+	if (!unitData) return data;
 
 	data.healthPercent = unitData->GetHPAlpha();
 	data.moralePercent = unitData->GetMoraleAlpha();
@@ -184,7 +185,7 @@ void ATroop::InitTroop(FUnitData* data)
 	if (GameMode::activeFactions.Contains(faction))
 		GameMode::activeFactions[faction]->allUnits.Add(this);
 
-	visibility->SetupComponent(unitData);
+	visibility->SetupComponent(unitData, mesh);
 	SphereCheck(20.f);
 }
 
@@ -210,11 +211,6 @@ bool ATroop::SetUpTroop()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Troop stats missing, could not set up troop"));
 		return false;
 	}
-	else if (!AGlobalSpawner::spawnerObject->troopFactionMaterials.Contains(faction))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction materials missing, could not set up troop"));
-		return false;
-	}
 
 	//If all data is present, perform setup
 	UnitActions::RobotIsActive(faction, this);
@@ -228,9 +224,6 @@ bool ATroop::SetUpTroop()
 	{
 		if (!debug) AITroopComponent->EnableEnemyAI();
 	}
-
-	visibility->meshMaterials.visibleTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[faction].visibleTexture;
-	visibility->meshMaterials.selectedTexture = AGlobalSpawner::spawnerObject->troopFactionMaterials[faction].selectedTexture;
 
 	return true;
 }

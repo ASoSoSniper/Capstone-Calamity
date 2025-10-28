@@ -27,6 +27,24 @@ struct FVisibility
 	UPROPERTY() bool discoveredByFaction = false;
 };
 
+UENUM(BlueprintType)
+enum class EVisibilityColor
+{
+	Default,
+	Hidden,
+	Selected
+};
+
+USTRUCT(BlueprintType)
+struct FVisibilityFade
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere) FColor color = FColor::White;
+	UPROPERTY(EditAnywhere) float duration = 0.5f;
+	UPROPERTY(EditAnywhere) UCurveFloat* fadeCurve = nullptr;
+};
+
 class UHexNav;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UMeshVisibility : public UActorComponent
@@ -44,39 +62,48 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-	FVisibilityMaterials meshMaterials;
-	FVisibilityMaterials hexBaseMaterials;
-	UPROPERTY() UStaticMeshComponent* mesh;
-	UPROPERTY() UStaticMeshComponent* otherMesh;
-	UPROPERTY() USkeletalMeshComponent* skeletalMesh;
-	UPROPERTY() USkeletalMeshComponent* otherSkeletalMesh;
-	UPROPERTY() UStaticMeshComponent* hexBaseMesh;
+
 	UPROPERTY(VisibleAnywhere) Factions faction;
-	UPROPERTY(VisibleAnywhere) bool enableScan = true;
-	UPROPERTY(EditAnywhere) float visibilityRadius = 100.f;
-	UPROPERTY(EditAnywhere) float detectionDistanceInRadius = 90.f;
-	TMap<Factions, FVisibility> factionVisibility;
 
-	void SetSelected(bool active);
-	bool VisibleToFaction(Factions factionToCheck);
-	bool DiscoveredByFaction(Factions factionToCheck);
+	UPROPERTY(VisibleAnywhere, Category = "Functionality") bool enableScan = true;
 
-	void SetupComponent(FUnitData* data);
-	void SetupComponentInHex(Factions setFaction);
-private:
+	void SetSelected(bool active, bool instigator = true);
+	bool VisibleToFaction(Factions factionToCheck) const;
+	bool DiscoveredByFaction(Factions factionToCheck) const;
+
+	void SetupComponent(Factions setFaction, UMeshComponent* meshComponent);
+	void SetupComponent(FUnitData* data, UMeshComponent* meshComponent);
+	void SetupFactionComponent(UMeshComponent* meshComponent);
+	void ResetComponent();
 	
-	UPROPERTY(VisibleAnywhere) ObjectTypes objectType;
+private:
+	UPROPERTY(EditAnywhere, Category = "Colors") TMap<EVisibilityColor, FVisibilityFade> visibilityColors;
+	UPROPERTY(VisibleAnywhere, Category = "Colors") EVisibilityColor colorTarget = EVisibilityColor::Hidden;
+	UPROPERTY(VisibleAnywhere, Category = "Colors") EVisibilityColor prevColorTarget = EVisibilityColor::Hidden;
+	UPROPERTY(VisibleAnywhere, Category = "Colors") float colorAlpha = 1.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Functionality") ObjectTypes objectType;
+	UPROPERTY(VisibleAnywhere, Category = "Functionality") bool selected;
+
+	UPROPERTY(EditAnywhere, Category = "Debug") bool debug;
+	UPROPERTY(EditAnywhere, Category = "Debug") bool infiniteRange;
+	UPROPERTY(EditAnywhere, Category = "Debug") bool showDebugSphere = false;
+
+	UPROPERTY() TArray<UMaterialInstanceDynamic*> meshMaterials;
+	UPROPERTY() UMaterialInstanceDynamic* factionMat;
+	TMap<Factions, FVisibility> factionVisibility;
 	FUnitData* unitData;
 	UPROPERTY() UHexNav* hexNav;
-	
-	UPROPERTY(VisibleAnywhere) bool selected;
-	UPROPERTY(EditAnywhere) bool debug;
+	UPROPERTY() ABaseHex* hexParent;
 	UPROPERTY() bool discoveredByPlayer;
-	UPROPERTY(EditAnywhere) bool infiniteRange;
-	UPROPERTY(EditAnywhere) bool showDebugSphere = false;
 
-	void Scan(float radius);
+	void Scan();
 	void InSight(Factions thisFaction);
-	void SetVisibility();
+	bool SetVisibility();
+	void RevealModelsAndMeshes();
+	void HideModelsAndMeshes();
+
+	void SetColorTarget(EVisibilityColor setTarget);
+	void FadeToColor(const float& DeltaTime);
+	void ToggleOpacity(bool active);
 };

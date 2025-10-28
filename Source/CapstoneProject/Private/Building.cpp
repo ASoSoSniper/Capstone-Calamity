@@ -85,7 +85,7 @@ void ABuilding::InitBuilding(const Factions& faction)
 	if (GameMode::activeFactions.Contains(faction))
 		GameMode::activeFactions[faction]->allBuildings.Add(this);
 
-	visibility->SetupComponent(unitData);
+	visibility->SetupComponent(unitData, mesh);
 	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
 }
 
@@ -261,12 +261,24 @@ void ABuilding::BuildingAction()
 {
 }
 
-void ABuilding::SetToFinishedModel()
+UStaticMesh* ABuilding::LoadFinishedModel()
 {
 	UStaticMesh* meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CysAwfulBuilding.CysAwfulBuilding'"));
+
+	return meshAsset;
+}
+
+void ABuilding::SetToFinishedModel()
+{
+	UStaticMesh* meshAsset = LoadFinishedModel();
+
 	if (meshAsset)
 	{
 		mesh->SetStaticMesh(meshAsset);
+		mesh->EmptyOverrideMaterials();
+
+		visibility->ResetComponent();
+		visibility->SetupComponent(unitData, mesh);
 	}
 }
 

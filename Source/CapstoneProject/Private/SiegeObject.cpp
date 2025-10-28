@@ -59,23 +59,23 @@ void ASiegeObject::GenerateModels()
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
-		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
-		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
 	if (building->GetUnitData()->GetFaction() == Factions::Human || building->GetOccupier() == Factions::Human)
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
-		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
 	}
 	else
 	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
-		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 }
 

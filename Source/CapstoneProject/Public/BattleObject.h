@@ -26,12 +26,11 @@ public:
 	ABaseHex* GetHex();
 
 	UPROPERTY(EditAnywhere) UHexNav* hexNav;
-
+	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere) UInteractable* interact;
-	UPROPERTY(EditAnywhere) UMeshVisibility* visibility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group1Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USkeletalMeshComponent* group2Mesh;

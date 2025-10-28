@@ -71,7 +71,7 @@ ABaseHex::ABaseHex()
 
 	hexBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Base Mesh"));
 	hexBase->SetupAttachment(RootComponent);
-	UStaticMesh* baseAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/CyTheHexGuy.CyTheHexGuy'"));
+	UStaticMesh* baseAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Hex_Base.Hex_Base'"));
 	if (baseAsset)
 	{
 		hexBase->SetStaticMesh(baseAsset);
@@ -84,9 +84,6 @@ ABaseHex::ABaseHex()
 
 	visibility = CreateDefaultSubobject<UMeshVisibility>(TEXT("Mesh Visibility"));
 	visibility->enableScan = false;
-	visibility->hexBaseMesh = hexBase;
-	visibility->visibilityRadius = 50.f;
-	visibility->detectionDistanceInRadius = 40.f;
 
 	audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	audioComponent->SetupAttachment(RootComponent);
@@ -102,6 +99,7 @@ ABaseHex::ABaseHex()
 	resourceBonuses.Add(EStratResources::Production, 1);
 	resourceBonuses.Add(EStratResources::Food, 1);
 }
+
 void ABaseHex::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -139,14 +137,7 @@ void ABaseHex::SetHexOwner(Factions faction)
 	}
 
 	hexOwner = faction;
-
-	if (faction == Factions::None)
-	{
-		visibility->hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::factionColors[Factions::None];
-		return;
-	}
-
-	visibility->SetupComponentInHex(faction);
+	visibility->faction = faction;
 
 	if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(this))
 	{
@@ -278,7 +269,11 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers, bool includeSelf) c
 		}
 	}
 
-	if (!includeSelf)
+	if (includeSelf)
+	{
+		hexes.Add(const_cast<ABaseHex*>(this));
+	}
+	else
 	{
 		if (hexes.Contains(this))
 			hexes.Remove(this);
@@ -696,9 +691,7 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 }
 void ABaseHex::SetHexModel()
 {
-	if (!visibility->factionVisibility.Contains(Factions::Human)) return;
-
-	if (!visibility->factionVisibility[Factions::Human].discoveredByFaction)
+	if (!visibility->DiscoveredByFaction(Factions::Human))
 	{
 		AGlobalSpawner::spawnerObject->CreateHexModel(TerrainType::None, this);
 	}

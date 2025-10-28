@@ -12,9 +12,9 @@ UMeshVisibility::UMeshVisibility()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	hexBaseMaterials.hiddenTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
-	hexBaseMaterials.visibleTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
-	hexBaseMaterials.selectedTexture = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed"));
+	visibilityColors.Add(EVisibilityColor::Default, FVisibilityFade{ FColor::White, 0.5f });
+	visibilityColors.Add(EVisibilityColor::Hidden, FVisibilityFade{ FColor(0.1f, 0.1f, 0.1f, 1.f), 0.5f });
+	visibilityColors.Add(EVisibilityColor::Selected, FVisibilityFade{ FColor(1.f, 1.f, 0.f, 1.f), 0.1f });
 }
 
 
@@ -24,34 +24,56 @@ void UMeshVisibility::BeginPlay()
 	Super::BeginPlay();
 
 	objectType = UnitActions::DetermineObjectType(GetOwner()).type;
-	if (objectType == ObjectTypes::MoveAI || objectType == ObjectTypes::Building)
-	{
+	if (objectType == ObjectTypes::Hex)
+		hexParent = Cast<ABaseHex>(GetOwner());
+	else
 		hexNav = GetOwner()->GetComponentByClass<UHexNav>();
-	}
-	else if (objectType == ObjectTypes::Hex)
-	{
-		enableScan = false;
-	}
-
-	mesh = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
-	if (!mesh)
-	{
-		skeletalMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
-	}
-
+	
 	for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
 	{
 		factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
-
-	if (faction != Factions::None)
-	{
-		if (!factionVisibility.Contains(faction)) 
-			factionVisibility.Add(faction, FVisibility{ VisibilityStatus::Undiscovered, false, false });
-	}
-	
 }
 
+void UMeshVisibility::SetupComponent(Factions setFaction, UMeshComponent* meshComponent)
+{
+	faction = setFaction;
+
+	if (!meshComponent) return;
+	
+	UMaterialInterface* material = meshComponent->GetMaterial(0);
+	UMaterialInstanceDynamic* dynamic = UMaterialInstanceDynamic::Create(material, meshComponent->GetOwner());
+
+	meshMaterials.Add(dynamic);
+	meshComponent->SetMaterial(0, dynamic);
+}
+
+void UMeshVisibility::SetupComponent(FUnitData* data, UMeshComponent* meshComponent)
+{
+	unitData = data;
+	
+	SetupComponent(data->GetFaction(), meshComponent);
+}
+
+void UMeshVisibility::SetupFactionComponent(UMeshComponent* meshComponent)
+{
+	if (!meshComponent || factionMat) return;
+
+	meshComponent->EmptyOverrideMaterials();
+
+	UMaterialInterface* material = meshComponent->GetMaterial(0);
+	UMaterialInstanceDynamic* dynamic = UMaterialInstanceDynamic::Create(material, meshComponent);
+
+	factionMat = dynamic;
+	meshComponent->SetMaterial(0, dynamic);
+}
+
+void UMeshVisibility::ResetComponent()
+{
+	faction = Factions::None;
+	meshMaterials.Empty();
+	factionMat = nullptr;
+}
 
 // Called every frame
 void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -68,44 +90,44 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		return;
 	}
 
+	FadeToColor(DeltaTime);
+
 	if (ACapstoneProjectGameModeBase::currentScanTime <= 0.f)
 	{
-		if (enableScan) Scan(visibilityRadius);
-		SetVisibility();
+		if (enableScan) Scan();
+
+		if (SetVisibility())
+			RevealModelsAndMeshes();
+		else
+			HideModelsAndMeshes();
 	}
 }
 
-void UMeshVisibility::Scan(float radius)
+void UMeshVisibility::Scan()
 {
-	TArray<AActor*> actorsToIgnore;
-	if (objectType != ObjectTypes::Hex) actorsToIgnore.Add(GetOwner());
-	TArray<FHitResult> results;
+	if (!hexNav && !hexParent) return;
 
-	int visionMulti = (unitData != nullptr) ? unitData->GetVision() : 1;
+	int baseVision = (unitData != nullptr) ? unitData->GetVision() : 1;
 	float hexVisionMod = (hexNav && hexNav->GetCurrentHex()) ? hexNav->GetCurrentHex()->GetVision() : 0;
 
-	bool zeroVision = ((radius * visionMulti) + (radius * hexVisionMod) == 0);
-	float hexMod = zeroVision ? -0.5f : hexVisionMod;
+	int searchRadius = FMath::Max(baseVision + hexVisionMod, 0);
 
-	float searchRadius = infiniteRange ? 10000.f : (radius * (float)visionMulti) + 
-		(radius * hexMod);
-	float detectionRadius = infiniteRange ? 10000.f : (detectionDistanceInRadius * (float)visionMulti) +
-		(radius * hexMod);
+	ABaseHex* centerHex = hexNav ? hexNav->GetCurrentHex() : hexParent;
+	TSet<ABaseHex*> foundHexes = centerHex->GetHexesInRadius(searchRadius);
 
-	//if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("SearchRadius = %f, visionMod = %f, hexMod = %f"), searchRadius, hexVisionMod, hexMod));
-
-	bool bHit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), searchRadius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, actorsToIgnore, showDebugSphere ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None, results, true);
-
-	if (bHit)
+	for (ABaseHex* hex : foundHexes)
 	{
-		for (int i = 0; i < results.Num(); ++i)
-		{
-			UMeshVisibility* found = results[i].GetActor()->GetComponentByClass<UMeshVisibility>();
-			if (found && faction != Factions::None)
-			{
-				if (FVector::Distance(results[i].GetActor()->GetActorLocation(), GetOwner()->GetActorLocation()) > detectionRadius) continue;
+		hex->visibility->InSight(faction);
 
-				found->InSight(faction);
+		if (hex->building)
+			hex->building->visibility->InSight(faction);
+		if (hex->battle)
+			hex->battle->visibility->InSight(faction);
+		if (!hex->troopsInHex.IsEmpty())
+		{
+			for (int i = 0; i < hex->troopsInHex.Num(); i++)
+			{
+				hex->troopsInHex[i]->visibility->InSight(faction);
 			}
 		}
 	}
@@ -122,14 +144,17 @@ void UMeshVisibility::InSight(Factions thisFaction)
 	//Set object as "In Sight" for the faction and all its allies
 	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		if (UnitActions::GetFaction(thisFaction)->GetFactionRelationship(ally.Key) == FactionRelationship::Ally)
+		UFaction* factionObject = UnitActions::GetFaction(thisFaction);
+		if (!factionObject) continue;
+
+		if (factionObject->GetFactionRelationship(ally.Key) == FactionRelationship::Ally)
 		{
 			factionVisibility[ally.Key].inSight = true;
 		}
 	}
 }
 
-void UMeshVisibility::SetVisibility()
+bool UMeshVisibility::SetVisibility()
 {
 	bool visibleToPlayer = false;
 
@@ -159,154 +184,135 @@ void UMeshVisibility::SetVisibility()
 	if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(faction) == FactionRelationship::Ally
 		&& objectType != ObjectTypes::Hex) visibleToPlayer = true;
 
-	UMaterialInterface* material = nullptr;
-	UMaterialInterface* otherMaterial = nullptr;
-	UMaterialInterface* baseMaterial = nullptr;
+	return visibleToPlayer;
+}
 
-	if (visibleToPlayer)
+void UMeshVisibility::RevealModelsAndMeshes()
+{
+	EVisibilityColor target = selected ? EVisibilityColor::Selected : EVisibilityColor::Default;
+
+	switch (objectType)
 	{
-		switch (objectType)
+	case ObjectTypes::Hex:
+		SetColorTarget(target);
+		if (hexParent->building)
+			hexParent->building->visibility->SetColorTarget(target);
+
+		if (!discoveredByPlayer && factionVisibility[Factions::Human].discoveredByFaction)
 		{
-		case ObjectTypes::Hex:
-			if (selected)
-			{
-				material = meshMaterials.selectedTexture;
-				otherMaterial = meshMaterials.modelSelectedTexture;
-			}
-			else
-			{
-				material = meshMaterials.visibleTexture;
-				otherMaterial = meshMaterials.modelVisibleTexture;
-			}
-
-			if (hexBaseMesh) baseMaterial = hexBaseMaterials.visibleTexture;
-
-			if (!discoveredByPlayer && factionVisibility[Factions::Human].discoveredByFaction)
-			{
-				Cast<ABaseHex>(GetOwner())->SetHexModel();
-				discoveredByPlayer = true;
-				if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
-			}
-			break;
-
-		case ObjectTypes::MoveAI:
-			skeletalMesh->SetVisibility(true);
-
-			if (selected)
-			{
-				material = meshMaterials.selectedTexture;
-			}
-			else
-			{
-				material = meshMaterials.visibleTexture;
-			}
-			break;
-
-		case ObjectTypes::Building:
-			if (mesh) mesh->SetVisibility(true);
-			if (skeletalMesh) skeletalMesh->SetVisibility(true);
-
-			if (selected)
-			{
-				material = meshMaterials.selectedTexture;
-			}
-			else
-			{
-				material = meshMaterials.visibleTexture;
-			}
-			break;
+			hexParent->SetHexModel();
+			discoveredByPlayer = true;
+			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 		}
-	}
-	else
-	{
-		switch (objectType)
+		hexParent->ToggleUI(true);
+		if (VisibleToFaction(Factions::Human) && faction != Factions::None)
 		{
-		case ObjectTypes::Hex:
-			material = meshMaterials.hiddenTexture;
-			otherMaterial = meshMaterials.modelHiddenTexture;
-			baseMaterial = hexBaseMaterials.hiddenTexture;
+			if (FFactionDisplay* display = AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(faction))
+				factionMat->SetVectorParameterValue(FName("Visibility"), display->tileColor);
+		}
+		break;
 
-			if (!factionVisibility[Factions::Human].discoveredByFaction)
-			{
-				if (otherMesh) otherMesh->SetVisibility(false);
-			}
-			break;
+	case ObjectTypes::Building:
+		ToggleOpacity(true);
+		break;
+	case ObjectTypes::MoveAI:
+		SetColorTarget(target);
+		ToggleOpacity(true);
+		break;
+	}
+}
+void UMeshVisibility::HideModelsAndMeshes()
+{
+	SetColorTarget(EVisibilityColor::Hidden);
 
-		case ObjectTypes::MoveAI:
-			if (mesh) mesh->SetVisibility(false);
-			if (skeletalMesh) skeletalMesh->SetVisibility(false);
-			break;
+	switch (objectType)
+	{
+	case ObjectTypes::Hex:
+		hexParent->ToggleUI(false);
+		break;
 
-		case ObjectTypes::Building:
-			material = meshMaterials.hiddenTexture;
-			if (!factionVisibility[Factions::Human].discoveredByFaction)
-			{
-				mesh->SetVisibility(false);
-			}
-			break;
-		}
-	}
+	case ObjectTypes::MoveAI:
+		ToggleOpacity(false);
+		break;
 
-	if (!material)
-	{
-		return;
-	}
-
-	if (mesh)
-	{
-		if (mesh->GetMaterial(0) != material)
+	case ObjectTypes::Building:
+		if (!factionVisibility[Factions::Human].discoveredByFaction)
 		{
-			mesh->SetMaterial(0, material);
-			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
+			ToggleOpacity(false);
 		}
-	}
-	if (otherMesh)
-	{
-		if (otherMesh->GetMaterial(0) != otherMaterial)
-		{
-			otherMesh->SetMaterial(0, otherMaterial);
-			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Other material changed"));
-		}
-	}
-	if (hexBaseMesh)
-	{
-		if (hexBaseMesh->GetMaterial(0) != baseMaterial)
-		{
-			hexBaseMesh->SetMaterial(0, baseMaterial);
-			hexBaseMaterials.hiddenTexture = baseMaterial;
-		}
-	}
-	if (skeletalMesh)
-	{
-		if (skeletalMesh->GetMaterial(0) != material)
-		{
-			skeletalMesh->SetMaterial(0, material);
-			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
-		}
-	}
-	if (otherSkeletalMesh)
-	{
-		if (otherSkeletalMesh->GetMaterial(0) != material)
-		{
-			otherSkeletalMesh->SetMaterial(0, material);
-			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Material changed"));
-		}
+		break;
 	}
 }
 
-void UMeshVisibility::SetSelected(bool active)
+void UMeshVisibility::SetColorTarget(EVisibilityColor setTarget)
+{
+	if (setTarget == colorTarget) return;
+
+	prevColorTarget = colorTarget;
+	colorTarget = setTarget;
+	colorAlpha = 0.f;
+}
+
+void UMeshVisibility::FadeToColor(const float& DeltaTime)
+{
+	if (!visibilityColors.Contains(prevColorTarget) ||
+		!visibilityColors.Contains(colorTarget)) return;
+
+	FVisibilityFade& start = visibilityColors[prevColorTarget];
+	FVisibilityFade& end = visibilityColors[colorTarget];
+
+	FLinearColor startColor = start.color;
+	FLinearColor endColor = end.color;
+
+	colorAlpha += DeltaTime / end.duration;
+	colorAlpha = FMath::Clamp(colorAlpha, 0.f, 1.f);
+
+	float alpha = end.fadeCurve ? end.fadeCurve->GetFloatValue(colorAlpha) : colorAlpha;
+	FLinearColor setColor = FMath::Lerp(startColor, endColor, alpha);
+
+	for (UMaterialInstanceDynamic* material : meshMaterials)
+	{
+		material->SetVectorParameterValue(FName("Visibility"), setColor);
+	}
+}
+
+void UMeshVisibility::ToggleOpacity(bool active)
+{
+	for (UMaterialInstanceDynamic* material : meshMaterials)
+	{
+		material->SetScalarParameterValue(FName("Opacity"), active);
+	}
+}
+
+void UMeshVisibility::SetSelected(bool active, bool instigator)
 {
 	selected = active;
+
+	if (!instigator) return;
+
+	if (objectType == ObjectTypes::Hex)
+	{
+		if (!hexParent->building) return;
+
+		ABaseHex* centerHex = hexParent->building->hexNav->GetCurrentHex();
+		int hexRadius = hexParent->building->GetHexLayersToOccupy();
+
+		TSet<ABaseHex*> occupiedHexes = centerHex->GetHexesInRadius(hexRadius);
+		for (ABaseHex* hex : occupiedHexes)
+		{
+			hex->visibility->SetSelected(selected, false);
+		}
+	}
 }
 
-bool UMeshVisibility::VisibleToFaction(Factions factionToCheck)
+bool UMeshVisibility::VisibleToFaction(Factions factionToCheck) const
 {
 	if (!factionVisibility.Contains(factionToCheck)) return false;
 
 	return factionVisibility[factionToCheck].status == VisibilityStatus::Visible;
 }
 
-bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck)
+bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck) const
 {
 	if (!factionVisibility.Contains(factionToCheck)) return false;
 
@@ -317,16 +323,4 @@ bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck)
 	default:
 		return true;
 	}
-}
-
-void UMeshVisibility::SetupComponent(FUnitData* data)
-{
-	unitData = data;
-	faction = unitData->GetFaction();
-}
-
-void UMeshVisibility::SetupComponentInHex(Factions setFaction)
-{
-	faction = setFaction;
-	hexBaseMaterials.visibleTexture = ACapstoneProjectGameModeBase::activeFactions[faction]->factionColor;
 }

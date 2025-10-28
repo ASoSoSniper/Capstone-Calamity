@@ -6,26 +6,10 @@
 
 APowerPlant::APowerPlant()
 {
-	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/EnergyStationMat01"));
-	if (visibleMat)
-	{
-		visibility->meshMaterials.visibleTexture = visibleMat;
-	}
-	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/EnergyStationMat01_Hidden"));
-	if (hiddenMat)
-	{
-		visibility->meshMaterials.hiddenTexture = hiddenMat;
-	}
-	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/EnergyStationMat01_HL"));
-	if (selectedMat)
-	{
-		visibility->meshMaterials.selectedTexture = selectedMat;
-	}
-
 	buildingType = SpawnableBuildings::PowerPlant;
 }
 
-void APowerPlant::SetToFinishedModel()
+UStaticMesh* APowerPlant::LoadFinishedModel()
 {
 	UStaticMesh* meshAsset = nullptr;
 
@@ -36,16 +20,7 @@ void APowerPlant::SetToFinishedModel()
 	else
 	{
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingPowerPlantAlien.BuildingPowerPlantAlien'"));
-
-		UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienEnergyStationMat01"));
-		if (visibleMat)
-		{
-			visibility->meshMaterials.visibleTexture = visibleMat;
-		}
 	}
 
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-	}
+	return meshAsset;
 }

@@ -17,6 +17,6 @@ class CAPSTONEPROJECT_API ARockCity : public AAlienCity
 
 public:
 	ARockCity();
-	virtual void SetToFinishedModel() override;
+	virtual UStaticMesh* LoadFinishedModel() override;
 	virtual bool IsDisabled() override;
 };

@@ -17,6 +17,7 @@ class CAPSTONEPROJECT_API ACapitalHub : public AOutpost
 public:
 	ACapitalHub();
 
+	virtual UStaticMesh* LoadFinishedModel() override;
 	virtual void SetToFinishedModel() override;
 
 	virtual void Destroyed() override;

@@ -14,5 +14,5 @@ class CAPSTONEPROJECT_API AAlienCity : public AOutpost
 public:
 	AAlienCity();
 
-	virtual void SetToFinishedModel() override;
+	virtual UStaticMesh* LoadFinishedModel() override;
 };

@@ -6,22 +6,6 @@
 
 AFarmland::AFarmland()
 {
-	UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/FoodStationMat02"));
-	if (visibleMat)
-	{
-		visibility->meshMaterials.visibleTexture = visibleMat;
-	}
-	UMaterialInterface* hiddenMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HiddenVersions/FoodStationMat01_Hidden"));
-	if (hiddenMat)
-	{
-		visibility->meshMaterials.hiddenTexture = hiddenMat;
-	}
-	UMaterialInterface* selectedMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/HighlightedVersions/FoodStationMat01_HL"));
-	if (selectedMat)
-	{
-		visibility->meshMaterials.selectedTexture = selectedMat;
-	}
-
 	buildingType = SpawnableBuildings::Farmland;
 }
 
@@ -47,7 +31,7 @@ void AFarmland::RevertResources()
 		hex->UpdateResourceYield(EStratResources::Wealth, -resourceYields[EStratResources::Wealth]);
 }
 
-void AFarmland::SetToFinishedModel()
+UStaticMesh* AFarmland:: LoadFinishedModel()
 {
 	UStaticMesh* meshAsset = nullptr;
 	if (unitData->GetFaction() == Factions::Human)
@@ -57,17 +41,9 @@ void AFarmland::SetToFinishedModel()
 	else
 	{
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingFarmhouseAlien.BuildingFarmhouseAlien'"));
-		UMaterialInterface* visibleMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/AlienFarmingStationMat01"));
-		if (visibleMat)
-		{
-			visibility->meshMaterials.visibleTexture = visibleMat;
-		}
 	}
 	
-	if (meshAsset)
-	{
-		mesh->SetStaticMesh(meshAsset);
-	}
+	return meshAsset;
 }
 
 bool AFarmland::ToggleResourcesProduced(bool produceFood)

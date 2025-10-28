@@ -39,9 +39,11 @@ protected:
 		float traceLength = 50.f;
 	UPROPERTY(VisibleAnywhere) TSet<ABaseHex*> claimedHexes;
 
+	UStaticMesh* LoadFinishedModel() override;
+	virtual void SetToFinishedModel() override;
+
 private:
 	TSet<ABaseHex*> ClaimLand();
 
 	void BuildingAction() override;
-	virtual void SetToFinishedModel();
 };

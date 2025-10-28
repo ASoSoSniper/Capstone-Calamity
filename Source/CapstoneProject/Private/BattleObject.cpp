@@ -36,7 +36,6 @@ ABattleObject::ABattleObject()
 
 	interact->CreateCollision(group1Mesh);
 	interact->CreateExtraCollision(group2Mesh);
-	visibility->otherSkeletalMesh = group2Mesh;
 }
 void ABattleObject::BeginPlay()
 {
@@ -148,23 +147,31 @@ void ABattleObject::GenerateModels()
 	if (currentBattle.Group1.Contains(Factions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
-		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+
+		visibility->SetupComponent(Factions::Human, group1Mesh);
 	}
 	else
 	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
-		group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+
+		visibility->SetupComponent(Factions::None, group1Mesh);
 	}
 
 	if (currentBattle.Group2.Contains(Factions::Human))
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
-		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
+
+		visibility->SetupComponent(Factions::Human, group2Mesh);
 	}
 	else
 	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
-		group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
+
+		visibility->SetupComponent(Factions::None, group2Mesh);
 	}
 }
 
