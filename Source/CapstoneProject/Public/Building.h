@@ -63,10 +63,12 @@ public:
 	void HealOverTime();
 	UFUNCTION(BlueprintCallable) int GetHexLayersToOccupy() const;
 	UFUNCTION(BlueprintCallable) Factions GetOccupier();
-	UFUNCTION(BlueprintCallable) float GetBuildPercent();
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
 	UFUNCTION(BlueprintCallable) SpawnableBuildings GetBuildingType();
-	UFUNCTION(BlueprintCallable) bool ConstructionComplete() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool ConstructionComplete() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetBuildingIcon() const;
 
 protected:
 	enum BuildStates

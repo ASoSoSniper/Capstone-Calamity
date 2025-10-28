@@ -130,7 +130,7 @@ FTroopUIData ATroop::GetUIData()
 	data.healthPercent = unitData->GetHPAlpha();
 	data.moralePercent = unitData->GetMoraleAlpha();
 
-	data.progressToMove = (float)currTimeTillHexMove / (float)unitData->GetSpeed();
+	data.progressToMove = GetTravelProgress();
 
 	return data;
 }

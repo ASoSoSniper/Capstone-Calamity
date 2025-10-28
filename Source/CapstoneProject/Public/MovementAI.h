@@ -45,6 +45,10 @@ public:
 
 	FUnitData* GetUnitData() const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool IsTraveling() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTravelProgress() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetTroopIcon() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;
 	int hexPathIndex;

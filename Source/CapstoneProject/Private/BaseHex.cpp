@@ -360,6 +360,30 @@ void ABaseHex::UpdateWorkerDisplay()
 #pragma endregion
 
 #pragma region Troops and Buildings
+AMovementAI* ABaseHex::GetFurthestTravelingTroop() const
+{
+	if (troopsInHex.IsEmpty()) return nullptr;
+
+	AMovementAI* bestTroop = nullptr;
+	float bestProgress = 0.f;
+
+	for (AMovementAI* troop : troopsInHex)
+	{
+		if (!troop->IsTraveling()) continue;
+
+		float progress = troop->GetTravelProgress();
+		if (progress > bestProgress)
+		{
+			bestTroop = troop;
+			bestProgress = progress;
+		}
+	}
+
+	if (bestProgress >= 1.f) return nullptr;
+
+	return bestTroop;
+}
+
 void ABaseHex::AddTroopToHex(AMovementAI* troop)
 {
 	troop->hexNav->SetCurrentHex(this);
@@ -377,6 +401,10 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 
 		RemoveAllEffectsFromUnit(troop->GetUnitData());
 	}
+}
+ABuilding* ABaseHex::GetBuilding() const
+{
+	return building;
 }
 void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 {

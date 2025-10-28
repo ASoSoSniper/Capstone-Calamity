@@ -145,10 +145,12 @@ private:
 
 #pragma region Troops and Buildings
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) AMovementAI* GetFurthestTravelingTroop() const;
 	void AddTroopToHex(AMovementAI* troop);
 	void RemoveTroopFromHex(AMovementAI* troop);
 	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABuilding* GetBuilding() const;
 	void AddBuildingToHex(ABuilding* setBuilding, int layers = 0);
 	void RemoveBuildingFromHex(int layers = 0);
 	UPROPERTY(VisibleAnywhere) ABuilding* building;

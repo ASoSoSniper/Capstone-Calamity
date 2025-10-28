@@ -538,6 +538,16 @@ bool ABuilding::ConstructionComplete() const
 	return buildState == BuildStates::Complete || buildState == BuildStates::Upgraded;
 }
 
+UTexture2D* ABuilding::GetBuildingIcon() const
+{
+	if (AGlobalSpawner::spawnerObject->buildingStats.Contains(buildingType))
+	{
+		return AGlobalSpawner::spawnerObject->buildingStats[buildingType].buildingIcon;
+	}
+
+	return nullptr;
+}
+
 void ABuilding::HealOverTime()
 {
 	if (ABaseHex* hex = hexNav->GetCurrentHex())

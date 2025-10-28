@@ -461,6 +461,30 @@ FUnitData* AMovementAI::GetUnitData() const
 	return unitData;
 }
 
+bool AMovementAI::IsTraveling() const
+{
+	return moveState == Move;
+}
+
+float AMovementAI::GetTravelProgress() const
+{
+	return (float)currTimeTillHexMove / (float)unitData->GetSpeed();
+}
+
+UTexture2D* AMovementAI::GetTroopIcon() const
+{
+	if (!unitData) return nullptr;
+
+	UnitTypes unit = unitData->GetUnitType();
+
+	if (AGlobalSpawner::spawnerObject->troopStats.Contains(unit))
+	{
+		return AGlobalSpawner::spawnerObject->troopStats[unit].icon;
+	}
+
+	return nullptr;
+}
+
 float AMovementAI::FNodeData::GetG() const
 {
 	return g;
