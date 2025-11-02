@@ -65,11 +65,11 @@ public:
 	UFUNCTION(BlueprintCallable) Factions GetOccupier();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
-	UFUNCTION(BlueprintCallable) SpawnableBuildings GetBuildingType();
+	UFUNCTION(BlueprintCallable, BlueprintPure) SpawnableBuildings GetBuildingType();
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool ConstructionComplete() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetBuildingIcon() const;
-
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetHPAlpha() const;
 protected:
 	enum BuildStates
 	{

@@ -42,12 +42,12 @@ ATroop* AMergedArmy::SpawnUnit(TArray<FUnitData*>& groupData)
 	switch (isArmy)
 	{
 	case true:
-		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmy(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData, hpPercent);
+		spawnArmy = AGlobalSpawner::spawnerObject->SpawnArmyByArray(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData, hpPercent);
 		
 		return spawnArmy;
 
 	case false:
-		spawnTroop = AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData[0], hpPercent);
+		spawnTroop = AGlobalSpawner::spawnerObject->SpawnArmyByUnit(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), groupData[0], hpPercent);
 
 		return spawnTroop;
 	}
@@ -108,7 +108,7 @@ void AMergedArmy::ExtractOneUnit(UnitTypes type)
 	FUnitData* unit = unitData->ExtractUnitData(unitIndex);
 	if (!unit) return;
 
-	AGlobalSpawner::spawnerObject->SpawnTroop(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), unit);
+	AGlobalSpawner::spawnerObject->SpawnArmyByUnit(hex->FindFreeAdjacentHex(unitData->GetFaction(), usedHexes), unit);
 }
 
 void AMergedArmy::Action1()

@@ -59,7 +59,7 @@ ATroop* ATroopStorage::ReleaseOneTroop(int index)
 ATroop* ATroopStorage::ReleaseTroop(int index, ABaseHex* hex, TSet<ABaseHex*>& usedHexes)
 {
 	ABaseHex* spawnPoint = hex->FindFreeAdjacentHex(hex->GetHexOwner(), usedHexes);
-	ATroop* spawn = AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, troopsInStorage[index]);
+	ATroop* spawn = AGlobalSpawner::spawnerObject->SpawnArmyByUnit(spawnPoint, troopsInStorage[index]);
 
 	if (spawn) SetUpdateUI();
 

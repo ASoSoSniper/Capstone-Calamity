@@ -384,6 +384,11 @@ AMovementAI* ABaseHex::GetFurthestTravelingTroop() const
 	return bestTroop;
 }
 
+bool ABaseHex::HexContainsTroop(AMovementAI* troop) const
+{
+	return troopsInHex.Contains(troop);
+}
+
 void ABaseHex::AddTroopToHex(AMovementAI* troop)
 {
 	troop->hexNav->SetCurrentHex(this);
@@ -545,14 +550,18 @@ void ABaseHex::CheckForHostility(ABuilding* refBuilding)
 		}
 	}
 }
-Factions ABaseHex::GetAttackerFaction()
+AMovementAI* ABaseHex::GetAttackingTroop()
 {
-	Factions faction = attackingTroop->GetUnitData()->GetFaction();
+	AMovementAI* troop = attackingTroop;
 	attackingTroop = nullptr;
 
-	return faction;
+	return troop;
 }
-bool ABaseHex::ActiveBattleOnHex()
+ABattleObject* ABaseHex::GetBattle() const
+{
+	return battle;
+}
+bool ABaseHex::ActiveBattleOnHex() const
 {
 	if (!battle) return false;
 

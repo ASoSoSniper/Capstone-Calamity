@@ -19,9 +19,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void QueueTroopBuild(UnitTypes unit);
-	float GetTroopBuildTime() const;
-	UnitTypes GetQueuedTroop() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTroopBuildTime() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTroopBuildAlpha() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetQueuedTroopIcon() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) UnitTypes GetQueuedTroop() const;
 	int GetQueueSize() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool BuildingTroop() const;
 private:
 	void BuildTroop(const float& DeltaTime);
 	void SpawnTroop();

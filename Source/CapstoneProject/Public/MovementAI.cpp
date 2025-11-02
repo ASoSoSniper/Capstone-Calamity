@@ -475,7 +475,7 @@ UTexture2D* AMovementAI::GetTroopIcon() const
 {
 	if (!unitData) return nullptr;
 
-	UnitTypes unit = unitData->GetUnitType();
+	UnitTypes unit = unitData->GetLargestUnitQuantity();
 
 	if (AGlobalSpawner::spawnerObject->troopStats.Contains(unit))
 	{

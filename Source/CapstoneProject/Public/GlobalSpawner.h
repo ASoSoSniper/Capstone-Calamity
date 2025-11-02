@@ -249,6 +249,7 @@ struct FFactionDisplay
 {
 	GENERATED_USTRUCT_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString displayName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FColor tileColor;
 };
@@ -648,8 +649,8 @@ public:
 
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
 	void SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
-	ATroop* SpawnTroop(ABaseHex* hex, FUnitData* data, float parentHealthPercent = 1.f);
-	AMergedArmy* SpawnArmy(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent = 1.f);
+	ATroop* SpawnArmyByUnit(ABaseHex* hex, FUnitData* data, float parentHealthPercent = 1.f);
+	AMergedArmy* SpawnArmyByArray(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent = 1.f);
 	ABattleObject* SpawnBattle(ABaseHex* hex);
 	AActor* SpawnSmoke(AActor* object);
 	AActor* SpawnEndParticle(AActor* object, GameStates state);

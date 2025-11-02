@@ -110,7 +110,7 @@ void UMeshVisibility::Scan()
 	int baseVision = (unitData != nullptr) ? unitData->GetVision() : 1;
 	float hexVisionMod = (hexNav && hexNav->GetCurrentHex()) ? hexNav->GetCurrentHex()->GetVision() : 0;
 
-	int searchRadius = FMath::Max(baseVision + hexVisionMod, 0);
+	int searchRadius = !infiniteRange ? FMath::Max(baseVision + hexVisionMod, 0) : 100;
 
 	ABaseHex* centerHex = hexNav ? hexNav->GetCurrentHex() : hexParent;
 	TSet<ABaseHex*> foundHexes = centerHex->GetHexesInRadius(searchRadius);
@@ -141,12 +141,12 @@ void UMeshVisibility::InSight(Factions thisFaction)
 		factionVisibility.Add(thisFaction, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
 
+	UFaction* factionObject = UnitActions::GetFaction(thisFaction);
+	if (!factionObject) return;
+
 	//Set object as "In Sight" for the faction and all its allies
 	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		UFaction* factionObject = UnitActions::GetFaction(thisFaction);
-		if (!factionObject) continue;
-
 		if (factionObject->GetFactionRelationship(ally.Key) == FactionRelationship::Ally)
 		{
 			factionVisibility[ally.Key].inSight = true;

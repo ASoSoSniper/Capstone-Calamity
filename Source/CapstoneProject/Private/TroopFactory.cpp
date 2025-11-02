@@ -40,6 +40,25 @@ float ATroopFactory::GetTroopBuildTime() const
 	return currentTroopBuildTime;
 }
 
+float ATroopFactory::GetTroopBuildAlpha() const
+{
+	UnitTypes unit = GetQueuedTroop();
+	if (unit == UnitTypes::None) return 0.f;
+
+	float totalTime = AGlobalSpawner::spawnerObject->troopCosts[unit].timeToBuild;
+
+	return (totalTime - currentTroopBuildTime) / totalTime;
+}
+
+UTexture2D* ATroopFactory::GetQueuedTroopIcon() const
+{
+	UnitTypes unit = GetQueuedTroop();
+	if (unit == UnitTypes::None) return nullptr;
+	if (!AGlobalSpawner::spawnerObject->troopCosts.Contains(unit)) return nullptr;
+
+	return AGlobalSpawner::spawnerObject->troopCosts[unit].icon;
+}
+
 UnitTypes ATroopFactory::GetQueuedTroop() const
 {
 	UnitTypes unit = UnitTypes::None;
@@ -51,6 +70,11 @@ UnitTypes ATroopFactory::GetQueuedTroop() const
 int ATroopFactory::GetQueueSize() const
 {
 	return queueSize;
+}
+
+bool ATroopFactory::BuildingTroop() const
+{
+	return queueSize > 0;
 }
 
 void ATroopFactory::BuildTroop(const float& DeltaTime)

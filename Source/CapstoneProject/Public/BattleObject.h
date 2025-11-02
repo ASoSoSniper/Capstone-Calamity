@@ -61,8 +61,6 @@ protected:
 	virtual void DestroyBattle();
 	virtual void Destroyed() override;
 
-	Factions attackingFaction = Factions::None;
-
 private:
 	bool ending = false;
 	UPROPERTY(EditAnywhere) float timeTillEnd = 5.f;
@@ -81,6 +79,9 @@ public:
 	{
 		TMap<Factions, FUnitData*> Group1;
 		TMap<Factions, FUnitData*> Group2;
+
+		Factions group1Leader = Factions::None;
+		Factions group2Leader = Factions::None;
 
 		bool AddUnit(FUnitData* data);
 		EngagementSelect DetermineConflictAlignment(Factions& unitFaction);
@@ -101,9 +102,10 @@ private:
 
 #pragma region Combat
 public:	
-	UFUNCTION(BlueprintCallable) float DisplayBattleProgress();
+	UFUNCTION(BlueprintCallable, BlueprintPure) TArray<FFactionDisplay> GetGroupDisplayData() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float DisplayBattleProgress() const;
 
-	bool IsAttacking();
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool IsAttacking() const;
 
 	int GetGroup1Die();
 	int GetGroup2Die();

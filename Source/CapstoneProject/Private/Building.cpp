@@ -518,9 +518,16 @@ Factions ABuilding::GetOccupier()
 
 float ABuilding::GetBuildPercent()
 {
-	if (buildTime <= 0) return 0.f;
-
-	return (buildTime - currBuildTime) / buildTime;
+	switch (buildState)
+	{
+	case BuildStates::Building:
+		return FMath::Clamp(((buildTime - currBuildTime) / buildTime), 0.f, 1.f);
+	case BuildStates::Destroying:
+		return FMath::Clamp(((destructionTime - currDestructionTime) / destructionTime), 0.f, 1.f);
+	default:
+		return 0.f;
+	}
+	
 }
 
 float ABuilding::GetUnrestPercent()
@@ -546,6 +553,12 @@ UTexture2D* ABuilding::GetBuildingIcon() const
 	}
 
 	return nullptr;
+}
+float ABuilding::GetHPAlpha() const
+{
+	if (!unitData) return 0.f;
+
+	return unitData->GetHPAlpha();
 }
 
 void ABuilding::HealOverTime()

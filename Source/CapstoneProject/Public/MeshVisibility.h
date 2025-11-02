@@ -87,7 +87,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Debug") bool debug;
 	UPROPERTY(EditAnywhere, Category = "Debug") bool infiniteRange;
-	UPROPERTY(EditAnywhere, Category = "Debug") bool showDebugSphere = false;
 
 	UPROPERTY() TArray<UMaterialInstanceDynamic*> meshMaterials;
 	UPROPERTY() UMaterialInstanceDynamic* factionMat;

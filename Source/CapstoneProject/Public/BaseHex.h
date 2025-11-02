@@ -146,6 +146,7 @@ private:
 #pragma region Troops and Buildings
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) AMovementAI* GetFurthestTravelingTroop() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool HexContainsTroop(AMovementAI* troop) const;
 	void AddTroopToHex(AMovementAI* troop);
 	void RemoveTroopFromHex(AMovementAI* troop);
 	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
@@ -167,8 +168,9 @@ public:
 	void CheckForHostility(AMovementAI* refTroop);
 	void CheckForHostility(ABuilding* refBuilding);
 	
-	Factions GetAttackerFaction();
-	bool ActiveBattleOnHex();
+	AMovementAI* GetAttackingTroop();
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABattleObject* GetBattle() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool ActiveBattleOnHex() const;
 
 	UPROPERTY(VisibleAnywhere) ABattleObject* battle;
 

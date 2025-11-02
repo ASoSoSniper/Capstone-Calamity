@@ -116,14 +116,11 @@ void ABattleObject::Start()
 //Collect all units in the hex and sort them into factions
 void ABattleObject::CreateFactions()
 {
+	//Add the hex's designated attacking troop first, for consistency
+	AddUnitToFaction(hex->GetAttackingTroop());
+
 	//Get the number of troops in the hex (since we'll be removing elements mid-loop)
 	int hexPop = hex->troopsInHex.Num();
-
-	//The attacking faction is very likely to own the last troop to enter the hex, so the troop at the end of the array is set as the attacker
-	attackingFaction = hex->GetAttackerFaction();
-
-	//Set attacking faction to group 1 for consistency
-	currentBattle.Group1.Add(attackingFaction, new FUnitData(attackingFaction, UnitTypes::Army));
 
 	//For each troop in the hex, add it to its respective faction
 	for (int i = 0; i < hexPop; ++i)
@@ -145,34 +142,35 @@ void ABattleObject::GenerateModels()
 	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 
 	if (currentBattle.Group1.Contains(Factions::Human))
-	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
-		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
-
-		visibility->SetupComponent(Factions::Human, group1Mesh);
-	}
 	else
-	{
 		group1Mesh->SetSkeletalMesh(alienMesh);
-		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
-
-		visibility->SetupComponent(Factions::None, group1Mesh);
-	}
 
 	if (currentBattle.Group2.Contains(Factions::Human))
-	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
-		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
-
-		visibility->SetupComponent(Factions::Human, group2Mesh);
-	}
 	else
-	{
 		group2Mesh->SetSkeletalMesh(alienMesh);
-		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 
-		visibility->SetupComponent(Factions::None, group2Mesh);
-	}
+	UFaction* factionObject = UnitActions::GetFaction(Factions::Human);
+	
+	auto ContainsHumanAlly = [&](TMap<Factions, FUnitData*>& group) -> bool
+		{
+			for (TPair<Factions, FUnitData*>& unit : group)
+			{
+				if (factionObject->GetFactionRelationship(unit.Key) == FactionRelationship::Ally)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+	Factions playerVisibility = (ContainsHumanAlly(currentBattle.Group1) || ContainsHumanAlly(currentBattle.Group2)) ?
+		Factions::Human : Factions::None;
+
+	visibility->SetupComponent(playerVisibility, group1Mesh);
+	visibility->SetupComponent(playerVisibility, group2Mesh);
 }
 
 bool ABattleObject::IsEnding()
@@ -344,7 +342,18 @@ TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TMap<Faction
 #pragma endregion
 
 #pragma region Combat
-float ABattleObject::DisplayBattleProgress()
+TArray<FFactionDisplay> ABattleObject::GetGroupDisplayData() const
+{
+	TArray<FFactionDisplay> data;
+
+	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty()) return data;
+
+	data.Add(*AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(currentBattle.group1Leader));
+	data.Add(*AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(currentBattle.group2Leader));
+
+	return data;
+}
+float ABattleObject::DisplayBattleProgress() const
 {
 	int group1MaxHP = 0;
 	int group2MaxHP = 0;
@@ -367,7 +376,7 @@ float ABattleObject::DisplayBattleProgress()
 	return totalPercent;
 }
 
-bool ABattleObject::IsAttacking()
+bool ABattleObject::IsAttacking() const
 {
 	return attacking;
 }
@@ -605,9 +614,11 @@ bool ABattleObject::Battle::AddUnit(FUnitData* data)
 	switch (assignment)
 	{
 	case EngagementSelect::JoinGroup1:
+		if (Group1.IsEmpty()) group1Leader = unitFaction;
 		AddToFactionArmy(Group1);
 		return true;
 	case EngagementSelect::JoinGroup2:
+		if (Group2.IsEmpty()) group2Leader = unitFaction;
 		AddToFactionArmy(Group2);
 		return true;
 	default:
@@ -752,12 +763,12 @@ ATroop* ABattleObject::Battle::ExtractFaction(Factions& faction, ABaseHex* hex, 
 				if (group[faction]->GetCurrentMorale() <= 0.f)
 					unitToSpawn->SetMoraleByValue(1);
 
-				return AGlobalSpawner::spawnerObject->SpawnTroop(spawnPoint, unitToSpawn, hpPercent);
+				return AGlobalSpawner::spawnerObject->SpawnArmyByUnit(spawnPoint, unitToSpawn, hpPercent);
 
 			default:
 				if (group[faction]->GetCurrentMorale() <= 0.f)
 					group[faction]->SetMoraleByValue(1);
-				return AGlobalSpawner::spawnerObject->SpawnArmy(spawnPoint, group[faction]->GetSavedUnits(), hpPercent);
+				return AGlobalSpawner::spawnerObject->SpawnArmyByUnit(spawnPoint, group[faction], hpPercent);
 			}
 		};
 
@@ -790,9 +801,13 @@ TArray<ATroop*> ABattleObject::Battle::ExtractAllFactions(ABaseHex* hex)
 		};
 
 	if (!Group1.IsEmpty())
+	{
 		ExtractGroup(Group1);
+	}
 	if (!Group2.IsEmpty())
+	{
 		ExtractGroup(Group2);
+	}
 
 	return extracted;
 }

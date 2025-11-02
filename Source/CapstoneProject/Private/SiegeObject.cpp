@@ -99,7 +99,7 @@ bool ASiegeObject::BuildingIsAlive() const
 	{
 		if (!currentBattle.Group1.IsEmpty())
 		{
-			building->SetSiegeState(true, attackingFaction);
+			building->SetSiegeState(true, currentBattle.group1Leader);
 		}
 	}
 

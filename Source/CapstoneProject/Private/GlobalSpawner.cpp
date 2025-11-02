@@ -1078,7 +1078,7 @@ void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings buil
 	spawn->SetBuildAtStart(buildAtStart);
 }
 
-ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, FUnitData* data, float parentHealthPercent)
+ATroop* AGlobalSpawner::SpawnArmyByUnit(ABaseHex* hex, FUnitData* data, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!troopPrefab || !mergedArmyPrefab) return nullptr;
@@ -1093,7 +1093,7 @@ ATroop* AGlobalSpawner::SpawnTroop(ABaseHex* hex, FUnitData* data, float parentH
 	return newTroop;
 }
 
-AMergedArmy* AGlobalSpawner::SpawnArmy(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent)
+AMergedArmy* AGlobalSpawner::SpawnArmyByArray(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!mergedArmyPrefab) return nullptr;
