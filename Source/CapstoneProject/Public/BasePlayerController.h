@@ -209,13 +209,15 @@ public:
 		if constexpr (std::is_same<ABaseHex, T>::value)
 		{
 			ABaseHex* hex = Cast<ABaseHex>(target);
-			if (hex->building && 
+			if (hex->building &&
 				hex->building->GetBuildingType() == SpawnableBuildings::RobotBarracks &&
 				hex->GetHexOwner() == playerFaction &&
 				IsInBuildMode())
 			{
 				troop->AI_SetMovementAction(troop_Store, hex->building->hexNav);
 			}
+			else if (hex->HasPOI())
+				troop->AI_SetMovementAction(troop_Investigate, hex);
 			else
 				troop->AI_SetMovementAction(troop_MoveToPos, hex);
 		}
@@ -249,5 +251,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_ChaseTarget;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_HalveArmy;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Store;
+	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Investigate;
 #pragma endregion
 };

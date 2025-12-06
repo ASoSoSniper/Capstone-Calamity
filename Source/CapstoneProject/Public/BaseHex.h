@@ -16,6 +16,7 @@ class AMergedArmy;
 class AMovementAI;
 class ABuilding;
 class AGlobalSpawner;
+class AInvestigator;
 
 USTRUCT(BlueprintType)
 struct FHexInfo
@@ -245,5 +246,25 @@ private:
 	void RemoveAllEffectsFromUnit(FUnitData* data);
 
 	TSet<FStatusEffect*> statusEffects;
+#pragma endregion
+
+#pragma region Point of Interest
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool HasPOI() const;
+	FPointOfInterest* GetPOI();
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TMap<EStratResources, int32>& GetPOIRewards() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) int32 GetPOIDaysToComplete() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) FString GetPOIWorldDisplay() const;
+
+	UFUNCTION(BlueprintCallable) void CreatePointOfInterest(FPointOfInterest& setPOI);
+	void BeginInvestigation(AMovementAI* investigator);
+	void EndPOIInvestigation();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) AInvestigator* GetInvestigator() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool HasUnsearchedPOI() const;
+private:
+	UPROPERTY(EditAnywhere, Category = "Point of Interest") TSubclassOf<AInvestigator> investigatorPrefab;
+	FPointOfInterest* pointOfInterest;
+	AInvestigator* investigatorObject;
 #pragma endregion
 };

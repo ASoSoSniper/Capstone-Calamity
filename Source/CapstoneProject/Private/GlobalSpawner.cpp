@@ -24,10 +24,8 @@
 #include "SiegeObject.h"
 #include "CapstoneProjectGameModeBase.h"
 
-// Sets default values
-
+#pragma region General Logic
 AGlobalSpawner* AGlobalSpawner::spawnerObject = nullptr;
-
 AGlobalSpawner::AGlobalSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -569,8 +567,6 @@ AGlobalSpawner::AGlobalSpawner()
 	buildingPrefabs.Add(SB::RockCity, ARockCity::StaticClass());
 #pragma endregion
 }
-
-// Called when the game starts or when spawned
 void AGlobalSpawner::BeginPlay()
 {
 	Super::BeginPlay();
@@ -587,8 +583,6 @@ void AGlobalSpawner::BeginPlay()
 
 	ProceduralHexGen(400, ShapesOfMap::Square);
 }
-
-// Called every frame
 void AGlobalSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -599,65 +593,15 @@ void AGlobalSpawner::Tick(float DeltaTime)
 		controller = Cast<ABasePlayerController>(controllerTemp);
 	}
 }
-
-UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
+FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(Factions faction)
 {
-	if (!buildingPrefabs.Contains(building))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Failed to build: building prefab not found"));
-		return nullptr;
-	}
+	if (!factionDisplayPresets.Contains(faction)) return nullptr;
 
-	return buildingPrefabs[building];
+	return &factionDisplayPresets[faction];
 }
+#pragma endregion
 
-void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Armies merged!"));
-	int armies = 0;
-
-	AMergedArmy* testSeeker = Cast<AMergedArmy>(seeker);
-	if (testSeeker) armies += 1;
-	AMergedArmy* testTarget = Cast<AMergedArmy>(target);
-	if (testTarget) armies += 1;
-
-	FActorSpawnParameters params;
-	AMergedArmy* mergedArmy;
-
-	switch (armies)
-	{
-		//If neither unit is an army, create a new army that consumes both units
-	case 0:
-		mergedArmy = Cast<AMergedArmy>(BuildArmy(seeker->GetUnitData()->GetFaction(), hex));
-		mergedArmy->ConsumeUnit(seeker);
-		mergedArmy->ConsumeUnit(target);
-		break;
-
-		//If one unit is an army, determine which unit is that army and merge the other into it
-	case 1:
-		AMergedArmy* army;
-		ATroop* unit;
-		if (testSeeker)
-		{
-			army = testSeeker;
-			unit = target;
-		}
-		else
-		{
-			army = testTarget;
-			unit = seeker;
-		}
-
-		army->ConsumeUnit(unit);
-		break;
-
-		//If both units are armies, let the seeker be the dominant army and merge the other army into it
-	case 2:
-		testSeeker->ConsumeUnit(testTarget);
-		break;
-	}
-}
-
+#pragma region Hex Generation
 void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 {
 	UStaticMesh* meshAsset = nullptr;
@@ -703,7 +647,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 
 		break;
-	case TerrainType::TheRock:		
+	case TerrainType::TheRock:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 
 		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
@@ -728,7 +672,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 
 		switch (terrainType)
 		{
-		
+
 		case TerrainType::Jungle:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, randomRot, 0));
 			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
@@ -774,15 +718,20 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	hex->visibility->SetupComponent(owner, hex->hexMeshAttachment);
 	hex->visibility->SetupFactionComponent(hex->hexBase);
 }
-
-ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
+ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
 {
-	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	newTroop->InitTroop(faction, UnitTypes::Army);
+	if (x < 0 || y < 0) return nullptr;
 
-	return newTroop;
+	if (hexArray.Num() - 1 > x)
+	{
+		if (hexArray[x].Num() - 1 > y)
+		{
+			return hexArray[x][y];
+		}
+	}
+
+	return nullptr;
 }
-
 void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 {
 	bool shipExists = false;
@@ -809,7 +758,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		{
 			roundedSQRoot += 1;
 		}
-		
+
 		for (int x = 0; x < roundedSQRoot; x++)
 		{
 			TArray<ABaseHex*> column;
@@ -845,7 +794,7 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		rockHex = hexArray[FMath::RandRange(12, 17)][FMath::RandRange(12, 17)];
 		rockHex->SetHexTerrain(TerrainType::TheRock);
 		SpawnBuildingsAroundCity(rockHex);
-		
+
 		for (int i = 0; i < 6; i++)
 		{
 			ABaseHex* hex = nullptr;
@@ -868,9 +817,10 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 			}
 
 			hex->SetHexTerrain(TerrainType::AlienCity);
-			alienHexes.Add(hex);
 			SpawnBuildingsAroundCity(hex);
 		}
+
+		SpawnPointsOfInterest();
 
 		break;
 	case ShapesOfMap::Rectangle:
@@ -883,52 +833,6 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		break;
 	}
 }
-
-ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
-{
-	if (x < 0 || y < 0) return nullptr;
-
-	if (hexArray.Num() - 1 > x)
-	{
-		if (hexArray[x].Num() - 1 > y)
-		{
-			return hexArray[x][y];
-		}
-	}
-
-	return nullptr;
-}
-
-bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
-{
-	if (!hex) return false;
-
-	FHitResult hitResult;
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(hex);
-
-	FVector start = hex->GetActorLocation();
-	FVector end = start + FVector::UpVector * 50.f;
-
-	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params);
-
-	if (hit)
-	{
-		ABuilding* building = Cast<ABuilding>(hitResult.GetActor());
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Building on hex, skipping"));
-		if (building) return true;
-	}
-
-	return false;
-}
-
-FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(Factions faction)
-{
-	if (!factionDisplayPresets.Contains(faction)) return nullptr;
-
-	return &factionDisplayPresets[faction];
-}
-
 void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 {
 	FVector2D center = centerHex->GetHexCoordinates();
@@ -960,7 +864,7 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 				{
 					hex = hexTest;
 				}
-				
+
 			}
 		}
 
@@ -972,7 +876,32 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::Farmland, randomHexes[1], true);
 	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::PowerPlant, randomHexes[2], true);
 }
+void AGlobalSpawner::SpawnPointsOfInterest()
+{
+	if (pointsOfInterest.IsEmpty()) return;
 
+	int32 xMax = hexArray.Num() - 1;
+	int32 yMax = hexArray[0].Num() - 1;
+
+	for (int i = 0; i < pointOfInterestCount; i++)
+	{
+		int32 randPOI = FMath::RandRange(0, pointsOfInterest.Num() - 1);
+
+		while (true)
+		{
+			int32 x = FMath::RandRange(0, xMax);
+			int32 y = FMath::RandRange(0, yMax);
+
+			if (hexArray[x][y]->HasPOI()) continue;
+
+			hexArray[x][y]->CreatePointOfInterest(pointsOfInterest[randPOI]);
+			break;
+		}
+	}
+}
+#pragma endregion
+
+#pragma region Building Construction
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
 {
 	//If hex already occupied
@@ -1070,14 +999,47 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
 	}
 }
-
 void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
 {
 	ABuilding* spawn = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(building), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	spawn->InitBuilding(faction);
 	spawn->SetBuildAtStart(buildAtStart);
 }
+UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
+{
+	if (!buildingPrefabs.Contains(building))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Failed to build: building prefab not found"));
+		return nullptr;
+	}
 
+	return buildingPrefabs[building];
+}
+bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
+{
+	if (!hex) return false;
+
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(hex);
+
+	FVector start = hex->GetActorLocation();
+	FVector end = start + FVector::UpVector * 50.f;
+
+	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params);
+
+	if (hit)
+	{
+		ABuilding* building = Cast<ABuilding>(hitResult.GetActor());
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Building on hex, skipping"));
+		if (building) return true;
+	}
+
+	return false;
+}
+#pragma endregion
+
+#pragma region Troop/Battle Construction
 ATroop* AGlobalSpawner::SpawnArmyByUnit(ABaseHex* hex, FUnitData* data, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
@@ -1092,14 +1054,13 @@ ATroop* AGlobalSpawner::SpawnArmyByUnit(ABaseHex* hex, FUnitData* data, float pa
 
 	return newTroop;
 }
-
 AMergedArmy* AGlobalSpawner::SpawnArmyByArray(ABaseHex* hex, TArray<FUnitData*> groupData, float parentHealthPercent)
 {
 	FActorSpawnParameters params;
 	if (!mergedArmyPrefab) return nullptr;
 
 	AMergedArmy* newTroop = GetWorld()->SpawnActor<AMergedArmy>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-	
+
 	for (int i = 0; i < groupData.Num(); ++i)
 	{
 		groupData[i]->SetHPByAlpha(parentHealthPercent, false);
@@ -1107,6 +1068,111 @@ AMergedArmy* AGlobalSpawner::SpawnArmyByArray(ABaseHex* hex, TArray<FUnitData*> 
 
 	newTroop->InitTroop(groupData[0]->GetFaction(), UnitTypes::Army);
 	newTroop->ConsumeData(groupData);
+
+	return newTroop;
+}
+void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("Armies merged!"));
+	int armies = 0;
+
+	AMergedArmy* testSeeker = Cast<AMergedArmy>(seeker);
+	if (testSeeker) armies += 1;
+	AMergedArmy* testTarget = Cast<AMergedArmy>(target);
+	if (testTarget) armies += 1;
+
+	FActorSpawnParameters params;
+	AMergedArmy* mergedArmy;
+
+	switch (armies)
+	{
+		//If neither unit is an army, create a new army that consumes both units
+	case 0:
+		mergedArmy = Cast<AMergedArmy>(BuildArmy(seeker->GetUnitData()->GetFaction(), hex));
+		mergedArmy->ConsumeUnit(seeker);
+		mergedArmy->ConsumeUnit(target);
+		break;
+
+		//If one unit is an army, determine which unit is that army and merge the other into it
+	case 1:
+		AMergedArmy* army;
+		ATroop* unit;
+		if (testSeeker)
+		{
+			army = testSeeker;
+			unit = target;
+		}
+		else
+		{
+			army = testTarget;
+			unit = seeker;
+		}
+
+		army->ConsumeUnit(unit);
+		break;
+
+		//If both units are armies, let the seeker be the dominant army and merge the other army into it
+	case 2:
+		testSeeker->ConsumeUnit(testTarget);
+		break;
+	}
+}
+
+bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
+{
+	bool canAfford = false;
+
+	TMap<EStratResources, int> resourceCosts = TMap<EStratResources, int>();
+	if (troopCosts.Contains(unit))
+	{
+		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+
+		if (resources[EStratResources::Production] >= troopCosts[unit].productionCost)
+		{
+			if (unit == UnitTypes::Settler)
+			{
+				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[UnitTypes::Settler].populationCost))
+				{
+					canAfford = true;
+				}
+			}
+			else
+			{
+				canAfford = true;
+			}
+
+		}
+
+		resourceCosts.Add(EStratResources::Production, troopCosts[unit].productionCost);
+	}
+
+	if (canAfford)
+	{
+		UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
+		controller->PlayUITroopSound(unit);
+	}
+	else
+	{
+		controller->PlayUISound(controller->selectFailSound);
+	}
+
+	return canAfford;
+}
+ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
+{
+	if (unit == UnitTypes::Army) return BuildArmy(faction, hex);
+
+	FTroopStats unitData = troopStats[unit];
+
+	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	newTroop->InitTroop(faction, unit);
+
+	return newTroop;
+}
+ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
+{
+	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+	newTroop->InitTroop(faction, UnitTypes::Army);
 
 	return newTroop;
 }
@@ -1123,7 +1189,9 @@ ABattleObject* AGlobalSpawner::SpawnBattle(ABaseHex* hex)
 
 	return battle;
 }
+#pragma endregion
 
+#pragma region Particle Effects
 AActor* AGlobalSpawner::SpawnSmoke(AActor* object)
 {
 	if (!smokePrefab) return nullptr;
@@ -1158,58 +1226,7 @@ AActor* AGlobalSpawner::SpawnEndParticle(AActor* object, GameStates state)
 
 	return particleSystem;
 }
-bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
-{
-	bool canAfford = false;
-
-	TMap<EStratResources, int> resourceCosts = TMap<EStratResources, int>();
-	if (troopCosts.Contains(unit))
-	{
-		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
-
-		if (resources[EStratResources::Production] >= troopCosts[unit].productionCost)
-		{
-			if (unit == UnitTypes::Settler)
-			{
-				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[UnitTypes::Settler].populationCost))
-				{
-					canAfford = true;
-				}
-			}
-			else
-			{
-				canAfford = true;
-			}
-			
-		}
-
-		resourceCosts.Add(EStratResources::Production, troopCosts[unit].productionCost);
-	}
-
-	if (canAfford)
-	{
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
-		controller->PlayUITroopSound(unit);
-	}
-	else
-	{
-		controller->PlayUISound(controller->selectFailSound);
-	}
-
-	return canAfford;
-}
-
-ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
-{
-	if (unit == UnitTypes::Army) return BuildArmy(faction, hex);
-
-	FTroopStats unitData = troopStats[unit];
-
-	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(troopPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
-	newTroop->InitTroop(faction, unit);
-
-	return newTroop;
-}
+#pragma endregion
 
 #pragma region UnitData
 Factions FUnitData::GetFaction() const
@@ -1739,5 +1756,74 @@ float FStatusEffect::GetDamageMod() const
 float FStatusEffect::GetSiegePowerMod() const
 {
 	return siegePowerMod;
+}
+#pragma endregion
+
+#pragma region Point of Interest
+FString FPointOfInterest::GetPointTitle() const
+{
+	return pointTitle;
+}
+const TMap<EStratResources, int32>& FPointOfInterest::GetRewards() const
+{
+	return rewards;
+}
+FString FPointOfInterest::GetWorldDisplay() const
+{
+	FString message = pointTitle + FString::Printf(TEXT(" - <img id=\":time:\"/> %d day%s\n"), daysToComplete,
+		daysToComplete > 1 ? TEXT("s") : TEXT(""));
+
+	for (const TPair<EStratResources, int32>& r : rewards)
+	{
+		FString resource = "";
+		switch (r.Key)
+		{
+		case EStratResources::Energy:
+			resource += TEXT(":energy:");
+			break;
+		case EStratResources::Production:
+			resource += TEXT(":prod:");
+			break;
+		case EStratResources::Food:
+			resource += TEXT(":food:");
+			break;
+		case EStratResources::Wealth:
+			resource += TEXT(":wealth:");
+			break;
+		case EStratResources::Population:
+			resource += TEXT(":pop:");
+			break;
+		}
+
+		message += FString::Printf(TEXT("<img id=\"%s\"/>%d "), *resource, r.Value);
+	}
+
+	return message;
+}
+int32 FPointOfInterest::GetDaysToComplete() const
+{
+	return daysToComplete;
+}
+bool FPointOfInterest::Work()
+{
+	if (WorkCompleted()) return false;
+
+	if (!ACapstoneProjectGameModeBase::GetDateUpdates()->minuteTick) return false;
+
+	minutes++;
+	if (minutes < 2) return false;
+
+	hoursRemaining++;
+	minutes = 0;
+	if (hoursRemaining < 24) return false;
+
+	daysToComplete--;
+	hoursRemaining = 0;
+
+	return WorkCompleted();
+}
+bool FPointOfInterest::WorkCompleted() const
+{
+	return daysToComplete <= 0;
 }
 #pragma endregion

@@ -8,6 +8,7 @@
 #include "BattleObject.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
+#include "Investigator.h"
 #include "Kismet/GameplayStatics.h"
 
 #pragma region General Logic
@@ -98,6 +99,8 @@ ABaseHex::ABaseHex()
 	resourceBonuses.Add(EStratResources::Energy, 1);
 	resourceBonuses.Add(EStratResources::Production, 1);
 	resourceBonuses.Add(EStratResources::Food, 1);
+
+	investigatorPrefab = AInvestigator::StaticClass();
 }
 
 void ABaseHex::Tick(float DeltaTime)
@@ -882,5 +885,58 @@ void ABaseHex::RemoveAllEffectsFromUnit(FUnitData* data)
 	{
 		data->RemoveStatusEffect(effect);
 	}
+}
+#pragma endregion
+
+#pragma region Point of Interest
+bool ABaseHex::HasPOI() const
+{
+	return pointOfInterest && !pointOfInterest->WorkCompleted();
+}
+FPointOfInterest* ABaseHex::GetPOI()
+{
+	if (!HasPOI()) return nullptr;
+
+	return pointOfInterest;
+}
+const TMap<EStratResources, int32>& ABaseHex::GetPOIRewards() const
+{
+	return pointOfInterest->GetRewards();
+}
+int32 ABaseHex::GetPOIDaysToComplete() const
+{
+	return pointOfInterest->GetDaysToComplete();
+}
+FString ABaseHex::GetPOIWorldDisplay() const
+{
+	if (!pointOfInterest) return "No POI";
+
+	return pointOfInterest->GetWorldDisplay();
+}
+void ABaseHex::CreatePointOfInterest(FPointOfInterest& setPOI)
+{
+	if (pointOfInterest) return;
+
+	pointOfInterest = new FPointOfInterest(setPOI);
+}
+void ABaseHex::BeginInvestigation(AMovementAI* investigator)
+{
+	AInvestigator* spawn = GetWorld()->SpawnActor<AInvestigator>(investigatorPrefab);
+	spawn->InitInvestigator(this, investigator->GetUnitData());
+
+	RemoveTroopFromHex(investigator);
+	investigator->Destroy();
+}
+void ABaseHex::EndPOIInvestigation()
+{
+	investigatorObject = nullptr;
+}
+AInvestigator* ABaseHex::GetInvestigator() const
+{
+	return investigatorObject;
+}
+bool ABaseHex::HasUnsearchedPOI() const
+{
+	return HasPOI() && !investigatorObject;
 }
 #pragma endregion

@@ -59,6 +59,10 @@ void ATroop::MergeOnTile()
 	switch (objectType.type)
 	{
 	case ObjectTypes::Hex:
+		if (objectType.hex->HasUnsearchedPOI())
+		{
+			objectType.hex->BeginInvestigation(this);
+		}
 		break;
 	case ObjectTypes::MoveAI:
 		if (hexNav->GetCurrentHex() == objectType.moveAI->hexNav->GetCurrentHex())

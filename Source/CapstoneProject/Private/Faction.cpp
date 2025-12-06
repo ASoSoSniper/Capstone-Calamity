@@ -498,6 +498,13 @@ void UFaction::SetFactionController(AFactionController* setController)
 	controller = setController;
 }
 
+void UFaction::CollectResource(EStratResources resource, int amount)
+{
+	resourceInventory[resource].currentResources += amount;
+
+	resourceInventory[resource].currentResources = FMath::Clamp(resourceInventory[resource].currentResources, 0, resourceInventory[resource].maxResources);
+}
+
 void UFaction::UpdateResourceCosts()
 {
 	if (IsAIControlled()) return;

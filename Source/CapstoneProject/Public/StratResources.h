@@ -14,5 +14,6 @@ enum class EStratResources : uint8
 	Energy,
 	Production,
 	Food,
-	Wealth
+	Wealth,
+	Population
 };

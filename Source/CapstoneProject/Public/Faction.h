@@ -112,6 +112,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceMax() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) AFactionController* GetFactionController() const;
 	UFUNCTION() void SetFactionController(AFactionController* setController);
+
+	UFUNCTION(BlueprintCallable) void CollectResource(EStratResources resource, int amount);
 	
 private:
 
