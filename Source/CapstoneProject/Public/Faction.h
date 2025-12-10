@@ -16,6 +16,7 @@ struct FWorkerStats
 public:
 	int working;
 	int available;
+	int maxAcquired;
 
 	int workingEnergyCost;
 	int workingFoodCost;
@@ -110,6 +111,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<FRelationshipStats> GetFactionRelationships() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetAvailableResources() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceMax() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPopAlpha() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) AFactionController* GetFactionController() const;
 	UFUNCTION() void SetFactionController(AFactionController* setController);
 

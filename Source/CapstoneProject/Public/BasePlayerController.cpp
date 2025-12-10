@@ -665,6 +665,10 @@ int ABasePlayerController::GetPlayerPopulation()
 {
 	return UnitActions::GetFactionPopulation(playerFaction);
 }
+float ABasePlayerController::GetPlayerPopAlpha() const
+{
+	return UnitActions::GetFaction(Factions::Human)->GetPopAlpha();
+}
 int ABasePlayerController::GetStarveLevel()
 {
 	return UnitActions::GetFactionStarveLevel(playerFaction);

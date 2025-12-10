@@ -17,11 +17,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void InitInvestigator(ABaseHex* hex, FUnitData* data);
-
+	UFUNCTION(BlueprintCallable) void EndInvestigation(bool spawnTroop = true);
+	FUnitData* GetUnit() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) Factions GetUnitFaction() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPOIWorkProgress() const;
 private:
 	void Investigate();
 	void ClaimRewards();
-	void EndInvestigation();
 
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* root;
 	UPROPERTY(EditAnywhere, Category = "Components") UHexNav* hexNav;

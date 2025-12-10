@@ -1770,8 +1770,8 @@ const TMap<EStratResources, int32>& FPointOfInterest::GetRewards() const
 }
 FString FPointOfInterest::GetWorldDisplay() const
 {
-	FString message = pointTitle + FString::Printf(TEXT(" - <img id=\":time:\"/> %d day%s\n"), daysToComplete,
-		daysToComplete > 1 ? TEXT("s") : TEXT(""));
+	FString message = pointTitle + FString::Printf(TEXT(" - <img id=\":time:\"/> %d day%s\n"), daysRemaining,
+		daysRemaining > 1 ? TEXT("s") : TEXT(""));
 
 	for (const TPair<EStratResources, int32>& r : rewards)
 	{
@@ -1802,7 +1802,7 @@ FString FPointOfInterest::GetWorldDisplay() const
 }
 int32 FPointOfInterest::GetDaysToComplete() const
 {
-	return daysToComplete;
+	return daysRemaining;
 }
 bool FPointOfInterest::Work()
 {
@@ -1817,13 +1817,23 @@ bool FPointOfInterest::Work()
 	minutes = 0;
 	if (hoursRemaining < 24) return false;
 
-	daysToComplete--;
+	daysRemaining--;
 	hoursRemaining = 0;
 
 	return WorkCompleted();
 }
 bool FPointOfInterest::WorkCompleted() const
 {
-	return daysToComplete <= 0;
+	return daysRemaining <= 0;
+}
+float FPointOfInterest::GetWorkProgress() const
+{
+	long int daysToMinutes = (daysToComplete - daysRemaining) * 1440;
+	long int hoursToMinutes = hoursRemaining * 60;
+
+	long int totalMinutes = daysToComplete * 1440;
+	long int currentMinutes = minutes + hoursToMinutes + daysToMinutes;
+	
+	return static_cast<float>(currentMinutes) / static_cast<float>(totalMinutes);
 }
 #pragma endregion

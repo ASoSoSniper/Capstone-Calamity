@@ -15,9 +15,9 @@ UFaction::UFaction()
 	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Wealth, FInventoryStat{ 000, 300, 0, 0 });
 
-	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,500, 0,1,0 });
-	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,10, 1,0,0 });
-	availableWorkers.Add(WorkerType::Alien, FWorkerStats{ 0,0, 0,1,0 });
+	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,100, 500, 0,1,0 });
+	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,10, 10, 1,0,0 });
+	availableWorkers.Add(WorkerType::Alien, FWorkerStats{ 0,0, 0, 0,1,0 });
 
 	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
 	armyNamesHuman.Add(TEXT("Asswipes"), TArray<int32>());
@@ -486,6 +486,13 @@ int UFaction::GetResourceMax() const
 	return resourceInventory[EStratResources::Food].maxResources;
 }
 
+float UFaction::GetPopAlpha() const
+{
+	const FWorkerStats& stats = availableWorkers[WorkerType::Human];
+
+	return (float)(stats.available + stats.working) / (float)stats.maxAcquired;
+}
+
 AFactionController* UFaction::GetFactionController() const
 {
 	return controller;
@@ -500,9 +507,22 @@ void UFaction::SetFactionController(AFactionController* setController)
 
 void UFaction::CollectResource(EStratResources resource, int amount)
 {
-	resourceInventory[resource].currentResources += amount;
+	amount = FMath::Max(amount, 0);
 
-	resourceInventory[resource].currentResources = FMath::Clamp(resourceInventory[resource].currentResources, 0, resourceInventory[resource].maxResources);
+	switch (resource)
+	{
+	case EStratResources::None:
+		return;
+	case EStratResources::Population:
+		availableWorkers[WorkerType::Human].available += amount;
+		availableWorkers[WorkerType::Human].maxAcquired = FMath::Max(availableWorkers[WorkerType::Human].available + availableWorkers[WorkerType::Human].working,
+			availableWorkers[WorkerType::Human].maxAcquired);
+		break;
+	default:
+		resourceInventory[resource].currentResources += amount;
+		resourceInventory[resource].currentResources = FMath::Clamp(resourceInventory[resource].currentResources, 0, resourceInventory[resource].maxResources);
+		break;
+	}
 }
 
 void UFaction::UpdateResourceCosts()

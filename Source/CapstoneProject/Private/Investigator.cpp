@@ -52,6 +52,23 @@ void AInvestigator::InitInvestigator(ABaseHex* hex, FUnitData* data)
 	SetActorLocation(hex->troopAnchor->GetComponentLocation());
 }
 
+FUnitData* AInvestigator::GetUnit() const
+{
+	return unit;
+}
+
+Factions AInvestigator::GetUnitFaction() const
+{
+	return unit->GetFaction();
+}
+
+float AInvestigator::GetPOIWorkProgress() const
+{
+	if (!pointOfInterest) return 0.f;
+
+	return pointOfInterest->GetWorkProgress();
+}
+
 void AInvestigator::Investigate()
 {
 	if (!pointOfInterest) EndInvestigation();
@@ -71,9 +88,10 @@ void AInvestigator::ClaimRewards()
 	EndInvestigation();
 }
 
-void AInvestigator::EndInvestigation()
+void AInvestigator::EndInvestigation(bool spawnTroop)
 {
-	ATroop* spawn = AGlobalSpawner::spawnerObject->SpawnArmyByUnit(hexNav->GetCurrentHex(), unit);
+	if (spawnTroop)
+		AGlobalSpawner::spawnerObject->SpawnArmyByUnit(hexNav->GetCurrentHex(), unit);
 
 	hexNav->GetCurrentHex()->EndPOIInvestigation();
 	Destroy();

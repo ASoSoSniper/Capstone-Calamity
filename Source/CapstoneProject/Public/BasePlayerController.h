@@ -48,7 +48,7 @@ public:
 	//Interactable object the player has clicked to select
 	UPROPERTY(VisibleAnywhere) AActor* selectedWorldObject;
 	//Additional info on selectedWorldObject if it is identified as a movable unit
-	UPROPERTY(VisibleAnywhere) ABaseHex* selectedHex;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) ABaseHex* selectedHex;
 
 	//Active when left click is held down, with the intent to select
 	UPROPERTY(VisibleAnywhere) bool activeSelecting;
@@ -156,6 +156,8 @@ public:
 	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
 
 	UFUNCTION(BlueprintCallable) int GetPlayerPopulation();
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPlayerPopAlpha() const;
+
 	UFUNCTION(BlueprintCallable) int GetStarveLevel();
 	UFUNCTION(BlueprintCallable) int GetPowerOutageLevel();
 	UFUNCTION(BlueprintCallable) FPlayerWorkers GetPlayerWorkers();

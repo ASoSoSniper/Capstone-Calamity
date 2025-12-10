@@ -528,6 +528,14 @@ void ABaseHex::CheckForHostility(AMovementAI* refTroop)
 			return;
 		}
 	}
+	if (investigatorObject)
+	{
+		if (UnitActions::IsHostileTarget(refTroop->GetUnitData()->GetFaction(), investigatorObject->GetUnitFaction()))
+		{
+			BeginBattle(refTroop);
+			return;
+		}
+	}
 	for (int i = 0; i < troopsInHex.Num(); ++i)
 	{
 		if (troopsInHex[i] != refTroop)
@@ -921,8 +929,8 @@ void ABaseHex::CreatePointOfInterest(FPointOfInterest& setPOI)
 }
 void ABaseHex::BeginInvestigation(AMovementAI* investigator)
 {
-	AInvestigator* spawn = GetWorld()->SpawnActor<AInvestigator>(investigatorPrefab);
-	spawn->InitInvestigator(this, investigator->GetUnitData());
+	investigatorObject = GetWorld()->SpawnActor<AInvestigator>(investigatorPrefab);
+	investigatorObject->InitInvestigator(this, investigator->GetUnitData());
 
 	RemoveTroopFromHex(investigator);
 	investigator->Destroy();
@@ -934,6 +942,10 @@ void ABaseHex::EndPOIInvestigation()
 AInvestigator* ABaseHex::GetInvestigator() const
 {
 	return investigatorObject;
+}
+bool ABaseHex::HasPOIInvestigator() const
+{
+	return investigatorObject != nullptr;
 }
 bool ABaseHex::HasUnsearchedPOI() const
 {

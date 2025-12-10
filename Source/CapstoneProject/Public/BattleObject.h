@@ -94,6 +94,7 @@ public:
 
 protected:
 	void AddUnitToFaction(AMovementAI* troop);
+	bool AddUnitToFaction(FUnitData* unitData);
 	void DestroyArmy(Factions faction);
 
 private:

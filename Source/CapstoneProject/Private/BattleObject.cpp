@@ -4,6 +4,7 @@
 #include "BattleObject.h"
 #include "Troop.h"
 #include "MergedArmy.h"
+#include "Investigator.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
 
@@ -118,6 +119,14 @@ void ABattleObject::CreateFactions()
 {
 	//Add the hex's designated attacking troop first, for consistency
 	AddUnitToFaction(hex->GetAttackingTroop());
+
+	//If an enemy POI investigation is taking place, add the investigating unit to the battle
+	//and end the investigation
+	if (AInvestigator* investigator = hex->GetInvestigator())
+	{
+		if (AddUnitToFaction(investigator->GetUnit()))
+			investigator->EndInvestigation(false);
+	}
 
 	//Get the number of troops in the hex (since we'll be removing elements mid-loop)
 	int hexPop = hex->troopsInHex.Num();
@@ -278,11 +287,15 @@ void ABattleObject::AddUnitToFaction(AMovementAI* troop)
 {
 	//Get data from the troop
 	FUnitData* unitData = troop->GetUnitData();
-	Factions unitFaction = unitData->GetFaction();
 
 	//Add the troop to an army, and if successful, destroy its presence in world-space
-	if (currentBattle.AddUnit(unitData)) 
-		troop->Destroy();
+	if (AddUnitToFaction(unitData)) troop->Destroy();
+}
+bool ABattleObject::AddUnitToFaction(FUnitData* unitData)
+{
+	if (!currentBattle.AddUnit(unitData)) return false;
+
+	Factions unitFaction = unitData->GetFaction();
 
 	//If the newly joined unit is (an ally to) the player, set the battle to be visible to the player
 	if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(unitFaction) == FactionRelationship::Ally)
@@ -290,6 +303,8 @@ void ABattleObject::AddUnitToFaction(AMovementAI* troop)
 		if (visibility->faction != Factions::Human)
 			visibility->faction = unitFaction;
 	}
+
+	return true;
 }
 void ABattleObject::DestroyArmy(Factions faction)
 {

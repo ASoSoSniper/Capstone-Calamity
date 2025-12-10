@@ -261,6 +261,7 @@ public:
 	void EndPOIInvestigation();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) AInvestigator* GetInvestigator() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool HasPOIInvestigator() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool HasUnsearchedPOI() const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Point of Interest") TSubclassOf<AInvestigator> investigatorPrefab;
