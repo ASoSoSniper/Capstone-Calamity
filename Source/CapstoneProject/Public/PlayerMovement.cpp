@@ -39,7 +39,14 @@ void APlayerMovement::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	HexCast();
-	DragCamera();
+	if (!rightClickHeld)
+	{
+		DragCamera();
+	}
+	else
+	{
+		RotateCamera(DeltaTime);
+	}
 
 	if (controlState == Cinematic)
 		MoveToCinematicPos(DeltaTime);
@@ -59,7 +66,8 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	//PlayerInputComponent->BindAction("Deselect", IE_Pressed, this, &APlayerMovement::DeselectInput);
 	PlayerInputComponent->BindAction("SelectAction", IE_Pressed, this, &APlayerMovement::SelectInput);
 	PlayerInputComponent->BindAction("SelectAction", IE_Released, this, &APlayerMovement::StartSelect);
-	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::StartCommand);
+	PlayerInputComponent->BindAction("CommandAction", IE_Pressed, this, &APlayerMovement::CommandInput);
+	PlayerInputComponent->BindAction("CommandAction", IE_Released, this, &APlayerMovement::StartCommand);
 
 	PlayerInputComponent->BindAction("Action9", IE_Pressed, this, &APlayerMovement::Action9Input);
 	PlayerInputComponent->BindAction("Action10", IE_Pressed, this, &APlayerMovement::Action10Input);
@@ -91,6 +99,207 @@ void APlayerMovement::MoveToCinematicPos(float& DeltaTime)
 	controlState = Free;
 }
 
+void APlayerMovement::DeselectInput()
+{
+	if (controlState != Free) return;
+
+	if (controller) controller->Deselect();
+}
+
+void APlayerMovement::SelectInput()
+{
+	if (controlState != Free) return;
+
+	clickHeld = true;
+
+	float x;
+	float y;
+	controller->GetMousePosition(x, y);
+	previousMouseLocation = FVector2D(x, y);
+
+	if (controller) controller->activeSelecting = true;
+}
+
+void APlayerMovement::StartSelect()
+{
+	if (controlState != Free) return;
+
+	clickHeld = false;
+	
+	if (controller)
+	{
+		if (controller->hoveredWorldObject && controller->activeSelecting) 
+			controller->SetSelectedWorldObject(controller->hoveredWorldObject);
+
+		controller->hoveredWorldObject = nullptr;
+		controller->activeSelecting = false;
+	}
+}
+
+void APlayerMovement::CommandInput()
+{
+	if (controlState != Free) return;
+	rightClickHeld = true;
+}
+
+void APlayerMovement::StartCommand()
+{
+	if (controlState != Free) return;
+	rightClickHeld = false;
+
+	if (controller) controller->CommandAction();
+}
+
+void APlayerMovement::GetMouseX(float axis)
+{
+	mouseX = axis;
+}
+
+void APlayerMovement::GetMouseY(float axis)
+{
+	mouseY = axis;
+}
+
+void APlayerMovement::DragCamera()
+{
+	if (controlState != Free) return;
+	if (!clickHeld) return;
+
+	float x;
+	float y;
+	controller->GetMousePosition(x, y);
+	currentMouseLocation = FVector2D(x, y);
+
+	FVector2D direction = currentMouseLocation - previousMouseLocation;
+	if (direction.Size() > 1.f) controller->activeSelecting = false;
+
+	FVector step = GetActorRightVector() * -direction.X + FVector::CrossProduct(GetActorRightVector(), FVector::UpVector) * direction.Y;
+	
+	AddActorWorldOffset(step);
+	previousMouseLocation = currentMouseLocation;
+}
+
+void APlayerMovement::RotateCamera(const float& deltaTime)
+{
+	if (controlState != Free || !rightClickHeld) return;
+
+	FVector forwardVector = GetActorForwardVector();
+	float distance = FMath::Sqrt(FMath::Square(currZoom) + FMath::Square(currZoom));
+	FVector gimbalPoint = GetActorLocation() + forwardVector * distance;
+	SetActorLocation(gimbalPoint);
+
+	FRotator currRotation = GetActorRotation();
+	float prevPitch = currRotation.Pitch;
+	currRotation.Pitch = 0;
+
+	currRotation.Yaw += mouseX * rotationSpeed * deltaTime;
+	currRotation.Pitch = prevPitch;
+	SetActorRotation(currRotation);
+
+	FVector returnPoint = gimbalPoint + GetActorForwardVector() * -distance;
+	SetActorLocation(returnPoint);
+}
+
+void APlayerMovement::PanRight(float axis)
+{
+	if (controlState != Free) return;
+
+	FVector currLocation = GetActorLocation();
+
+	currLocation += GetActorRightVector() * axis * cameraVel * FApp::GetDeltaTime();
+	currLocation.Y = FMath::Clamp(currLocation.Y, camMinY, camMaxY);
+	SetActorLocation(currLocation);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
+}
+
+void APlayerMovement::PanUp(float axis)
+{
+	if (controlState != Free) return;
+
+	FVector currLocation = GetActorLocation();
+
+	FVector forwardVector = FVector::CrossProduct(GetActorRightVector(), FVector::UpVector);
+	currLocation += forwardVector * axis * cameraVel * FApp::GetDeltaTime();
+	currLocation.Y = FMath::Clamp(currLocation.Y, camMinY, camMaxY);
+	SetActorLocation(currLocation);
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
+}
+
+void APlayerMovement::ZoomIn(float axis)
+{
+	if (controlState != Free) return;
+
+	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
+	{
+		FVector currLocation = GetActorLocation();
+		currLocation += camera->GetForwardVector() * axis * cameraVel * FApp::GetDeltaTime();
+		
+		if (currLocation.Z > camMaxZ)
+		{
+			currLocation.Z = camMaxZ;
+		}
+		else if (currLocation.Z < camMinZ)
+		{
+			currLocation.Z = camMinZ;
+		}
+
+		if (currLocation.Z < camMaxZ && currLocation.Z > camMinZ)
+		{
+			SetActorLocation(currLocation);
+		}
+
+		currZoom = currLocation.Z;
+		//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().Z));
+	}
+}
+
+void APlayerMovement::AdjustTimeScale(float axis)
+{
+	if (controlState != Free) return;
+
+	ACapstoneProjectGameModeBase::timeScale += axis;
+	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
+}
+
+void APlayerMovement::HexCast()
+{
+	TArray<FHitResult> results;
+	FVector start = GetActorLocation();
+	FVector end = start + camera->GetForwardVector() * 10000.f;
+
+	bool hit = GetWorld()->LineTraceMultiByChannel(results, start, end, ECC_Visibility);
+	if (!hit) return;
+
+	ABaseHex* foundHex = nullptr;
+	int32 index = 0;
+	for (int i = 0; i < results.Num(); i++)
+	{
+		foundHex = Cast<ABaseHex>(results[i].GetActor());
+		if (foundHex)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	if (!foundHex) return;
+
+	if (!soundBox)
+	{
+		soundBox = Cast<ASoundBox>(GetWorld()->SpawnActor(soundBoxPrefab));
+	}
+
+	FVector boxLocation = FVector(results[index].ImpactPoint.X, results[index].ImpactPoint.Y, foundHex->GetActorLocation().Z);
+	soundBox->SetActorLocation(boxLocation);
+
+	bool canPlayEnvSounds = GetActorLocation().Z <= soundBox->cameraZoomToTrigger;
+	soundBox->ToggleSoundsActive(canPlayEnvSounds);
+}
+
+#pragma region Generic Actions
 void APlayerMovement::Action1Input()
 {
 	if (controlState != Free) return;
@@ -185,220 +394,5 @@ void APlayerMovement::Action12Input()
 {
 	UnitActions::GetFaction(Factions::Alien2)->IncreaseHostility(controller->playerFaction, 1.f);
 }
-
-void APlayerMovement::DeselectInput()
-{
-	if (controlState != Free) return;
-
-	if (controller) controller->Deselect();
-}
-
-void APlayerMovement::SelectInput()
-{
-	if (controlState != Free) return;
-
-	clickHeld = true;
-
-	float x;
-	float y;
-	controller->GetMousePosition(x, y);
-	previousMouseLocation = FVector2D(x, y);
-
-	if (controller) controller->activeSelecting = true;
-}
-
-void APlayerMovement::StartSelect()
-{
-	if (controlState != Free) return;
-
-	clickHeld = false;
-	
-	if (controller)
-	{
-		if (controller->hoveredWorldObject && controller->activeSelecting) 
-			controller->SetSelectedWorldObject(controller->hoveredWorldObject);
-
-		controller->hoveredWorldObject = nullptr;
-		controller->activeSelecting = false;
-	}
-}
-
-void APlayerMovement::StartCommand()
-{
-	if (controlState != Free) return;
-
-	if (controller) controller->CommandAction();
-}
-
-void APlayerMovement::GetMouseX(float axis)
-{
-	mouseX = axis;
-}
-
-void APlayerMovement::GetMouseY(float axis)
-{
-	mouseY = axis;
-}
-
-void APlayerMovement::DragCamera()
-{
-	if (controlState != Free) return;
-	if (!clickHeld) return;
-
-	float x;
-	float y;
-	controller->GetMousePosition(x, y);
-	currentMouseLocation = FVector2D(x, y);
-
-	FVector2D direction = currentMouseLocation - previousMouseLocation;
-	if (direction.Size() > 1.f) controller->activeSelecting = false;
-
-	FVector step = FVector(-direction.Y, direction.X, 0);
-
-	AddActorWorldOffset(step);
-	previousMouseLocation = currentMouseLocation;
-}
-
-void APlayerMovement::PanRight(float axis)
-{
-	if (controlState != Free) return;
-
-	if (axis < 0)
-	{
-		if (GetActorLocation().Y < camMaxY)
-		{
-			FVector currLocation = GetActorLocation();
-
-			currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-
-			if (currLocation.Y <= camMaxY)
-			{
-				SetActorLocation(currLocation);
-			}
-		}
-	}
-	else if (axis > 0)
-	{
-		if (GetActorLocation().Y > camMinY)
-		{
-			FVector currLocation = GetActorLocation();
-
-			currLocation += FVector::RightVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-
-			if (currLocation.Y >= camMinY)
-			{
-				SetActorLocation(currLocation);
-			}
-		}
-	}
-	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
-
-}
-
-void APlayerMovement::PanUp(float axis)
-{
-	if (controlState != Free) return;
-
-	if (axis < 0)
-	{
-		if (GetActorLocation().X < camMaxX + GetActorLocation().Z)
-		{
-			FVector currLocation = GetActorLocation();
-			
-			currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-			
-			if (currLocation.X <= camMaxX + GetActorLocation().Z)
-			{
-				SetActorLocation(currLocation);
-			}	
-		}
-	}
-	else if (axis > 0)
-	{
-		if (GetActorLocation().X > camMinX + GetActorLocation().Z)
-		{
-			FVector currLocation = GetActorLocation();
-
-			currLocation += FVector::ForwardVector * axis * cameraVel * FApp::GetDeltaTime() * -1.0;
-
-			if (currLocation.X >= camMinX + GetActorLocation().Z)
-			{
-				SetActorLocation(currLocation);
-			}		
-		}
-	}
-	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
-}
-
-void APlayerMovement::ZoomIn(float axis)
-{
-	if (controlState != Free) return;
-
-	if (GetActorLocation().Z >= camMinZ && GetActorLocation().Z <= camMaxZ)
-	{
-		FVector currLocation = GetActorLocation();
-		currLocation += camera->GetForwardVector() * axis * cameraVel * FApp::GetDeltaTime();
-		
-		if (currLocation.Z > camMaxZ)
-		{
-			currLocation.Z = camMaxZ;
-		}
-		else if (currLocation.Z < camMinZ)
-		{
-			currLocation.Z = camMinZ;
-		}
-
-		if (currLocation.Z < camMaxZ && currLocation.Z > camMinZ)
-		{
-			SetActorLocation(currLocation);
-		}
-
-		//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Z Pos = %f"), GetActorLocation().Z));
-	}
-}
-
-void APlayerMovement::AdjustTimeScale(float axis)
-{
-	if (controlState != Free) return;
-
-	ACapstoneProjectGameModeBase::timeScale += axis;
-	ACapstoneProjectGameModeBase::timeScale = FMath::Clamp(ACapstoneProjectGameModeBase::timeScale, 0.f, 2.f);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Red, FString::Printf(TEXT("TimeScale = %f"), ACapstoneProjectGameModeBase::timeScale));
-}
-
-void APlayerMovement::HexCast()
-{
-	TArray<FHitResult> results;
-	FVector start = GetActorLocation();
-	FVector end = start + camera->GetForwardVector() * 10000.f;
-
-	bool hit = GetWorld()->LineTraceMultiByChannel(results, start, end, ECC_Visibility);
-	if (!hit) return;
-
-	ABaseHex* foundHex = nullptr;
-	int32 index = 0;
-	for (int i = 0; i < results.Num(); i++)
-	{
-		foundHex = Cast<ABaseHex>(results[i].GetActor());
-		if (foundHex)
-		{
-			index = i;
-			break;
-		}
-	}
-
-	if (!foundHex) return;
-
-	if (!soundBox)
-	{
-		soundBox = Cast<ASoundBox>(GetWorld()->SpawnActor(soundBoxPrefab));
-	}
-
-	FVector boxLocation = FVector(results[index].ImpactPoint.X, results[index].ImpactPoint.Y, foundHex->GetActorLocation().Z);
-	soundBox->SetActorLocation(boxLocation);
-
-	bool canPlayEnvSounds = GetActorLocation().Z <= soundBox->cameraZoomToTrigger;
-	soundBox->ToggleSoundsActive(canPlayEnvSounds);
-}
+#pragma endregion
 

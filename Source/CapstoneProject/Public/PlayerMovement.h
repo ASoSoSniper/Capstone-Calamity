@@ -67,22 +67,26 @@ public:
 	void DeselectInput();
 	void SelectInput();
 	void StartSelect();
+	void CommandInput();
 	void StartCommand();
 	
 	void GetMouseX(float axis);
 	void GetMouseY(float axis);
 
 	void DragCamera();
+	void RotateCamera(const float& deltaTime);
 	void PanRight(float axis);
 	void PanUp(float axis);
 	void ZoomIn(float axis);
 	UPROPERTY(EditAnywhere) float cameraVel = 750.0f;
+	UPROPERTY(EditAnywhere) float rotationSpeed = 500.0f;
 	float camMinX = -1000;
 	float camMaxX = 1000;
 	float camMinY = -1000;
 	float camMaxY = 1000;
 	float camMinZ = 100;
 	float camMaxZ = 600;
+	float currZoom = 0;
 
 	void AdjustTimeScale(float axis);
 
@@ -94,6 +98,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere) bool clickHeld = false;
+	UPROPERTY(VisibleAnywhere) bool rightClickHeld = false;
 	float mouseX = 0.f;
 	float mouseY = 0.f;
 
