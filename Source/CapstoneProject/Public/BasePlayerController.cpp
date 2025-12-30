@@ -345,10 +345,10 @@ FBuildingTTInfo ABasePlayerController::GetBuildingTTDisplay(SpawnableBuildings b
 	buildingInfo.titleTT = buildingStats->name;
 	buildingInfo.descTT = buildingStats->description;
 
-	buildingInfo.energyMod = FText::AsNumber(buildingStats->energyYield);
-	buildingInfo.foodMod = FText::AsNumber(buildingStats->foodYield);
-	buildingInfo.prodMod = FText::AsNumber(buildingStats->productionYield);
-	buildingInfo.wealthMod = FText::AsNumber(buildingStats->wealthYield);
+	buildingInfo.energyMod = FText::AsNumber(buildingStats->resourceYields.Contains(EStratResources::Energy) ? buildingStats->resourceYields[EStratResources::Energy] : 0);
+	buildingInfo.foodMod = FText::AsNumber(buildingStats->resourceYields.Contains(EStratResources::Food) ? buildingStats->resourceYields[EStratResources::Food] : 0);
+	buildingInfo.prodMod = FText::AsNumber(buildingStats->resourceYields.Contains(EStratResources::Production) ? buildingStats->resourceYields[EStratResources::Production] : 0);
+	buildingInfo.wealthMod = FText::AsNumber(buildingStats->resourceYields.Contains(EStratResources::Wealth) ? buildingStats->resourceYields[EStratResources::Wealth] : 0);
 
 	buildingInfo.resourceStorageMod = FText::AsNumber(buildingStats->resourceCapIncrease);
 	buildingInfo.robotStorageMod = FText::AsNumber(buildingStats->robotStorage);
@@ -492,9 +492,9 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 {
 	if (!selectedHex) return sliders;
 
-	selectedHex->workersInHex[WorkerType::Human] += UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * selectedHex->GetMaxWorkers()), selectedHex);
-	selectedHex->workersInHex[WorkerType::Robot] += UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * selectedHex->GetMaxWorkers()), selectedHex);
-	selectedHex->workersInHex[WorkerType::Alien] += UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * selectedHex->GetMaxWorkers()), selectedHex);
 
 	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
 	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];

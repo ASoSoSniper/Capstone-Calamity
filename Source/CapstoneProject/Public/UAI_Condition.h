@@ -18,8 +18,10 @@ public:
 protected:
 	float FactorInversion(const float& score) const;
 	float EvaluateOnCurve(const float& score) const;
+	float GetMinScore() const;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Scoring") float minimumScore = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Scoring") bool bInvertScore = false;
 	UPROPERTY(EditAnywhere, Category = "Scoring") UCurveFloat* scoreCurve = nullptr;
 };

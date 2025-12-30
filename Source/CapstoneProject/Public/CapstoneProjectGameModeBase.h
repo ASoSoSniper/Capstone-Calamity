@@ -124,8 +124,6 @@ private:
 	void CheckHumanPop();
 	void CheckDate();
 
-	void SpawnEnemies();
-	void SpawnBuildings();
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
 	UPROPERTY(EditAnywhere, Category = "Faction") TSubclassOf<class AFactionController> factionControllerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;

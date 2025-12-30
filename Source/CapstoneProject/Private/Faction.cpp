@@ -15,8 +15,8 @@ UFaction::UFaction()
 	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Wealth, FInventoryStat{ 000, 300, 0, 0 });
 
-	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,100, 500, 0,1,0 });
-	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,10, 10, 1,0,0 });
+	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,0, 500, 0,1,0 });
+	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,0, 0, 1,0,0 });
 	availableWorkers.Add(WorkerType::Alien, FWorkerStats{ 0,0, 0, 0,1,0 });
 
 	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
@@ -32,6 +32,8 @@ UFaction::UFaction()
 	armyNamesAlien.Add(TEXT("Pop Tarts"), TArray<int32>());
 	armyNamesAlien.Add(TEXT("Quakers"), TArray<int32>());
 	armyNamesAlien.Add(TEXT("Lucky Charms"), TArray<int32>());
+
+	allBuildings.Add(SpawnableBuildings::None, FBuildingSet());
 }
 
 void UFaction::FindActiveFactions()
@@ -135,6 +137,17 @@ void UFaction::SetFaction(Factions newFaction)
 	if (newFaction == Factions::None) return;
 
 	faction = newFaction;
+
+	if (faction == Factions::Human)
+	{
+		availableWorkers[WorkerType::Human].available = 100;
+		availableWorkers[WorkerType::Robot].available = 10;
+	}
+	else
+	{
+		availableWorkers[WorkerType::Alien].available = 1000;
+		availableWorkers[WorkerType::Alien].maxAcquired = 1000;
+	}
 }
 
 Factions UFaction::GetFaction()
@@ -202,39 +215,6 @@ void UFaction::ConsumeEnergy()
 	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
 }
 
-void UFaction::BuildRandomBuilding()
-{
-	if (!IsAIControlled() || ownedHexes.IsEmpty()) return;
-
-	--currentDaysTillBuildingSpawn;
-
-	if (currentDaysTillBuildingSpawn > 0) return;
-	currentDaysTillBuildingSpawn = daysTillBuildingSpawn;
-
-	TArray<ABaseHex*> hexes;
-
-	for (ABaseHex* hex : ownedHexes)
-	{
-		if (hex->IsBuildableTerrain() && !hex->building)
-			hexes.Add(hex);
-	}
-
-	if (hexes.IsEmpty())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No Valid hexes found"));
-		return;
-	}
-
-	int rand = FMath::RandRange(0, hexes.Num() - 1);
-
-	ABaseHex* randHex = hexes[rand];
-
-	if (AGlobalSpawner::spawnerObject)
-	{
-		AGlobalSpawner::spawnerObject->SpawnBuildingFree(faction, SpawnableBuildings(FMath::RandRange(1, 3)), randHex);
-	}
-}
-
 TArray<ABaseHex*> UFaction::GetHexesOfResource(EStratResources resource, int minValue, bool includeHexesWithBuildings)
 {
 	TArray<ABaseHex*> hexes = TArray<ABaseHex*>();
@@ -270,75 +250,31 @@ TArray<ABaseHex*> UFaction::GetHexesOfResource(EStratResources resource, int min
 	return hexes;
 }
 
-TArray<AOutpost*> UFaction::GetFactionOutposts()
+const TSet<ABuilding*>& UFaction::GetBuildingsOfType(SpawnableBuildings buildingType) const
 {
-	TArray<AOutpost*> outposts;
+	if (!allBuildings.Contains(buildingType)) return allBuildings[SpawnableBuildings::None].buildings;
 
-	for (ABuilding* building : allBuildings)
-	{
-		SpawnableBuildings type = building->GetBuildingType();
-
-		if (type == SpawnableBuildings::Outpost || type == SpawnableBuildings::Capitol || type == SpawnableBuildings::AlienCity)
-		{
-			outposts.Add(Cast<AOutpost>(building));
-		}
-	}
-
-	return outposts;
+	return allBuildings[buildingType].buildings;
 }
 
-void UFaction::SpawnEnemy()
+void UFaction::AddBuildingToFaction(ABuilding* building)
 {
-	if (!IsAIControlled()) return;
+	if (!building) return;
 
-	//Restrict enemy spawning if bool checking for player troops is enabled
-	if (ACapstoneProjectGameModeBase::playerTroopsNeededForAISpawn)
-	{
-		if (!UnitActions::GetFaction(Factions::Human)->allUnits.IsEmpty())
-		{
-			ACapstoneProjectGameModeBase::playerTroopsNeededForAISpawn = false;
-		}
-		else
-		{
-			return;
-		}
-	}
+	SpawnableBuildings buildingType = building->GetBuildingType();
+	if (!allBuildings.Contains(buildingType)) allBuildings.Add(buildingType, FBuildingSet());
 
-	--currentDaysTillArmySpawn;
-	--currentDaysTillArmyGrowth;
-
-	if (currentDaysTillArmyGrowth <= 0)
-	{
-		troopsInArmy = FMath::Clamp(troopsInArmy + 1, 1, maxTroopsInArmy);
-		currentDaysTillArmyGrowth = daysTillArmyGrowth;
-	}
-
-	if (currentDaysTillArmySpawn > 0) return;
-
-	TArray<ABuilding*> spawnableBuildings;
-	for (ABuilding* building : allBuildings)
-	{
-		if (building->GetOccupier() != Factions::None) continue;
-
-		if (building->GetBuildingType() == SpawnableBuildings::RobotFactory)
-		{
-			spawnableBuildings.Add(building);
-		}
-	}
-
-	if (!spawnableBuildings.IsEmpty()) return;
-	if (allUnits.Num() >= spawnableBuildings.Num()) return;
-
-	ATroopFactory* randBuilding = Cast<ATroopFactory>(spawnableBuildings[FMath::RandRange(0, spawnableBuildings.Num() - 1)]);
-
-	randBuilding->QueueTroopBuild(UnitTypes::Army);
-
-	currentDaysTillArmySpawn = daysTillArmySpawn;
+	allBuildings[buildingType].buildings.Add(building);
 }
 
-int UFaction::GetArmyTroopCount()
+void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 {
-	return troopsInArmy;
+	if (!building) return;
+
+	SpawnableBuildings buildingType = building->GetBuildingType();
+	if (!allBuildings.Contains(buildingType)) return;
+
+	allBuildings[buildingType].buildings.Remove(building);
 }
 
 void UFaction::StarvePop(int foodCost)
@@ -445,18 +381,6 @@ void UFaction::KillPopulation(int cost, int deathsPerResource)
 		availableWorkers[WorkerType::Human].working = 0;
 }
 
-void UFaction::SetDaysToTroopBuild(unsigned int days)
-{
-	daysTillArmySpawn = days;
-	currentDaysTillArmySpawn = FMath::Clamp(currentDaysTillArmySpawn, 0, daysTillArmySpawn);
-}
-
-void UFaction::SetDaysToBuildingBuild(unsigned int days)
-{
-	daysTillBuildingSpawn = days;
-	currentDaysTillBuildingSpawn = FMath::Clamp(currentDaysTillBuildingSpawn, 0, daysTillBuildingSpawn);
-}
-
 const TArray<FRelationshipStats> UFaction::GetFactionRelationships() const
 {
 	TArray<FRelationshipStats> relationValues;
@@ -525,6 +449,36 @@ void UFaction::CollectResource(EStratResources resource, int amount)
 	}
 }
 
+TMap<EStratResources, int> UFaction::GetNetResourcesPerDay(bool includeIncompleteBuildings) const
+{
+	using SR = EStratResources;
+	TMap<SR, int> resources = {
+		{SR::Food, (resourceInventory[SR::Food].resourcePerTick * 6) - resourceInventory[SR::Food].lossesPerDay},
+		{SR::Energy, (resourceInventory[SR::Energy].resourcePerTick * 6) - resourceInventory[SR::Energy].lossesPerDay},
+		{SR::Production, (resourceInventory[SR::Production].resourcePerTick * 6) - resourceInventory[SR::Production].lossesPerDay},
+		{SR::Wealth, (resourceInventory[SR::Wealth].resourcePerTick * 6) - resourceInventory[SR::Wealth].lossesPerDay}
+	};
+
+	if (!includeIncompleteBuildings) return resources;
+
+	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)
+	{
+		for (const ABuilding* building : buildingType.Value.buildings)
+		{
+			if (!building->ConstructionComplete())
+			{
+				const TMap<SR, int>& yields = building->GetResourceYields();
+				for (const TPair<SR, int>& yield : yields)
+				{
+					resources[yield.Key] += yield.Value;
+				}
+			}
+		}
+	}
+
+	return resources;
+}
+
 void UFaction::UpdateResourceCosts()
 {
 	if (IsAIControlled()) return;
@@ -588,9 +542,14 @@ int UFaction::CalculateEnergyCost()
 			energyCost += troop->GetUnitData()->GetEnergyUpkeep();
 		}
 	}
-	for (ABuilding* building : allBuildings)
+	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)
 	{
-		energyCost += building->GetUnitData()->GetEnergyUpkeep();
+		if (buildingType.Value.buildings.IsEmpty()) continue;
+
+		for (ABuilding* building : buildingType.Value.buildings)
+		{
+			energyCost += building->GetUnitData()->GetEnergyUpkeep();
+		}
 	}
 	for (ABaseHex* hex : ownedHexes)
 	{
@@ -643,20 +602,24 @@ void UFaction::TargetBuildingsOfFaction(Factions targetFaction)
 	if (!IsAIControlled() || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
 
 	UFaction* factionObject = UnitActions::GetFaction(targetFaction);
-
-	for (auto& building : factionObject->allBuildings)
+	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)
 	{
-		if (building->GetOccupier() != Factions::None)
+		if (buildingType.Value.buildings.IsEmpty()) continue;
+
+		for (ABuilding* building : buildingType.Value.buildings)
 		{
-			if (GetFactionRelationship(building->GetOccupier()) == FactionRelationship::Enemy)
+			if (building->GetOccupier() != Factions::None)
 			{
-				targetList.Add(building->hexNav->GetCurrentHex(), building->GetOccupier());
-				continue;
+				if (GetFactionRelationship(building->GetOccupier()) == FactionRelationship::Enemy)
+				{
+					targetList.Add(building->hexNav->GetCurrentHex(), building->GetOccupier());
+					continue;
+				}
 			}
-		}
-		else
-		{
-			targetList.Add(Cast<ABaseHex>(building->hexNav->GetCurrentHex()), targetFaction);
+			else
+			{
+				targetList.Add(building->hexNav->GetCurrentHex(), targetFaction);
+			}
 		}
 	}
 }

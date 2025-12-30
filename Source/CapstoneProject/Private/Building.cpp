@@ -83,7 +83,7 @@ void ABuilding::InitBuilding(const Factions& faction)
 
 	unitData = new FUnitData(faction);
 	if (GameMode::activeFactions.Contains(faction))
-		GameMode::activeFactions[faction]->allBuildings.Add(this);
+		GameMode::activeFactions[faction]->AddBuildingToFaction(this);
 
 	visibility->SetupComponent(unitData, mesh);
 	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
@@ -125,10 +125,10 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	unitData->SetBuildingValues(stats.HP, stats.vision, stats.siegeDamage, stats.energyUpkeepCost);
 
-	resourceYields[EStratResources::Energy] = stats.energyYield;
-	resourceYields[EStratResources::Food] = stats.foodYield;
-	resourceYields[EStratResources::Production] = stats.productionYield;
-	resourceYields[EStratResources::Wealth] = stats.wealthYield;
+	for (const TPair<EStratResources, int>& yield : stats.resourceYields)
+	{
+		resourceYields[yield.Key] = yield.Value;
+	}
 
 	FBuildingCost costs;
 	ABaseHex* hex = hexNav->GetCurrentHex();
@@ -383,10 +383,7 @@ void ABuilding::Destroyed()
 
 		UnitActions::UpdateResourceCapacity(faction, -resourceCapIncrease);
 
-		if (ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Contains(this))
-		{
-			ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings.Remove(this);
-		}
+		ACapstoneProjectGameModeBase::activeFactions[faction]->RemoveBuildingFromFaction(this);
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
@@ -413,6 +410,16 @@ bool ABuilding::IsDisabled()
 	if (unitData->IsAlive()) return false;
 
 	return true;
+}
+
+bool ABuilding::ActiveAndHarvesting() const
+{
+	return ConstructionComplete() && hexNav->GetCurrentHex()->WorkersAtCapacity();
+}
+
+const TMap<EStratResources, int>& ABuilding::GetResourceYields() const
+{
+	return resourceYields;
 }
 
 bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
@@ -570,6 +577,11 @@ void ABuilding::HealOverTime()
 			unitData->HealHP(FMath::RoundToInt(unitData->GetMaxHP() * healPercent));
 		}
 	}
+}
+
+ABaseHex* ABuilding::GetHex() const
+{
+	return hexNav->GetCurrentHex();
 }
 
 int ABuilding::GetHexLayersToOccupy() const

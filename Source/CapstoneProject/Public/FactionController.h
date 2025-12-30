@@ -19,6 +19,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetFaction(UFaction* setFaction);
+	UFaction* GetFactionObject() const;
 	virtual bool IsAIControlled() override;
 
 	void TriggerUpdateDisplay();
@@ -46,4 +47,5 @@ private:
 	void DateUpdateTick();
 
 	UPROPERTY(EditAnywhere, Category = "Actions") TMap<EActionType, FActionSelection> actions;
+	UPROPERTY(EditAnywhere, Category = "Actions") float updateTime = 1.f;
 };

@@ -90,6 +90,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
+protected:
+	virtual void BeginPlay() override;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Components") UInteractable* interactable;
 #pragma endregion
@@ -113,7 +115,7 @@ public:
 
 	bool IsStaticBuildingTerrain();
 	bool IsTraversableTerrain() const;
-	bool IsBuildableTerrain();
+	bool IsBuildableTerrain() const;
 	bool IsPlayerHex();
 	bool CanPutWorkersOnHex();
 
@@ -130,9 +132,10 @@ private:
 
 #pragma region Workers
 public:
-	int GetMaxWorkers();
+	int GetMaxWorkers() const;
 	void SetMaxWorkers(int newMax);
-	int GetNumberOfWorkers();
+	int GetNumberOfWorkers() const;
+	bool WorkersAtCapacity() const;
 
 	void UpdateWorkerDisplay();
 
@@ -141,7 +144,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent) void SetWorkerDisplay(const int& current, const int& max);
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkers = 15;
-	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkersDefault = 15;
+	UPROPERTY(EditAnywhere, Category = "Identity") int maxWorkersDefault = 5;
 #pragma endregion
 
 #pragma region Troops and Buildings
@@ -152,6 +155,7 @@ public:
 	void RemoveTroopFromHex(AMovementAI* troop);
 	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanBuildOnHex(int requiredLayers) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABuilding* GetBuilding() const;
 	void AddBuildingToHex(ABuilding* setBuilding, int layers = 0);
 	void RemoveBuildingFromHex(int layers = 0);
@@ -187,6 +191,7 @@ public:
 	void UpdateResourceYield(EStratResources resource, int value, Factions faction = Factions::None);
 	void ToggleResourceYield();
 	FCurrentResourceYields GetCurrentResourceYields();
+	const TMap<EStratResources, int>& GetHexResources() const;
 private:
 	TMap<EStratResources, int> resourceBonuses;
 	bool harvesting;

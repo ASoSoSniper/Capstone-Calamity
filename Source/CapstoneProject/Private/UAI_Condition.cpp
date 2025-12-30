@@ -20,3 +20,8 @@ float UAI_Condition::EvaluateOnCurve(const float& score) const
 
     return scoreCurve->GetFloatValue(clampedScore);
 }
+
+float UAI_Condition::GetMinScore() const
+{
+    return FactorInversion(minimumScore);
+}

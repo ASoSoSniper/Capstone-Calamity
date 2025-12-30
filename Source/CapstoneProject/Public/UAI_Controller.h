@@ -14,6 +14,7 @@ enum class EActionType : uint8
 {
 	None,
 	Explore,
+	Defense,
 	Attack
 };
 
@@ -75,6 +76,8 @@ public:
 	void SetBestAction(UAI_Action* action, EActionType actionType = EActionType::None);
 	virtual void SetBestAction(FUAI_Decision& decision);
 
+	float ScoreAction(const TArray<UAI_Condition*>& conditions);
+
 	virtual void EndAction();
 protected:
 	void FSM_Tick(const float& DeltaTime);
@@ -92,8 +95,6 @@ private:
 	bool DecideBestAction();
 
 	void PrintDecisionResults();
-
-	float ScoreAction(const TArray<UAI_Condition*>& conditions);
 
 	bool UpdateTimer(const float& DeltaTime);
 	bool AbandonTimer(const float& DeltaTime);

@@ -32,6 +32,7 @@ AGlobalSpawner::AGlobalSpawner()
 	PrimaryActorTick.bCanEverTick = true;
 
 	using SB = SpawnableBuildings;
+	using Res = EStratResources;
 
 #pragma region Building Costs
 	buildingCosts.Add(SB::MiningStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Mining Station"),
@@ -56,14 +57,10 @@ AGlobalSpawner::AGlobalSpawner()
 #pragma region Building Stats
 	//Mining Station Stats
 	buildingStats.Add(SB::MiningStation, FBuildingStats{ FText::FromString("Mining Station"), FText::FromString("A drilling station that extracts resources necessary for building troops and new facilities."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		2,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Production, 2}
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -88,14 +85,11 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Farm Stats
 	buildingStats.Add(SB::Farmland, FBuildingStats{ FText::FromString("Farmland"), FText::FromString("Plots of land dedicated to provided the colony with food or cash crops."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		2,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		2,
+		//Resource Yields
+		{
+			{Res::Food, 2},
+			{Res::Wealth, 2}
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -120,14 +114,10 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Power Plant Stats
 	buildingStats.Add(SB::PowerPlant, FBuildingStats{ FText::FromString("Power Plant"), FText::FromString("A rudamentory fission reactor that produces energy to power troops and facilities."),
-		/*Energy Yield*/
-		2,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Energy, 2}
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -152,14 +142,10 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Material Storage Stats
 	buildingStats.Add(SB::Storage, FBuildingStats{ FText::FromString("Material Storage"), FText::FromString("A warehouse extension that provides additional storage capacity for the colony's resources."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			
+		},
 		/*Resource Cap Increase*/
 		500,
 		/*Robot Storage*/
@@ -184,14 +170,10 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Robot Factory Stats
 	buildingStats.Add(SB::RobotFactory, FBuildingStats{ FText::FromString("Robot Factory"), FText::FromString("A highly industrialized factory capable of creating robotic armies."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -216,14 +198,10 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Robot Storage Stats
 	buildingStats.Add(SB::RobotBarracks, FBuildingStats{ FText::FromString("Robot Barracks"), FText::FromString("A building that allows for robot units to be repaired when on the tile."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -248,14 +226,10 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Defense Station Stats
 	buildingStats.Add(SB::DefenseStation, FBuildingStats{ FText::FromString("Defense Station"), FText::FromString("A fortress extension that greatly enhances defensive capabilities."),
-		/*Energy Yield*/
-		0,
-		/*Food Yield*/
-		0,
-		/*Production Yield*/
-		0,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+
+		},
 		/*Resource Cap Increase*/
 		0,
 		/*Robot Storage*/
@@ -280,14 +254,12 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Outpost Stats
 	buildingStats.Add(SB::Outpost, FBuildingStats{ FText::FromString("Outpost"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited. Create by moving a settler troop to a non-controlled tile, then selecting this."),
-		/*Energy Yield*/
-		2,
-		/*Food Yield*/
-		2,
-		/*Production Yield*/
-		2,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Energy, 2},
+			{Res::Food, 2},
+			{Res::Production, 2}
+		},
 		/*Resource Cap Increase*/
 		500,
 		/*Robot Storage*/
@@ -312,14 +284,12 @@ AGlobalSpawner::AGlobalSpawner()
 		});
 	//Capitol Hub
 	buildingStats.Add(SB::Capitol, FBuildingStats{ FText::FromString("Capitol Hub"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
-		/*Energy Yield*/
-		1,
-		/*Food Yield*/
-		3,
-		/*Production Yield*/
-		2,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Energy, 1},
+			{Res::Food, 3},
+			{Res::Production, 2}
+		},
 		/*Resource Cap Increase*/
 		1000,
 		/*Robot Storage*/
@@ -343,14 +313,12 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'"))
 		});
 	buildingStats.Add(SB::AlienCity, FBuildingStats{ FText::FromString("Alien City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
-		/*Energy Yield*/
-		1,
-		/*Food Yield*/
-		3,
-		/*Production Yield*/
-		2,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Energy, 1},
+			{Res::Food, 3},
+			{Res::Production, 2}
+		},
 		/*Resource Cap Increase*/
 		1000,
 		/*Robot Storage*/
@@ -374,14 +342,12 @@ AGlobalSpawner::AGlobalSpawner()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'"))
 		});
 	buildingStats.Add(SB::RockCity, FBuildingStats{ FText::FromString("Rock City"), FText::FromString("A central location that expands the colony's zone of control, allowing for additional tiles to be exploited."),
-		/*Energy Yield*/
-		3,
-		/*Food Yield*/
-		3,
-		/*Production Yield*/
-		3,
-		/*Wealth Yield*/
-		0,
+		//Resource Yields
+		{
+			{Res::Energy, 3},
+			{Res::Food, 3},
+			{Res::Production, 3}
+		},
 		/*Resource Cap Increase*/
 		1500,
 		/*Robot Storage*/
@@ -577,7 +543,6 @@ void AGlobalSpawner::BeginPlay()
 	if (!siegePrefab) siegePrefab = ASiegeObject::StaticClass();
 
 	spawnerObject = this;
-
 	AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
 	controller = Cast<ABasePlayerController>(controllerTemp);
 
@@ -644,13 +609,13 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	case TerrainType::AlienCity:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 
-		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		//newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 
 		break;
 	case TerrainType::TheRock:
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/TileJungle.TileJungle'"));
 
-		newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		//newBuilding = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 
 		break;
 	default:
@@ -793,9 +758,10 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 
 		rockHex = hexArray[FMath::RandRange(12, 17)][FMath::RandRange(12, 17)];
 		rockHex->SetHexTerrain(TerrainType::TheRock);
-		SpawnBuildingsAroundCity(rockHex);
+		GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::RockCity), rockHex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
+		//SpawnBuildingsAroundCity(rockHex);
 
-		for (int i = 0; i < 6; i++)
+		/*for (int i = 0; i < 2; i++)
 		{
 			ABaseHex* hex = nullptr;
 			FVector2D randomXY = FVector2D::Zero();
@@ -817,8 +783,9 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 			}
 
 			hex->SetHexTerrain(TerrainType::AlienCity);
+			GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(SpawnableBuildings::AlienCity), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 			SpawnBuildingsAroundCity(hex);
-		}
+		}*/
 
 		SpawnPointsOfInterest();
 
@@ -904,24 +871,11 @@ void AGlobalSpawner::SpawnPointsOfInterest()
 #pragma region Building Construction
 void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
 {
-	//If hex already occupied
-	if (hex->building)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Hex already occupied"));
-		return;
-	}
-
 	//Check if terrain is valid
-	TSet<ABaseHex*> hexesToBuild = hex->GetHexesInRadius(buildingCosts[building].hexLayers);
-	for (ABaseHex* aHex : hexesToBuild)
+	if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
 	{
-		if (aHex->building ||
-			!aHex->IsBuildableTerrain() ||
-			aHex->GetHexOwner() != faction)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
-			return;
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
+		return;
 	}
 
 	//Determine building prefab to spawn
@@ -1014,6 +968,26 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 	}
 
 	return buildingPrefabs[building];
+}
+EStratResources AGlobalSpawner::GetMainBuildingYield(SpawnableBuildings building)
+{
+	if (spawnerObject == nullptr) return EStratResources::None;
+	if (!spawnerObject->buildingStats.Contains(building)) return EStratResources::None;
+
+	const TMap<EStratResources, int32>& yields = spawnerObject->buildingStats[building].resourceYields;
+
+	EStratResources best = EStratResources::None;
+	for (const TPair<EStratResources, int32>& resource : yields)
+	{
+		if (resource.Key == EStratResources::Wealth) continue;
+
+		if (best == EStratResources::None || yields[resource.Key] > yields[best])
+		{
+			best = resource.Key;
+		}
+	}
+
+	return best;
 }
 bool AGlobalSpawner::BuildingOnHex(ABaseHex* hex)
 {

@@ -394,10 +394,7 @@ struct FBuildingStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energyYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int foodYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionYield;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealthYield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) TMap<EStratResources, int32> resourceYields;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int resourceCapIncrease;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int robotStorage;
@@ -705,6 +702,8 @@ public:
 	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
 	void SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
 	UClass* DetermineBuildingType(SpawnableBuildings building);
+
+	static EStratResources GetMainBuildingYield(SpawnableBuildings building);
 
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingCost> buildingCosts;
 	UPROPERTY(EditAnywhere) TMap<SpawnableBuildings, FBuildingStats> buildingStats;

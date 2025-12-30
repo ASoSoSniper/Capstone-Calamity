@@ -38,6 +38,11 @@ void AFactionController::SetFaction(UFaction* setFaction)
 	faction = setFaction;
 }
 
+UFaction* AFactionController::GetFactionObject() const
+{
+	return faction;
+}
+
 bool AFactionController::IsAIControlled()
 {
 	if (!faction) return false;
@@ -52,7 +57,7 @@ void AFactionController::TriggerUpdateDisplay()
 
 float AFactionController::GetUpdateRate() const
 {
-	return ACapstoneProjectGameModeBase::GetTimeTillNextTick();
+	return ACapstoneProjectGameModeBase::GetTimeTillNextTick() * updateTime;
 }
 
 void AFactionController::SetBestAction(FUAI_Decision& decision)
@@ -113,7 +118,7 @@ bool AFactionController::DecisionsMade() const
 
 const FUAI_Decision& AFactionController::GetDecisionFromHistory(int index) const
 {
-	const TArray<FUAI_Decision> history = GetDecisionHistory();
+	const TArray<FUAI_Decision>& history = GetDecisionHistory();
 
 	index = FMath::Clamp(index, 0, history.Num() - 1);
 
@@ -122,7 +127,9 @@ const FUAI_Decision& AFactionController::GetDecisionFromHistory(int index) const
 
 FText AFactionController::GetActionFromHistory(int decision, int index) const
 {
-	FUAI_ActionScore action = GetDecisionHistory()[decision].actionScores[index];
+	const FUAI_Decision& fDecision = GetDecisionFromHistory(decision);
+	if (index >= fDecision.actionScores.Num()) return FText::FromString("No Action");
+	FUAI_ActionScore action = fDecision.actionScores[index];
 
 	FString actionInfo = FString::Printf(TEXT("%s: %.2f"), *action.actionName.ToString(), action.score);
 

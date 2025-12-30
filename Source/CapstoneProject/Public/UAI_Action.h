@@ -28,7 +28,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Display") FString actionName = TEXT("None");
-	UPROPERTY(EditAnywhere, Category = "Conditions") TEnumAsByte<EActionType> defaultActionType;
+	UPROPERTY(EditAnywhere, Category = "Conditions") EActionType defaultActionType;
 	UPROPERTY(EditAnywhere, Category = "Conditions") TArray<UAI_Condition*> conditions;
 
 	UPROPERTY(EditAnywhere, Category = "Execution") bool canAbandon = false;

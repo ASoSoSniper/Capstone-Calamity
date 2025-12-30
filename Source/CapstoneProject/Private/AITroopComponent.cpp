@@ -237,7 +237,7 @@ void UAITroopComponent::GenerateArmy()
 {
 	FUnitData* data = parentTroop->GetUnitData();
 
-	troopsInArmy = UnitActions::GetFaction(data->GetFaction())->GetArmyTroopCount();
+	troopsInArmy = 1;//UnitActions::GetFaction(data->GetFaction())->GetArmyTroopCount();
 
 	for (int i = 0; i < troopsInArmy; i++)
 	{

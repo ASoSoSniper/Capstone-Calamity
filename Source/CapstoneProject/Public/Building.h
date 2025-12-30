@@ -52,6 +52,8 @@ public:
 	void InitBuilding(const Factions& faction);
 	virtual void BeginDestroying();
 	virtual bool IsDisabled();
+	bool ActiveAndHarvesting() const;
+	const TMap<EStratResources, int>& GetResourceYields() const;
 
 	bool SetSiegeState(bool sieging, Factions occupier = Factions::None);
 	bool IsOccupied();
@@ -61,6 +63,7 @@ public:
 	int GetOccupyingTroops();
 	int GetOccupationMinCount();
 	void HealOverTime();
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetHex() const;
 	UFUNCTION(BlueprintCallable) int GetHexLayersToOccupy() const;
 	UFUNCTION(BlueprintCallable) Factions GetOccupier();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
@@ -87,7 +90,7 @@ protected:
 	TMap<EStratResources, int> resourceYields;
 	int resourceCapIncrease = 0;
 	UPROPERTY(EditAnywhere, Category = "Initialization") bool builtAtStart = false;
-	UPROPERTY(EditAnywhere, Category = "Initialization") TEnumAsByte<Factions> preAssignedFaction = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Initialization") Factions preAssignedFaction = Factions::None;
 
 	virtual void UpdateResources();
 	virtual void RevertResources();

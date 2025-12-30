@@ -26,7 +26,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Troops") TMap<UnitTypes, int> troopsToBuild;
-	UPROPERTY(EditAnywhere, Category = "Troops") TEnumAsByte<EBuildOrder> buildOrder = EBuildOrder::Random;
+	UPROPERTY(EditAnywhere, Category = "Troops") EBuildOrder buildOrder = EBuildOrder::Random;
 	UPROPERTY(EditAnywhere, Category = "Troops") bool ascendingOrder = false;
 	UPROPERTY(EditAnywhere, Category = "Troops") bool cycleTroopsQueued = false;
 	UPROPERTY(EditAnywhere, Category = "Troops") int cycleTroopAtCount = 2;

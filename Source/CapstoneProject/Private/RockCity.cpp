@@ -6,6 +6,9 @@
 
 ARockCity::ARockCity()
 {
+	builtAtStart = true;
+	preAssignedFaction = Factions::Alien1;
+
 	buildingType = SpawnableBuildings::RockCity;
 }
 
@@ -19,7 +22,7 @@ UStaticMesh* ARockCity::LoadFinishedModel()
 	}
 
 	ACapstoneProjectGameModeBase::cinematicObjects.Add(this, cinematicComponent->cinematicVars);
-	if (AGlobalSpawner::spawnerObject) AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this);
+	//if (AGlobalSpawner::spawnerObject) AGlobalSpawner::spawnerObject->controller->SetCinematicObject(this);
 
 	return meshAsset;
 }

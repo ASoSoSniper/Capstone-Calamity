@@ -124,6 +124,12 @@ void ABaseHex::Tick(float DeltaTime)
 
 	SetToTargetVolume(DeltaTime);
 }
+void ABaseHex::BeginPlay()
+{
+	Super::BeginPlay();
+
+	maxWorkers = maxWorkersDefault;
+}
 #pragma endregion
 
 #pragma region Identity
@@ -317,7 +323,7 @@ bool ABaseHex::IsTraversableTerrain() const
 	return hexTerrain != TerrainType::Border &&
 		hexTerrain != TerrainType::Mountains;
 }
-bool ABaseHex::IsBuildableTerrain()
+bool ABaseHex::IsBuildableTerrain() const
 {
 	return hexTerrain != TerrainType::Border &&
 		hexTerrain != TerrainType::Mountains &&
@@ -334,15 +340,27 @@ bool ABaseHex::CanPutWorkersOnHex()
 #pragma endregion
 
 #pragma region Workers
-int ABaseHex::GetMaxWorkers()
+int ABaseHex::GetMaxWorkers() const
 {
 	return maxWorkers;
 }
 void ABaseHex::SetMaxWorkers(int newMax)
 {
-	maxWorkers = newMax > 0 ? newMax : 0;
+	maxWorkers = FMath::Max(newMax, 0);
+
+	int currCount = GetNumberOfWorkers();
+	while (currCount > newMax)
+	{
+		for (const TPair<WorkerType, int>& worker : workersInHex)
+		{
+			if (UnitActions::SetWorkers(hexOwner, worker.Key, worker.Value - 1, this) != 0)
+			{
+				if (--currCount <= newMax) break;
+			}
+		}
+	}
 }
-int ABaseHex::GetNumberOfWorkers()
+int ABaseHex::GetNumberOfWorkers() const
 {
 	int totalWorkers = 0;
 
@@ -352,6 +370,10 @@ int ABaseHex::GetNumberOfWorkers()
 	}
 
 	return totalWorkers;
+}
+bool ABaseHex::WorkersAtCapacity() const
+{
+	return GetNumberOfWorkers() >= GetMaxWorkers();
 }
 void ABaseHex::UpdateWorkerDisplay()
 {
@@ -410,6 +432,24 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 		RemoveAllEffectsFromUnit(troop->GetUnitData());
 	}
 }
+
+bool ABaseHex::CanBuildOnHex(int requiredLayers) const
+{
+	if (building || !IsBuildableTerrain()) return false;
+
+	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(requiredLayers, false);
+	for (ABaseHex* aHex : hexesToBuild)
+	{
+		if (aHex->building ||
+			!aHex->IsBuildableTerrain() ||
+			aHex->GetHexOwner() != hexOwner)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 ABuilding* ABaseHex::GetBuilding() const
 {
 	return building;
@@ -451,29 +491,6 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 		building = nullptr;
 
 		SetMaxWorkers(maxWorkersDefault);
-		int totalWorkers = 0;
-		for (auto& worker : workersInHex)
-		{
-			totalWorkers += worker.Value;
-		}
-		int workersToRemove = totalWorkers > maxWorkersDefault ? totalWorkers - maxWorkersDefault : 0;
-
-		int removedWorkers = 0;
-		while (removedWorkers < workersToRemove)
-		{
-			for (auto& worker : workersInHex)
-			{
-				if (removedWorkers == workersToRemove) break;
-
-				int remove = UnitActions::RemoveWorkers(building->GetUnitData()->GetFaction(), worker.Key, 1, this);
-
-				if (remove > 0)
-				{
-					removedWorkers++;
-					workersInHex[worker.Key]--;
-				}
-			}
-		}
 	}
 }
 void ABaseHex::RemoveBuildingFromHex(int layers)
@@ -654,6 +671,10 @@ FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 	yields.wealthYield = FMath::RoundToInt(outputPercent * (float)resourceBonuses[EStratResources::Wealth]);
 
 	return yields;
+}
+const TMap<EStratResources, int>& ABaseHex::GetHexResources() const
+{
+	return resourceBonuses;
 }
 #pragma endregion
 

@@ -23,6 +23,6 @@ public:
 	virtual void ExecuteAction(IUAI_Controller* controller) override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Split Rules") TEnumAsByte<ESplitType> splitType;
-	UPROPERTY(EditAnywhere, Category = "Split Rules") TEnumAsByte<UnitTypes> unitToSplit;
+	UPROPERTY(EditAnywhere, Category = "Split Rules") ESplitType splitType;
+	UPROPERTY(EditAnywhere, Category = "Split Rules") UnitTypes unitToSplit;
 };

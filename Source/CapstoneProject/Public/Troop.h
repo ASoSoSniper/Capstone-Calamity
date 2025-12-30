@@ -60,8 +60,8 @@ private:
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
 	UPROPERTY(EditAnywhere) int armyCap = 20;
 	UPROPERTY(VisibleAnywhere) bool merging;
-	UPROPERTY(EditAnywhere, Category = "Debug") TEnumAsByte<Factions> preAssignedFaction = Factions::None;
-	UPROPERTY(EditAnywhere, Category = "Debug") TEnumAsByte<UnitTypes> preAssignedUnitType = UnitTypes::None;
+	UPROPERTY(EditAnywhere, Category = "Debug") Factions preAssignedFaction = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Debug") UnitTypes preAssignedUnitType = UnitTypes::None;
 	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 
 #pragma region Utility AI

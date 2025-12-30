@@ -73,7 +73,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
         workersInHex += workers.Value;
     }
     if (workersInHex >= hex->GetMaxWorkers()) return 0;
-    int workersToAdd = availableWorkers >= desiredWorkers ? desiredWorkers : availableWorkers;
+    int workersToAdd = FMath::Min(availableWorkers, desiredWorkers);
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working += workersToAdd;
@@ -83,7 +83,7 @@ int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWork
 
 int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
 {
-    int workersToRemove = desiredWorkers <= hex->workersInHex[worker] ? desiredWorkers : hex->workersInHex[worker];
+    int workersToRemove = FMath::Min(desiredWorkers, hex->workersInHex[worker]);
 
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
     ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
@@ -115,6 +115,7 @@ int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWork
         changedWorkerCount = -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
     }
 
+    hex->workersInHex[worker] += changedWorkerCount;
     hex->UpdateWorkerDisplay();
     
     return changedWorkerCount;
@@ -247,23 +248,17 @@ int UnitActions::GetResourceCap(Factions faction)
 
 ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referencePoint)
 {
-    TArray<AOutpost*> outposts;
-
-    for (ABuilding* building : ACapstoneProjectGameModeBase::activeFactions[faction]->allBuildings)
-    {
-        AOutpost* outpost = Cast<AOutpost>(building);
-        if (outpost) outposts.Add(outpost);
-    }
+    const TSet<ABuilding*>& outposts = ACapstoneProjectGameModeBase::activeFactions[faction]->GetBuildingsOfType(SpawnableBuildings::Outpost);
 
     float shortestDistance = std::numeric_limits<float>::infinity();
-    AOutpost* closestOutpost = nullptr;
-    for (int i = 0; i < outposts.Num(); i++)
+    ABuilding* closestOutpost = nullptr;
+    for (ABuilding* outpost : outposts)
     {
-        float distance = FVector::Distance(outposts[i]->GetActorLocation(), referencePoint->GetActorLocation());
+        float distance = FVector::Distance(outpost->GetActorLocation(), referencePoint->GetActorLocation());
         if (distance < shortestDistance)
         {
             shortestDistance = distance;
-            closestOutpost = outposts[i];
+            closestOutpost = outpost;
         }
     }
 

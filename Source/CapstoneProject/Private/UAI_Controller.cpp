@@ -198,10 +198,11 @@ void IUAI_Controller::FSM_Tick(const float& DeltaTime)
             FSM_State = EDecisionState::Executing;
         break;
     case EDecisionState::Executing:
-        if (bestAction)
+        UAI_Action* action = bestAction;
+        if (action)
         {
-            bestAction->ExecuteAction(this);
-            bestAction = nullptr;
+            action->ExecuteAction(this);
+            if (bestAction == action) FSM_Reset();
         }
         break;
     }

@@ -259,10 +259,10 @@ void ACapstoneProjectGameModeBase::UpdateBuildings()
 {
 	for (auto& faction : activeFactions)
 	{
-		for (ABuilding* building : faction.Value->allBuildings)
+		/*for (ABuilding* building : faction.Value->allBuildings)
 		{
 			building->HealOverTime();
-		}
+		}*/
 	}
 }
 
@@ -295,7 +295,7 @@ void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
 			Factions buildingFaction = data->GetFaction();
 			if (activeFactions.Contains(buildingFaction))
 			{
-				activeFactions[buildingFaction]->allBuildings.Add(building);
+				activeFactions[buildingFaction]->AddBuildingToFaction(building);
 			}
 		}
 	}
@@ -350,22 +350,4 @@ void ACapstoneProjectGameModeBase::CheckDate()
 	if (dayStruct.day != 25) return;
 
 	gameState = GameStates::Defeat;
-}
-
-void ACapstoneProjectGameModeBase::SpawnEnemies()
-{
-	if (blockEnemySpawning) return;
-
-	for (auto& factionObject : activeFactions)
-	{
-		factionObject.Value->SpawnEnemy();
-	}
-}
-
-void ACapstoneProjectGameModeBase::SpawnBuildings()
-{
-	for (auto& factionObject : activeFactions)
-	{
-		factionObject.Value->BuildRandomBuilding();
-	}
 }

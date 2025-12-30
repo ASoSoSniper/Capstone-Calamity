@@ -51,6 +51,15 @@ public:
 	UPROPERTY(BlueprintReadWrite) float hostilityScale = 0.5f;
 };
 
+USTRUCT(BlueprintType)
+struct FBuildingSet
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	TSet<ABuilding*> buildings;
+};
+
 UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API UFaction : public UObject
 {
@@ -62,7 +71,6 @@ public:
 	UPROPERTY(BlueprintReadWrite) TMap<EStratResources, FInventoryStat> resourceInventory;
 	UPROPERTY() TMap<WorkerType, FWorkerStats> availableWorkers;
 	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
-	UPROPERTY() TSet<ABuilding*> allBuildings = TSet<ABuilding*>();
 	UPROPERTY() TSet<ABaseHex*> ownedHexes = TSet<ABaseHex*>();
 	UPROPERTY() TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
 
@@ -98,15 +106,11 @@ public:
 	UFUNCTION() void FeedPop();
 	UFUNCTION() void ConsumeEnergy();
 
-	UFUNCTION() void BuildRandomBuilding();
 	UFUNCTION() TArray<ABaseHex*> GetHexesOfResource(EStratResources resource, int minValue = 2, bool includeHexesWithBuildings = false);
-	UFUNCTION() TArray<AOutpost*> GetFactionOutposts();
 
-	UFUNCTION() void SpawnEnemy();
-	UFUNCTION() int GetArmyTroopCount();
-
-	UFUNCTION() void SetDaysToTroopBuild(unsigned int days);
-	UFUNCTION() void SetDaysToBuildingBuild(unsigned int days);
+	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
+	void AddBuildingToFaction(ABuilding* building);
+	void RemoveBuildingFromFaction(ABuilding* building);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<FRelationshipStats> GetFactionRelationships() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetAvailableResources() const;
@@ -116,7 +120,7 @@ public:
 	UFUNCTION() void SetFactionController(AFactionController* setController);
 
 	UFUNCTION(BlueprintCallable) void CollectResource(EStratResources resource, int amount);
-	
+	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetNetResourcesPerDay(bool includeIncompleteBuildings) const;
 private:
 
 	UPROPERTY() Factions faction;
@@ -142,14 +146,5 @@ private:
 	int popDeathsPerFoodMissing;
 	int popDeathsPerPowerMissing;
 
-	int currentDaysTillArmySpawn = 0;
-	int currentDaysTillArmyGrowth = 0;
-	int currentDaysTillBuildingSpawn = 0;
-
-	int troopsInArmy = 0;
-	int maxTroopsInArmy = 20;
-
-	int daysTillArmySpawn = 1;
-	int daysTillArmyGrowth = 10;
-	int daysTillBuildingSpawn = 2;
+	UPROPERTY() TMap<SpawnableBuildings, FBuildingSet> allBuildings;
 };
