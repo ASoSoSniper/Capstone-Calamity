@@ -132,11 +132,6 @@ public:
 
 	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
 
-	static int AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-	static int RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-	static bool SetWorkers(Factions faction, WorkerType worker, int desiredWorkers);
-	static int SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex);
-
 	static TArray<int> GetFactionResources(Factions faction);
 	static void SetFactionResources(Factions faction, EStratResources resourceToChange, int desiredResourceVal);
 	static int GetFactionPopulation(Factions faction);
@@ -146,8 +141,6 @@ public:
 	static TMap<EStratResources, int> GetResourceLosses(Factions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
 	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
-	static void ConsumeSpentResources(Factions faction, TMap<EStratResources, int> resources, ABaseHex* hex = nullptr);
-	static void ConsumeSpentResources(Factions faction, TArray<int> values);
 	static void UpdateResourceCapacity(Factions faction, int addedCap);
 
 	static int GetResourceCap(Factions faction);

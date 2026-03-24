@@ -8,10 +8,6 @@
 #include "GlobalSpawner.h"
 #include "Outpost.generated.h"
 
-/**
- * 
- */
-
 UCLASS()
 class CAPSTONEPROJECT_API AOutpost : public ABuilding
 {
@@ -29,6 +25,8 @@ public:
 	virtual void Action4() override;
 
 	virtual void Destroyed() override;
+
+	
 protected:
 
 	UPROPERTY(EditAnywhere) int range = 2;

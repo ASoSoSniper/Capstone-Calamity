@@ -8,6 +8,7 @@
 #include "FactionController.generated.h"
 
 class UFaction;
+class UUAI_PriorityManager_Hex;
 
 UCLASS()
 class CAPSTONEPROJECT_API AFactionController : public AActor, public IUAI_Controller
@@ -48,4 +49,14 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actions") TMap<EActionType, FActionSelection> actions;
 	UPROPERTY(EditAnywhere, Category = "Actions") float updateTime = 1.f;
+
+#pragma region Priority Targeting
+public:
+	template<typename T>
+	UFUNCTION() void BindDelegates(T* t, bool enable);
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Workers(EStratResources resource) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Building(SpawnableBuildings building) const;
+private:
+	UPROPERTY(EditAnywhere, Category = "Priority Management") UUAI_PriorityManager_Hex* priorityManager_Hex;
+#pragma endregion
 };

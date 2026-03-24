@@ -143,13 +143,9 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		}
 	}
 
-	int hexWorkers = 0;
+	int hexWorkers = hex->GetNumberOfWorkers();
 	int availableWorkers = 0;
 	TMap<WorkerType, int> factionWorkers = UnitActions::GetFactionWorkers(unitData->GetFaction());
-	for (auto& worker : hex->workersInHex)
-	{
-		hexWorkers += worker.Value;
-	}
 	for (auto& worker : factionWorkers)
 	{
 		availableWorkers += worker.Value;
@@ -159,17 +155,14 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 	{
 		for (auto& worker : factionWorkers)
 		{
-			int addedWorker = UnitActions::AddWorkers(unitData->GetFaction(), worker.Key, 1, hex);
+			int addedWorker = hex->SetWorkers(worker.Key, hex->workersInHex[worker.Key] + 1);
 
-			hex->workersInHex[worker.Key] += addedWorker;
 			hexWorkers += addedWorker;
 			availableWorkers -= addedWorker;
 
 			if (hexWorkers >= hex->GetMaxWorkers() || availableWorkers <= 0) break;
 		}
 	}
-
-	hex->UpdateWorkerDisplay();
 
 	resourceCapIncrease = stats.resourceCapIncrease;
 

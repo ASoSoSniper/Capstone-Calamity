@@ -490,18 +490,19 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 }
 FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 {
-	if (!selectedHex) return sliders;
+	if (!selectedHex || selectedHex->GetHexOwner() != Factions::Human) return sliders;
 
-	UnitActions::SetWorkers(Factions::Human, WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * selectedHex->GetMaxWorkers()), selectedHex);
-	UnitActions::SetWorkers(Factions::Human, WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * selectedHex->GetMaxWorkers()), selectedHex);
-	UnitActions::SetWorkers(Factions::Human, WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * selectedHex->GetMaxWorkers()), selectedHex);
+	sliders.maxWorkers = selectedHex->GetMaxWorkers();
+
+	selectedHex->SetWorkers(WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * sliders.maxWorkers));
+	selectedHex->SetWorkers(WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * sliders.maxWorkers));
+	selectedHex->SetWorkers(WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * sliders.maxWorkers));
 
 	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
 	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];
 	sliders.alienDisplay = selectedHex->workersInHex[WorkerType::Alien];
 
-	sliders.maxWorkers = selectedHex->GetMaxWorkers();
-	sliders.currWorkers = selectedHex->workersInHex[WorkerType::Human] + selectedHex->workersInHex[WorkerType::Robot] + selectedHex->workersInHex[WorkerType::Alien];
+	sliders.currWorkers = selectedHex->GetNumberOfWorkers();
 
 	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);
 	sliders.availableRobots = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Robot);
@@ -569,75 +570,6 @@ TArray<int> ABasePlayerController::GetPlayerResources()
 
 	return numbers;
 }
-void ABasePlayerController::SetPlayerResources(int foodCost, int prodCost, int energyCost, int wealthCost, int popCost, bool overrideCosts)
-{
-	int canAfford = 0;
-
-	TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(playerFaction);
-	TMap<WorkerType, int> workers = UnitActions::GetFactionWorkers(playerFaction);
-
-	//if (foodCost >= 0 || resources[StratResources::Food] < foodCost) canAfford++;
-	//if (prodCost >= 0 || resources[StratResources::Production] < prodCost) canAfford++;
-	//if (energyCost >= 0 || resources[StratResources::Energy] < energyCost) canAfford++;
-	//if (wealthCost >= 0 || resources[StratResources::Wealth] < wealthCost) canAfford++;
-	//if (popCost >= 0 || workers[WorkerType::Human] < popCost) canAfford++;
-
-	//if (canAfford < 5 || !overrideCosts) return;
-
-	TMap<EStratResources, int> costs;
-	costs.Add(EStratResources::Food, -foodCost);
-	costs.Add(EStratResources::Production, -prodCost);
-	costs.Add(EStratResources::Energy, -energyCost);
-	costs.Add(EStratResources::Wealth, -wealthCost);
-	UnitActions::ConsumeSpentResources(playerFaction, costs);
-
-	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available += popCost;
-	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available);
-
-	int remainingPopCost = workers[WorkerType::Human] + popCost;
-	if (remainingPopCost >= 0) return;
-
-	remainingPopCost = FMath::Abs(remainingPopCost);;
-	int thatPopCost = remainingPopCost;
-
-	//Kill working population
-	TArray<ABaseHex*> hexesWithWorkers;
-	for (ABaseHex* hex : ACapstoneProjectGameModeBase::activeFactions[playerFaction]->ownedHexes)
-	{
-		if (hex->workersInHex[WorkerType::Human] > 0)
-			hexesWithWorkers.Add(hex);
-	}
-
-	int scanIndex = 0;
-
-	if (hexesWithWorkers.IsEmpty()) return;
-
-	int overloadStopper = 0;
-	while (remainingPopCost != 0)
-	{
-		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
-		{
-			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
-			remainingPopCost--;
-		}
-
-		scanIndex++;
-		if (!hexesWithWorkers.IsValidIndex(scanIndex))
-		{
-			scanIndex = 0;
-		}
-
-		overloadStopper++;
-		if (overloadStopper == 100)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Could not finish"));
-			return;
-		}
-	}
-	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working -= thatPopCost;
-	ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working =
-		FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working);
-}
 
 //FOR BLUEPRINT: Returns the maximum number of resources the player faction can possess
 int ABasePlayerController::GetResourceCap()
@@ -659,6 +591,14 @@ FResourcesPerTick ABasePlayerController::GetResourcesPerTick()
 FResourceGainLoss ABasePlayerController::GetResourceRates()
 {
 	return UnitActions::GetFaction(playerFaction)->GetResourceRates();
+}
+
+void ABasePlayerController::SetPlayerResources(const TMap<EStratResources, int>& resources)
+{
+	UFaction* faction = UnitActions::GetFaction(playerFaction);
+
+	if (faction)
+		faction->SetResources(resources);
 }
 
 int ABasePlayerController::GetPlayerPopulation()

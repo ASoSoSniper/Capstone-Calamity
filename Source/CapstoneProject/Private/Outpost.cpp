@@ -2,11 +2,9 @@
 
 
 #include "Outpost.h"
-#include "MergedArmy.h"
-#include "Troop.h"
-#include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
-#include "TroopFactory.h"
+#include "UnitActions.h"
+#include "Faction.h"
 
 AOutpost::AOutpost()
 {
@@ -43,6 +41,7 @@ TSet<ABaseHex*> AOutpost::ClaimLand()
 void AOutpost::BuildingAction()
 {
 	claimedHexes = ClaimLand();
+	onHexesClaimed.Broadcast();
 }
 
 UStaticMesh* AOutpost::LoadFinishedModel()

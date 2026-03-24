@@ -133,6 +133,12 @@ void ABaseHex::BeginPlay()
 #pragma endregion
 
 #pragma region Identity
+FHexInfo ABaseHex::GetTerrainInfo(TerrainType terrain) const
+{
+	if (!hexInfo.Contains(terrain)) return FHexInfo();
+
+	return hexInfo[terrain];
+}
 Factions ABaseHex::GetHexOwner()
 {
 	return hexOwner;
@@ -141,17 +147,13 @@ void ABaseHex::SetHexOwner(Factions faction)
 {
 	if (hexOwner != Factions::None)
 	{
-		if (ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ownedHexes.Contains(this))
-			ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ownedHexes.Remove(this);
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->DropHex(this);
 	}
 
 	hexOwner = faction;
 	visibility->faction = faction;
 
-	if (!ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Contains(this))
-	{
-		ACapstoneProjectGameModeBase::activeFactions[faction]->ownedHexes.Add(this);
-	}
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
 }
 
 FVector2D ABaseHex::GetHexCoordinates() const
@@ -325,9 +327,13 @@ bool ABaseHex::IsTraversableTerrain() const
 }
 bool ABaseHex::IsBuildableTerrain() const
 {
-	return hexTerrain != TerrainType::Border &&
-		hexTerrain != TerrainType::Mountains &&
-		hexTerrain != TerrainType::Jungle;
+	return IsBuildableTerrain(hexTerrain);
+}
+bool ABaseHex::IsBuildableTerrain(TerrainType terrain)
+{
+	return terrain != TerrainType::Border &&
+		terrain != TerrainType::Mountains &&
+		terrain != TerrainType::Jungle;
 }
 bool ABaseHex::IsPlayerHex()
 {
@@ -340,6 +346,44 @@ bool ABaseHex::CanPutWorkersOnHex()
 #pragma endregion
 
 #pragma region Workers
+int ABaseHex::SetWorkers(WorkerType worker, int desiredWorkers)
+{
+	int changedWorkerCount = 0;
+
+	if (desiredWorkers > workersInHex[worker])
+	{
+		changedWorkerCount = AddWorkers(worker, desiredWorkers - workersInHex[worker]);
+	}
+	else if (desiredWorkers < workersInHex[worker])
+	{
+		changedWorkerCount = RemoveWorkers(worker, workersInHex[worker] - desiredWorkers);
+	}
+
+	onWorkersSet.Broadcast(this);
+
+	return changedWorkerCount;
+}
+
+int ABaseHex::AddWorkers(WorkerType worker, unsigned int desiredWorkers)
+{
+	desiredWorkers = FMath::Min(desiredWorkers, (unsigned int)(maxWorkers - GetNumberOfWorkers()));
+	int workersToAdd = UnitActions::GetFaction(hexOwner)->SetWorkerAvailability(true, worker, desiredWorkers);
+
+	workersInHex[worker] += workersToAdd;
+
+	return workersToAdd;
+}
+
+int ABaseHex::RemoveWorkers(WorkerType worker, unsigned int desiredWorkers)
+{
+	desiredWorkers = FMath::Min(desiredWorkers, (unsigned int)workersInHex[worker]);
+	int workersToRemove = UnitActions::GetFaction(hexOwner)->SetWorkerAvailability(false, worker, desiredWorkers);
+
+	workersInHex[worker] -= workersToRemove;
+
+	return -workersToRemove;
+}
+
 int ABaseHex::GetMaxWorkers() const
 {
 	return maxWorkers;
@@ -353,7 +397,7 @@ void ABaseHex::SetMaxWorkers(int newMax)
 	{
 		for (const TPair<WorkerType, int>& worker : workersInHex)
 		{
-			if (UnitActions::SetWorkers(hexOwner, worker.Key, worker.Value - 1, this) != 0)
+			if (SetWorkers(worker.Key, worker.Value - 1) != 0)
 			{
 				if (--currCount <= newMax) break;
 			}
@@ -375,12 +419,16 @@ bool ABaseHex::WorkersAtCapacity() const
 {
 	return GetNumberOfWorkers() >= GetMaxWorkers();
 }
-void ABaseHex::UpdateWorkerDisplay()
+void ABaseHex::EmptyWorkers(WorkerType worker)
 {
-	int current = GetNumberOfWorkers();
-	int max = maxWorkers;
-	
-	SetWorkerDisplay(current, max);
+	SetWorkers(worker, -workersInHex[worker]);
+}
+void ABaseHex::EmptyWorkers()
+{
+	for (const TPair<WorkerType, int>& worker : workersInHex)
+	{
+		EmptyWorkers(worker.Key);
+	}
 }
 #pragma endregion
 
@@ -492,6 +540,8 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 
 		SetMaxWorkers(maxWorkersDefault);
 	}
+
+	onBuildingSet.Broadcast(this);
 }
 void ABaseHex::RemoveBuildingFromHex(int layers)
 {
@@ -675,6 +725,22 @@ FCurrentResourceYields ABaseHex::GetCurrentResourceYields()
 const TMap<EStratResources, int>& ABaseHex::GetHexResources() const
 {
 	return resourceBonuses;
+}
+EStratResources ABaseHex::GetMainResourceYield() const
+{
+	EStratResources best = EStratResources::None;
+	int bestCount = 0;
+
+	for (const TPair<EStratResources, int32>& resource : resourceBonuses)
+	{
+		if (best == EStratResources::None || resource.Value > bestCount)
+		{
+			bestCount = resource.Value;
+			best = resource.Key;
+		}
+	}
+
+	return best;
 }
 #pragma endregion
 

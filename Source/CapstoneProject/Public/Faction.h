@@ -8,6 +8,7 @@
 #include "FactionController.h"
 #include "Faction.generated.h"
 
+#pragma region Structs
 USTRUCT(BlueprintType)
 struct FWorkerStats
 {
@@ -57,25 +58,77 @@ struct FBuildingSet
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FBuildingStats buildingStats;
 	TSet<ABuilding*> buildings;
 };
+
+USTRUCT(BlueprintType)
+struct FHexSet
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FHexInfo hexInfo;
+	TSet<ABaseHex*> hexes;
+};
+#pragma endregion
+
+class UUAI_PriorityManager_Hex;
 
 UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API UFaction : public UObject
 {
 	GENERATED_BODY()
 
+#pragma region General Logic
 public:
 	UFaction();
 
-	UPROPERTY(BlueprintReadWrite) TMap<EStratResources, FInventoryStat> resourceInventory;
-	UPROPERTY() TMap<WorkerType, FWorkerStats> availableWorkers;
-	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
-	UPROPERTY() TSet<ABaseHex*> ownedHexes = TSet<ABaseHex*>();
-	UPROPERTY() TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
+	UFUNCTION() void SetFaction(Factions newFaction);
+	UFUNCTION() Factions GetFaction();
+	UFUNCTION() FString GetFactionName() const;
+	UFUNCTION() bool IsAIControlled();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) AFactionController* GetFactionController() const;
+	UFUNCTION() void SetFactionController(AFactionController* setController);
 
 	void FindActiveFactions();
+
+	UPROPERTY() UMaterialInterface* factionColor;
+	TMap<FString, TArray<int32>> armyNamesHuman;
+	TMap<FString, TArray<int32>> armyNamesAlien;
+	UPROPERTY() int maxNameShare = 3;
+
+	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
+private:
+	UPROPERTY() Factions faction;
+	UPROPERTY() FString factionName;
+	UPROPERTY() AFactionController* controller;
+#pragma endregion
+#pragma region Resources
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetAvailableResources() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceMax() const;
+	
+	UFUNCTION(BlueprintCallable) void CollectResource(EStratResources resource, int amount);
+	UFUNCTION(BlueprintCallable) void ConsumeResource(EStratResources resource, int amount);
+	UFUNCTION(BlueprintCallable) void SetResources(const TMap<EStratResources, int>& resources);
+
+	UPROPERTY(BlueprintReadWrite) TMap<EStratResources, FInventoryStat> resourceInventory;
+private:	
+#pragma endregion
+#pragma region Resource Costs
+public:
 	void SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
+	UFUNCTION() void UpdateResourceCosts();
+	UFUNCTION() FResourceGainLoss GetResourceRates();
+
+	UFUNCTION() void FeedPop();
+	UFUNCTION() void ConsumeEnergy();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetNetResourcesPerDay(bool includeIncompleteBuildings) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceGainsPerDay(EStratResources resource, bool includeIncompleteBuildings) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceLossesPerDay(EStratResources resource) const;
 
 	UPROPERTY() int daysTillStarve = 3;
 	UPROPERTY() int currStarveDays = 0;
@@ -84,67 +137,73 @@ public:
 	UPROPERTY() int daysTillPowerOutage = 3;
 	UPROPERTY() int currPowerDays = 0;
 	UPROPERTY() bool powerOutage = false;
-
-	UPROPERTY() UMaterialInterface* factionColor;
-	TMap<FString, TArray<int32>> armyNamesHuman;
-	TMap<FString, TArray<int32>> armyNamesAlien;
-	UPROPERTY() int maxNameShare = 3;
-
-	FactionRelationship GetFactionRelationship(Factions targetFaction);
-	FactionRelationship GetFactionRelationship(AActor* target);
-
-	UFUNCTION() void IncreaseHostility(Factions targetFaction, float amount);
-	UFUNCTION() void LowerHostility(Factions targetFaction, float amount);
-
-	UFUNCTION() void SetFaction(Factions newFaction);
-	UFUNCTION() Factions GetFaction();
-	UFUNCTION() FString GetFactionName() const;
-	UFUNCTION() bool IsAIControlled();
-
-	UFUNCTION() void UpdateResourceCosts();
-	UFUNCTION() FResourceGainLoss GetResourceRates();
-	UFUNCTION() void FeedPop();
-	UFUNCTION() void ConsumeEnergy();
-
-	UFUNCTION() TArray<ABaseHex*> GetHexesOfResource(EStratResources resource, int minValue = 2, bool includeHexesWithBuildings = false);
-
-	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
-	void AddBuildingToFaction(ABuilding* building);
-	void RemoveBuildingFromFaction(ABuilding* building);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<FRelationshipStats> GetFactionRelationships() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetAvailableResources() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceMax() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPopAlpha() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) AFactionController* GetFactionController() const;
-	UFUNCTION() void SetFactionController(AFactionController* setController);
-
-	UFUNCTION(BlueprintCallable) void CollectResource(EStratResources resource, int amount);
-	UFUNCTION(BlueprintCallable, BlueprintPure) TMap<EStratResources, int> GetNetResourcesPerDay(bool includeIncompleteBuildings) const;
 private:
-
-	UPROPERTY() Factions faction;
-	UPROPERTY() FString factionName;
-	UPROPERTY() AFactionController* controller;
-
-	UPROPERTY() TMap<Factions, FRelationshipStats> factionRelationships;
-	UFUNCTION() void SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship);
-	UFUNCTION() void CleanTargetPool();
-	UFUNCTION() void GetTargetsOfAllies();
-	UFUNCTION() void TargetBuildingsOfFaction(Factions targetFaction);
-
 	UFUNCTION() void CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost);
 	UFUNCTION() int CalculateEnergyCost();
 
 	UFUNCTION() void StarvePop(int foodCost);
 	UFUNCTION() void PowerOutage(int energyCost);
-	UFUNCTION() void RemoveWorkers(WorkerType workerType);
-	UFUNCTION() void KillPopulation(int cost, int deathsPerResource);
-
+	
 	int foodPerNonWorkers;
 	int foodPerWorkers;
 	int popDeathsPerFoodMissing;
 	int popDeathsPerPowerMissing;
+#pragma endregion
+#pragma region Faction Relationships
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<FRelationshipStats> GetFactionRelationships() const;
+	FactionRelationship GetFactionRelationship(Factions targetFaction);
+	FactionRelationship GetFactionRelationship(AActor* target);
 
+	UFUNCTION() void IncreaseHostility(Factions targetFaction, float amount);
+	UFUNCTION() void LowerHostility(Factions targetFaction, float amount);
+private:
+	UFUNCTION() void SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship);
+	UPROPERTY() TMap<Factions, FRelationshipStats> factionRelationships;
+#pragma endregion
+#pragma region Hexes
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool OwnsHex(ABaseHex* hex) const;
+	UFUNCTION(BlueprintCallable) void ClaimHex(ABaseHex* hex);
+	UFUNCTION(BlueprintCallable) void DropHex(ABaseHex* hex);
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TMap<TerrainType, FHexSet>& GetOwnedHexes() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetOccupiedHexCount() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetOwnedHexCount(bool includeNonBuildable = false) const;
+private:
+	UPROPERTY() TMap<TerrainType, FHexSet> ownedHexes = TMap<TerrainType, FHexSet>();
+#pragma endregion
+#pragma region Buildings
+public:
+	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
+	void AddBuildingToFaction(ABuilding* building);
+	void RemoveBuildingFromFaction(ABuilding* building);
+private:
 	UPROPERTY() TMap<SpawnableBuildings, FBuildingSet> allBuildings;
+#pragma endregion
+#pragma region Workers
+public:
+	UFUNCTION(BlueprintCallable) int SetWorkerAvailability(bool toWorking, WorkerType workerType, int desiredWorkers);
+	UFUNCTION(BlueprintCallable) bool ConsumeWorkers(WorkerType workerType, int count);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPopAlpha() const;
+
+	UPROPERTY() TMap<WorkerType, FWorkerStats> availableWorkers;
+private:
+	UFUNCTION() void RemoveWorkers(WorkerType workerType);
+	UFUNCTION() void KillPopulation(int amount);
+#pragma endregion
+#pragma region Enemy Targeting
+public:
+	UPROPERTY() TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
+private:
+	UFUNCTION() void CleanTargetPool();
+	UFUNCTION() void GetTargetsOfAllies();
+	UFUNCTION() void TargetBuildingsOfFaction(Factions targetFaction);
+#pragma endregion
+#pragma region Priority Targeting
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Workers(EStratResources resource) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Building(SpawnableBuildings building) const;
+#pragma endregion;
 };

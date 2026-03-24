@@ -13,22 +13,8 @@ void UUAIA_SetWorkersOnHex::ExecuteAction(IUAI_Controller* controller)
 
 	UFaction* faction = factionController->GetFactionObject();
 	if (!faction) return;
-	if (faction->ownedHexes.IsEmpty()) return;
 
-	ABaseHex* bestHex = nullptr;
-	int bestResource = 0;
-	for (ABaseHex*& hex : faction->ownedHexes)
-	{
-		if (hex->workersInHex[WorkerType::Alien] >= hex->GetMaxWorkers()) continue;
-		int resource = hex->GetHexResources()[resourceTarget];
-
-		if (!bestHex || resource > bestResource)
-		{
-			bestHex = hex;
-			bestResource = resource;
-		}
-	}
-
+	ABaseHex* bestHex = faction->GetPriorityHex_Workers(resourceTarget);
 	if (!bestHex) return;
 
 	int amount = 0;
@@ -45,5 +31,5 @@ void UUAIA_SetWorkersOnHex::ExecuteAction(IUAI_Controller* controller)
 		break;
 	}
 	
-	UnitActions::SetWorkers(faction->GetFaction(), WorkerType::Alien, amount, bestHex);
+	bestHex->SetWorkers(WorkerType::Alien, amount);
 }

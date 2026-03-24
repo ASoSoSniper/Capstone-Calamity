@@ -78,6 +78,8 @@ enum class EHexSearchRules : uint8
 	ContainsEnemies
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexPropertyChanged, ABaseHex*, hex);
+
 UCLASS()
 class CAPSTONEPROJECT_API ABaseHex : public AActor
 {
@@ -90,6 +92,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* troopAnchor;
 	UPROPERTY(EditAnywhere, Category = "Components") USceneComponent* buildingAnchor;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events") FOnHexPropertyChanged onBuildingSet;
+	UPROPERTY(BlueprintAssignable, Category = "Events") FOnHexPropertyChanged onWorkersSet;
+
 protected:
 	virtual void BeginPlay() override;
 private:
@@ -98,6 +104,8 @@ private:
 
 #pragma region Identity
 public:
+	FHexInfo GetTerrainInfo(TerrainType terrain) const;
+
 	Factions GetHexOwner();
 	void SetHexOwner(Factions faction);
 
@@ -116,6 +124,7 @@ public:
 	bool IsStaticBuildingTerrain();
 	bool IsTraversableTerrain() const;
 	bool IsBuildableTerrain() const;
+	static bool IsBuildableTerrain(TerrainType terrain);
 	bool IsPlayerHex();
 	bool CanPutWorkersOnHex();
 
@@ -132,17 +141,21 @@ private:
 
 #pragma region Workers
 public:
-	int GetMaxWorkers() const;
-	void SetMaxWorkers(int newMax);
-	int GetNumberOfWorkers() const;
-	bool WorkersAtCapacity() const;
+	int SetWorkers(WorkerType worker, int desiredWorkers);
 
-	void UpdateWorkerDisplay();
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetMaxWorkers() const;
+	UFUNCTION(BlueprintCallable) void SetMaxWorkers(int newMax);
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetNumberOfWorkers() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool WorkersAtCapacity() const;
+
+	void EmptyWorkers(WorkerType worker);
+	void EmptyWorkers();
 
 	TMap<WorkerType, int> workersInHex;
-protected:
-	UFUNCTION(BlueprintImplementableEvent) void SetWorkerDisplay(const int& current, const int& max);
 private:
+	int AddWorkers(WorkerType worker, unsigned int desiredWorkers);
+	int RemoveWorkers(WorkerType worker, unsigned int desiredWorkers);
+
 	UPROPERTY(VisibleAnywhere, Category = "Identity") int maxWorkers = 15;
 	UPROPERTY(EditAnywhere, Category = "Identity") int maxWorkersDefault = 5;
 #pragma endregion
@@ -192,6 +205,8 @@ public:
 	void ToggleResourceYield();
 	FCurrentResourceYields GetCurrentResourceYields();
 	const TMap<EStratResources, int>& GetHexResources() const;
+
+	EStratResources GetMainResourceYield() const;
 private:
 	TMap<EStratResources, int> resourceBonuses;
 	bool harvesting;

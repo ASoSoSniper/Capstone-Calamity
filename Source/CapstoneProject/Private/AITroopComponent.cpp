@@ -210,7 +210,7 @@ AActor* UAITroopComponent::FindHexToSettle()
 	ABaseHex* bestHex = nullptr;
 	int mostFreeHexes = 0;
 
-	for (ABaseHex* ownedHex : factionObject->ownedHexes)
+	/*for (ABaseHex* ownedHex : factionObject->ownedHexes)
 	{
 		int freeHexes = 0;
 		TSet<ABaseHex*> adjacentHexes = ownedHex->GetHexesInRadius();
@@ -228,7 +228,7 @@ AActor* UAITroopComponent::FindHexToSettle()
 			mostFreeHexes = freeHexes;
 			bestHex = ownedHex;
 		}
-	}
+	}*/
 
 	return bestHex;
 }

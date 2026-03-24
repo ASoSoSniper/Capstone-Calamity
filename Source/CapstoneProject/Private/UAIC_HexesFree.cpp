@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UAIC_CanBuildOfSize.h"
-#include "FactionController.h"
+#include "UAIC_HexesFree.h"
 #include "Faction.h"
+#include "FactionController.h"
 
-float UUAIC_CanBuildOfSize::ScoreCondition(IUAI_Controller* controller) const
+float UUAIC_HexesFree::ScoreCondition(IUAI_Controller* controller) const
 {
 	AFactionController* factionController = Cast<AFactionController>(controller);
 	if (!factionController) return GetMinScore();
@@ -13,10 +13,9 @@ float UUAIC_CanBuildOfSize::ScoreCondition(IUAI_Controller* controller) const
 	UFaction* faction = factionController->GetFactionObject();
 	if (!faction) return GetMinScore();
 
-	for (ABaseHex*& hex : faction->ownedHexes)
-	{
-		if (hex->CanBuildOnHex(buildingSize)) return FactorInversion(1.f);
-	}
+	float occupied = faction->GetOccupiedHexCount();
+	float total = faction->GetOwnedHexCount();
 
-	return GetMinScore();
+	float alpha = FMath::Clamp(occupied / total, 0.f, 0.1f);
+	return EvaluateOnCurve(FactorInversion(alpha));
 }

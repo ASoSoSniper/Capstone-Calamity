@@ -885,6 +885,8 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 	//If no prefab found, return
 	if (!prefab) return;
 
+	UFaction* factionObject = UnitActions::GetFaction(faction);
+
 	//Declare bool for whether this building is affordable
 	bool canAfford = false;
 
@@ -920,18 +922,14 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			}
 		}
 
-		resourceCosts.Add(EStratResources::Production, buildingCosts[building].productionCost);
+		resourceCosts.Add(EStratResources::Production, -buildingCosts[building].productionCost);
 	}
 
 	if (canAfford)
 	{
-		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, hex);
-		newBuilding->InitBuilding(faction);
-
 		if (building == SpawnableBuildings::Outpost)
 		{
-			UnitActions::SetWorkers(faction, WorkerType::Human, troopCosts[UnitTypes::Settler].populationCost);
+			resourceCosts.Add(EStratResources::Population, troopCosts[UnitTypes::Settler].populationCost);
 			if (settlerOnHex)
 			{
 				if (settlerOnHex->GetUnitData()->GetUnitType() == UnitTypes::Settler)
@@ -945,12 +943,15 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 			}
 		}
 
+		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
+		factionObject->SetResources(resourceCosts);
+		newBuilding->InitBuilding(faction);
+
 		controller->PlayUIBuildingSound(building);
 	}
 	else
 	{
 		controller->PlayUISound(controller->selectFailSound);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot afford building"));
 	}
 }
 void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
@@ -1101,28 +1102,17 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
 	{
 		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
 
-		if (resources[EStratResources::Production] >= troopCosts[unit].productionCost)
-		{
-			if (unit == UnitTypes::Settler)
-			{
-				if (UnitActions::SetWorkers(faction, WorkerType::Human, -troopCosts[UnitTypes::Settler].populationCost))
-				{
-					canAfford = true;
-				}
-			}
-			else
-			{
-				canAfford = true;
-			}
+		if (resources[EStratResources::Production] >= troopCosts[unit].productionCost) 
+			canAfford = true;
 
-		}
-
-		resourceCosts.Add(EStratResources::Production, troopCosts[unit].productionCost);
+		resourceCosts.Add(EStratResources::Production, -troopCosts[unit].productionCost);
+		if (unit == UnitTypes::Settler)
+			resourceCosts.Add(EStratResources::Population, -troopCosts[unit].populationCost);
 	}
 
 	if (canAfford)
 	{
-		UnitActions::ConsumeSpentResources(faction, resourceCosts, nullptr);
+		UnitActions::GetFaction(faction)->SetResources(resourceCosts);
 		controller->PlayUITroopSound(unit);
 	}
 	else

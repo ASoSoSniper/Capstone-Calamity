@@ -4,6 +4,8 @@
 #include "FactionController.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "Faction.h"
+#include "UAI_PriorityManager_Hex.h"
+
 
 // Sets default values
 AFactionController::AFactionController()
@@ -11,6 +13,7 @@ AFactionController::AFactionController()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	priorityManager_Hex = CreateDefaultSubobject<UUAI_PriorityManager_Hex>(TEXT("Hex Priority Manager"));
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +39,9 @@ void AFactionController::SetFaction(UFaction* setFaction)
 	if (faction != nullptr) return;
 
 	faction = setFaction;
+
+	priorityManager_Hex = NewObject<UUAI_PriorityManager_Hex>(this);
+	priorityManager_Hex->Initialize(faction);
 }
 
 UFaction* AFactionController::GetFactionObject() const
@@ -146,3 +152,28 @@ FText AFactionController::GetActionAbandonCountdown() const
 {
 	return FText::FromString(FString::Printf(TEXT("Abandon Action In: %.2f"), GetTimeTIllActionAbandon()));
 }
+
+#pragma region Priority Targeting
+template<typename T>
+void AFactionController::BindDelegates(T* t, bool enable)
+{
+	if (!t) return;
+
+	if (ABaseHex* hex = Cast<ABaseHex>(t))
+	{
+		priorityManager_Hex->BindHexDelegates(hex, enable);
+	}
+	else if (ABuilding* building = Cast<ABuilding>(t))
+	{
+		priorityManager_Hex->BindBuildingDelegates(building, enable);
+	}
+}
+ABaseHex* AFactionController::GetPriorityHex_Workers(EStratResources resource) const
+{
+	return priorityManager_Hex->GetPriorityHex_Workers(resource);
+}
+ABaseHex* AFactionController::GetPriorityHex_Building(SpawnableBuildings building) const
+{
+	return priorityManager_Hex->GetPriorityHex_Building(building);
+}
+#pragma endregion

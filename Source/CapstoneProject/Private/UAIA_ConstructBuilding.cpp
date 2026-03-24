@@ -13,29 +13,8 @@ void UUAIA_ConstructBuilding::ExecuteAction(IUAI_Controller* controller)
 
 	UFaction* faction = factionController->GetFactionObject();
 	if (!faction) return;
-	if (faction->ownedHexes.IsEmpty()) return;
 
-	EStratResources buildingResource = AGlobalSpawner::GetMainBuildingYield(building);
-	if (buildingResource == EStratResources::None) return;
-
-	int buildingSize = AGlobalSpawner::spawnerObject->buildingCosts[building].hexLayers;
-
-	ABaseHex* bestHex = nullptr;
-	int bestResource = 0;
-	for (ABaseHex*& hex : faction->ownedHexes)
-	{
-		if (hex->CanBuildOnHex(buildingSize))
-		{
-			int resource = hex->GetHexResources()[buildingResource];
-
-			if (!bestHex || resource > bestResource)
-			{
-				bestHex = hex;
-				bestResource = resource;
-			}
-		}
-	}
-
+	ABaseHex* bestHex = faction->GetPriorityHex_Building(building);
 	if (!bestHex) return;
 
 	AGlobalSpawner::spawnerObject->SpawnBuilding(faction->GetFaction(), building, bestHex);

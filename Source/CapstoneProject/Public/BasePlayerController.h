@@ -150,10 +150,12 @@ public:
 #pragma region Player Commands
 public:
 	UFUNCTION(BlueprintCallable) TArray<int> GetPlayerResources();
-	UFUNCTION(BlueprintCallable) void SetPlayerResources(int foodCost, int prodCost, int energyCost, int wealthCost, int popCost, bool overrideCosts = true);
 	UFUNCTION(BlueprintCallable) int GetResourceCap();
 	UFUNCTION(BlueprintCallable) FResourcesPerTick GetResourcesPerTick();
 	UFUNCTION(BlueprintCallable) FResourceGainLoss GetResourceRates();
+
+	//Collects and consumes resources. Positive int values add resources, negative values consume them.
+	UFUNCTION(BlueprintCallable) void SetPlayerResources(const TMap<EStratResources, int>& resources);
 
 	UFUNCTION(BlueprintCallable) int GetPlayerPopulation();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPlayerPopAlpha() const;

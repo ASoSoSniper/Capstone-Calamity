@@ -14,6 +14,7 @@
 #include "UAI_Controller.h"
 #include "Building.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHexesClaimed);
 
 UCLASS()
 class CAPSTONEPROJECT_API ABuilding : public AActor, public IUAI_Controller
@@ -36,6 +37,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
+
+	FOnHexesClaimed onHexesClaimed;
 
 	virtual void Action1();
 	virtual void Action2();

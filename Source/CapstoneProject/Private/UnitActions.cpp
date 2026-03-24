@@ -64,63 +64,6 @@ int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
 }
 
-int UnitActions::AddWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
-{
-    int availableWorkers = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
-    int workersInHex = 0;
-    for (auto& workers : hex->workersInHex)
-    {
-        workersInHex += workers.Value;
-    }
-    if (workersInHex >= hex->GetMaxWorkers()) return 0;
-    int workersToAdd = FMath::Min(availableWorkers, desiredWorkers);
-
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available -= workersToAdd;
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working += workersToAdd;
-
-    return workersToAdd;
-}
-
-int UnitActions::RemoveWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
-{
-    int workersToRemove = FMath::Min(desiredWorkers, hex->workersInHex[worker]);
-
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += workersToRemove;
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].working -= workersToRemove;
-
-    return workersToRemove;
-}
-
-bool UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers)
-{
-    if (desiredWorkers < 0 && FMath::Abs(desiredWorkers) > ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available) return false;
-
-    ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available += desiredWorkers;
-
-    return true;
-}
-
-int UnitActions::SetWorkers(Factions faction, WorkerType worker, int desiredWorkers, ABaseHex* hex)
-{
-    if (!hex) return 0;
-
-    int changedWorkerCount = 0;
-
-    if (desiredWorkers > hex->workersInHex[worker])
-    {
-        changedWorkerCount = AddWorkers(faction, worker, desiredWorkers - hex->workersInHex[worker], hex);
-    }
-    else if (desiredWorkers < hex->workersInHex[worker])
-    {
-        changedWorkerCount = -RemoveWorkers(faction, worker, hex->workersInHex[worker] - desiredWorkers, hex);
-    }
-
-    hex->workersInHex[worker] += changedWorkerCount;
-    hex->UpdateWorkerDisplay();
-    
-    return changedWorkerCount;
-}
-
 TArray<int> UnitActions::GetFactionResources(Factions faction)
 {
     TArray<int> resources;
@@ -207,30 +150,6 @@ TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
     }
 
     return workers;
-}
-
-void UnitActions::ConsumeSpentResources(Factions faction, TMap<EStratResources, int> resources, ABaseHex* hex)
-{
-    for (auto& resource : resources)
-    {
-        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources -= resource.Value;
-        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources = FMath::Max(0, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resource.Key].currentResources);
-    }
-}
-
-void UnitActions::ConsumeSpentResources(Factions faction, TArray<int> values)
-{
-    int index = 0;
-    for (auto& resources : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
-    {
-        ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resources.Key].currentResources = FMath::Clamp(values[index], 0, resources.Value.maxResources);
-        index++;
-    }
-    for (auto& workers : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
-    {
-        ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[workers.Key].available = values[index] > 0 ? values[index] : 0;
-        index++;
-    }
 }
 
 void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
