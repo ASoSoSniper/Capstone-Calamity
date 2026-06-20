@@ -3,14 +3,10 @@
 
 #include "UAIC_HexesFree.h"
 #include "Faction.h"
-#include "FactionController.h"
 
 float UUAIC_HexesFree::ScoreCondition(IUAI_Controller* controller) const
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return GetMinScore();
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
 	float occupied = faction->GetOccupiedHexCount();

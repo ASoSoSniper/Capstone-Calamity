@@ -35,7 +35,7 @@ void UMeshVisibility::BeginPlay()
 	}
 }
 
-void UMeshVisibility::SetupComponent(Factions setFaction, UMeshComponent* meshComponent)
+void UMeshVisibility::SetupComponent(EFactions setFaction, UMeshComponent* meshComponent)
 {
 	faction = setFaction;
 
@@ -70,7 +70,7 @@ void UMeshVisibility::SetupFactionComponent(UMeshComponent* meshComponent)
 
 void UMeshVisibility::ResetComponent()
 {
-	faction = Factions::None;
+	faction = EFactions::None;
 	meshMaterials.Empty();
 	factionMat = nullptr;
 }
@@ -133,7 +133,7 @@ void UMeshVisibility::Scan()
 	}
 }
 
-void UMeshVisibility::InSight(Factions thisFaction)
+void UMeshVisibility::InSight(EFactions thisFaction)
 {
 	//Add faction to object if it doesn't already exist
 	if (!factionVisibility.Contains(thisFaction))
@@ -147,7 +147,7 @@ void UMeshVisibility::InSight(Factions thisFaction)
 	//Set object as "In Sight" for the faction and all its allies
 	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
 	{
-		if (factionObject->GetFactionRelationship(ally.Key) == FactionRelationship::Ally)
+		if (factionObject->GetFactionRelationship(ally.Key) == EFactionRelationship::Ally)
 		{
 			factionVisibility[ally.Key].inSight = true;
 		}
@@ -168,7 +168,7 @@ bool UMeshVisibility::SetVisibility()
 
 			UnitActions::SetTargetListElement(curfaction.Key, GetOwner());
 
-			if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(curfaction.Key) == FactionRelationship::Ally)
+			if (UnitActions::GetFaction(EFactions::Human)->GetFactionRelationship(curfaction.Key) == EFactionRelationship::Ally)
 			{
 				visibleToPlayer = true;
 				if (debug) GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Visible to player"));
@@ -181,7 +181,7 @@ bool UMeshVisibility::SetVisibility()
 	}
 
 	//If the player commands this object and it is not a hex, set visible to player by default
-	if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(faction) == FactionRelationship::Ally
+	if (UnitActions::GetFaction(EFactions::Human)->GetFactionRelationship(faction) == EFactionRelationship::Ally
 		&& objectType != ObjectTypes::Hex) visibleToPlayer = true;
 
 	return visibleToPlayer;
@@ -198,14 +198,14 @@ void UMeshVisibility::RevealModelsAndMeshes()
 		if (hexParent->building)
 			hexParent->building->visibility->SetColorTarget(target);
 
-		if (!discoveredByPlayer && factionVisibility[Factions::Human].discoveredByFaction)
+		if (!discoveredByPlayer && factionVisibility[EFactions::Human].discoveredByFaction)
 		{
 			hexParent->SetHexModel();
 			discoveredByPlayer = true;
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 		}
 		hexParent->ToggleUI(true);
-		if (VisibleToFaction(Factions::Human) && faction != Factions::None)
+		if (VisibleToFaction(EFactions::Human) && faction != EFactions::None)
 		{
 			if (FFactionDisplay* display = AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(faction))
 				factionMat->SetVectorParameterValue(FName("Visibility"), display->tileColor);
@@ -236,7 +236,7 @@ void UMeshVisibility::HideModelsAndMeshes()
 		break;
 
 	case ObjectTypes::Building:
-		if (!factionVisibility[Factions::Human].discoveredByFaction)
+		if (!factionVisibility[EFactions::Human].discoveredByFaction)
 		{
 			ToggleOpacity(false);
 		}
@@ -305,14 +305,14 @@ void UMeshVisibility::SetSelected(bool active, bool instigator)
 	}
 }
 
-bool UMeshVisibility::VisibleToFaction(Factions factionToCheck) const
+bool UMeshVisibility::VisibleToFaction(EFactions factionToCheck) const
 {
 	if (!factionVisibility.Contains(factionToCheck)) return false;
 
 	return factionVisibility[factionToCheck].status == VisibilityStatus::Visible;
 }
 
-bool UMeshVisibility::DiscoveredByFaction(Factions factionToCheck) const
+bool UMeshVisibility::DiscoveredByFaction(EFactions factionToCheck) const
 {
 	if (!factionVisibility.Contains(factionToCheck)) return false;
 

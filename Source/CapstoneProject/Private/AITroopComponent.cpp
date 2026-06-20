@@ -123,7 +123,7 @@ ABaseHex* UAITroopComponent::FindHex(int X, int Y)
 
 AActor* UAITroopComponent::SelectClosestHostileTarget(ObjectTypes targetType)
 {
-	TMap<ABaseHex*, Factions> targetList = UnitActions::GetTargetList(parentTroop->GetUnitData()->GetFaction());
+	TMap<ABaseHex*, EFactions> targetList = UnitActions::GetTargetList(parentTroop->GetUnitData()->GetFaction());
 
 	if (targetList.IsEmpty()) return nullptr;
 

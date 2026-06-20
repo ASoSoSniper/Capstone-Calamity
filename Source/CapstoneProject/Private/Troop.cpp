@@ -17,7 +17,7 @@ void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (preAssignedFaction != Factions::None)
+	if (preAssignedFaction != EFactions::None)
 	{
 		if (preAssignedUnitType == UnitTypes::None)
 			preAssignedUnitType = UnitTypes::Infantry;
@@ -170,12 +170,12 @@ float ATroop::GetRemainingHexTraversalTime() const
 	return remainingTime / hexNav->GetCurrentHex()->GetMovementMulti();
 }
 
-void ATroop::InitTroop(const Factions& faction, const UnitTypes& unitType)
+void ATroop::InitTroop(const EFactions& factionType, const UnitTypes& unitType)
 {
 	using GameMode = ACapstoneProjectGameModeBase;
-	if (!GameMode::activeFactions.Contains(faction)) return;
+	if (!GameMode::activeFactions.Contains(factionType)) return;
 
-	unitData = new FUnitData(faction, unitType);
+	unitData = new FUnitData(factionType, unitType);
 	InitTroop(unitData);
 }
 
@@ -184,10 +184,10 @@ void ATroop::InitTroop(FUnitData* data)
 	unitData = data;
 
 	using GameMode = ACapstoneProjectGameModeBase;
-	Factions faction = unitData->GetFaction();
+	EFactions factionType = unitData->GetFaction();
 
-	if (GameMode::activeFactions.Contains(faction))
-		GameMode::activeFactions[faction]->allUnits.Add(this);
+	if (GameMode::activeFactions.Contains(factionType))
+		GameMode::activeFactions[factionType]->allUnits.Add(this);
 
 	visibility->SetupComponent(unitData, mesh);
 	SphereCheck(20.f);
@@ -201,14 +201,14 @@ bool ATroop::SetUpTroop()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No global spawner, could not set up troop"));
 		return false;
 	}
-	if (!unitData || unitData->GetFaction() == Factions::None || unitData->GetUnitType() == UnitTypes::None)
+	if (!unitData || unitData->GetFaction() == EFactions::None || unitData->GetUnitType() == UnitTypes::None)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Faction or UnitType not set, could not set up troop"));
 		return false;
 	}
 
 	UnitTypes unitType = unitData->GetUnitType();
-	Factions faction = unitData->GetFaction();
+	EFactions factionType = unitData->GetFaction();
 
 	if (!AGlobalSpawner::spawnerObject->troopStats.Contains(unitType) && unitType != UnitTypes::Army)
 	{
@@ -217,14 +217,14 @@ bool ATroop::SetUpTroop()
 	}
 
 	//If all data is present, perform setup
-	UnitActions::RobotIsActive(faction, this);
+	UnitActions::RobotIsActive(factionType, this);
 	if (unitType != UnitTypes::Army && !unitData->SetupComplete())
 	{
 		FTroopStats* stats = &AGlobalSpawner::spawnerObject->troopStats[unitType];
 		unitData->SetUnitValues(stats->HP, stats->morale, stats->vision, stats->speed, stats->damage, stats->siegePower, stats->reinforceRate, stats->energyUpkeepCost);
 	}
 
-	if (faction != Factions::Human)
+	if (factionType != EFactions::Human)
 	{
 		if (!debug) AITroopComponent->EnableEnemyAI();
 	}
@@ -244,11 +244,11 @@ void ATroop::Destroyed()
 {
 	if (hexNav->GetCurrentHex())
 	{
-		Factions faction = unitData->GetFaction();
+		EFactions factionType = unitData->GetFaction();
 
-		if (ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Contains(this))
+		if (ACapstoneProjectGameModeBase::activeFactions[factionType]->allUnits.Contains(this))
 		{
-			ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits.Remove(this);
+			ACapstoneProjectGameModeBase::activeFactions[factionType]->allUnits.Remove(this);
 		}
 		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
 

@@ -11,7 +11,7 @@ ADefenseStation::ADefenseStation()
 void ADefenseStation::BuildingAction()
 {
 	buff = new FStatusEffect(TEXT("Defense Station Buff"), 
-		unitData->GetFaction(), FactionRelationship::Ally, 
+		unitData->GetFaction(), EFactionRelationship::Ally, 
 		1.f, moraleBuff, 0, 1.f, damageBuff, siegeDamageBuff);
 
 	ClaimLand();

@@ -449,7 +449,7 @@ void AMovementAI::CancelPath()
 	}
 }
 
-bool AMovementAI::VisibleToFaction(Factions faction) const
+bool AMovementAI::VisibleToFaction(EFactions faction) const
 {
 	if (faction == unitData->GetFaction()) return true;
 
@@ -483,6 +483,18 @@ UTexture2D* AMovementAI::GetTroopIcon() const
 	}
 
 	return nullptr;
+}
+
+TArray<const ABaseHex*> AMovementAI::SimulatePathToHex(const ABaseHex* destination)
+{
+	const ABaseHex* prevStep = nullptr;
+	if (!hexPath.IsEmpty() && moveState == Move
+		&& currTimeTillHexMove >= unitData->GetSpeed())
+	{
+		prevStep = hexPath[hexPathIndex];
+	}
+
+	return GeneratePath_AStar(destination, prevStep);
 }
 
 float AMovementAI::FNodeData::GetG() const

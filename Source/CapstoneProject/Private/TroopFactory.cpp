@@ -100,21 +100,21 @@ void ATroopFactory::BuildTroop(const float& DeltaTime)
 void ATroopFactory::SpawnTroop()
 {
 	ABaseHex* hex = hexNav->GetCurrentHex();
-	Factions faction = unitData->GetFaction();
+	EFactions factionType = unitData->GetFaction();
 
 	//Build the troop, play a build sound
 	UnitTypes unit = DequeueTroop();
 	if (unit == UnitTypes::None) return;
-	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(faction, unit, hex);
+	ATroop* troop = AGlobalSpawner::spawnerObject->BuildTroop(factionType, unit, hex);
 	AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->troopCompleteSound);
 
 	//If the hex has a friendly troop, automatically merge if army cap not exceeded,
 	//otherwise place on free adjacent hex
-	if (UnitActions::HexHasFriendlyTroop(faction, hex, troop))
+	if (UnitActions::HexHasFriendlyTroop(factionType, hex, troop))
 	{
 		for (int i = 0; i < hex->troopsInHex.Num(); i++)
 		{
-			if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
+			if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == factionType)
 			{
 				if (hex->troopsInHex[i]->GetUnitData()->GetSavedUnitCount() < Cast<ATroop>(hex->troopsInHex[i])->GetArmyCap())
 				{
@@ -124,7 +124,7 @@ void ATroopFactory::SpawnTroop()
 				else
 				{
 					TSet<ABaseHex*> usedHexes;
-					ABaseHex* freeHex = hex->FindFreeAdjacentHex(faction, usedHexes);
+					ABaseHex* freeHex = hex->FindFreeAdjacentHex(factionType, usedHexes);
 
 					troop->SetActorLocation(freeHex->troopAnchor->GetComponentLocation());
 				}

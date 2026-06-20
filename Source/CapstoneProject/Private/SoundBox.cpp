@@ -63,7 +63,7 @@ void ASoundBox::AssignHexes()
 
 void ASoundBox::SetHexAmbience(ABaseHex* hex)
 {
-	if (!hex->visibility->DiscoveredByFaction(Factions::Human)) return;
+	if (!hex->visibility->DiscoveredByFaction(EFactions::Human)) return;
 
 	bool soundSet = false;
 	

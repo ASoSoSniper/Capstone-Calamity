@@ -112,7 +112,7 @@ void ABaseHex::Tick(float DeltaTime)
 		SetHexTerrain(TerrainType(FMath::RandRange(1, 4)));
 	}
 
-	if (hexOwner != Factions::None) ActiveHarvesting();
+	if (hexOwner != EFactions::None) ActiveHarvesting();
 
 	if (attackingTroop)
 	{ 
@@ -139,13 +139,13 @@ FHexInfo ABaseHex::GetTerrainInfo(TerrainType terrain) const
 
 	return hexInfo[terrain];
 }
-Factions ABaseHex::GetHexOwner()
+EFactions ABaseHex::GetHexOwner()
 {
 	return hexOwner;
 }
-void ABaseHex::SetHexOwner(Factions faction)
+void ABaseHex::SetHexOwner(EFactions faction)
 {
-	if (hexOwner != Factions::None)
+	if (hexOwner != EFactions::None)
 	{
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->DropHex(this);
 	}
@@ -165,15 +165,15 @@ void ABaseHex::SetHexCoordinates(int x, int y)
 	hexCoordinates = FVector2D(x, y);
 }
 
-ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf, EHexSearchRules occupancyFilter, bool includeBuildings)
+ABaseHex* ABaseHex::FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf, EHexSearchRules occupancyFilter, bool includeBuildings)
 {
 	TSet<ABaseHex*> hexesInRadius = GetHexesInRadius(1, includeSelf);
 
-	TMap<Factions, FactionRelationship> foundFactions;
+	TMap<EFactions, EFactionRelationship> foundFactions;
 
 	auto ContainsFactionsToFilter = [&](const FUnitData* unit) -> bool
 		{
-			Factions unitFaction = unit->GetFaction();
+			EFactions unitFaction = unit->GetFaction();
 
 			if (!foundFactions.Contains(unitFaction))
 			{
@@ -186,9 +186,9 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedH
 			case EHexSearchRules::ContainsAny:
 				return true;
 			case EHexSearchRules::ContainsAllies:
-				return foundFactions[unitFaction] == FactionRelationship::Ally;
+				return foundFactions[unitFaction] == EFactionRelationship::Ally;
 			case EHexSearchRules::ContainsEnemies:
-				return foundFactions[unitFaction] == FactionRelationship::Enemy;
+				return foundFactions[unitFaction] == EFactionRelationship::Enemy;
 			}
 
 			return false;
@@ -337,7 +337,7 @@ bool ABaseHex::IsBuildableTerrain(TerrainType terrain)
 }
 bool ABaseHex::IsPlayerHex()
 {
-	return hexOwner == Factions::Human;
+	return hexOwner == EFactions::Human;
 }
 bool ABaseHex::CanPutWorkersOnHex()
 {
@@ -674,9 +674,9 @@ float ABaseHex::GetOutputPercent()
 	return (float)GetNumberOfWorkers() / (float)maxWorkers;
 }
 
-void ABaseHex::UpdateResourceYield(EStratResources resource, int value, Factions faction)
+void ABaseHex::UpdateResourceYield(EStratResources resource, int value, EFactions faction)
 {
-	Factions selectedFaction = faction != Factions::None ? faction : hexOwner;
+	EFactions selectedFaction = faction != EFactions::None ? faction : hexOwner;
 
 	resourceBonuses[resource] += value;
 
@@ -691,7 +691,7 @@ void ABaseHex::UpdateResourceYield(EStratResources resource, int value, Factions
 }
 void ABaseHex::ToggleResourceYield()
 {
-	if (hexOwner == Factions::None) return;
+	if (hexOwner == EFactions::None) return;
 
 	float newOutputPercent = GetOutputPercent();
 
@@ -819,14 +819,14 @@ void ABaseHex::SetHexTerrain(TerrainType terrain)
 	if (hexTerrain == TerrainType::Ship)
 	{
 		visibility->enableScan = true;
-		SetHexOwner(Factions::Human);
+		SetHexOwner(EFactions::Human);
 	}
 
 	SetHexModel();
 }
 void ABaseHex::SetHexModel()
 {
-	if (!visibility->DiscoveredByFaction(Factions::Human))
+	if (!visibility->DiscoveredByFaction(EFactions::Human))
 	{
 		AGlobalSpawner::spawnerObject->CreateHexModel(TerrainType::None, this);
 	}
@@ -842,7 +842,7 @@ void ABaseHex::SetAttachmentCanBeVisible(bool canBeVisible)
 
 bool ABaseHex::VisibleToPlayer() const
 {
-	return visibility->VisibleToFaction(Factions::Human);
+	return visibility->VisibleToFaction(EFactions::Human);
 }
 
 FHexDisplay ABaseHex::GetDisplayInfo()
@@ -924,8 +924,8 @@ void ABaseHex::RemoveEffectFromHex(FStatusEffect* effect)
 
 void ABaseHex::AddEffectToUnit(FUnitData* data, FStatusEffect* effect, UFaction* factionObject)
 {
-	FactionRelationship relWithHex = factionObject->GetFactionRelationship(data->GetFaction());
-	FactionRelationship relToAffect = effect->GetFactionsToAffect();
+	EFactionRelationship relWithHex = factionObject->GetFactionRelationship(data->GetFaction());
+	EFactionRelationship relToAffect = effect->GetFactionsToAffect();
 
 	if (relWithHex == relToAffect)
 		data->AddStatusEffect(effect);
@@ -942,11 +942,11 @@ void ABaseHex::AddEffectToAllUnits(FStatusEffect* effect)
 
 	if (battle)
 	{
-		auto AddEffectToGroup = [&](TMap<Factions, FUnitData*>& group)
+		auto AddEffectToGroup = [&](TMap<EFactions, FUnitData*>& group)
 			{
 				if (group.IsEmpty()) return;
 
-				for (TPair<Factions, FUnitData*>& army : group)
+				for (TPair<EFactions, FUnitData*>& army : group)
 				{
 					AddEffectToUnit(army.Value, effect, factionObject);
 				}

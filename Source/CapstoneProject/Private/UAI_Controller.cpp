@@ -5,6 +5,12 @@
 #include "UAI_Action.h"
 #include "UAI_Condition.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Faction.h"
+
+UFaction* IUAI_Controller::GetFaction() const
+{
+    return faction;
+}
 
 UAI_Action* IUAI_Controller::GetBestAction() const
 {
@@ -76,7 +82,10 @@ bool IUAI_Controller::DecideBestAction()
     FUAI_Decision decision;
 
     const TMap<EActionType, FActionSelection>& actionTypes = GetActions();
+
+    if (actionTypes.IsEmpty()) return false;
     EActionType selectedType = DecideBestActionType(actionTypes);
+    if (actionTypes[selectedType].actions.IsEmpty()) return false;
 
     decision.bestActionType = selectedType;
 

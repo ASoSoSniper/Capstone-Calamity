@@ -2,15 +2,11 @@
 
 
 #include "UAIC_SpaceForBuilding.h"
-#include "FactionController.h"
 #include "Faction.h"
 
 float UUAIC_SpaceForBuilding::ScoreCondition(IUAI_Controller* controller) const
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return GetMinScore();
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
 	if (faction->GetPriorityHex_Building(building)) return FactorInversion(1.f);

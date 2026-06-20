@@ -150,23 +150,23 @@ void ABattleObject::GenerateModels()
 	USkeletalMesh* robotMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 
-	if (currentBattle.Group1.Contains(Factions::Human))
+	if (currentBattle.Group1.Contains(EFactions::Human))
 		group1Mesh->SetSkeletalMesh(robotMesh);
 	else
 		group1Mesh->SetSkeletalMesh(alienMesh);
 
-	if (currentBattle.Group2.Contains(Factions::Human))
+	if (currentBattle.Group2.Contains(EFactions::Human))
 		group2Mesh->SetSkeletalMesh(robotMesh);
 	else
 		group2Mesh->SetSkeletalMesh(alienMesh);
 
-	UFaction* factionObject = UnitActions::GetFaction(Factions::Human);
+	UFaction* factionObject = UnitActions::GetFaction(EFactions::Human);
 	
-	auto ContainsHumanAlly = [&](TMap<Factions, FUnitData*>& group) -> bool
+	auto ContainsHumanAlly = [&](TMap<EFactions, FUnitData*>& group) -> bool
 		{
-			for (TPair<Factions, FUnitData*>& unit : group)
+			for (TPair<EFactions, FUnitData*>& unit : group)
 			{
-				if (factionObject->GetFactionRelationship(unit.Key) == FactionRelationship::Ally)
+				if (factionObject->GetFactionRelationship(unit.Key) == EFactionRelationship::Ally)
 				{
 					return true;
 				}
@@ -175,8 +175,8 @@ void ABattleObject::GenerateModels()
 			return false;
 		};
 
-	Factions playerVisibility = (ContainsHumanAlly(currentBattle.Group1) || ContainsHumanAlly(currentBattle.Group2)) ?
-		Factions::Human : Factions::None;
+	EFactions playerVisibility = (ContainsHumanAlly(currentBattle.Group1) || ContainsHumanAlly(currentBattle.Group2)) ?
+		EFactions::Human : EFactions::None;
 
 	visibility->SetupComponent(playerVisibility, group1Mesh);
 	visibility->SetupComponent(playerVisibility, group2Mesh);
@@ -224,7 +224,7 @@ void ABattleObject::EndBattle()
 	}
 	//Otherwise, visibility being set to Human indicates a prior human presence
 	//before being slain, thus a defeat sound is played.
-	else if (visibility->faction == Factions::Human)
+	else if (visibility->faction == EFactions::Human)
 	{
 		AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->battleDefeatSound);
 	}
@@ -254,9 +254,9 @@ void ABattleObject::Destroyed()
 #pragma endregion
 
 #pragma region Army Management
-Factions ABattleObject::FleeFromBattle(Factions faction)
+EFactions ABattleObject::FleeFromBattle(EFactions faction)
 {
-	if (!currentBattle.ContainsFaction(faction)) return Factions::None;
+	if (!currentBattle.ContainsFaction(faction)) return EFactions::None;
 
 	TSet<ABaseHex*> usedHexes;
 	ATroop* troop = currentBattle.ExtractFaction(faction, hex, usedHexes, true);
@@ -272,9 +272,9 @@ Factions ABattleObject::FleeFromBattle(Factions faction)
 
 void ABattleObject::GetGroupHealthAndMorale(int groupIndex, int& HP, int& maxHP, int& morale, int& maxMorale) const
 {
-	const TMap<Factions, FUnitData*>& group = (groupIndex == 0) ? currentBattle.Group1 : currentBattle.Group2;
+	const TMap<EFactions, FUnitData*>& group = (groupIndex == 0) ? currentBattle.Group1 : currentBattle.Group2;
 
-	for (const TPair<Factions, FUnitData*>& army : group)
+	for (const TPair<EFactions, FUnitData*>& army : group)
 	{
 		HP += army.Value->GetCurrentHP();
 		maxHP += army.Value->GetMaxHP();
@@ -295,18 +295,18 @@ bool ABattleObject::AddUnitToFaction(FUnitData* unitData)
 {
 	if (!currentBattle.AddUnit(unitData)) return false;
 
-	Factions unitFaction = unitData->GetFaction();
+	EFactions unitFaction = unitData->GetFaction();
 
 	//If the newly joined unit is (an ally to) the player, set the battle to be visible to the player
-	if (UnitActions::GetFaction(Factions::Human)->GetFactionRelationship(unitFaction) == FactionRelationship::Ally)
+	if (UnitActions::GetFaction(EFactions::Human)->GetFactionRelationship(unitFaction) == EFactionRelationship::Ally)
 	{
-		if (visibility->faction != Factions::Human)
+		if (visibility->faction != EFactions::Human)
 			visibility->faction = unitFaction;
 	}
 
 	return true;
 }
-void ABattleObject::DestroyArmy(Factions faction)
+void ABattleObject::DestroyArmy(EFactions faction)
 {
 	if (currentBattle.Group1.Contains(faction))
 	{
@@ -320,7 +320,7 @@ void ABattleObject::DestroyArmy(Factions faction)
 	}
 }
 
-TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TMap<Factions, FUnitData*>& group)
+TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TMap<EFactions, FUnitData*>& group)
 {
 	TMap<UnitTypes, FUnitComposition> unitsInArmy;
 	unitsInArmy.Add(UnitTypes::Infantry, FUnitComposition{});
@@ -333,7 +333,7 @@ TMap<UnitTypes, FUnitComposition> ABattleObject::GetArmyComposition(TMap<Faction
 	int totalUnits = 0;
 
 	//Add troop type quantities for each faction in the group
-	for (TPair<Factions, FUnitData*>& army : group)
+	for (TPair<EFactions, FUnitData*>& army : group)
 	{
 		FUnitData* data = army.Value;
 
@@ -404,6 +404,64 @@ int ABattleObject::GetGroup2Die()
 	return group2Die;
 }
 
+int ABattleObject::GetGroupDamage(TMap<UnitTypes, FUnitComposition>& attacker, TMap<UnitTypes, FUnitComposition>& reciever)
+{
+	if (attacker.IsEmpty() || reciever.IsEmpty()) return 0;
+
+	int totalDamage = 0;
+
+	//For each unit type
+	for (auto& unit : attacker)
+	{
+		float damage = 0;
+
+		//For each enemy type in the enemy army
+		for (auto& enemyUnit : reciever)
+		{
+			float percent = 0;
+
+			//Select the damage modifier based on the unit type
+			switch (enemyUnit.Key)
+			{
+			case UnitTypes::Infantry:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsInfantry;
+				break;
+			case UnitTypes::Cavalry:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsCavalry;
+				break;
+			case UnitTypes::Ranged:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsRanged;
+				break;
+			case UnitTypes::Shielder:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsShielder;
+				break;
+			case UnitTypes::Scout:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsScout;
+				break;
+			case UnitTypes::Settler:
+				percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsSettler;
+				break;
+			}
+
+			//Convert to decimal
+			percent *= 0.01f;
+			//Multiply by the percent of this unit type in the enemy army
+			percent *= enemyUnit.Value.compPercent;
+
+			//Add this percent to the total damage
+			damage += percent;
+		}
+
+		//When all percentages have been added up, multiply the total by the unit type's base damage
+		damage *= AGlobalSpawner::spawnerObject->troopStats[unit.Key].damage;
+
+		//Add to the total group damage the calculated damage times the number of this unit type in the army
+		totalDamage += FMath::RoundToInt(damage) * unit.Value.quantity;
+	}
+
+	return totalDamage;
+}
+
 void ABattleObject::Attack()
 {
 	if (!attacking) return;
@@ -434,64 +492,8 @@ void ABattleObject::CalculateGroupDamage(int& group1DamageTotal, int& group2Dama
 	if (!currentBattle.Group2.IsEmpty())
 		groupCompositions[1] = GetArmyComposition(currentBattle.Group2);
 
-	auto GroupDamage = [&](TMap<UnitTypes, FUnitComposition>& attacker, TMap<UnitTypes, FUnitComposition>& reciever) -> int
-		{
-			int totalDamage = 0;
-
-			//For each unit type
-			for (auto& unit : attacker)
-			{
-				float damage = 0;
-
-				//For each enemy type in the enemy army
-				for (auto& enemyUnit : reciever)
-				{
-					float percent = 0;
-
-					//Select the damage modifier based on the unit type
-					switch (enemyUnit.Key)
-					{
-					case UnitTypes::Infantry:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsInfantry;
-						break;
-					case UnitTypes::Cavalry:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsCavalry;
-						break;
-					case UnitTypes::Ranged:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsRanged;
-						break;
-					case UnitTypes::Shielder:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsShielder;
-						break;
-					case UnitTypes::Scout:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsScout;
-						break;
-					case UnitTypes::Settler:
-						percent = AGlobalSpawner::spawnerObject->troopStats[unit.Key].attackvsSettler;
-						break;
-					}
-
-					//Convert to decimal
-					percent *= 0.01f;
-					//Multiply by the percent of this unit type in the enemy army
-					percent *= enemyUnit.Value.compPercent;
-
-					//Add this percent to the total damage
-					damage += percent;
-				}
-
-				//When all percentages have been added up, multiply the total by the unit type's base damage
-				damage *= AGlobalSpawner::spawnerObject->troopStats[unit.Key].damage;
-
-				//Add to the total group damage the calculated damage times the number of this unit type in the army
-				totalDamage += FMath::RoundToInt(damage) * unit.Value.quantity;
-			}
-
-			return totalDamage;
-		};
-
-	int group1Damage = GroupDamage(groupCompositions[0], groupCompositions[1]);
-	int group2Damage = GroupDamage(groupCompositions[1], groupCompositions[0]);
+	int group1Damage = GetGroupDamage(groupCompositions[0], groupCompositions[1]);
+	int group2Damage = GetGroupDamage(groupCompositions[1], groupCompositions[0]);
 
 	--currentTickTillRoll;
 	if (currentTickTillRoll <= 0)
@@ -509,11 +511,11 @@ void ABattleObject::CalculateGroupDamage(int& group1DamageTotal, int& group2Dama
 void ABattleObject::ApplyGroupDamage(const int& group1Damage, const int& group2Damage)
 {
 	//Created array of armies to remove this combat tick
-	TArray<Factions> armiesToRemove;
+	TArray<EFactions> armiesToRemove;
 
-	auto DamageGroup = [&](TMap<Factions, FUnitData*>& group, int damage)
+	auto DamageGroup = [&](TMap<EFactions, FUnitData*>& group, int damage)
 		{
-			for (TPair<Factions, FUnitData*>& army : group)
+			for (TPair<EFactions, FUnitData*>& army : group)
 			{
 				army.Value->DamageHP(damage);
 
@@ -532,7 +534,7 @@ void ABattleObject::ApplyGroupDamage(const int& group1Damage, const int& group2D
 	{
 		for (int i = 0; i < armiesToRemove.Num(); i++)
 		{
-			Factions faction = armiesToRemove[i];
+			EFactions faction = armiesToRemove[i];
 			FUnitData* army = currentBattle.Group1.Contains(faction)
 				? currentBattle.Group1[faction] : currentBattle.Group2[faction];
 
@@ -583,13 +585,13 @@ float ABattleObject::DecayMorale(FUnitData* faction, float percentReduction)
 
 bool ABattleObject::Group1IsAlive(bool& containsHuman) const
 {
-	containsHuman = currentBattle.Group1.Contains(Factions::Human);
+	containsHuman = currentBattle.Group1.Contains(EFactions::Human);
 
 	return !currentBattle.Group1.IsEmpty();
 }
 bool ABattleObject::Group2IsAlive(bool& containsHuman) const
 {
-	containsHuman = currentBattle.Group2.Contains(Factions::Human);
+	containsHuman = currentBattle.Group2.Contains(EFactions::Human);
 
 	return !currentBattle.Group2.IsEmpty();
 }
@@ -598,10 +600,10 @@ bool ABattleObject::Group2IsAlive(bool& containsHuman) const
 #pragma region Battle Struct
 bool ABattleObject::Battle::AddUnit(FUnitData* data)
 {
-	Factions unitFaction = data->GetFaction();
+	EFactions unitFaction = data->GetFaction();
 	EngagementSelect assignment = DetermineConflictAlignment(unitFaction);
 
-	auto AddToFactionArmy = [&](TMap<Factions, FUnitData*>& armies)
+	auto AddToFactionArmy = [&](TMap<EFactions, FUnitData*>& armies)
 		{
 			//If army of faction does not already exist, initialize the army:
 			if (!armies.Contains(unitFaction))
@@ -640,7 +642,7 @@ bool ABattleObject::Battle::AddUnit(FUnitData* data)
 		return false;
 	}
 }
-EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(Factions& unitFaction)
+EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(EFactions& unitFaction)
 {
 	//
 	//  ALREADY PRESENT
@@ -674,22 +676,22 @@ EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(Factions& uni
 		int enemiesInGroup1 = 0;
 
 		//Check Group 1 relationships to this unit's faction
-		for (TPair<Factions, FUnitData*>& army : Group1)
+		for (TPair<EFactions, FUnitData*>& army : Group1)
 		{
 			if (army.Key != unitFaction)
 			{
-				FactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
+				EFactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
 
 				//Record the faction's relationship
 				switch (factionAlignment)
 				{
-				case FactionRelationship::Ally:
+				case EFactionRelationship::Ally:
 					alliesInGroup1++;
 					break;
-				case FactionRelationship::Neutral:
+				case EFactionRelationship::Neutral:
 					neutralsInGroup1++;
 					break;
-				case FactionRelationship::Enemy:
+				case EFactionRelationship::Enemy:
 					enemiesInGroup1++;
 					break;
 				}
@@ -715,16 +717,16 @@ EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(Factions& uni
 	//  If both groups possess factions, perform a more streamlined check:
 	//
 
-	auto ContainsEnemy = [&factionObject, &unitFaction](TMap<Factions, FUnitData*>& group) -> bool
+	auto ContainsEnemy = [&factionObject, &unitFaction](TMap<EFactions, FUnitData*>& group) -> bool
 		{
-			for (TPair<Factions, FUnitData*>& army : group)
+			for (TPair<EFactions, FUnitData*>& army : group)
 			{
 				if (army.Key != unitFaction)
 				{
-					FactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
+					EFactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
 
 					//If this faction not a direct ally, deny Group as a possible selection
-					if (factionAlignment != FactionRelationship::Ally)
+					if (factionAlignment != EFactionRelationship::Ally)
 					{
 						return true;
 					}
@@ -748,18 +750,18 @@ EngagementSelect ABattleObject::Battle::DetermineConflictAlignment(Factions& uni
 
 	return EngagementSelect::DoNotJoin;
 }
-bool ABattleObject::Battle::ContainsFaction(Factions faction) const
+bool ABattleObject::Battle::ContainsFaction(EFactions faction) const
 {
 	return Group1.Contains(faction) || Group2.Contains(faction);
 }
-ATroop* ABattleObject::Battle::ExtractFaction(Factions& faction, ABaseHex* hex, TSet<ABaseHex*> usedHexes, bool spawnAtOutpost)
+ATroop* ABattleObject::Battle::ExtractFaction(EFactions& faction, ABaseHex* hex, TSet<ABaseHex*> usedHexes, bool spawnAtOutpost)
 {
 	if (!ContainsFaction(faction)) return nullptr;
 	if (!hex) return nullptr;
 
 	ATroop* troop = nullptr;
 
-	auto SpawnUnit = [&](TMap<Factions, FUnitData*> group) -> ATroop*
+	auto SpawnUnit = [&](TMap<EFactions, FUnitData*> group) -> ATroop*
 		{
 			float hpPercent = group[faction]->GetHPAlpha();
 
@@ -805,9 +807,9 @@ TArray<ATroop*> ABattleObject::Battle::ExtractAllFactions(ABaseHex* hex)
 	TArray<ATroop*> extracted;
 	TSet<ABaseHex*> usedHexes;
 
-	auto ExtractGroup = [&](TMap<Factions, FUnitData*>& group)
+	auto ExtractGroup = [&](TMap<EFactions, FUnitData*>& group)
 		{
-			for (TPair<Factions, FUnitData*>& army : group)
+			for (TPair<EFactions, FUnitData*>& army : group)
 			{
 				ATroop* troop = ExtractFaction(army.Key, hex, usedHexes);
 				if (troop)

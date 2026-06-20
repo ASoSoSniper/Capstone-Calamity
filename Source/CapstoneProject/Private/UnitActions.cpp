@@ -21,13 +21,13 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
 {
     if (unit->GetUnitData() && target->GetUnitData())
     {
-        Factions a = unit->GetUnitData()->GetFaction();
-        Factions b = target->GetUnitData()->GetFaction();
+        EFactions a = unit->GetUnitData()->GetFaction();
+        EFactions b = target->GetUnitData()->GetFaction();
 
         UFaction* factionObject = GetFaction(a);
         if (!factionObject) return false;
 
-        if (factionObject->GetFactionRelationship(b) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(b) == EFactionRelationship::Enemy)
         {
             return true;
         }
@@ -36,35 +36,35 @@ bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
     return false;
 }
 
-bool UnitActions::IsHostileTarget(const Factions& a, const Factions& b)
+bool UnitActions::IsHostileTarget(const EFactions& a, const EFactions& b)
 {
     UFaction* aFaction = GetFaction(a);
     if (!aFaction) return false;
 
-    return aFaction->GetFactionRelationship(b) == FactionRelationship::Enemy;
+    return aFaction->GetFactionRelationship(b) == EFactionRelationship::Enemy;
 }
 
-bool UnitActions::IsAllyToFaction(FactionRelationship relationship)
+bool UnitActions::IsAllyToFaction(EFactionRelationship relationship)
 {
     switch (relationship)
     {
-    case FactionRelationship::Ally:
+    case EFactionRelationship::Ally:
         return true;
-    case FactionRelationship::Enemy:
+    case EFactionRelationship::Enemy:
         return false;
-    case FactionRelationship::Neutral:
+    case EFactionRelationship::Neutral:
         return false;
     }
 
     return false;
 }
 
-int UnitActions::GetAvailableWorkerType(Factions faction, WorkerType worker)
+int UnitActions::GetAvailableWorkerType(EFactions faction, WorkerType worker)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
 }
 
-TArray<int> UnitActions::GetFactionResources(Factions faction)
+TArray<int> UnitActions::GetFactionResources(EFactions faction)
 {
     TArray<int> resources;
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
@@ -74,18 +74,18 @@ TArray<int> UnitActions::GetFactionResources(Factions faction)
     return resources;
 }
 
-void UnitActions::SetFactionResources(Factions faction, EStratResources resourceToChange, int desiredResourceVal)
+void UnitActions::SetFactionResources(EFactions faction, EStratResources resourceToChange, int desiredResourceVal)
 {
     ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resourceToChange].currentResources = desiredResourceVal;
 }
 
-int UnitActions::GetFactionPopulation(Factions faction)
+int UnitActions::GetFactionPopulation(EFactions faction)
 {
     int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].working;
     return humanPop;
 }
 
-TMap<EStratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions faction)
+TMap<EStratResources, int> UnitActions::GetMoreSpecificFactionResources(EFactions faction)
 {
     TMap<EStratResources, int> resources;
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
@@ -95,7 +95,7 @@ TMap<EStratResources, int> UnitActions::GetMoreSpecificFactionResources(Factions
     return resources;
 }
 
-TMap<EStratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourcesPerTick(EFactions faction)
 {
     TMap<EStratResources, int> resources;
 
@@ -106,7 +106,7 @@ TMap<EStratResources, int> UnitActions::GetResourcesPerTick(Factions faction)
     return resources;
 }
 
-TMap<EStratResources, int> UnitActions::GetResourceGains(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourceGains(EFactions faction)
 {
     TMap<EStratResources, int> resources;
 
@@ -118,7 +118,7 @@ TMap<EStratResources, int> UnitActions::GetResourceGains(Factions faction)
     return resources;
 }
 
-TMap<EStratResources, int> UnitActions::GetResourceLosses(Factions faction)
+TMap<EStratResources, int> UnitActions::GetResourceLosses(EFactions faction)
 {
     TMap<EStratResources, int> resources;
 
@@ -130,7 +130,7 @@ TMap<EStratResources, int> UnitActions::GetResourceLosses(Factions faction)
     return resources;
 }
 
-TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
+TMap<WorkerType, int> UnitActions::GetFactionWorkers(EFactions faction)
 {
     TMap<WorkerType, int> workers;
     for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
@@ -141,7 +141,7 @@ TMap<WorkerType, int> UnitActions::GetFactionWorkers(Factions faction)
     return workers;
 }
 
-TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
+TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(EFactions faction)
 {
     TMap<WorkerType, int> workers;
     for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
@@ -152,7 +152,7 @@ TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(Factions faction)
     return workers;
 }
 
-void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
+void UnitActions::UpdateResourceCapacity(EFactions faction, int addedCap)
 {
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
@@ -160,12 +160,12 @@ void UnitActions::UpdateResourceCapacity(Factions faction, int addedCap)
     }
 }
 
-int UnitActions::GetResourceCap(Factions faction)
+int UnitActions::GetResourceCap(EFactions faction)
 {
     return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].maxResources;
 }
 
-ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referencePoint)
+ABaseHex* UnitActions::GetClosestOutpostHex(EFactions faction, AActor* referencePoint)
 {
     const TSet<ABuilding*>& outposts = ACapstoneProjectGameModeBase::activeFactions[faction]->GetBuildingsOfType(SpawnableBuildings::Outpost);
 
@@ -190,7 +190,7 @@ ABaseHex* UnitActions::GetClosestOutpostHex(Factions faction, AActor* referenceP
     return Cast<ABaseHex>(referencePoint);
 }
 
-bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* referenceTroop)
+bool UnitActions::HexHasFriendlyTroop(EFactions faction, AActor* hex, ATroop* referenceTroop)
 {
     ABaseHex* hexActor = Cast<ABaseHex>(hex);
     if (!hexActor) return false;
@@ -211,7 +211,7 @@ bool UnitActions::HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* ref
     return false;
 }
 
-bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
+bool UnitActions::HexHasEnemyTroop(EFactions faction, AActor* hex)
 {
     ABaseHex* hexActor = Cast<ABaseHex>(hex);
     if (!hexActor) return false;
@@ -219,7 +219,7 @@ bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
 
     for (int i = 0; i < hexActor->troopsInHex.Num(); i++)
     {
-        if (factionObject->GetFactionRelationship(hexActor->troopsInHex[i]->GetUnitData()->GetFaction()) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(hexActor->troopsInHex[i]->GetUnitData()->GetFaction()) == EFactionRelationship::Enemy)
         {
             return true;
         }
@@ -228,7 +228,7 @@ bool UnitActions::HexHasEnemyTroop(Factions faction, AActor* hex)
     return false;
 }
 
-int UnitActions::GetFactionStarveLevel(Factions faction)
+int UnitActions::GetFactionStarveLevel(EFactions faction)
 {
     int level = 0;
     if (ACapstoneProjectGameModeBase::activeFactions[faction]->starving)
@@ -243,7 +243,7 @@ int UnitActions::GetFactionStarveLevel(Factions faction)
     return level;
 }
 
-int UnitActions::GetFactionPowerOutageLevel(Factions faction)
+int UnitActions::GetFactionPowerOutageLevel(EFactions faction)
 {
     int level = 0;
     if (ACapstoneProjectGameModeBase::activeFactions[faction]->powerOutage)
@@ -258,7 +258,7 @@ int UnitActions::GetFactionPowerOutageLevel(Factions faction)
     return level;
 }
 
-void UnitActions::EnableRobots(Factions faction, bool enable)
+void UnitActions::EnableRobots(EFactions faction, bool enable)
 {
     for (ATroop* troop : ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits)
     {
@@ -267,9 +267,9 @@ void UnitActions::EnableRobots(Factions faction, bool enable)
     }
 }
 
-void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
+void UnitActions::RobotIsActive(EFactions faction, ATroop* robot)
 {
-    if (faction == Factions::None) return;
+    if (faction == EFactions::None) return;
 
     if (GetFaction(faction)->powerOutage)
     {
@@ -277,7 +277,7 @@ void UnitActions::RobotIsActive(Factions faction, ATroop* robot)
     }
 }
 
-void UnitActions::AddResources(Factions faction, TMap<EStratResources, int> resources)
+void UnitActions::AddResources(EFactions faction, TMap<EStratResources, int> resources)
 {
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
     {
@@ -287,7 +287,7 @@ void UnitActions::AddResources(Factions faction, TMap<EStratResources, int> reso
 }
 
 //Called every scan tick, adds found hex to TargetList if hex contains hostile target, removes if target of interest is no longer found there
-void UnitActions::SetTargetListElement(Factions faction, AActor* target)
+void UnitActions::SetTargetListElement(EFactions faction, AActor* target)
 {
     //Return if target actor does not exist
     if (!target) return;
@@ -298,7 +298,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     if (!factionObject->IsAIControlled()) return;
 
     //Create an easier-to-read address to the faction's target list
-    TMap<ABaseHex*, Factions>& targetList = factionObject->targetList;
+    TMap<ABaseHex*, EFactions>& targetList = factionObject->targetList;
 
     //Get the object type of the target actor, return if it isn't a hex
     UnitActions::SelectionIdentity objectType = DetermineObjectType(target);
@@ -307,8 +307,8 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     //ADD HEX TO LIST IF:
 
     //(a) Hex contains an enemy troop
-    Factions hostileInHex = FindHostileTarget(faction, objectType.hex);
-    if (hostileInHex != Factions::None)
+    EFactions hostileInHex = FindHostileTarget(faction, objectType.hex);
+    if (hostileInHex != EFactions::None)
     {
         targetList.Add(objectType.hex, hostileInHex);
         return;
@@ -317,8 +317,8 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     //(b) Hex contains a battle the faction connects with diplomatically
     if (objectType.hex->battle && !objectType.hex->battle->IsEnding())
     {
-        Factions hostileInBattle = FindHostileTarget(faction, objectType.hex->battle);
-        if (hostileInBattle != Factions::None)
+        EFactions hostileInBattle = FindHostileTarget(faction, objectType.hex->battle);
+        if (hostileInBattle != EFactions::None)
         {
             targetList.Add(objectType.hex, hostileInBattle);
             return;
@@ -328,7 +328,7 @@ void UnitActions::SetTargetListElement(Factions faction, AActor* target)
     //(c) Hex contains an enemy building this faction is not currently occupying
     if (ABuilding* building = objectType.hex->building)
     {
-        if (GetFaction(faction)->GetFactionRelationship(building) != FactionRelationship::Enemy) return;
+        if (GetFaction(faction)->GetFactionRelationship(building) != EFactionRelationship::Enemy) return;
         if (building->GetOccupier() != faction && building->GetUnitData()->IsAlive())
         {
             targetList.Add(objectType.hex, building->GetUnitData()->GetFaction());
@@ -354,9 +354,9 @@ void UnitActions::RemoveFromAllTargetLists(ABaseHex* target)
     }
 }
 
-TMap<ABaseHex*, Factions> UnitActions::GetTargetList(Factions faction)
+TMap<ABaseHex*, EFactions> UnitActions::GetTargetList(EFactions faction)
 {
-    TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
+    TMap<ABaseHex*, EFactions> targetList = TMap<ABaseHex*, EFactions>();
 
     if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
     {
@@ -384,60 +384,60 @@ bool UnitActions::ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unit
     return false;
 }
 
-Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABaseHex* hex)
+EFactions UnitActions::FindHostileTarget(EFactions referenceFaction, ABaseHex* hex)
 {
     UFaction* factionObject = GetFaction(referenceFaction);
 
     for (int i = 0; i < hex->troopsInHex.Num(); i++)
     {
-        Factions targetFaction = hex->troopsInHex[i]->GetUnitData()->GetFaction();
+        EFactions targetFaction = hex->troopsInHex[i]->GetUnitData()->GetFaction();
 
-        if (factionObject->GetFactionRelationship(targetFaction) == FactionRelationship::Enemy)
+        if (factionObject->GetFactionRelationship(targetFaction) == EFactionRelationship::Enemy)
         {
             return targetFaction;
         }
     }
 
-    return Factions::None;
+    return EFactions::None;
 }
 
-Factions UnitActions::FindHostileTarget(Factions referenceFaction, ABattleObject* battle)
+EFactions UnitActions::FindHostileTarget(EFactions referenceFaction, ABattleObject* battle)
 {
     UFaction* factionObject = GetFaction(referenceFaction);
 
-    auto GetHostile = [&](TMap<Factions, FUnitData*>& group) -> Factions
+    auto GetHostile = [&](TMap<EFactions, FUnitData*>& group) -> EFactions
         {
-            if (group.IsEmpty()) return Factions::None;
+            if (group.IsEmpty()) return EFactions::None;
 
-            for (TPair<Factions, FUnitData*>& army : group)
+            for (TPair<EFactions, FUnitData*>& army : group)
             {
-                FactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
-                if (factionAlignment == FactionRelationship::Enemy) return army.Key;
+                EFactionRelationship factionAlignment = factionObject->GetFactionRelationship(army.Key);
+                if (factionAlignment == EFactionRelationship::Enemy) return army.Key;
             }
 
-            return Factions::None;
+            return EFactions::None;
         };
 
-    Factions foundHostile = GetHostile(battle->currentBattle.Group1);
-    if (foundHostile == Factions::None)
+    EFactions foundHostile = GetHostile(battle->currentBattle.Group1);
+    if (foundHostile == EFactions::None)
         foundHostile = GetHostile(battle->currentBattle.Group2);
 
     return foundHostile;
 }
 
-UFaction* UnitActions::GetFaction(const Factions& faction)
+UFaction* UnitActions::GetFaction(const EFactions& faction)
 {
     if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return nullptr;
 
     return ACapstoneProjectGameModeBase::activeFactions[faction];
 }
 
-TMap<Factions, UFaction*> UnitActions::GetFactions()
+TMap<EFactions, UFaction*> UnitActions::GetFactions()
 {
     return ACapstoneProjectGameModeBase::activeFactions;
 }
 
-AFactionController* UnitActions::GetFactionController(const Factions& faction)
+AFactionController* UnitActions::GetFactionController(const EFactions& faction)
 {
     if (UFaction* factionObject = GetFaction(faction))
     {

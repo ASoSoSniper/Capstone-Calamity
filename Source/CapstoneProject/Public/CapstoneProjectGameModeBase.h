@@ -31,6 +31,8 @@ struct FDateTickUpdate
 	bool monthTick = false;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateTick, const FDateTickUpdate&, update);
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -43,8 +45,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	static inline TMap<Factions, UFaction*> activeFactions;
-	static inline TMap<Factions, UMaterialInterface*> factionColors;
+	static inline TMap<EFactions, UFaction*> activeFactions;
+	static inline TMap<EFactions, UMaterialInterface*> factionColors;
 
 	static inline TMap<AActor*, FCinematicObject> cinematicObjects;
 
@@ -100,13 +102,15 @@ public:
 
 	static float GetTimeTillNextTick();
 
+	static FOnDateTick onDateTick;
+
 private:
 
 	FString currentDate;
 	static FDateTickUpdate dateTickUpdates;
 	static float currSeconds;
 
-	Factions CreateNewFaction();
+	EFactions CreateNewFaction();
 	int factionCount = 0;
 
 	void Harvest(float& DeltaTime);

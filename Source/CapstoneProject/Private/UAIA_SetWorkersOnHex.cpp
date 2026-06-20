@@ -2,16 +2,12 @@
 
 
 #include "UAIA_SetWorkersOnHex.h"
-#include "FactionController.h"
 #include "Faction.h"
 #include "UnitActions.h"
 
 void UUAIA_SetWorkersOnHex::ExecuteAction(IUAI_Controller* controller)
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return;
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return;
 
 	ABaseHex* bestHex = faction->GetPriorityHex_Workers(resourceTarget);

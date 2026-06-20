@@ -2,16 +2,12 @@
 
 
 #include "UAIA_ConstructBuilding.h"
-#include "FactionController.h"
 #include "Faction.h"
 #include "GlobalSpawner.h"
 
 void UUAIA_ConstructBuilding::ExecuteAction(IUAI_Controller* controller)
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return;
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return;
 
 	ABaseHex* bestHex = faction->GetPriorityHex_Building(building);

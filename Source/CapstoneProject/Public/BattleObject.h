@@ -68,7 +68,7 @@ private:
 
 #pragma region Army Management
 public:
-	Factions FleeFromBattle(Factions faction);
+	EFactions FleeFromBattle(EFactions faction);
 
 	void GetGroupHealthAndMorale(int groupIndex, int& HP, int& maxHP, int& morale, int& maxMorale) const;
 
@@ -77,17 +77,17 @@ public:
 
 	struct Battle
 	{
-		TMap<Factions, FUnitData*> Group1;
-		TMap<Factions, FUnitData*> Group2;
+		TMap<EFactions, FUnitData*> Group1;
+		TMap<EFactions, FUnitData*> Group2;
 
-		Factions group1Leader = Factions::None;
-		Factions group2Leader = Factions::None;
+		EFactions group1Leader = EFactions::None;
+		EFactions group2Leader = EFactions::None;
 
 		bool AddUnit(FUnitData* data);
-		EngagementSelect DetermineConflictAlignment(Factions& unitFaction);
-		bool ContainsFaction(Factions faction) const;
+		EngagementSelect DetermineConflictAlignment(EFactions& unitFaction);
+		bool ContainsFaction(EFactions faction) const;
 
-		ATroop* ExtractFaction(Factions& faction, ABaseHex* hex, TSet<ABaseHex*> usedHexes, bool spawnAtOutpost = false);
+		ATroop* ExtractFaction(EFactions& faction, ABaseHex* hex, TSet<ABaseHex*> usedHexes, bool spawnAtOutpost = false);
 		TArray<ATroop*> ExtractAllFactions(ABaseHex* hex);
 	};
 	Battle currentBattle;
@@ -95,10 +95,10 @@ public:
 protected:
 	void AddUnitToFaction(AMovementAI* troop);
 	bool AddUnitToFaction(FUnitData* unitData);
-	void DestroyArmy(Factions faction);
+	void DestroyArmy(EFactions faction);
 
 private:
-	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TMap<Factions, FUnitData*>& group);
+	TMap<UnitTypes, FUnitComposition> GetArmyComposition(TMap<EFactions, FUnitData*>& group);
 #pragma endregion
 
 #pragma region Combat
@@ -110,6 +110,8 @@ public:
 
 	int GetGroup1Die();
 	int GetGroup2Die();
+
+	static int GetGroupDamage(TMap<UnitTypes, FUnitComposition>& attacker, TMap<UnitTypes, FUnitComposition>& reciever);
 
 protected:
 	void Attack();

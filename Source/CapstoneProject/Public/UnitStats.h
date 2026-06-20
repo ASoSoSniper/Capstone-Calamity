@@ -30,7 +30,7 @@ public:
 	void Heal(int amount);
 	void RecoverMorale();
 
-	UPROPERTY(EditAnywhere) Factions faction;
+	UPROPERTY(EditAnywhere) EFactions faction;
 	UPROPERTY(EditAnywhere) UnitTypes unitType;
 	UPROPERTY() FString name;
 	UPROPERTY() int32 nameInstance;

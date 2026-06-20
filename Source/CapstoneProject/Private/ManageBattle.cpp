@@ -79,6 +79,6 @@ AActor* UManageBattle::GetSelectedObject()
 
 void UManageBattle::Action1()
 {
-	selectedBattle->FleeFromBattle(Factions::Human);
+	selectedBattle->FleeFromBattle(EFactions::Human);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, TEXT("ACTION 1 TRIGGERED"));
 }

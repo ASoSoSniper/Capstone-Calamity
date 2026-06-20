@@ -21,9 +21,9 @@ TSet<ABaseHex*> AOutpost::ClaimLand()
 {
 	TSet<ABaseHex*> hexesToClaim;
 
-	Factions faction = GetUnitData()->GetFaction();
+	EFactions factionType = GetUnitData()->GetFaction();
 
-	if (faction == Factions::None)
+	if (factionType == EFactions::None)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("No faction assigned, cannot claim land"));
 		return hexesToClaim;
@@ -32,7 +32,7 @@ TSet<ABaseHex*> AOutpost::ClaimLand()
 	hexesToClaim = hexNav->GetCurrentHex()->GetHexesInRadius(range);
 	for (ABaseHex* hex : hexesToClaim)
 	{
-		hex->SetHexOwner(faction);
+		hex->SetHexOwner(factionType);
 	}
 	
 	return hexesToClaim;
@@ -83,7 +83,7 @@ void AOutpost::Destroyed()
 {
 	for (ABaseHex* hex : claimedHexes)
 	{
-		hex->SetHexOwner(Factions::None);
+		hex->SetHexOwner(EFactions::None);
 	}
 
 	Super::Destroyed();

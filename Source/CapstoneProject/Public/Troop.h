@@ -27,7 +27,7 @@ public:
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	void InitTroop(const Factions& faction, const UnitTypes& unitType);
+	void InitTroop(const EFactions& factionType, const UnitTypes& unitType);
 	void InitTroop(FUnitData* data);
 	
 	virtual void MergeOnTile();
@@ -60,7 +60,7 @@ private:
 	UPROPERTY(EditAnywhere) bool EndForVSlice = false;
 	UPROPERTY(EditAnywhere) int armyCap = 20;
 	UPROPERTY(VisibleAnywhere) bool merging;
-	UPROPERTY(EditAnywhere, Category = "Debug") Factions preAssignedFaction = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Debug") EFactions preAssignedFaction = EFactions::None;
 	UPROPERTY(EditAnywhere, Category = "Debug") UnitTypes preAssignedUnitType = UnitTypes::None;
 	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 

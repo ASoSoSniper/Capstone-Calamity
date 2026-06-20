@@ -42,10 +42,10 @@ struct FRelationshipStats
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite) Factions faction = Factions::None;
+	UPROPERTY(BlueprintReadWrite) EFactions faction = EFactions::None;
 
 	//Enum relationship with target faction, default is neutral
-	UPROPERTY(BlueprintReadWrite) FactionRelationship relationship = FactionRelationship::Neutral;
+	UPROPERTY(BlueprintReadWrite) EFactionRelationship relationship = EFactionRelationship::Neutral;
 
 	//Scale from 0 to 1 in terms of a faction's hostility toward the target
 	//0 turns this faction into an ally, 1 turns it into an enemy
@@ -84,8 +84,8 @@ class CAPSTONEPROJECT_API UFaction : public UObject
 public:
 	UFaction();
 
-	UFUNCTION() void SetFaction(Factions newFaction);
-	UFUNCTION() Factions GetFaction();
+	UFUNCTION() void SetFaction(EFactions newFaction);
+	UFUNCTION() EFactions GetFaction();
 	UFUNCTION() FString GetFactionName() const;
 	UFUNCTION() bool IsAIControlled();
 
@@ -101,7 +101,7 @@ public:
 
 	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
 private:
-	UPROPERTY() Factions faction;
+	UPROPERTY() EFactions faction;
 	UPROPERTY() FString factionName;
 	UPROPERTY() AFactionController* controller;
 #pragma endregion
@@ -152,14 +152,14 @@ private:
 #pragma region Faction Relationships
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<FRelationshipStats> GetFactionRelationships() const;
-	FactionRelationship GetFactionRelationship(Factions targetFaction);
-	FactionRelationship GetFactionRelationship(AActor* target);
+	EFactionRelationship GetFactionRelationship(EFactions targetFaction);
+	EFactionRelationship GetFactionRelationship(AActor* target);
 
-	UFUNCTION() void IncreaseHostility(Factions targetFaction, float amount);
-	UFUNCTION() void LowerHostility(Factions targetFaction, float amount);
+	UFUNCTION() void IncreaseHostility(EFactions targetFaction, float amount);
+	UFUNCTION() void LowerHostility(EFactions targetFaction, float amount);
 private:
-	UFUNCTION() void SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship);
-	UPROPERTY() TMap<Factions, FRelationshipStats> factionRelationships;
+	UFUNCTION() void SetFactionRelationship(EFactions targetFaction, EFactionRelationship newRelationship);
+	UPROPERTY() TMap<EFactions, FRelationshipStats> factionRelationships;
 #pragma endregion
 #pragma region Hexes
 public:
@@ -195,11 +195,11 @@ private:
 #pragma endregion
 #pragma region Enemy Targeting
 public:
-	UPROPERTY() TMap<ABaseHex*, Factions> targetList = TMap<ABaseHex*, Factions>();
+	UPROPERTY() TMap<ABaseHex*, EFactions> targetList = TMap<ABaseHex*, EFactions>();
 private:
 	UFUNCTION() void CleanTargetPool();
 	UFUNCTION() void GetTargetsOfAllies();
-	UFUNCTION() void TargetBuildingsOfFaction(Factions targetFaction);
+	UFUNCTION() void TargetBuildingsOfFaction(EFactions targetFaction);
 #pragma endregion
 #pragma region Priority Targeting
 public:

@@ -377,22 +377,22 @@ void APlayerMovement::Action8Input()
 
 void APlayerMovement::Action9Input()
 {
-	UnitActions::GetFaction(Factions::Alien1)->LowerHostility(controller->playerFaction, 1.f);
+	UnitActions::GetFaction(EFactions::Alien1)->LowerHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action10Input()
 {
-	UnitActions::GetFaction(Factions::Alien1)->IncreaseHostility(controller->playerFaction, 1.f);
+	UnitActions::GetFaction(EFactions::Alien1)->IncreaseHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action11Input()
 {
-	UnitActions::GetFaction(Factions::Alien2)->LowerHostility(controller->playerFaction, 1.f);
+	UnitActions::GetFaction(EFactions::Alien2)->LowerHostility(controller->playerFaction, 1.f);
 }
 
 void APlayerMovement::Action12Input()
 {
-	UnitActions::GetFaction(Factions::Alien2)->IncreaseHostility(controller->playerFaction, 1.f);
+	UnitActions::GetFaction(EFactions::Alien2)->IncreaseHostility(controller->playerFaction, 1.f);
 }
 #pragma endregion
 

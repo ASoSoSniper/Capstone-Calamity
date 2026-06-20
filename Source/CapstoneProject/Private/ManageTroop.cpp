@@ -141,7 +141,7 @@ void UManageTroop::Action4()
 
 void UManageTroop::CommandAction()
 {
-	if (!controller->hoveredWorldObject || !selectedTroop || selectedTroop->GetUnitData()->GetFaction() != Factions::Human) return;
+	if (!controller->hoveredWorldObject || !selectedTroop || selectedTroop->GetUnitData()->GetFaction() != EFactions::Human) return;
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
 

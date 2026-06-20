@@ -8,7 +8,7 @@
  * 
  */
 UENUM(BlueprintType)
-enum class Factions : uint8
+enum class EFactions : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Human UMETA(DisplayName = "Human"),
@@ -30,7 +30,7 @@ enum class Race : uint8
 };
 
 UENUM(BlueprintType)
-enum class FactionRelationship : uint8
+enum class EFactionRelationship : uint8
 {
 	Neutral,
 	Ally,

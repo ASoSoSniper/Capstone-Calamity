@@ -52,13 +52,13 @@ public:
 	virtual void Action10();
 	
 	FUnitData* GetUnitData() const;
-	void InitBuilding(const Factions& faction);
+	void InitBuilding(const EFactions& factionType);
 	virtual void BeginDestroying();
 	virtual bool IsDisabled();
 	bool ActiveAndHarvesting() const;
 	const TMap<EStratResources, int>& GetResourceYields() const;
 
-	bool SetSiegeState(bool sieging, Factions occupier = Factions::None);
+	bool SetSiegeState(bool sieging, EFactions occupier = EFactions::None);
 	bool IsOccupied();
 	void SetBuildAtStart(bool active);
 	
@@ -68,7 +68,7 @@ public:
 	void HealOverTime();
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetHex() const;
 	UFUNCTION(BlueprintCallable) int GetHexLayersToOccupy() const;
-	UFUNCTION(BlueprintCallable) Factions GetOccupier();
+	UFUNCTION(BlueprintCallable) EFactions GetOccupier();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
 	UFUNCTION(BlueprintCallable, BlueprintPure) SpawnableBuildings GetBuildingType();
@@ -93,7 +93,7 @@ protected:
 	TMap<EStratResources, int> resourceYields;
 	int resourceCapIncrease = 0;
 	UPROPERTY(EditAnywhere, Category = "Initialization") bool builtAtStart = false;
-	UPROPERTY(EditAnywhere, Category = "Initialization") Factions preAssignedFaction = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Initialization") EFactions preAssignedFaction = EFactions::None;
 
 	virtual void UpdateResources();
 	virtual void RevertResources();
@@ -114,7 +114,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Occupation") int troopOccupationMin = 3;
 	UPROPERTY(EditAnywhere, Category = "Occupation") float occupyResourcePercent = 0.25f;
 	UPROPERTY(VisibleAnywhere, Category = "Occupation") bool occupied = false;
-	UPROPERTY(VisibleAnywhere, Category = "Occupation") Factions occupyingFaction = Factions::None;
+	UPROPERTY(VisibleAnywhere, Category = "Occupation") EFactions occupyingFaction = EFactions::None;
 	UPROPERTY(VisibleAnywhere, Category = "Unrest") float unrestLevel = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Unrest") float unrestTime = 20.f;
 

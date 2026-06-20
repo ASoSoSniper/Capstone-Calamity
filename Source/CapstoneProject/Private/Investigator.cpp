@@ -57,7 +57,7 @@ FUnitData* AInvestigator::GetUnit() const
 	return unit;
 }
 
-Factions AInvestigator::GetUnitFaction() const
+EFactions AInvestigator::GetUnitFaction() const
 {
 	return unit->GetFaction();
 }

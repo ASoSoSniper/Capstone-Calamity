@@ -14,6 +14,8 @@ AFactionController::AFactionController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	priorityManager_Hex = CreateDefaultSubobject<UUAI_PriorityManager_Hex>(TEXT("Hex Priority Manager"));
+	decider_Resources = CreateDefaultSubobject<UUAI_Decider>(TEXT("Resource Decider"));
+	decider_Troops = CreateDefaultSubobject<UUAI_Decider>(TEXT("Troop Decider"));
 }
 
 // Called when the game starts or when spawned
@@ -27,11 +29,6 @@ void AFactionController::BeginPlay()
 void AFactionController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (!faction) return;
-
-	DateUpdateTick();
-	FSM_Tick(DeltaTime);
 }
 
 void AFactionController::SetFaction(UFaction* setFaction)
@@ -40,8 +37,11 @@ void AFactionController::SetFaction(UFaction* setFaction)
 
 	faction = setFaction;
 
-	priorityManager_Hex = NewObject<UUAI_PriorityManager_Hex>(this);
+	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &AFactionController::DateUpdate);
+
 	priorityManager_Hex->Initialize(faction);
+	decider_Resources->Initialize(faction);
+	decider_Troops->Initialize(faction);
 }
 
 UFaction* AFactionController::GetFactionObject() const
@@ -51,56 +51,30 @@ UFaction* AFactionController::GetFactionObject() const
 
 bool AFactionController::IsAIControlled()
 {
-	if (!faction) return false;
-
-	return faction->GetFaction() != Factions::Human;
+	return faction->GetFaction() != EFactions::Human;
 }
 
 void AFactionController::TriggerUpdateDisplay()
 {
-	updateDecisionDisplay = true;
+	decider_Resources->onDecisionMade.Broadcast();
 }
 
-float AFactionController::GetUpdateRate() const
+void AFactionController::DateUpdate(const FDateTickUpdate& update)
 {
-	return ACapstoneProjectGameModeBase::GetTimeTillNextTick() * updateTime;
-}
-
-void AFactionController::SetBestAction(FUAI_Decision& decision)
-{
-	IUAI_Controller::SetBestAction(decision);
-
-	updateDecisionDisplay = true;
-}
-
-const TMap<EActionType, FActionSelection>& AFactionController::GetActions()
-{
-	return actions;
-}
-
-bool AFactionController::DestinationReached() const
-{
-	return false;
-}
-
-void AFactionController::DateUpdateTick()
-{
-	FDateTickUpdate* update = ACapstoneProjectGameModeBase::GetDateUpdates();
-
-	if (update->minuteTick)
+	if (update.minuteTick)
 	{
 		
 	}
-	if (update->hourTick)
+	if (update.hourTick)
 	{
 		faction->UpdateResourceCosts();
 	}
-	if (update->dayTick)
+	if (update.dayTick)
 	{
 		faction->FeedPop();
 		faction->ConsumeEnergy();
 	}
-	if (update->monthTick)
+	if (update.monthTick)
 	{
 
 	}
@@ -117,56 +91,24 @@ bool AFactionController::UpdateDisplay()
 	return false;
 }
 
-bool AFactionController::DecisionsMade() const
+UUAI_Decider* AFactionController::GetResourceDecider()
 {
-	return !GetDecisionHistory().IsEmpty();
+	return decider_Resources;
 }
 
-const FUAI_Decision& AFactionController::GetDecisionFromHistory(int index) const
+UUAI_Decider* AFactionController::GetTroopDecider()
 {
-	const TArray<FUAI_Decision>& history = GetDecisionHistory();
-
-	index = FMath::Clamp(index, 0, history.Num() - 1);
-
-	return history[index];
-}
-
-FText AFactionController::GetActionFromHistory(int decision, int index) const
-{
-	const FUAI_Decision& fDecision = GetDecisionFromHistory(decision);
-	if (index >= fDecision.actionScores.Num()) return FText::FromString("No Action");
-	FUAI_ActionScore action = fDecision.actionScores[index];
-
-	FString actionInfo = FString::Printf(TEXT("%s: %.2f"), *action.actionName.ToString(), action.score);
-
-	return FText::FromString(actionInfo);
-
-}
-
-FText AFactionController::GetActionUpdateCountdown() const
-{
-	return FText::FromString(FString::Printf(TEXT("Next Decision: %.2f"), GetTimeTillNextDecision()));
-}
-
-FText AFactionController::GetActionAbandonCountdown() const
-{
-	return FText::FromString(FString::Printf(TEXT("Abandon Action In: %.2f"), GetTimeTIllActionAbandon()));
+	return decider_Troops;
 }
 
 #pragma region Priority Targeting
-template<typename T>
-void AFactionController::BindDelegates(T* t, bool enable)
+void AFactionController::BindHexDelegates(ABaseHex* hex, bool enable)
 {
-	if (!t) return;
-
-	if (ABaseHex* hex = Cast<ABaseHex>(t))
-	{
-		priorityManager_Hex->BindHexDelegates(hex, enable);
-	}
-	else if (ABuilding* building = Cast<ABuilding>(t))
-	{
-		priorityManager_Hex->BindBuildingDelegates(building, enable);
-	}
+	priorityManager_Hex->BindHexDelegates(hex, enable);
+}
+void AFactionController::BindBuildingDelegates(ABuilding* building, bool enable)
+{
+	priorityManager_Hex->BindBuildingDelegates(building, enable);
 }
 ABaseHex* AFactionController::GetPriorityHex_Workers(EStratResources resource) const
 {

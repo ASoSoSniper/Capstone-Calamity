@@ -19,7 +19,7 @@ public:
 	void InitInvestigator(ABaseHex* hex, FUnitData* data);
 	UFUNCTION(BlueprintCallable) void EndInvestigation(bool spawnTroop = true);
 	FUnitData* GetUnit() const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) Factions GetUnitFaction() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) EFactions GetUnitFaction() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetPOIWorkProgress() const;
 private:
 	void Investigate();

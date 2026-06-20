@@ -7,7 +7,7 @@
 ARockCity::ARockCity()
 {
 	builtAtStart = true;
-	preAssignedFaction = Factions::Alien1;
+	preAssignedFaction = EFactions::Alien1;
 
 	buildingType = SpawnableBuildings::RockCity;
 }

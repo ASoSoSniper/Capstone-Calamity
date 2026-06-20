@@ -5,6 +5,7 @@
 
 float ACapstoneProjectGameModeBase::currSeconds = 0.f;
 FDateTickUpdate ACapstoneProjectGameModeBase::dateTickUpdates = FDateTickUpdate();
+FOnDateTick ACapstoneProjectGameModeBase::onDateTick = FOnDateTick();
 
 ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 {
@@ -25,14 +26,14 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	dayStruct.day = 26;
 	currSeconds = 1;
 
-	factionColors.Add(Factions::None, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed")));
-	factionColors.Add(Factions::Human, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/HumanOwned.HumanOwned")));
-	factionColors.Add(Factions::Alien1, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned01.AlienOwned01")));
-	factionColors.Add(Factions::Alien2, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned02.AlienOwned02")));
-	factionColors.Add(Factions::Alien3, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned03.AlienOwned03")));
-	factionColors.Add(Factions::Alien4, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned04.AlienOwned04")));
-	factionColors.Add(Factions::Alien5, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned05.AlienOwned05")));
-	factionColors.Add(Factions::Alien6, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned06.AlienOwned06")));
+	factionColors.Add(EFactions::None, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed")));
+	factionColors.Add(EFactions::Human, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/HumanOwned.HumanOwned")));
+	factionColors.Add(EFactions::Alien1, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned01.AlienOwned01")));
+	factionColors.Add(EFactions::Alien2, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned02.AlienOwned02")));
+	factionColors.Add(EFactions::Alien3, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned03.AlienOwned03")));
+	factionColors.Add(EFactions::Alien4, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned04.AlienOwned04")));
+	factionColors.Add(EFactions::Alien5, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned05.AlienOwned05")));
+	factionColors.Add(EFactions::Alien6, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned06.AlienOwned06")));
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()
@@ -175,6 +176,9 @@ void ACapstoneProjectGameModeBase::DateTick(float& deltaTime)
 	Args.Add(FStringFormatArg(extraMinuteZero));
 	Args.Add(FStringFormatArg(dayStruct.minute));
 	currentDate = FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
+
+	if (dateTickUpdates.minuteTick)
+		onDateTick.Broadcast(dateTickUpdates);
 }
 
 FDateTickUpdate* ACapstoneProjectGameModeBase::GetDateUpdates()
@@ -197,19 +201,19 @@ float ACapstoneProjectGameModeBase::GetTimeTillNextTick()
 	return FMath::Clamp(1.f - currSeconds, 0.f, 1.f);
 }
 
-Factions ACapstoneProjectGameModeBase::CreateNewFaction()
+EFactions ACapstoneProjectGameModeBase::CreateNewFaction()
 {
 	//Advance in the Factions enum, element 0 is None
 	++factionCount;
 	
 	//Get the selected faction in the Factions enum
-	Factions selectedFaction = static_cast<Factions>(factionCount);
+	EFactions selectedFaction = static_cast<EFactions>(factionCount);
 
 	//Create a new Faction instance
 	UFaction* newFaction = NewObject<UFaction>();
 	newFaction->AddToRoot();
 
-	AFactionController* factionController = selectedFaction == Factions::Human ? nullptr :
+	AFactionController* factionController = selectedFaction == EFactions::Human ? nullptr :
 		GetWorld()->SpawnActor<AFactionController>(factionControllerPrefab ? factionControllerPrefab : AFactionController::StaticClass());
 
 	//Make the new Faction instance aware of the faction it's assigned to
@@ -292,7 +296,7 @@ void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
 		ABuilding* building = Cast<ABuilding>(buildings[i]);
 		if (FUnitData* data = building->GetUnitData())
 		{
-			Factions buildingFaction = data->GetFaction();
+			EFactions buildingFaction = data->GetFaction();
 			if (activeFactions.Contains(buildingFaction))
 			{
 				activeFactions[buildingFaction]->AddBuildingToFaction(building);
@@ -306,7 +310,7 @@ void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
 	for (int i = 0; i < troops.Num(); i++)
 	{
 		ATroop* troop = Cast<ATroop>(troops[i]);
-		Factions troopFaction = troop->GetUnitData()->GetFaction();
+		EFactions troopFaction = troop->GetUnitData()->GetFaction();
 		if (activeFactions.Contains(troopFaction))
 		{
 			activeFactions[troopFaction]->allUnits.Add(troop);
@@ -335,7 +339,7 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 
 void ACapstoneProjectGameModeBase::CheckHumanPop()
 {
-	FWorkerStats workers = activeFactions[Factions::Human]->availableWorkers[WorkerType::Human];
+	FWorkerStats workers = activeFactions[EFactions::Human]->availableWorkers[WorkerType::Human];
 
 	if (workers.available + workers.working < 25)
 	{

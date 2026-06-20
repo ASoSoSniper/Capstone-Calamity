@@ -8,6 +8,7 @@
 
 class UAI_Action;
 class UAI_Condition;
+class UFaction;
 
 UENUM(BlueprintType)
 enum class EActionType : uint8
@@ -72,6 +73,8 @@ class CAPSTONEPROJECT_API IUAI_Controller
 	GENERATED_BODY()
 
 public:
+	UFaction* GetFaction() const;
+
 	UAI_Action* GetBestAction() const;
 	void SetBestAction(UAI_Action* action, EActionType actionType = EActionType::None);
 	virtual void SetBestAction(FUAI_Decision& decision);
@@ -79,13 +82,17 @@ public:
 	float ScoreAction(const TArray<UAI_Condition*>& conditions);
 
 	virtual void EndAction();
+
 protected:
+	UFaction* faction;
+
 	void FSM_Tick(const float& DeltaTime);
 	void FSM_Reset();
 
 	virtual bool IsAIControlled();
 
 private:
+
 	UAI_Action* bestAction;
 	EActionType currentActionType = EActionType::None;
 	EDecisionState FSM_State = EDecisionState::Deciding;

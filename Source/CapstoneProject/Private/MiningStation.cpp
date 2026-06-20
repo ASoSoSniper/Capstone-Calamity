@@ -15,7 +15,7 @@ UStaticMesh* AMiningStation::LoadFinishedModel()
 {
 	UStaticMesh* meshAsset = nullptr;
 
-	if (unitData->GetFaction() == Factions::Human)
+	if (unitData->GetFaction() == EFactions::Human)
 	{
 		meshAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Vertical_Slice_Assets/BuildingMiningStationModel.BuildingMiningStationModel'"));
 	}

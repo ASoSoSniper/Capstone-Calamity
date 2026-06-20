@@ -3,14 +3,10 @@
 
 #include "UAIC_ResourceCosts.h"
 #include "Faction.h"
-#include "FactionController.h"
 
 float UUAIC_ResourceCosts::ScoreCondition(IUAI_Controller* controller) const
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return GetMinScore();
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
 	float gains = faction->GetResourceGainsPerDay(resource, includeIncompleteBuildings);

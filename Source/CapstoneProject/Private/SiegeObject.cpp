@@ -56,7 +56,7 @@ void ASiegeObject::GenerateModels()
 	USkeletalMesh* robotMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 	USkeletalMesh* alienMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Animations/robot_all_beta.robot_all_beta'"));
 
-	if (currentBattle.Group1.Contains(Factions::Human))
+	if (currentBattle.Group1.Contains(EFactions::Human))
 	{
 		group1Mesh->SetSkeletalMesh(robotMesh);
 		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
@@ -67,7 +67,7 @@ void ASiegeObject::GenerateModels()
 		//group1Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Alien1].visibleTexture);
 	}
 
-	if (building->GetUnitData()->GetFaction() == Factions::Human || building->GetOccupier() == Factions::Human)
+	if (building->GetUnitData()->GetFaction() == EFactions::Human || building->GetOccupier() == EFactions::Human)
 	{
 		group2Mesh->SetSkeletalMesh(robotMesh);
 		//group2Mesh->SetMaterial(0, AGlobalSpawner::spawnerObject->troopFactionMaterials[Factions::Human].visibleTexture);
@@ -81,7 +81,7 @@ void ASiegeObject::GenerateModels()
 
 void ASiegeObject::DestroyBattle()
 {
-	if (building->GetUnitData()->GetFaction() == Factions::Human && !BuildingIsAlive()) building->Destroy();
+	if (building->GetUnitData()->GetFaction() == EFactions::Human && !BuildingIsAlive()) building->Destroy();
 
 	TSet<ABaseHex*> surroundingHexes = GetHex()->GetHexesInRadius(building->GetHexLayersToOccupy());
 	for (ABaseHex* adjHex : surroundingHexes)

@@ -106,13 +106,13 @@ private:
 public:
 	FHexInfo GetTerrainInfo(TerrainType terrain) const;
 
-	Factions GetHexOwner();
-	void SetHexOwner(Factions faction);
+	EFactions GetHexOwner();
+	void SetHexOwner(EFactions faction);
 
 	FVector2D GetHexCoordinates() const;
 	void SetHexCoordinates(int x, int y);
 
-	ABaseHex* FindFreeAdjacentHex(Factions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf = true, EHexSearchRules occupancyFilter = EHexSearchRules::ContainsAny, bool includeBuildings = false);
+	ABaseHex* FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf = true, EHexSearchRules occupancyFilter = EHexSearchRules::ContainsAny, bool includeBuildings = false);
 	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1, bool includeSelf = true) const;
 
 	TerrainType GetHexTerrain();
@@ -129,7 +129,7 @@ public:
 	bool CanPutWorkersOnHex();
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Identity") Factions hexOwner = Factions::None;
+	UPROPERTY(EditAnywhere, Category = "Identity") EFactions hexOwner = EFactions::None;
 	TerrainType hexTerrain = TerrainType::Plains;
 	FVector2D hexCoordinates;
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
@@ -201,7 +201,7 @@ public:
 	bool ActiveHarvesting();
 	float GetOutputPercent();
 
-	void UpdateResourceYield(EStratResources resource, int value, Factions faction = Factions::None);
+	void UpdateResourceYield(EStratResources resource, int value, EFactions faction = EFactions::None);
 	void ToggleResourceYield();
 	FCurrentResourceYields GetCurrentResourceYields();
 	const TMap<EStratResources, int>& GetHexResources() const;

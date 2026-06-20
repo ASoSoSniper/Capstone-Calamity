@@ -55,7 +55,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere) ActionStates currentActionState = ActionStates::None;
 	TMap<ActionStates, UManageMode*> actionStates;
-	UPROPERTY(BlueprintReadWrite) Factions playerFaction = Factions::Human;
+	UPROPERTY(BlueprintReadWrite) EFactions playerFaction = EFactions::Human;
 
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
@@ -93,7 +93,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable) void PlayUISound(USoundBase* sound);
 	UFUNCTION(BlueprintCallable) void PlayUITroopSound(UnitTypes unitType);
-	UFUNCTION(BlueprintCallable) void PlayUITroopSelectionSound(Factions faction);
+	UFUNCTION(BlueprintCallable) void PlayUITroopSelectionSound(EFactions faction);
 	UFUNCTION(BlueprintCallable) void PlayUIBuildingSound(SpawnableBuildings buildingType);
 	UFUNCTION(BlueprintCallable) void PlayUIHexSound(TerrainType hexType, ABaseHex* hex = nullptr);
 
@@ -102,7 +102,7 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere) APlayerMovement* playerCamera;
 	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<UnitTypes, USoundBase*> UITroopSounds;
-	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<Factions, USoundBase*> UITroopSelectionSounds;
+	UPROPERTY(EditAnywhere, Category = "Troop Sounds") TMap<EFactions, USoundBase*> UITroopSelectionSounds;
 	UPROPERTY(EditAnywhere, Category = "Building Sounds") TMap<SpawnableBuildings, USoundBase*> UIBuildingSounds;
 	UPROPERTY(EditAnywhere, Category = "Hex Sounds") TMap<TerrainType, USoundBase*> UIHexSounds;
 #pragma endregion
@@ -228,18 +228,18 @@ public:
 		else if constexpr (std::is_same<ATroop, T>::value)
 		{
 			ATroop* targetTroop = Cast<ATroop>(target);
-			Factions targetFaction = targetTroop->GetUnitData()->GetFaction();
+			EFactions targetFaction = targetTroop->GetUnitData()->GetFaction();
 
 			if (targetFaction == playerFaction && IsInBuildMode())
 				troop->AI_SetMovementAction(troop_Merge, targetTroop->hexNav);
 			else
 			{
 				UFaction* factionObject = UnitActions::GetFaction(playerFaction);
-				FactionRelationship relation = factionObject->GetFactionRelationship(targetFaction);
+				EFactionRelationship relation = factionObject->GetFactionRelationship(targetFaction);
 
 				switch (relation)
 				{
-				case FactionRelationship::Enemy:
+				case EFactionRelationship::Enemy:
 					troop->AI_SetMovementAction(troop_ChaseTarget, targetTroop->hexNav);
 					break;
 				default:

@@ -41,13 +41,15 @@ public:
 	void SphereCheck(float rangeMulti = 1.f);
 	virtual void CancelPath();
 
-	bool VisibleToFaction(Factions faction) const;
+	bool VisibleToFaction(EFactions faction) const;
 
 	FUnitData* GetUnitData() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool IsTraveling() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTravelProgress() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetTroopIcon() const;
+
+	TArray<const ABaseHex*> SimulatePathToHex(const ABaseHex* destination);
 
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;

@@ -2,15 +2,11 @@
 
 
 #include "UAIC_BuildingCount.h"
-#include "FactionController.h"
 #include "Faction.h"
 
 float UUAIC_BuildingCount::ScoreCondition(IUAI_Controller* controller) const
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return GetMinScore();
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
 	const TSet<ABuilding*>& buildings = faction->GetBuildingsOfType(buildingType);

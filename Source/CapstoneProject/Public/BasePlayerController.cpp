@@ -200,7 +200,7 @@ void ABasePlayerController::PlayUITroopSound(UnitTypes unitType)
 	playerCamera->audioComponent->SetSound(UITroopSounds[unitType]);
 	playerCamera->audioComponent->Play();
 }
-void ABasePlayerController::PlayUITroopSelectionSound(Factions faction)
+void ABasePlayerController::PlayUITroopSelectionSound(EFactions faction)
 {
 	if (!UITroopSelectionSounds.Contains(faction)) return;
 
@@ -490,7 +490,7 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 }
 FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 {
-	if (!selectedHex || selectedHex->GetHexOwner() != Factions::Human) return sliders;
+	if (!selectedHex || selectedHex->GetHexOwner() != EFactions::Human) return sliders;
 
 	sliders.maxWorkers = selectedHex->GetMaxWorkers();
 
@@ -553,13 +553,13 @@ bool ABasePlayerController::HexIsDiscovered()
 {
 	if (!selectedHex) return false;
 
-	return selectedHex->visibility->DiscoveredByFaction(Factions::Human);
+	return selectedHex->visibility->DiscoveredByFaction(EFactions::Human);
 }
 bool ABasePlayerController::HexIsHumanControlled()
 {
 	if (!selectedHex) return false;
 
-	return selectedHex->GetHexOwner() == Factions::Human;
+	return selectedHex->GetHexOwner() == EFactions::Human;
 }
 #pragma endregion
 
@@ -607,7 +607,7 @@ int ABasePlayerController::GetPlayerPopulation()
 }
 float ABasePlayerController::GetPlayerPopAlpha() const
 {
-	return UnitActions::GetFaction(Factions::Human)->GetPopAlpha();
+	return UnitActions::GetFaction(EFactions::Human)->GetPopAlpha();
 }
 int ABasePlayerController::GetStarveLevel()
 {
@@ -1069,7 +1069,7 @@ void ABasePlayerController::RetreatFromBattle()
 
 	if (ABattleObject* Battle = Cast<ABattleObject>(Actor))
 	{
-		Battle->FleeFromBattle(Factions::Human);
+		Battle->FleeFromBattle(EFactions::Human);
 	}
 }
 
@@ -1120,14 +1120,14 @@ bool ABasePlayerController::BattleGroupIsHuman(int group)
 
 	if (group == 0)
 	{
-		if (battleObject->currentBattle.Group1.Contains(Factions::Human))
+		if (battleObject->currentBattle.Group1.Contains(EFactions::Human))
 		{
 			return true;
 		}
 	}
 	else
 	{
-		if (battleObject->currentBattle.Group2.Contains(Factions::Human))
+		if (battleObject->currentBattle.Group2.Contains(EFactions::Human))
 		{
 			return true;
 		}

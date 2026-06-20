@@ -63,15 +63,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(VisibleAnywhere) Factions faction;
+	UPROPERTY(VisibleAnywhere) EFactions faction;
 
 	UPROPERTY(VisibleAnywhere, Category = "Functionality") bool enableScan = true;
 
 	void SetSelected(bool active, bool instigator = true);
-	bool VisibleToFaction(Factions factionToCheck) const;
-	bool DiscoveredByFaction(Factions factionToCheck) const;
+	bool VisibleToFaction(EFactions factionToCheck) const;
+	bool DiscoveredByFaction(EFactions factionToCheck) const;
 
-	void SetupComponent(Factions setFaction, UMeshComponent* meshComponent);
+	void SetupComponent(EFactions setFaction, UMeshComponent* meshComponent);
 	void SetupComponent(FUnitData* data, UMeshComponent* meshComponent);
 	void SetupFactionComponent(UMeshComponent* meshComponent);
 	void ResetComponent();
@@ -90,14 +90,14 @@ private:
 
 	UPROPERTY() TArray<UMaterialInstanceDynamic*> meshMaterials;
 	UPROPERTY() UMaterialInstanceDynamic* factionMat;
-	TMap<Factions, FVisibility> factionVisibility;
+	TMap<EFactions, FVisibility> factionVisibility;
 	FUnitData* unitData;
 	UPROPERTY() UHexNav* hexNav;
 	UPROPERTY() ABaseHex* hexParent;
 	UPROPERTY() bool discoveredByPlayer;
 
 	void Scan();
-	void InSight(Factions thisFaction);
+	void InSight(EFactions thisFaction);
 	bool SetVisibility();
 	void RevealModelsAndMeshes();
 	void HideModelsAndMeshes();

@@ -10,7 +10,7 @@
 #pragma region General Logic
 UFaction::UFaction()
 {
-	faction = Factions::None;
+	faction = EFactions::None;
 	resourceInventory.Add(EStratResources::Energy, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Production, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
@@ -36,13 +36,13 @@ UFaction::UFaction()
 
 	allBuildings.Add(SpawnableBuildings::None, FBuildingSet());
 }
-void UFaction::SetFaction(Factions newFaction)
+void UFaction::SetFaction(EFactions newFaction)
 {
-	if (newFaction == Factions::None) return;
+	if (newFaction == EFactions::None) return;
 
 	faction = newFaction;
 
-	if (faction == Factions::Human)
+	if (faction == EFactions::Human)
 	{
 		availableWorkers[WorkerType::Human].available = 100;
 		availableWorkers[WorkerType::Robot].available = 10;
@@ -53,7 +53,7 @@ void UFaction::SetFaction(Factions newFaction)
 		availableWorkers[WorkerType::Alien].maxAcquired = 1000;
 	}
 }
-Factions UFaction::GetFaction()
+EFactions UFaction::GetFaction()
 {
 	return faction;
 }
@@ -63,7 +63,7 @@ FString UFaction::GetFactionName() const
 }
 bool UFaction::IsAIControlled()
 {
-	return faction != Factions::Human;
+	return faction != EFactions::Human;
 }
 
 AFactionController* UFaction::GetFactionController() const
@@ -83,7 +83,7 @@ void UFaction::FindActiveFactions()
 	{
 		if (currentFaction.Key != faction)
 		{
-			FactionRelationship relationShip = FactionRelationship::Neutral;
+			EFactionRelationship relationShip = EFactionRelationship::Neutral;
 
 			factionRelationships.Add(currentFaction.Key, FRelationshipStats{ currentFaction.Key, relationShip });
 		}
@@ -246,7 +246,7 @@ void UFaction::ConsumeEnergy()
 	resourceInventory[EStratResources::Energy].currentResources -= energyCost;
 	currPowerDays = 0;
 	powerOutage = false;
-	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
+	if (faction == EFactions::Human) UnitActions::EnableRobots(EFactions::Human, true);
 }
 
 TMap<EStratResources, int> UFaction::GetNetResourcesPerDay(bool includeIncompleteBuildings) const
@@ -369,7 +369,7 @@ void UFaction::PowerOutage(int energyCost)
 	{
 		powerOutage = true;
 		resourceInventory[EStratResources::Energy].currentResources = 0;
-		if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, false);
+		if (faction == EFactions::Human) UnitActions::EnableRobots(EFactions::Human, false);
 	}
 
 	if (currPowerDays < daysTillPowerOutage)
@@ -378,7 +378,7 @@ void UFaction::PowerOutage(int energyCost)
 		return;
 	}
 
-	if (faction == Factions::Human) UnitActions::EnableRobots(Factions::Human, true);
+	if (faction == EFactions::Human) UnitActions::EnableRobots(EFactions::Human, true);
 	KillPopulation(missingEnergy * popDeathsPerPowerMissing);
 }
 #pragma endregion
@@ -387,17 +387,17 @@ const TArray<FRelationshipStats> UFaction::GetFactionRelationships() const
 {
 	TArray<FRelationshipStats> relationValues;
 
-	for (const TPair<Factions, FRelationshipStats>& relation : factionRelationships)
+	for (const TPair<EFactions, FRelationshipStats>& relation : factionRelationships)
 	{
 		relationValues.Add(relation.Value);
 	}
 
 	return relationValues;
 }
-FactionRelationship UFaction::GetFactionRelationship(Factions targetFaction)
+EFactionRelationship UFaction::GetFactionRelationship(EFactions targetFaction)
 {
 	//If comparing unit faction to itself, return Ally.
-	if (faction == targetFaction) return FactionRelationship::Ally;
+	if (faction == targetFaction) return EFactionRelationship::Ally;
 
 	//If unit faction has a relationship with target faction, return that relationship.
 	if (factionRelationships.Contains(targetFaction))
@@ -406,18 +406,18 @@ FactionRelationship UFaction::GetFactionRelationship(Factions targetFaction)
 	}
 
 	//Otherwise, return Neutral.
-	return FactionRelationship::Neutral;
+	return EFactionRelationship::Neutral;
 }
-FactionRelationship UFaction::GetFactionRelationship(AActor* target)
+EFactionRelationship UFaction::GetFactionRelationship(AActor* target)
 {
 	UUnitStats* stats = target->FindComponentByClass<UUnitStats>();
 
 	if (stats) return GetFactionRelationship(stats->faction);
 
-	return FactionRelationship::Neutral;
+	return EFactionRelationship::Neutral;
 }
 
-void UFaction::IncreaseHostility(Factions targetFaction, float amount)
+void UFaction::IncreaseHostility(EFactions targetFaction, float amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
 	if (!IsAIControlled() || amount <= 0.f) return;
@@ -428,11 +428,11 @@ void UFaction::IncreaseHostility(Factions targetFaction, float amount)
 	hostility = FMath::Clamp(hostility + amount, 0.f, 1.f);
 
 	//If hostility reaches 1, set relationship to enemy
-	if (hostility == 1.f) SetFactionRelationship(targetFaction, FactionRelationship::Enemy);
+	if (hostility == 1.f) SetFactionRelationship(targetFaction, EFactionRelationship::Enemy);
 
 	controller->TriggerUpdateDisplay();
 }
-void UFaction::LowerHostility(Factions targetFaction, float amount)
+void UFaction::LowerHostility(EFactions targetFaction, float amount)
 {
 	//Return if not AI-controlled, amount to add <= 0, or the relationship does not exist
 	if (!IsAIControlled() || amount <= 0.f) return;
@@ -443,12 +443,12 @@ void UFaction::LowerHostility(Factions targetFaction, float amount)
 	hostility = FMath::Clamp(hostility - amount, 0.f, 1.f);
 
 	//If hostility reaches 0, set relationship to ally
-	if (hostility == 0.f) SetFactionRelationship(targetFaction, FactionRelationship::Ally);
+	if (hostility == 0.f) SetFactionRelationship(targetFaction, EFactionRelationship::Ally);
 
 	controller->TriggerUpdateDisplay();
 }
 
-void UFaction::SetFactionRelationship(Factions targetFaction, FactionRelationship newRelationship)
+void UFaction::SetFactionRelationship(EFactions targetFaction, EFactionRelationship newRelationship)
 {
 	//If this faction does not exist in the relationship index, return
 	if (!factionRelationships.Contains(targetFaction)) return;
@@ -488,7 +488,7 @@ void UFaction::ClaimHex(ABaseHex* hex)
 
 	ownedHexes[terrain].hexes.Add(hex);
 	if (controller)
-		controller->BindDelegates(hex, true);
+		controller->BindHexDelegates(hex, true);
 }
 void UFaction::DropHex(ABaseHex* hex)
 {
@@ -501,7 +501,7 @@ void UFaction::DropHex(ABaseHex* hex)
 	{
 		ownedHexes[terrain].hexes.Remove(hex);
 		if (controller)
-			controller->BindDelegates(hex, false);
+			controller->BindHexDelegates(hex, false);
 	}
 }
 
@@ -560,7 +560,7 @@ void UFaction::AddBuildingToFaction(ABuilding* building)
 
 	allBuildings[buildingType].buildings.Add(building);
 	if (controller)
-		controller->BindDelegates(building, true);
+		controller->BindBuildingDelegates(building, true);
 }
 void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 {
@@ -571,7 +571,7 @@ void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 
 	allBuildings[buildingType].buildings.Remove(building);
 	if (controller)
-		controller->BindDelegates(building, false);
+		controller->BindBuildingDelegates(building, false);
 }
 #pragma endregion
 #pragma region Workers
@@ -688,7 +688,7 @@ void UFaction::CleanTargetPool()
 	//If targets in the pool are no longer enemies, add to the removal list
 	for (auto& target : targetList)
 	{
-		if (GetFactionRelationship(target.Value) != FactionRelationship::Enemy)
+		if (GetFactionRelationship(target.Value) != EFactionRelationship::Enemy)
 		{
 			targetsToRemove.Add(target.Key);
 		}
@@ -707,18 +707,18 @@ void UFaction::GetTargetsOfAllies()
 
 	for (auto& otherFaction : factionRelationships)
 	{
-		if (otherFaction.Value.relationship != FactionRelationship::Ally) continue;
+		if (otherFaction.Value.relationship != EFactionRelationship::Ally) continue;
 
 		for (auto& target : UnitActions::GetFaction(otherFaction.Key)->targetList)
 		{
-			if (GetFactionRelationship(target.Value) == FactionRelationship::Enemy)
+			if (GetFactionRelationship(target.Value) == EFactionRelationship::Enemy)
 				targetList.Add(target);
 		}
 	}
 }
-void UFaction::TargetBuildingsOfFaction(Factions targetFaction)
+void UFaction::TargetBuildingsOfFaction(EFactions targetFaction)
 {
-	if (!IsAIControlled() || GetFactionRelationship(targetFaction) != FactionRelationship::Enemy) return;
+	if (!IsAIControlled() || GetFactionRelationship(targetFaction) != EFactionRelationship::Enemy) return;
 
 	UFaction* factionObject = UnitActions::GetFaction(targetFaction);
 	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)
@@ -727,9 +727,9 @@ void UFaction::TargetBuildingsOfFaction(Factions targetFaction)
 
 		for (ABuilding* building : buildingType.Value.buildings)
 		{
-			if (building->GetOccupier() != Factions::None)
+			if (building->GetOccupier() != EFactions::None)
 			{
-				if (GetFactionRelationship(building->GetOccupier()) == FactionRelationship::Enemy)
+				if (GetFactionRelationship(building->GetOccupier()) == EFactionRelationship::Enemy)
 				{
 					targetList.Add(building->hexNav->GetCurrentHex(), building->GetOccupier());
 					continue;

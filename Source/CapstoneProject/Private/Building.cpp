@@ -27,7 +27,7 @@ ABuilding::ABuilding()
 	visibility->enableScan = false;
 
 	buildingType = SpawnableBuildings::None;
-	preAssignedFaction = Factions::None;
+	preAssignedFaction = EFactions::None;
 
 	resourceYields.Add(EStratResources::Energy, 0);
 	resourceYields.Add(EStratResources::Food, 0);
@@ -43,7 +43,7 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (preAssignedFaction != Factions::None)
+	if (preAssignedFaction != EFactions::None)
 		InitBuilding(preAssignedFaction);
 }
 
@@ -76,14 +76,14 @@ FUnitData* ABuilding::GetUnitData() const
 	return unitData;
 }
 
-void ABuilding::InitBuilding(const Factions& faction)
+void ABuilding::InitBuilding(const EFactions& factionType)
 {
 	using GameMode = ACapstoneProjectGameModeBase;
-	if (!GameMode::activeFactions.Contains(faction)) return;
+	if (!GameMode::activeFactions.Contains(factionType)) return;
 
-	unitData = new FUnitData(faction);
-	if (GameMode::activeFactions.Contains(faction))
-		GameMode::activeFactions[faction]->AddBuildingToFaction(this);
+	unitData = new FUnitData(factionType);
+	if (GameMode::activeFactions.Contains(factionType))
+		GameMode::activeFactions[factionType]->AddBuildingToFaction(this);
 
 	visibility->SetupComponent(unitData, mesh);
 	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
@@ -101,7 +101,7 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No building stats found, could not set up building"));
 		return false;
 	}
-	if (!unitData || unitData->GetFaction() == Factions::None)
+	if (!unitData || unitData->GetFaction() == EFactions::None)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No faction set, could not set up building"));
 		return false;
@@ -204,7 +204,7 @@ void ABuilding::SetBuildState()
 		BuildingAction();
 		SetToFinishedModel();
 		visibility->enableScan = true;
-		if (unitData->GetFaction() == Factions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
+		if (unitData->GetFaction() == EFactions::Human) AGlobalSpawner::spawnerObject->controller->PlayUISound(AGlobalSpawner::spawnerObject->controller->buildingCompleteSound);
 		break;
 	case Complete:
 		
@@ -223,7 +223,7 @@ void ABuilding::UpdateResources()
 	for (auto& resource : resourceYields)
 	{
 		int value = resource.Value;
-		if (occupyingFaction != Factions::None)
+		if (occupyingFaction != EFactions::None)
 		{
 			int ownerPortion = FMath::RoundToInt((float)value - (float)value * occupyResourcePercent);
 			int siegePortion = FMath::RoundToInt((float)value * occupyResourcePercent);
@@ -372,17 +372,17 @@ void ABuilding::Destroyed()
 
 	if (hex)
 	{
-		Factions faction = unitData->GetFaction();
+		EFactions factionType = unitData->GetFaction();
 
-		UnitActions::UpdateResourceCapacity(faction, -resourceCapIncrease);
+		UnitActions::UpdateResourceCapacity(factionType, -resourceCapIncrease);
 
-		ACapstoneProjectGameModeBase::activeFactions[faction]->RemoveBuildingFromFaction(this);
+		ACapstoneProjectGameModeBase::activeFactions[factionType]->RemoveBuildingFromFaction(this);
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
 			TMap<EStratResources, int> addResources;
 			addResources.Add(EStratResources::Production, AGlobalSpawner::spawnerObject->buildingCosts[buildingType].productionCost * 0.25f);
-			UnitActions::AddResources(faction, addResources);
+			UnitActions::AddResources(factionType, addResources);
 		}
 
 		hex->RemoveBuildingFromHex(GetHexLayersToOccupy());
@@ -415,7 +415,7 @@ const TMap<EStratResources, int>& ABuilding::GetResourceYields() const
 	return resourceYields;
 }
 
-bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
+bool ABuilding::SetSiegeState(bool sieging, EFactions occupier)
 {
 	if (occupied == sieging) return false;
 
@@ -429,7 +429,7 @@ bool ABuilding::SetSiegeState(bool sieging, Factions occupier)
 	}
 	else
 	{
-		occupyingFaction = Factions::None;
+		occupyingFaction = EFactions::None;
 		if (smokeEffect)
 		{
 			smokeEffect->Destroy();
@@ -511,7 +511,7 @@ void ABuilding::UpdateUnrestLevel(float& DeltaTime)
 	SetSiegeState(false);
 }
 
-Factions ABuilding::GetOccupier()
+EFactions ABuilding::GetOccupier()
 {
 	return occupyingFaction;
 }

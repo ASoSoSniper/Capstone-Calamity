@@ -558,7 +558,7 @@ void AGlobalSpawner::Tick(float DeltaTime)
 		controller = Cast<ABasePlayerController>(controllerTemp);
 	}
 }
-FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(Factions faction)
+FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(EFactions faction)
 {
 	if (!factionDisplayPresets.Contains(faction)) return nullptr;
 
@@ -676,7 +676,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	hex->hexMeshAttachment->SetVisibility(extraAsset != nullptr);
 	hex->SetAttachmentCanBeVisible(extraAsset != nullptr);
 
-	Factions owner = hex->GetHexOwner();
+	EFactions owner = hex->GetHexOwner();
 
 	hex->visibility->ResetComponent();
 	hex->visibility->SetupComponent(owner, hex->hexMesh);
@@ -839,9 +839,9 @@ void AGlobalSpawner::SpawnBuildingsAroundCity(ABaseHex* centerHex)
 		claimedCoordinates.Add(FVector2D(randX, randY));
 	}
 
-	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::MiningStation, randomHexes[0], true);
-	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::Farmland, randomHexes[1], true);
-	SpawnBuildingFree(Factions::Alien1, SpawnableBuildings::PowerPlant, randomHexes[2], true);
+	SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::MiningStation, randomHexes[0], true);
+	SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::Farmland, randomHexes[1], true);
+	SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::PowerPlant, randomHexes[2], true);
 }
 void AGlobalSpawner::SpawnPointsOfInterest()
 {
@@ -869,7 +869,7 @@ void AGlobalSpawner::SpawnPointsOfInterest()
 #pragma endregion
 
 #pragma region Building Construction
-void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex)
+void AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex)
 {
 	//Check if terrain is valid
 	if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
@@ -954,7 +954,7 @@ void AGlobalSpawner::SpawnBuilding(Factions faction, SpawnableBuildings building
 		controller->PlayUISound(controller->selectFailSound);
 	}
 }
-void AGlobalSpawner::SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
+void AGlobalSpawner::SpawnBuildingFree(EFactions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
 {
 	ABuilding* spawn = GetWorld()->SpawnActor<ABuilding>(DetermineBuildingType(building), hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	spawn->InitBuilding(faction);
@@ -1093,7 +1093,7 @@ void AGlobalSpawner::MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex)
 	}
 }
 
-bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
+bool AGlobalSpawner::PurchaseTroop(EFactions faction, UnitTypes unit)
 {
 	bool canAfford = false;
 
@@ -1122,7 +1122,7 @@ bool AGlobalSpawner::PurchaseTroop(Factions faction, UnitTypes unit)
 
 	return canAfford;
 }
-ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex)
+ATroop* AGlobalSpawner::BuildTroop(EFactions faction, UnitTypes unit, ABaseHex* hex)
 {
 	if (unit == UnitTypes::Army) return BuildArmy(faction, hex);
 
@@ -1133,7 +1133,7 @@ ATroop* AGlobalSpawner::BuildTroop(Factions faction, UnitTypes unit, ABaseHex* h
 
 	return newTroop;
 }
-ATroop* AGlobalSpawner::BuildArmy(Factions faction, ABaseHex* hex)
+ATroop* AGlobalSpawner::BuildArmy(EFactions faction, ABaseHex* hex)
 {
 	ATroop* newTroop = GetWorld()->SpawnActor<ATroop>(mergedArmyPrefab, hex->troopAnchor->GetComponentLocation(), FRotator(0, 0, 0));
 	newTroop->InitTroop(faction, UnitTypes::Army);
@@ -1193,7 +1193,7 @@ AActor* AGlobalSpawner::SpawnEndParticle(AActor* object, GameStates state)
 #pragma endregion
 
 #pragma region UnitData
-Factions FUnitData::GetFaction() const
+EFactions FUnitData::GetFaction() const
 {
 	return faction;
 }
@@ -1336,7 +1336,7 @@ void FUnitData::GenerateArmyName(FString newName)
 	if (!GameMode::activeFactions.Contains(faction)) return;
 	if (armyName == newName && newName != TEXT("")) return;
 
-	TMap<FString, TArray<int32>>& names = faction == Factions::Human ?
+	TMap<FString, TArray<int32>>& names = faction == EFactions::Human ?
 		GameMode::activeFactions[faction]->armyNamesHuman :
 		GameMode::activeFactions[faction]->armyNamesAlien;
 
@@ -1392,7 +1392,7 @@ void FUnitData::RemoveArmyName()
 {
 	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return;
 
-	TMap<FString, TArray<int32>>& names = faction == Factions::Human ?
+	TMap<FString, TArray<int32>>& names = faction == EFactions::Human ?
 		ACapstoneProjectGameModeBase::activeFactions[faction]->armyNamesHuman :
 		ACapstoneProjectGameModeBase::activeFactions[faction]->armyNamesAlien;
 
@@ -1689,11 +1689,11 @@ FString FStatusEffect::GetEffectName() const
 {
 	return effectName;
 }
-Factions FStatusEffect::GetOriginFaction() const
+EFactions FStatusEffect::GetOriginFaction() const
 {
 	return originFaction;
 }
-FactionRelationship FStatusEffect::GetFactionsToAffect() const
+EFactionRelationship FStatusEffect::GetFactionsToAffect() const
 {
 	return factionsToAffect;
 }

@@ -110,13 +110,13 @@ class CAPSTONEPROJECT_API UnitActions : public UObject
 public:
 
 	static bool IsHostileTarget(AMovementAI* unit, AMovementAI* target);
-	static bool IsHostileTarget(const Factions& a, const Factions& b);
+	static bool IsHostileTarget(const EFactions& a, const EFactions& b);
 
-	static bool IsAllyToFaction(FactionRelationship relationship);
+	static bool IsAllyToFaction(EFactionRelationship relationship);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static UFaction* GetFaction(const Factions& faction);
-	static TMap<Factions, UFaction*> GetFactions();
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static AFactionController* GetFactionController(const Factions& faction);
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static UFaction* GetFaction(const EFactions& faction);
+	static TMap<EFactions, UFaction*> GetFactions();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Faction Identity") static AFactionController* GetFactionController(const EFactions& faction);
 	
 	struct SelectionIdentity
 	{
@@ -130,38 +130,38 @@ public:
 
 	static SelectionIdentity DetermineObjectType(AActor* object);
 
-	static int GetAvailableWorkerType(Factions faction, WorkerType worker);
+	static int GetAvailableWorkerType(EFactions faction, WorkerType worker);
 
-	static TArray<int> GetFactionResources(Factions faction);
-	static void SetFactionResources(Factions faction, EStratResources resourceToChange, int desiredResourceVal);
-	static int GetFactionPopulation(Factions faction);
-	static TMap<EStratResources, int> GetMoreSpecificFactionResources(Factions faction);
-	static TMap<EStratResources, int> GetResourcesPerTick(Factions faction);
-	static TMap<EStratResources, int> GetResourceGains(Factions faction);
-	static TMap<EStratResources, int> GetResourceLosses(Factions faction);
-	static TMap<WorkerType, int> GetFactionWorkers(Factions faction);
-	static TMap<WorkerType, int> GetWorkerEnergyCost(Factions faction);
-	static void UpdateResourceCapacity(Factions faction, int addedCap);
+	static TArray<int> GetFactionResources(EFactions faction);
+	static void SetFactionResources(EFactions faction, EStratResources resourceToChange, int desiredResourceVal);
+	static int GetFactionPopulation(EFactions faction);
+	static TMap<EStratResources, int> GetMoreSpecificFactionResources(EFactions faction);
+	static TMap<EStratResources, int> GetResourcesPerTick(EFactions faction);
+	static TMap<EStratResources, int> GetResourceGains(EFactions faction);
+	static TMap<EStratResources, int> GetResourceLosses(EFactions faction);
+	static TMap<WorkerType, int> GetFactionWorkers(EFactions faction);
+	static TMap<WorkerType, int> GetWorkerEnergyCost(EFactions faction);
+	static void UpdateResourceCapacity(EFactions faction, int addedCap);
 
-	static int GetResourceCap(Factions faction);
-	static ABaseHex* GetClosestOutpostHex(Factions faction, AActor* referencePoint);
-	static bool HexHasFriendlyTroop(Factions faction, AActor* hex, ATroop* referenceTroop = nullptr);
-	static bool HexHasEnemyTroop(Factions faction, AActor* hex);
-	static int GetFactionStarveLevel(Factions faction);
-	static int GetFactionPowerOutageLevel(Factions faction);
+	static int GetResourceCap(EFactions faction);
+	static ABaseHex* GetClosestOutpostHex(EFactions faction, AActor* referencePoint);
+	static bool HexHasFriendlyTroop(EFactions faction, AActor* hex, ATroop* referenceTroop = nullptr);
+	static bool HexHasEnemyTroop(EFactions faction, AActor* hex);
+	static int GetFactionStarveLevel(EFactions faction);
+	static int GetFactionPowerOutageLevel(EFactions faction);
 
-	static void EnableRobots(Factions faction, bool enable);
-	static void RobotIsActive(Factions faction, ATroop* robot);
-	static void AddResources(Factions faction, TMap<EStratResources, int> resources);
+	static void EnableRobots(EFactions faction, bool enable);
+	static void RobotIsActive(EFactions faction, ATroop* robot);
+	static void AddResources(EFactions faction, TMap<EStratResources, int> resources);
 
-	static void SetTargetListElement(Factions faction, AActor* target);
+	static void SetTargetListElement(EFactions faction, AActor* target);
 	static void RemoveFromAllTargetLists(ABaseHex* target);
-	static TMap<ABaseHex*, Factions> GetTargetList(Factions faction);
+	static TMap<ABaseHex*, EFactions> GetTargetList(EFactions faction);
 
 	static bool ArmyContainsUnit(AMovementAI* troop, UnitTypes type, int& unitIndex);
 
-	static Factions FindHostileTarget(Factions referenceFaction, ABaseHex* hex);
-	static Factions FindHostileTarget(Factions referenceFaction, ABattleObject* battle);
+	static EFactions FindHostileTarget(EFactions referenceFaction, ABaseHex* hex);
+	static EFactions FindHostileTarget(EFactions referenceFaction, ABattleObject* battle);
 };
 
 

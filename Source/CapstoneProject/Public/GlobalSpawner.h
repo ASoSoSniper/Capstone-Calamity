@@ -526,14 +526,14 @@ struct FStatusEffect
 
 public:
 	FStatusEffect() {};
-	FStatusEffect(FString name, Factions faction, FactionRelationship affected, float hp, float morale, int vision, float speed, float damage, float siegePower) :
+	FStatusEffect(FString name, EFactions faction, EFactionRelationship affected, float hp, float morale, int vision, float speed, float damage, float siegePower) :
 		effectName(name), originFaction(faction), factionsToAffect(affected),
 		hpMod(hp), moraleMod(morale), visionMod(vision), speedMod(speed), damageMod(damage), siegePowerMod(siegePower) {		
 	};
 
 	FString GetEffectName() const;
-	Factions GetOriginFaction() const;
-	FactionRelationship GetFactionsToAffect() const;
+	EFactions GetOriginFaction() const;
+	EFactionRelationship GetFactionsToAffect() const;
 
 	float GetHPMod() const;
 	float GetMoraleMod() const;
@@ -544,8 +544,8 @@ public:
 
 private:
 	FString effectName = TEXT("");
-	Factions originFaction = Factions::None;
-	FactionRelationship factionsToAffect = FactionRelationship::Neutral;
+	EFactions originFaction = EFactions::None;
+	EFactionRelationship factionsToAffect = EFactionRelationship::Neutral;
 
 	float hpMod = 1.f;
 	float moraleMod = 1.f;
@@ -563,12 +563,12 @@ struct FUnitData
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FUnitData() : faction(Factions::None), unitType(UnitTypes::None) {};
-	FUnitData(Factions setFaction) : faction(setFaction), unitType(UnitTypes::None)
+	FUnitData() : faction(EFactions::None), unitType(UnitTypes::None) {};
+	FUnitData(EFactions setFaction) : faction(setFaction), unitType(UnitTypes::None)
 	{
 		FUnitData(setFaction, UnitTypes::None);
 	};
-	FUnitData(Factions setFaction, UnitTypes setUnitType) : faction(setFaction), unitType(setUnitType)
+	FUnitData(EFactions setFaction, UnitTypes setUnitType) : faction(setFaction), unitType(setUnitType)
 	{
 		if (unitType == UnitTypes::Army)
 			GenerateArmyName();
@@ -577,7 +577,7 @@ public:
 	TMap<UnitTypes, FUnitComposition> GetUnitComposition() const;
 	UnitTypes GetLargestUnitQuantity() const;
 
-	Factions GetFaction() const;
+	EFactions GetFaction() const;
 	UnitTypes GetUnitType() const;
 
 	void SetUnitValues(int setHealth, int setMorale, int setVision, int setSpeed, int setDamage, int setSiegePower, int setReinforceRate, int setEnergyUpKeep);
@@ -629,7 +629,7 @@ public:
 	void ClearStatusEffects();
 
 private:
-	Factions faction;
+	EFactions faction;
 	UnitTypes unitType;
 
 	FString armyName = TEXT("");
@@ -668,14 +668,14 @@ public:
 	AGlobalSpawner();
 	virtual void Tick(float DeltaTime) override;
 
-	FFactionDisplay* GetFactionDisplayPreset(Factions faction);
+	FFactionDisplay* GetFactionDisplayPreset(EFactions faction);
 
 	static AGlobalSpawner* spawnerObject;
 	ABasePlayerController* controller;
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "Factions") TMap<Factions, FFactionDisplay> factionDisplayPresets;
+	UPROPERTY(EditAnywhere, Category = "Factions") TMap<EFactions, FFactionDisplay> factionDisplayPresets;
 #pragma endregion
 
 #pragma region Hex Generation
@@ -699,8 +699,8 @@ private:
 
 #pragma region Building Construction
 public:	
-	void SpawnBuilding(Factions faction, SpawnableBuildings building, ABaseHex* hex);
-	void SpawnBuildingFree(Factions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
+	void SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex);
+	void SpawnBuildingFree(EFactions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
 	UClass* DetermineBuildingType(SpawnableBuildings building);
 
 	static EStratResources GetMainBuildingYield(SpawnableBuildings building);
@@ -725,13 +725,13 @@ public:
 
 	void MergeArmies(ATroop* seeker, ATroop* target, ABaseHex* hex);
 
-	bool PurchaseTroop(Factions faction, UnitTypes unit);
-	ATroop* BuildTroop(Factions faction, UnitTypes unit, ABaseHex* hex);
+	bool PurchaseTroop(EFactions faction, UnitTypes unit);
+	ATroop* BuildTroop(EFactions faction, UnitTypes unit, ABaseHex* hex);
 
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopCost> troopCosts;
 	UPROPERTY(EditAnywhere) TMap<UnitTypes, FTroopStats> troopStats;
 private:
-	ATroop* BuildArmy(Factions faction, ABaseHex* hex);
+	ATroop* BuildArmy(EFactions faction, ABaseHex* hex);
 
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class ATroop> troopPrefab;
 	UPROPERTY(EditAnywhere, Category = "Unit") TSubclassOf<class AMergedArmy> mergedArmyPrefab;

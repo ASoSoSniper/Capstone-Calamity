@@ -2,15 +2,11 @@
 
 
 #include "UAIC_ResourceCompare.h"
-#include "FactionController.h"
 #include "Faction.h"
 
 float UUAIC_ResourceCompare::ScoreCondition(IUAI_Controller* controller) const
 {
-	AFactionController* factionController = Cast<AFactionController>(controller);
-	if (!factionController) return GetMinScore();
-
-	UFaction* faction = factionController->GetFactionObject();
+	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
 	const TMap<EStratResources, int>& inventory = faction->GetNetResourcesPerDay(includeIncompleteBuildings);
