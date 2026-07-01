@@ -187,7 +187,7 @@ void ATroop::InitTroop(FUnitData* data)
 	EFactions factionType = unitData->GetFaction();
 
 	if (GameMode::activeFactions.Contains(factionType))
-		GameMode::activeFactions[factionType]->allUnits.Add(this);
+		GameMode::activeFactions[factionType]->AddTroopToFaction(this);
 
 	visibility->SetupComponent(unitData, mesh);
 	SphereCheck(20.f);
@@ -246,10 +246,7 @@ void ATroop::Destroyed()
 	{
 		EFactions factionType = unitData->GetFaction();
 
-		if (ACapstoneProjectGameModeBase::activeFactions[factionType]->allUnits.Contains(this))
-		{
-			ACapstoneProjectGameModeBase::activeFactions[factionType]->allUnits.Remove(this);
-		}
+		ACapstoneProjectGameModeBase::activeFactions[factionType]->RemoveTroopFromFaction(this);
 		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
 
 		if (selectedByPlayer)

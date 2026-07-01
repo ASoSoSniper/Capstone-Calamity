@@ -313,7 +313,7 @@ void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
 		EFactions troopFaction = troop->GetUnitData()->GetFaction();
 		if (activeFactions.Contains(troopFaction))
 		{
-			activeFactions[troopFaction]->allUnits.Add(troop);
+			activeFactions[troopFaction]->AddTroopToFaction(troop);
 		}
 	}
 }

@@ -98,8 +98,6 @@ public:
 	TMap<FString, TArray<int32>> armyNamesHuman;
 	TMap<FString, TArray<int32>> armyNamesAlien;
 	UPROPERTY() int maxNameShare = 3;
-
-	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
 private:
 	UPROPERTY() EFactions faction;
 	UPROPERTY() FString factionName;
@@ -173,13 +171,19 @@ public:
 private:
 	UPROPERTY() TMap<TerrainType, FHexSet> ownedHexes = TMap<TerrainType, FHexSet>();
 #pragma endregion
-#pragma region Buildings
+#pragma region Buildings and Troops
 public:
 	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
 	void AddBuildingToFaction(ABuilding* building);
 	void RemoveBuildingFromFaction(ABuilding* building);
+
+	UFUNCTION() const TSet<ATroop*>& GetTroops() const;
+
+	void AddTroopToFaction(ATroop* troop);
+	void RemoveTroopFromFaction(ATroop* troop);
 private:
 	UPROPERTY() TMap<SpawnableBuildings, FBuildingSet> allBuildings;
+	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
 #pragma endregion
 #pragma region Workers
 public:

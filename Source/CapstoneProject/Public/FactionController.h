@@ -10,6 +10,7 @@
 
 class UFaction;
 class UUAI_PriorityManager_Hex;
+class UUAI_PriorityManager_Troops;
 class ACapstoneProjectGameModeBase;
 struct FDateTickUpdate;
 
@@ -51,7 +52,13 @@ public:
 	UFUNCTION() void BindBuildingDelegates(ABuilding* building, bool enable);
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Workers(EStratResources resource) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Building(SpawnableBuildings building) const;
+
+	UFUNCTION() void HandleOnTroopChanged();
+	UFUNCTION() void HandleOnHexTargeted();
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityTroop_TargetHex() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) ATroop* GetPriorityTroop_Troop() const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Priority Management") UUAI_PriorityManager_Hex* priorityManager_Hex;
+	UPROPERTY(EditAnywhere, Category = "Priority Management") UUAI_PriorityManager_Troops* priorityManager_Troops;
 #pragma endregion
 };

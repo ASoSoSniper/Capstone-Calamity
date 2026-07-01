@@ -540,7 +540,7 @@ int UFaction::GetOwnedHexCount(bool includeNonBuildable) const
 	return count;
 }
 #pragma endregion
-#pragma region Buildings
+#pragma region Buildings and Troops
 const TSet<ABuilding*>& UFaction::GetBuildingsOfType(SpawnableBuildings buildingType) const
 {
 	if (!allBuildings.Contains(buildingType)) return allBuildings[SpawnableBuildings::None].buildings;
@@ -572,6 +572,28 @@ void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 	allBuildings[buildingType].buildings.Remove(building);
 	if (controller)
 		controller->BindBuildingDelegates(building, false);
+}
+const TSet<ATroop*>& UFaction::GetTroops() const
+{
+	return allUnits;
+}
+void UFaction::AddTroopToFaction(ATroop* troop)
+{
+	if (!troop) return;
+
+	allUnits.Add(troop);
+	if (controller)
+		controller->HandleOnTroopChanged();
+}
+void UFaction::RemoveTroopFromFaction(ATroop* troop)
+{
+	if (!troop) return;
+
+	if (allUnits.Contains(troop))
+		allUnits.Remove(troop);
+
+	if (controller)
+		controller->HandleOnTroopChanged();
 }
 #pragma endregion
 #pragma region Workers

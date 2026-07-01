@@ -8,8 +8,6 @@ ACapitalHub::ACapitalHub()
 {
 	builtAtStart = true;
 	buildingType = SpawnableBuildings::Capitol;
-
-	range = 3;
 }
 
 UStaticMesh* ACapitalHub::LoadFinishedModel()

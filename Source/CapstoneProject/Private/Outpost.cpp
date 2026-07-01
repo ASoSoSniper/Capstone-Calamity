@@ -9,7 +9,6 @@
 AOutpost::AOutpost()
 {
 	buildingType = SpawnableBuildings::Outpost;
-	range = 3;
 }
 
 void AOutpost::Tick(float DeltaTime)
@@ -29,7 +28,7 @@ TSet<ABaseHex*> AOutpost::ClaimLand()
 		return hexesToClaim;
 	}
 
-	hexesToClaim = hexNav->GetCurrentHex()->GetHexesInRadius(range);
+	hexesToClaim = hexNav->GetCurrentHex()->GetHexesInRadius(unitData->GetVision());
 	for (ABaseHex* hex : hexesToClaim)
 	{
 		hex->SetHexOwner(factionType);

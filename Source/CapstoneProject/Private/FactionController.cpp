@@ -5,6 +5,7 @@
 #include "CapstoneProjectGameModeBase.h"
 #include "Faction.h"
 #include "UAI_PriorityManager_Hex.h"
+#include "UAI_PriorityManager_Troops.h"
 
 
 // Sets default values
@@ -14,6 +15,7 @@ AFactionController::AFactionController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	priorityManager_Hex = CreateDefaultSubobject<UUAI_PriorityManager_Hex>(TEXT("Hex Priority Manager"));
+	priorityManager_Troops = CreateDefaultSubobject<UUAI_PriorityManager_Troops>(TEXT("Troop Priority Manager"));
 	decider_Resources = CreateDefaultSubobject<UUAI_Decider>(TEXT("Resource Decider"));
 	decider_Troops = CreateDefaultSubobject<UUAI_Decider>(TEXT("Troop Decider"));
 }
@@ -40,8 +42,11 @@ void AFactionController::SetFaction(UFaction* setFaction)
 	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &AFactionController::DateUpdate);
 
 	priorityManager_Hex->Initialize(faction);
+	priorityManager_Troops->Initialize(faction);
 	decider_Resources->Initialize(faction);
 	decider_Troops->Initialize(faction);
+
+	decider_Troops->onDecisionMade.AddDynamic(this, &AFactionController::HandleOnHexTargeted);
 }
 
 UFaction* AFactionController::GetFactionObject() const
@@ -117,5 +122,21 @@ ABaseHex* AFactionController::GetPriorityHex_Workers(EStratResources resource) c
 ABaseHex* AFactionController::GetPriorityHex_Building(SpawnableBuildings building) const
 {
 	return priorityManager_Hex->GetPriorityHex_Building(building);
+}
+void AFactionController::HandleOnTroopChanged()
+{
+	priorityManager_Troops->HandleOnTroopChanged();
+}
+void AFactionController::HandleOnHexTargeted()
+{
+	priorityManager_Troops->HandleOnHexTargeted();
+}
+ABaseHex* AFactionController::GetPriorityTroop_TargetHex() const
+{
+	return priorityManager_Troops->GetPriorityHex();
+}
+ATroop* AFactionController::GetPriorityTroop_Troop() const
+{
+	return priorityManager_Troops->GetPriorityTroop();
 }
 #pragma endregion

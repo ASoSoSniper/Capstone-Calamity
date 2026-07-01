@@ -546,7 +546,7 @@ void AGlobalSpawner::BeginPlay()
 	AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
 	controller = Cast<ABasePlayerController>(controllerTemp);
 
-	ProceduralHexGen(400, ShapesOfMap::Square);
+	ProceduralHexGen(1225, ShapesOfMap::Square);
 }
 void AGlobalSpawner::Tick(float DeltaTime)
 {
@@ -664,7 +664,7 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 			break;
 		case TerrainType::Ship:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, -45.f, 0));
-			hex->hexMeshAttachment->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+			hex->hexMeshAttachment->SetRelativeScale3D(FVector(2.f, 2.f, 2.f));
 			break;
 		default:
 			hex->hexMeshAttachment->SetRelativeRotation(FRotator(0, 0, 0));
@@ -871,11 +871,14 @@ void AGlobalSpawner::SpawnPointsOfInterest()
 #pragma region Building Construction
 void AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex)
 {
-	//Check if terrain is valid
-	if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
+	if (building != SpawnableBuildings::Capitol && building != SpawnableBuildings::AlienCity && building != SpawnableBuildings::RockCity)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
-		return;
+		//Check if terrain is valid
+		if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
+			return;
+		}
 	}
 
 	//Determine building prefab to spawn

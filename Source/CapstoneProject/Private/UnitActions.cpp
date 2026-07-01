@@ -260,7 +260,9 @@ int UnitActions::GetFactionPowerOutageLevel(EFactions faction)
 
 void UnitActions::EnableRobots(EFactions faction, bool enable)
 {
-    for (ATroop* troop : ACapstoneProjectGameModeBase::activeFactions[faction]->allUnits)
+    const TSet<ATroop*>& factionTroops = ACapstoneProjectGameModeBase::activeFactions[faction]->GetTroops();
+
+    for (ATroop* troop : factionTroops)
     {
         troop->interact->SetInteract(enable);
         if (!enable) troop->CancelPath();

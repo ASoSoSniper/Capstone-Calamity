@@ -9,6 +9,8 @@
 class UFaction;
 class UAI_HexCondition;
 class UAI_TroopCondition;
+class ABaseHex;
+class ATroop;
 
 USTRUCT(BlueprintType)
 struct FTroopConditions
@@ -37,6 +39,22 @@ public:
 	UUAI_PriorityManager_Troops();
 	void Initialize(UFaction* faction);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) ATroop* GetPriorityTroop() const;
+	UFUNCTION() void HandleOnTroopChanged();
+	UFUNCTION() void HandleOnHexTargeted();
+
 private:
 	UFaction* parentFaction;
+
+	ABaseHex* priorityHex = nullptr;
+	ATroop* priorityTroop = nullptr;
+
+	UFUNCTION() void FindPriorityHex();
+	UFUNCTION() void FindPriorityTroop();
+	
+	float ScoreHex(ATroop* troop, ABaseHex* hex);
+
+	UPROPERTY(EditAnywhere, Category = "Search Conditions") TArray<UAI_TroopCondition*> hexTargetConditions;
+	UPROPERTY(EditAnywhere, Category = "Search Conditions") TArray<UAI_TroopCondition*> troopToTargetConditions;
 };

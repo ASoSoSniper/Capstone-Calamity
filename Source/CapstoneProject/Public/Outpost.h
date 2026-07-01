@@ -29,8 +29,6 @@ public:
 	
 protected:
 
-	UPROPERTY(EditAnywhere) int range = 2;
-
 	UPROPERTY(EditAnywhere)
 		float traceStartOffset = 10.f;
 	UPROPERTY(EditAnywhere)

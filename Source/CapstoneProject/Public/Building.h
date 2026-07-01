@@ -109,6 +109,7 @@ private:
 	void UpdateUnrestLevel(float& DeltaTime);
 	bool SphereCheck();
 	void SetBuildState();
+	void ScaleModelToLayer();
 	bool setupComplete;
 
 	UPROPERTY(EditAnywhere, Category = "Occupation") int troopOccupationMin = 3;

@@ -43,7 +43,7 @@ void IUAI_Controller::SetBestAction(FUAI_Decision& decision)
         decisionHistory.SetNum(10, true);
     }
 
-    PrintDecisionResults();
+    //PrintDecisionResults();
 
     SetBestAction(decision.bestAction);
 }

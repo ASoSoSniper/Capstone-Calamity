@@ -15,13 +15,13 @@ float UUTC_BattleAdvantage::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 
 	TMap<UnitTypes, FUnitComposition> defender;
 
-	TArray<AMovementAI*> troopsInHex = hex->troopsInHex;
+	const TArray<AMovementAI*>& troopsInHex = hex->troopsInHex;
 	if (!troopsInHex.IsEmpty())
 	{
 		int totalUnits = 0;
-		for (AMovementAI* troop : troopsInHex)
+		for (AMovementAI* t : troopsInHex)
 		{
-			FUnitData* unitData = troop->GetUnitData();
+			FUnitData* unitData = t->GetUnitData();
 			if (UnitActions::IsHostileTarget(faction, unitData->GetFaction()))
 			{
 				TMap<UnitTypes, FUnitComposition> composition = unitData->GetUnitComposition();

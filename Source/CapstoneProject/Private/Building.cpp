@@ -135,6 +135,8 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 	if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(type))
 	{
+		ScaleModelToLayer();
+
 		costs = AGlobalSpawner::spawnerObject->buildingCosts[type];
 
 		if (hex->GetMaxWorkers() != costs.workerCost)
@@ -215,6 +217,14 @@ void ABuilding::SetBuildState()
 	}
 }
 
+void ABuilding::ScaleModelToLayer()
+{
+	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return;
+
+	int scale = 1 + AGlobalSpawner::spawnerObject->buildingCosts[buildingType].hexLayers * 1.5f;
+	mesh->SetWorldScale3D(FVector::One() * scale);
+}
+
 void ABuilding::UpdateResources()
 {
 	ABaseHex* hex = hexNav->GetCurrentHex();
@@ -269,6 +279,8 @@ void ABuilding::SetToFinishedModel()
 	{
 		mesh->SetStaticMesh(meshAsset);
 		mesh->EmptyOverrideMaterials();
+
+		//ScaleModelToLayer();
 
 		visibility->ResetComponent();
 		visibility->SetupComponent(unitData, mesh);
