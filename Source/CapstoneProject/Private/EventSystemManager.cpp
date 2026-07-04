@@ -50,7 +50,7 @@ void AEventSystemManager::SelectOption(FEventOption option)
 	for (UObjective* objective : option.GetObjectives())
 	{
 		dockedObjectives.Add(objective);
-		objective->onObjectiveComplete.AddDynamic(this, &AEventManager::CompleteObjective);
+		objective->onObjectiveComplete.AddDynamic(this, &AEventSystemManager::CompleteObjective);
 		objective->SetupObjective(playerFaction);
 	}
 }

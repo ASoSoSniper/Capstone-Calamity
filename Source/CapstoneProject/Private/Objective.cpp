@@ -21,6 +21,11 @@ const TArray<UReward*>& UObjective::GetRewards() const
 	return rewards;
 }
 
+FString UObjective::GetObjectiveDisplay() const
+{
+	return GetObjectiveDescription() + TEXT(': 0/1');
+}
+
 void UObjective::SetupObjective(UFaction* faction)
 {
 	factionObject = faction;

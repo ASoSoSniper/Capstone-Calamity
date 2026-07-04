@@ -17,9 +17,10 @@ class CAPSTONEPROJECT_API UObjective : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable) FString GetObjectiveTitle() const;
-	UFUNCTION(BlueprintCallable) FString GetObjectiveDescription() const;
-	UFUNCTION(BlueprintCallable) const TArray<UReward*>& GetRewards() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) FString GetObjectiveTitle() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) FString GetObjectiveDescription() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<UReward*>& GetRewards() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) virtual FString GetObjectiveDisplay() const;
 
 	virtual void SetupObjective(UFaction* faction);
 
@@ -30,10 +31,10 @@ protected:
 	virtual void CleanupObjective();
 	//virtual void HandleUpdate(payload);
 	//int settlersBuilt = 0;
+
+	UFaction* factionObject;
 private:
 	UPROPERTY(EditAnywhere, Category = "Display") FString title;
 	UPROPERTY(EditAnywhere, Category = "Display") FString description;
 	UPROPERTY(EditAnywhere, Category = "Rewards") TArray<UReward*> rewards;
-
-	UFaction* factionObject;
 };
