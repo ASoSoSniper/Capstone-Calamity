@@ -34,6 +34,8 @@ struct FWorldEvent
 	UPROPERTY(EditAnywhere) TArray<FEventOption> options;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEventTriggered, const FWorldEvent&, event);
+
 UCLASS()
 class CAPSTONEPROJECT_API AEventSystemManager : public AActor
 {
@@ -47,6 +49,8 @@ public:
 
 	UFUNCTION(BlueprintCallable) void CloseActiveEvent();
 	UFUNCTION(BlueprintCallable) void SelectOption(FEventOption option);
+
+	UPROPERTY(BlueprintAssignable) FOnEventTriggered onEventTriggered;
 
 protected:
 	virtual void BeginPlay() override;
