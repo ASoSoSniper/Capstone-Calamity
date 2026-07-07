@@ -15,4 +15,5 @@ class CAPSTONEPROJECT_API UReward : public UDataAsset
 
 public:
 	virtual void ApplyReward(UFaction* faction);
+	UFUNCTION(BlueprintCallable, BlueprintPure) virtual FString GetRewardText() const;
 };

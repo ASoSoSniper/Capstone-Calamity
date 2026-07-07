@@ -7,3 +7,8 @@
 void UReward::ApplyReward(UFaction* faction)
 {
 }
+
+FString UReward::GetRewardText() const
+{
+    return TEXT("Placeholder text");
+}

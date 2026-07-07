@@ -47,28 +47,10 @@ void AEventSystemManager::CloseActiveEvent()
 
 void AEventSystemManager::SelectOption(FEventOption option)
 {
-	for (UObjective* objective : option.GetObjectives())
+	for (UObjective* objective : option.objectives)
 	{
 		dockedObjectives.Add(objective);
 		objective->onObjectiveComplete.AddDynamic(this, &AEventSystemManager::CompleteObjective);
 		objective->SetupObjective(playerFaction);
 	}
 }
-
-#pragma region Event Option
-FString FEventOption::GetOptionTitle() const
-{
-	return title;
-}
-
-FString FEventOption::GetOptionDescription() const
-{
-	return description;
-}
-
-const TArray<UObjective*>& FEventOption::GetObjectives() const
-{
-	return objectives;
-}
-#pragma endregion
-

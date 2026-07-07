@@ -13,14 +13,9 @@ struct FEventOption
 	GENERATED_USTRUCT_BODY();
 
 public:
-	FString GetOptionTitle() const;
-	FString GetOptionDescription() const;
-	const TArray<UObjective*>& GetObjectives() const;
-
-private:
-	UPROPERTY(EditAnywhere) FString title = "Quest for B (Rewards)";
-	UPROPERTY(EditAnywhere) FString description = "By choosing B, you will have to complete these tasks: 1; 2; 3;";
-	TArray<UObjective*> objectives;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString title = "Quest for B (Rewards)";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString description = "By choosing B, you will have to complete these tasks: 1; 2; 3;";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<UObjective*> objectives;
 };
 
 USTRUCT(BlueprintType)
@@ -28,10 +23,10 @@ struct FWorldEvent
 {
 	GENERATED_USTRUCT_BODY();
 
-	UPROPERTY(EditAnywhere) FString title = "Choose a letter";
-	UPROPERTY(EditAnywhere) FString description = "Do you choose A or B?";
-	UPROPERTY(EditAnywhere) UTexture2D* image;
-	UPROPERTY(EditAnywhere) TArray<FEventOption> options;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString title = "Choose a letter";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString description = "Do you choose A or B?";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* image;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<FEventOption> options;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEventTriggered, const FWorldEvent&, event);
