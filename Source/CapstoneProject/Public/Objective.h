@@ -35,6 +35,6 @@ protected:
 	UFaction* factionObject;
 private:
 	UPROPERTY(EditAnywhere, Category = "Display") FString title;
-	UPROPERTY(EditAnywhere, Category = "Display") FString description;
+	UPROPERTY(EditAnywhere, Category = "Display", meta = (MultiLine = "true")) FString description;
 	UPROPERTY(EditAnywhere, Category = "Rewards") TArray<UReward*> rewards;
 };

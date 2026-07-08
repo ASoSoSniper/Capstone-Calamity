@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
 #include "Objective.h"
 #include "EventSystemManager.generated.h"
@@ -14,17 +15,17 @@ struct FEventOption
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString title = "Quest for B (Rewards)";
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString description = "By choosing B, you will have to complete these tasks: 1; 2; 3;";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = "true")) FString description = "By choosing B, you will have to complete these tasks: 1; 2; 3;";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<UObjective*> objectives;
 };
 
 USTRUCT(BlueprintType)
-struct FWorldEvent
+struct FWorldEvent : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString title = "Choose a letter";
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FString description = "Do you choose A or B?";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = "true")) FString description = "Do you choose A or B?";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<FEventOption> options;
 };
