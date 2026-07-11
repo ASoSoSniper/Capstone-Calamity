@@ -5,6 +5,7 @@
 #include "UnitActions.h"
 
 AEventSystemManager* AEventSystemManager::eventManager = nullptr;
+const FString AEventSystemManager::eventSearchContext = TEXT("Empty Context");
 
 // Sets default values
 AEventSystemManager::AEventSystemManager()
@@ -29,9 +30,14 @@ void AEventSystemManager::Tick(float DeltaTime)
 
 }
 
-void AEventSystemManager::TriggerEvent(FWorldEvent event)
+void AEventSystemManager::TriggerEvent(FName eventKey)
 {
-	eventManager->activeEvent = &event;
+	if (!eventManager->eventTable) return;
+
+	FWorldEvent* event = eventManager->eventTable->FindRow<FWorldEvent>(eventKey, eventSearchContext);
+
+	eventManager->activeEvent = event;
+	eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
 }
 
 void AEventSystemManager::CompleteObjective(UObjective* objective)
@@ -41,11 +47,11 @@ void AEventSystemManager::CompleteObjective(UObjective* objective)
 
 void AEventSystemManager::CloseActiveEvent()
 {
+	onEventClosed.Broadcast();
 	activeEvent = nullptr;
-	//UI logic
 }
 
-void AEventSystemManager::SelectOption(FEventOption option)
+void AEventSystemManager::SelectOption(const FEventOption& option)
 {
 	for (UObjective* objective : option.objectives)
 	{

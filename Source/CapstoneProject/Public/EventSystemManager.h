@@ -31,6 +31,7 @@ struct FWorldEvent : public FTableRowBase
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEventTriggered, const FWorldEvent&, event);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEventClosed);
 
 UCLASS()
 class CAPSTONEPROJECT_API AEventSystemManager : public AActor
@@ -41,12 +42,13 @@ public:
 	AEventSystemManager();
 	virtual void Tick(float DeltaTime) override;
 
-	static void TriggerEvent(FWorldEvent event);
+	static void TriggerEvent(FName eventKey);
 
 	UFUNCTION(BlueprintCallable) void CloseActiveEvent();
-	UFUNCTION(BlueprintCallable) void SelectOption(FEventOption option);
+	UFUNCTION(BlueprintCallable) void SelectOption(const FEventOption& option);
 
 	UPROPERTY(BlueprintAssignable) FOnEventTriggered onEventTriggered;
+	UPROPERTY(BlueprintAssignable) FOnEventClosed onEventClosed;
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,4 +61,7 @@ private:
 	UFaction* playerFaction = nullptr;
 	FWorldEvent* activeEvent = nullptr;
 	TSet<UObjective*> dockedObjectives;
+
+	UPROPERTY(EditAnywhere, Category = "Events") UDataTable* eventTable;
+	static const FString eventSearchContext;
 };
