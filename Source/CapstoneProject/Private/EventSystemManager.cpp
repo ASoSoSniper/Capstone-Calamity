@@ -32,12 +32,24 @@ void AEventSystemManager::Tick(float DeltaTime)
 
 void AEventSystemManager::TriggerEvent(FName eventKey)
 {
-	if (!eventManager->eventTable) return;
+	FWorldEvent* event = GetEvent(eventKey);
+	if (!event) return;
+
+	if (eventManager->activeEvent) eventManager->queuedEvents.Enqueue(eventKey);
+	else 
+	{
+		eventManager->activeEvent = event;
+		eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+	}
+}
+
+FWorldEvent* AEventSystemManager::GetEvent(FName eventKey)
+{
+	if (!eventManager || !eventManager->eventTable) return nullptr;
 
 	FWorldEvent* event = eventManager->eventTable->FindRow<FWorldEvent>(eventKey, eventSearchContext);
 
-	eventManager->activeEvent = event;
-	eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+	return event;
 }
 
 void AEventSystemManager::CompleteObjective(UObjective* objective)
@@ -49,6 +61,14 @@ void AEventSystemManager::CloseActiveEvent()
 {
 	onEventClosed.Broadcast();
 	activeEvent = nullptr;
+
+	if (!queuedEvents.IsEmpty())
+	{
+		FName eventKey;
+		queuedEvents.Dequeue(eventKey);
+
+		TriggerEvent(eventKey);
+	}
 }
 
 void AEventSystemManager::SelectOption(const FEventOption& option)

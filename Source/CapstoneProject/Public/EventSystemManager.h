@@ -43,6 +43,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	static void TriggerEvent(FName eventKey);
+	static FWorldEvent* GetEvent(FName eventKey);
 
 	UFUNCTION(BlueprintCallable) void CloseActiveEvent();
 	UFUNCTION(BlueprintCallable) void SelectOption(const FEventOption& option);
@@ -61,6 +62,7 @@ private:
 	UFaction* playerFaction = nullptr;
 	FWorldEvent* activeEvent = nullptr;
 	TSet<UObjective*> dockedObjectives;
+	TQueue<FName> queuedEvents;
 
 	UPROPERTY(EditAnywhere, Category = "Events") UDataTable* eventTable;
 	static const FString eventSearchContext;
