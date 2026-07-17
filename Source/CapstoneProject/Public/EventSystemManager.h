@@ -32,6 +32,10 @@ struct FWorldEvent : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEventTriggered, const FWorldEvent&, event);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEventClosed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnObjectiveTriggered, UObjective*, objective);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnObjectiveClosed);
+
+struct FDateTickUpdate;
 
 UCLASS()
 class CAPSTONEPROJECT_API AEventSystemManager : public AActor
@@ -44,25 +48,35 @@ public:
 
 	static void TriggerEvent(FName eventKey);
 	static FWorldEvent* GetEvent(FName eventKey);
+	static void ScheduleEvent(int daysAhead, FName eventKey);
 
 	UFUNCTION(BlueprintCallable) void CloseActiveEvent();
+	UFUNCTION(BlueprintCallable) void CloseActiveObjective();
 	UFUNCTION(BlueprintCallable) void SelectOption(const FEventOption& option);
 
 	UPROPERTY(BlueprintAssignable) FOnEventTriggered onEventTriggered;
 	UPROPERTY(BlueprintAssignable) FOnEventClosed onEventClosed;
+	UPROPERTY(BlueprintAssignable) FOnObjectiveTriggered onObjectiveTriggered;
+	UPROPERTY(BlueprintAssignable) FOnObjectiveClosed onObjectiveClosed;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	void CompleteObjective(UObjective* objective);
+	void HandleDateTick(const FDateTickUpdate& date);
 
 	static AEventSystemManager* eventManager;
 
 	UFaction* playerFaction = nullptr;
 	FWorldEvent* activeEvent = nullptr;
-	TSet<UObjective*> dockedObjectives;
+	TMap<long long int, FName> scheduledEvents;
 	TQueue<FName> queuedEvents;
+
+	UObjective* activeObjective;
+	TSet<UObjective*> dockedObjectives;
+	TQueue<UObjective*> queuedObjectives;
+	
 
 	UPROPERTY(EditAnywhere, Category = "Events") UDataTable* eventTable;
 	static const FString eventSearchContext;

@@ -177,6 +177,8 @@ void ACapstoneProjectGameModeBase::DateTick(float& deltaTime)
 	Args.Add(FStringFormatArg(dayStruct.minute));
 	currentDate = FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
 
+	dateTickUpdates.totalDateTicks++;
+
 	if (dateTickUpdates.minuteTick)
 		onDateTick.Broadcast(dateTickUpdates);
 }

@@ -8,11 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "CapstoneProjectGameModeBase.h"
 
-ATroop::ATroop()
-{
-	AITroopComponent = CreateDefaultSubobject<UAITroopComponent>(TEXT("AI Component"));
-}
-
 void ATroop::BeginPlay()
 {
 	Super::BeginPlay();
@@ -222,11 +217,6 @@ bool ATroop::SetUpTroop()
 	{
 		FTroopStats* stats = &AGlobalSpawner::spawnerObject->troopStats[unitType];
 		unitData->SetUnitValues(stats->HP, stats->morale, stats->vision, stats->speed, stats->damage, stats->siegePower, stats->reinforceRate, stats->energyUpkeepCost);
-	}
-
-	if (factionType != EFactions::Human)
-	{
-		if (!debug) AITroopComponent->EnableEnemyAI();
 	}
 
 	return true;

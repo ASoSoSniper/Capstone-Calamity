@@ -3,6 +3,7 @@
 
 #include "EventSystemManager.h"
 #include "UnitActions.h"
+#include "CapstoneProjectGameModeBase.h"
 
 AEventSystemManager* AEventSystemManager::eventManager = nullptr;
 const FString AEventSystemManager::eventSearchContext = TEXT("Empty Context");
@@ -21,6 +22,8 @@ void AEventSystemManager::BeginPlay()
 	
 	eventManager = this;
 	playerFaction = UnitActions::GetFaction(EFactions::Human);
+
+	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &AEventSystemManager::HandleDateTick);
 }
 
 // Called every frame
@@ -52,9 +55,32 @@ FWorldEvent* AEventSystemManager::GetEvent(FName eventKey)
 	return event;
 }
 
+void AEventSystemManager::ScheduleEvent(int daysAhead, FName eventKey)
+{
+	long long int ticksAhead = daysAhead * 48;
+	long long int currentTicks = ACapstoneProjectGameModeBase::GetDateUpdates()->totalDateTicks;
+	eventManager->scheduledEvents.Add(currentTicks + ticksAhead, eventKey);
+}
+
 void AEventSystemManager::CompleteObjective(UObjective* objective)
 {
-	eventManager->dockedObjectives.Remove(objective);
+	if (activeObjective) queuedObjectives.Enqueue(objective);
+	else
+	{
+		activeObjective = objective;
+		onObjectiveTriggered.Broadcast(objective);
+		eventManager->dockedObjectives.Remove(objective);
+	}
+}
+
+void AEventSystemManager::HandleDateTick(const FDateTickUpdate& date)
+{
+	if (!scheduledEvents.Contains(date.totalDateTicks)) return;
+
+	FName eventKey;
+	scheduledEvents.RemoveAndCopyValue(date.totalDateTicks, eventKey);
+
+	TriggerEvent(eventKey);
 }
 
 void AEventSystemManager::CloseActiveEvent()
@@ -68,6 +94,20 @@ void AEventSystemManager::CloseActiveEvent()
 		queuedEvents.Dequeue(eventKey);
 
 		TriggerEvent(eventKey);
+	}
+}
+
+void AEventSystemManager::CloseActiveObjective()
+{
+	onObjectiveClosed.Broadcast();
+	activeObjective = nullptr;
+
+	if (!queuedObjectives.IsEmpty())
+	{
+		UObjective* objective = nullptr;
+		queuedObjectives.Dequeue(objective);
+
+		CompleteObjective(objective);
 	}
 }
 

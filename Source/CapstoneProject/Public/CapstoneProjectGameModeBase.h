@@ -25,6 +25,7 @@ struct FDateTickUpdate
 {
 	GENERATED_USTRUCT_BODY()
 
+	long long int totalDateTicks = 0;
 	bool minuteTick = false;
 	bool hourTick = false;
 	bool dayTick = false;
