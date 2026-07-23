@@ -46,6 +46,7 @@ public:
 	AEventSystemManager();
 	virtual void Tick(float DeltaTime) override;
 
+	static AEventSystemManager* GetEventSystemManager();
 	static void TriggerEvent(FName eventKey);
 	static FWorldEvent* GetEvent(FName eventKey);
 	static void ScheduleEvent(int daysAhead, FName eventKey);

@@ -33,6 +33,11 @@ void AEventSystemManager::Tick(float DeltaTime)
 
 }
 
+AEventSystemManager* AEventSystemManager::GetEventSystemManager()
+{
+	return eventManager;
+}
+
 void AEventSystemManager::TriggerEvent(FName eventKey)
 {
 	FWorldEvent* event = GetEvent(eventKey);
