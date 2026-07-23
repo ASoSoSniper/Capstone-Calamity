@@ -16,4 +16,7 @@ class CAPSTONEPROJECT_API UReward : public UDataAsset
 public:
 	virtual void ApplyReward(UFaction* faction);
 	UFUNCTION(BlueprintCallable, BlueprintPure) virtual FString GetRewardText() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool HiddenReward() const;
+protected:
+	UPROPERTY(EditAnywhere, Category = "Display") bool hiddenInWorldEvent = false;
 };

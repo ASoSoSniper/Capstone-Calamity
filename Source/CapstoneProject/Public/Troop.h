@@ -22,8 +22,6 @@ class CAPSTONEPROJECT_API ATroop : public AMovementAI, public IUAI_Controller
 	GENERATED_BODY()
 	
 public:
-	ATroop();
-	UPROPERTY(EditAnywhere) UAITroopComponent* AITroopComponent;
 	AActor* targetToMerge;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -62,7 +60,6 @@ private:
 	UPROPERTY(VisibleAnywhere) bool merging;
 	UPROPERTY(EditAnywhere, Category = "Debug") EFactions preAssignedFaction = EFactions::None;
 	UPROPERTY(EditAnywhere, Category = "Debug") UnitTypes preAssignedUnitType = UnitTypes::None;
-	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 
 #pragma region Utility AI
 public:

@@ -3,6 +3,7 @@
 
 #include "EventSystemManager.h"
 #include "UnitActions.h"
+#include "CapstoneProjectGameModeBase.h"
 
 AEventSystemManager* AEventSystemManager::eventManager = nullptr;
 const FString AEventSystemManager::eventSearchContext = TEXT("Empty Context");
@@ -21,6 +22,8 @@ void AEventSystemManager::BeginPlay()
 	
 	eventManager = this;
 	playerFaction = UnitActions::GetFaction(EFactions::Human);
+
+	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &AEventSystemManager::HandleDateTick);
 }
 
 // Called every frame
@@ -32,23 +35,80 @@ void AEventSystemManager::Tick(float DeltaTime)
 
 void AEventSystemManager::TriggerEvent(FName eventKey)
 {
-	if (!eventManager->eventTable) return;
+	FWorldEvent* event = GetEvent(eventKey);
+	if (!event) return;
+
+	if (eventManager->activeEvent) eventManager->queuedEvents.Enqueue(eventKey);
+	else 
+	{
+		eventManager->activeEvent = event;
+		eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+	}
+}
+
+FWorldEvent* AEventSystemManager::GetEvent(FName eventKey)
+{
+	if (!eventManager || !eventManager->eventTable) return nullptr;
 
 	FWorldEvent* event = eventManager->eventTable->FindRow<FWorldEvent>(eventKey, eventSearchContext);
 
-	eventManager->activeEvent = event;
-	eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+	return event;
+}
+
+void AEventSystemManager::ScheduleEvent(int daysAhead, FName eventKey)
+{
+	long long int ticksAhead = daysAhead * 48;
+	long long int currentTicks = ACapstoneProjectGameModeBase::GetDateUpdates()->totalDateTicks;
+	eventManager->scheduledEvents.Add(currentTicks + ticksAhead, eventKey);
 }
 
 void AEventSystemManager::CompleteObjective(UObjective* objective)
 {
-	eventManager->dockedObjectives.Remove(objective);
+	if (activeObjective) queuedObjectives.Enqueue(objective);
+	else
+	{
+		activeObjective = objective;
+		onObjectiveTriggered.Broadcast(objective);
+		eventManager->dockedObjectives.Remove(objective);
+	}
+}
+
+void AEventSystemManager::HandleDateTick(const FDateTickUpdate& date)
+{
+	if (!scheduledEvents.Contains(date.totalDateTicks)) return;
+
+	FName eventKey;
+	scheduledEvents.RemoveAndCopyValue(date.totalDateTicks, eventKey);
+
+	TriggerEvent(eventKey);
 }
 
 void AEventSystemManager::CloseActiveEvent()
 {
 	onEventClosed.Broadcast();
 	activeEvent = nullptr;
+
+	if (!queuedEvents.IsEmpty())
+	{
+		FName eventKey;
+		queuedEvents.Dequeue(eventKey);
+
+		TriggerEvent(eventKey);
+	}
+}
+
+void AEventSystemManager::CloseActiveObjective()
+{
+	onObjectiveClosed.Broadcast();
+	activeObjective = nullptr;
+
+	if (!queuedObjectives.IsEmpty())
+	{
+		UObjective* objective = nullptr;
+		queuedObjectives.Dequeue(objective);
+
+		CompleteObjective(objective);
+	}
 }
 
 void AEventSystemManager::SelectOption(const FEventOption& option)

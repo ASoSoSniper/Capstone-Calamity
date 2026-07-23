@@ -12,3 +12,8 @@ FString UReward::GetRewardText() const
 {
     return TEXT("Placeholder text");
 }
+
+bool UReward::HiddenReward() const
+{
+    return hiddenInWorldEvent;
+}
