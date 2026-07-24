@@ -124,4 +124,6 @@ void AEventSystemManager::SelectOption(const FEventOption& option)
 		objective->onObjectiveComplete.AddDynamic(this, &AEventSystemManager::CompleteObjective);
 		objective->SetupObjective(playerFaction);
 	}
+
+	CloseActiveEvent();
 }
