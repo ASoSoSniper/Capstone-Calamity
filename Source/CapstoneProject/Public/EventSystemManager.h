@@ -49,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) static AEventSystemManager* GetEventSystemManager();
 	UFUNCTION(BlueprintCallable) static void TriggerEvent(FName eventKey);
 	static FWorldEvent* GetEvent(FName eventKey);
-	static void ScheduleEvent(int daysAhead, FName eventKey);
+	UFUNCTION(BlueprintCallable) static void ScheduleEvent(int daysAhead, FName eventKey);
 
 	UFUNCTION(BlueprintCallable) void CloseActiveEvent();
 	UFUNCTION(BlueprintCallable) void CloseActiveObjective();
@@ -64,8 +64,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void CompleteObjective(UObjective* objective);
-	void HandleDateTick(const FDateTickUpdate& date);
+	UFUNCTION() void CompleteObjective(UObjective* objective);
+	UFUNCTION() void HandleDateTick(const FDateTickUpdate& date);
 
 	static AEventSystemManager* eventManager;
 

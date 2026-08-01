@@ -34,6 +34,9 @@ struct FDateTickUpdate
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateTick, const FDateTickUpdate&, update);
 
+class AEventSystemManager;
+class AFactionController;
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -130,7 +133,8 @@ private:
 	void CheckDate();
 
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
-	UPROPERTY(EditAnywhere, Category = "Faction") TSubclassOf<class AFactionController> factionControllerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AFactionController> factionControllerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AEventSystemManager> eventSystemManagerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;
