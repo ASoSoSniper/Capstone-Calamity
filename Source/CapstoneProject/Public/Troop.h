@@ -14,7 +14,6 @@
  * 
  */
 class AMergedArmy;
-class UAITroopComponent;
 
 UCLASS()
 class CAPSTONEPROJECT_API ATroop : public AMovementAI, public IUAI_Controller

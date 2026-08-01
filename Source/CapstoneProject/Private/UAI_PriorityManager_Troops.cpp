@@ -44,6 +44,7 @@ void UUAI_PriorityManager_Troops::FindPriorityHex()
 
 	ABaseHex* bestHex = nullptr;
 	float bestScore = 0.f;
+	TArray<FString> bestConditionScores;
 
 	for (int x = 0; x < hexArray.Num(); x++)
 	{
@@ -52,39 +53,57 @@ void UUAI_PriorityManager_Troops::FindPriorityHex()
 			ABaseHex* hex = hexArray[x][y];
 			if (!hex->IsTraversableTerrain()) continue;
 
-			float score = ScoreHex(priorityTroop, hex);
+			TArray<FString> conditionScores;
+
+			float score = ScoreHex(priorityTroop, hex, conditionScores);
 			if (score > bestScore)
 			{
 				bestScore = score;
 				bestHex = hex;
+				bestConditionScores = conditionScores;
 			}
 		}
 	}
 
 	priorityHex = bestHex;
+	if (!priorityHex) 
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("ERROR: No Priority Hex Set"));
+		return;
+	}
+	onHexSelected.Broadcast(priorityHex, bestConditionScores);
 	FindPriorityTroop();
 }
 
 void UUAI_PriorityManager_Troops::FindPriorityTroop()
 {
-	if (!priorityHex) FindPriorityHex();
+	if (!priorityHex)
+	{
+		FindPriorityHex();
+		return;
+	}
 
 	ATroop* bestTroop = nullptr;
 	float bestScore = 0.f;
+	TArray<FString> bestConditionScores;
 
 	const TSet<ATroop*>& troops = parentFaction->GetTroops();
 
 	for (ATroop* troop : troops)
 	{
-		float score = ScoreHex(troop, priorityHex);
+		TArray<FString> conditionScores;
+
+		float score = ScoreTroop(troop, priorityHex, conditionScores);
 		if (score > bestScore)
 		{
 			bestScore = score;
 			bestTroop = troop;
+			bestConditionScores = conditionScores;
 		}
 	}
 
 	priorityTroop = bestTroop;
+	onTroopSelected.Broadcast(priorityTroop, bestConditionScores);
 }
 
 void UUAI_PriorityManager_Troops::HandleOnTroopChanged()
@@ -104,21 +123,34 @@ void UUAI_PriorityManager_Troops::HandleOnHexTargeted()
 	FindPriorityHex();
 }
 
-float UUAI_PriorityManager_Troops::ScoreHex(ATroop* troop, ABaseHex* hex)
+float UUAI_PriorityManager_Troops::ScoreHex(ATroop* troop, ABaseHex* hex, TArray<FString>& outScores)
+{
+	return Score(hexTargetConditions, troop, hex, outScores);
+}
+
+float UUAI_PriorityManager_Troops::ScoreTroop(ATroop* troop, ABaseHex* hex, TArray<FString>& outScores)
+{
+	return Score(troopToTargetConditions, troop, hex, outScores);
+}
+
+float UUAI_PriorityManager_Troops::Score(const TArray<UAI_TroopCondition*>& conditions, ATroop* troop, ABaseHex* hex, TArray<FString>& outScores)
 {
 	float score = 1.f;
 
-	if (hexTargetConditions.IsEmpty()) return score;
+	if (conditions.IsEmpty()) return score;
 
-	for (int i = 0; i < hexTargetConditions.Num(); i++)
+	for (int i = 0; i < conditions.Num(); i++)
 	{
-		score *= hexTargetConditions[i]->ScoreCondition(troop, hex);
+		float conditionScore = conditions[i]->ScoreCondition(troop, hex);
+		score *= conditionScore;
+
+		outScores.Add(FString::Printf(TEXT("%s: %.2f"), *conditions[i]->GetName(), conditionScore));
 
 		if (score == 0) return 0;
 	}
 
 	float originalScore = score;
-	float modFactor = 1 - (1 / hexTargetConditions.Num());
+	float modFactor = 1 - (1 / conditions.Num());
 	float makeUpValue = (1 - originalScore) * modFactor;
 	return originalScore + (makeUpValue * originalScore);
 }

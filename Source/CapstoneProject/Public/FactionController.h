@@ -55,6 +55,7 @@ public:
 
 	UFUNCTION() void HandleOnTroopChanged();
 	UFUNCTION() void HandleOnHexTargeted();
+	UFUNCTION(BlueprintCallable, BlueprintPure) UUAI_PriorityManager_Troops* GetPriorityManager_Troops() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityTroop_TargetHex() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) ATroop* GetPriorityTroop_Troop() const;
 private:

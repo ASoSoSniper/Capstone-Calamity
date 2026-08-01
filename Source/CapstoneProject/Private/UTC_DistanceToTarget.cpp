@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -7,6 +8,7 @@
 float UUTC_DistanceToTarget::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 {
 	if (!troop) return FactorInversion(0.f);
+	if (troop->hexNav->GetCurrentHex() == hex) return 0.f;
 
 	FVector2D troopPos = troop->hexNav->GetCurrentHex()->GetHexCoordinates();
 	FVector2D hexPos = hex->GetHexCoordinates();

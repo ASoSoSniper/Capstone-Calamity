@@ -6,8 +6,12 @@
 
 float UUTC_HexOwnership::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 {
+	if (!troop || !hex) return FactorInversion(0.f);
+
 	UFaction* troopFaction = troop->GetFaction();
 	EFactions hexFaction = hex->GetHexOwner();
+
+	if (!troopFaction) return FactorInversion(0.f);
 
 	EFactionRelationship relationship = troopFaction->GetFactionRelationship(hexFaction);
 

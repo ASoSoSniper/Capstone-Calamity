@@ -131,6 +131,10 @@ void AFactionController::HandleOnHexTargeted()
 {
 	priorityManager_Troops->HandleOnHexTargeted();
 }
+UUAI_PriorityManager_Troops* AFactionController::GetPriorityManager_Troops() const
+{
+	return priorityManager_Troops;
+}
 ABaseHex* AFactionController::GetPriorityTroop_TargetHex() const
 {
 	return priorityManager_Troops->GetPriorityHex();

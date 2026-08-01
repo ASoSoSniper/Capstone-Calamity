@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere) TArray<UAI_HexCondition*> conditions;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHexSelected, ABaseHex*, hex, const TArray<FString>&, conditions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTroopSelected, ATroop*, troop, const TArray<FString>&, conditions);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UUAI_PriorityManager_Troops : public UActorComponent
 {
@@ -44,6 +47,9 @@ public:
 	UFUNCTION() void HandleOnTroopChanged();
 	UFUNCTION() void HandleOnHexTargeted();
 
+	UPROPERTY(BlueprintAssignable) FOnHexSelected onHexSelected;
+	UPROPERTY(BlueprintAssignable) FOnTroopSelected onTroopSelected;
+
 private:
 	UFaction* parentFaction;
 
@@ -53,7 +59,9 @@ private:
 	UFUNCTION() void FindPriorityHex();
 	UFUNCTION() void FindPriorityTroop();
 	
-	float ScoreHex(ATroop* troop, ABaseHex* hex);
+	float ScoreHex(ATroop* troop, ABaseHex* hex, TArray<FString>& outScores);
+	float ScoreTroop(ATroop* troop, ABaseHex* hex, TArray<FString>& outScores);
+	float Score(const TArray<UAI_TroopCondition*>& conditions, ATroop* troop, ABaseHex* hex, TArray<FString>& outScores);
 
 	UPROPERTY(EditAnywhere, Category = "Search Conditions") TArray<UAI_TroopCondition*> hexTargetConditions;
 	UPROPERTY(EditAnywhere, Category = "Search Conditions") TArray<UAI_TroopCondition*> troopToTargetConditions;
