@@ -56,7 +56,7 @@ public:
 
 	static inline float timeScale = 1.f;
 	static inline bool playerTroopsNeededForAISpawn = false;
-	float prevTime = 1.f;
+	static inline float prevTime = 1.f;
 
 	static inline float currentHarvestTime = 0;
 	UPROPERTY(EditAnywhere) float harvestTickLength = 8.f;
@@ -68,7 +68,7 @@ public:
 	static inline GameStates gameState;
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
-	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);
+	UFUNCTION(BlueprintCallable) static void SetDeltaTime(float deltaTime);
 	UFUNCTION(BlueprintCallable) void SetToPreviousTime();
 	UFUNCTION(BlueprintCallable) bool TimeScaleIsZero();
 

@@ -48,6 +48,7 @@ void AEventSystemManager::TriggerEvent(FName eventKey)
 	{
 		eventManager->activeEvent = event;
 		eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+		ACapstoneProjectGameModeBase::SetDeltaTime(0.f);
 	}
 }
 
@@ -92,6 +93,7 @@ void AEventSystemManager::CloseActiveEvent()
 {
 	onEventClosed.Broadcast();
 	activeEvent = nullptr;
+	ACapstoneProjectGameModeBase::SetDeltaTime(ACapstoneProjectGameModeBase::prevTime);
 
 	if (!queuedEvents.IsEmpty())
 	{
