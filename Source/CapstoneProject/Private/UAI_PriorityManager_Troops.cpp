@@ -102,6 +102,8 @@ void UUAI_PriorityManager_Troops::FindPriorityTroop()
 		}
 	}
 
+	if (!bestTroop) return;
+
 	priorityTroop = bestTroop;
 	onTroopSelected.Broadcast(priorityTroop, bestConditionScores);
 }
