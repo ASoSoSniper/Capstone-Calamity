@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Troop.h"
 #include "Building.h"
-#include "FactionController.h"
 #include "Faction.generated.h"
 
 #pragma region Structs
@@ -74,6 +73,7 @@ public:
 #pragma endregion
 
 class UUAI_PriorityManager_Hex;
+class AFactionController;
 
 UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API UFaction : public UObject

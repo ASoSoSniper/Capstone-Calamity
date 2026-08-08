@@ -2,6 +2,8 @@
 
 
 #include "CapstoneProjectGameModeBase.h"
+#include "EventSystemManager.h"
+#include "FactionController.h"
 
 float ACapstoneProjectGameModeBase::currSeconds = 0.f;
 FDateTickUpdate ACapstoneProjectGameModeBase::dateTickUpdates = FDateTickUpdate();
@@ -61,10 +63,15 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien1, FactionRelationship::Enemy);
 	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
 
-	FActorSpawnParameters params;
-	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner, params);
+	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner);
+	GetWorld()->SpawnActor<AEventSystemManager>(eventSystemManagerPrefab);
 
 	timeScale = 1.f;
+	dateTickUpdates.totalDateTicks = 0;
+	dateTickUpdates.minuteTick = false;
+	dateTickUpdates.hourTick = false;
+	dateTickUpdates.dayTick = false;
+	dateTickUpdates.monthTick = false;
 	//FindExistingBuildingsAndTroops();
 	//FindExistingHexes();
 }
@@ -177,10 +184,11 @@ void ACapstoneProjectGameModeBase::DateTick(float& deltaTime)
 	Args.Add(FStringFormatArg(dayStruct.minute));
 	currentDate = FString::Format(TEXT("{0} {1}{2}  -  {3}{4}:{5}{6}"), Args);
 
-	dateTickUpdates.totalDateTicks++;
-
 	if (dateTickUpdates.minuteTick)
+	{
+		dateTickUpdates.totalDateTicks++;
 		onDateTick.Broadcast(dateTickUpdates);
+	}
 }
 
 FDateTickUpdate* ACapstoneProjectGameModeBase::GetDateUpdates()

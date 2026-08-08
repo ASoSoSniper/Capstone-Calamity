@@ -33,6 +33,11 @@ void AEventSystemManager::Tick(float DeltaTime)
 
 }
 
+AEventSystemManager* AEventSystemManager::GetEventSystemManager()
+{
+	return eventManager;
+}
+
 void AEventSystemManager::TriggerEvent(FName eventKey)
 {
 	FWorldEvent* event = GetEvent(eventKey);
@@ -43,6 +48,7 @@ void AEventSystemManager::TriggerEvent(FName eventKey)
 	{
 		eventManager->activeEvent = event;
 		eventManager->onEventTriggered.Broadcast(*eventManager->activeEvent);
+		ACapstoneProjectGameModeBase::SetDeltaTime(0.f);
 	}
 }
 
@@ -87,6 +93,7 @@ void AEventSystemManager::CloseActiveEvent()
 {
 	onEventClosed.Broadcast();
 	activeEvent = nullptr;
+	ACapstoneProjectGameModeBase::SetDeltaTime(ACapstoneProjectGameModeBase::prevTime);
 
 	if (!queuedEvents.IsEmpty())
 	{
@@ -119,4 +126,6 @@ void AEventSystemManager::SelectOption(const FEventOption& option)
 		objective->onObjectiveComplete.AddDynamic(this, &AEventSystemManager::CompleteObjective);
 		objective->SetupObjective(playerFaction);
 	}
+
+	CloseActiveEvent();
 }

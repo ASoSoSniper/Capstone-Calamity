@@ -5,6 +5,7 @@
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
 #include "TroopFactory.h"
+#include "FactionController.h"
 #include "UAI_PriorityManager_Hex.h"
 
 #pragma region General Logic

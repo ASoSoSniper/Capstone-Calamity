@@ -34,6 +34,9 @@ struct FDateTickUpdate
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateTick, const FDateTickUpdate&, update);
 
+class AEventSystemManager;
+class AFactionController;
+
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase
 {
@@ -53,7 +56,7 @@ public:
 
 	static inline float timeScale = 1.f;
 	static inline bool playerTroopsNeededForAISpawn = false;
-	float prevTime = 1.f;
+	static inline float prevTime = 1.f;
 
 	static inline float currentHarvestTime = 0;
 	UPROPERTY(EditAnywhere) float harvestTickLength = 8.f;
@@ -65,7 +68,7 @@ public:
 	static inline GameStates gameState;
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
-	UFUNCTION(BlueprintCallable) void SetDeltaTime(float deltaTime);
+	UFUNCTION(BlueprintCallable) static void SetDeltaTime(float deltaTime);
 	UFUNCTION(BlueprintCallable) void SetToPreviousTime();
 	UFUNCTION(BlueprintCallable) bool TimeScaleIsZero();
 
@@ -130,7 +133,8 @@ private:
 	void CheckDate();
 
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
-	UPROPERTY(EditAnywhere, Category = "Faction") TSubclassOf<class AFactionController> factionControllerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AFactionController> factionControllerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AEventSystemManager> eventSystemManagerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;

@@ -44,7 +44,7 @@ private:
 	UFaction* faction;
 	bool updateDecisionDisplay = false;
 
-	void DateUpdate(const FDateTickUpdate& update);
+	UFUNCTION() void DateUpdate(const FDateTickUpdate& update);
 
 #pragma region Priority Targeting
 public:
