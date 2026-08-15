@@ -61,6 +61,7 @@ EActionType IUAI_Controller::DecideBestActionType(const TMap<EActionType, FActio
     for (const TPair<EActionType, FActionSelection>& action : actionTypes)
     {
         float score = ScoreAction(action.Value.conditions);
+        if (score == 0) continue;
         if (score > bestScore)
         {
             bestScore = score;
@@ -85,7 +86,7 @@ bool IUAI_Controller::DecideBestAction()
 
     if (actionTypes.IsEmpty()) return false;
     EActionType selectedType = DecideBestActionType(actionTypes);
-    if (actionTypes[selectedType].actions.IsEmpty()) return false;
+    if (!actionTypes.Contains(selectedType) || actionTypes[selectedType].actions.IsEmpty()) return false;
 
     decision.bestActionType = selectedType;
 

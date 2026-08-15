@@ -49,7 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTravelProgress() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetTroopIcon() const;
 
-	TArray<const ABaseHex*> SimulatePathToHex(const ABaseHex* destination);
+	UFUNCTION(BlueprintCallable, BlueprintPure) int GetHexPathIndex() const;
+	const TArray<const ABaseHex*>& GetHexPath() const;
+	const TArray<const ABaseHex*> SimulatePathToHex(const ABaseHex* destination) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;
@@ -71,12 +73,12 @@ private:
 	UPROPERTY(EditAnywhere) float moveSpeed = 1.f;
 	float currentMoveAlpha = 0.f;
 
-	float AngleBetweenVectors(FVector a, FVector b);
-	FVector GetVectorToTarget(FVector origin);
-	bool HexIsTraversable(AActor* hex);
-	bool HexIsTraversable(const ABaseHex* hex);
+	float AngleBetweenVectors(FVector a, FVector b) const;
+	FVector GetVectorToTarget(FVector origin) const;
+	bool HexIsTraversable(AActor* hex) const;
+	bool HexIsTraversable(const ABaseHex* hex) const;
 	void SnapToHex(ABaseHex* hex);
-	ABaseHex* HexSearch(const ABaseHex* hex);
+	ABaseHex* HexSearch(const ABaseHex* hex) const;
 
 	struct FNodeData
 	{
@@ -104,8 +106,8 @@ private:
 		float h = 0;
 	};
 
-	TArray<const ABaseHex*> GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep = nullptr);
-	TArray<const ABaseHex*> GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep = nullptr);
+	TArray<const ABaseHex*> GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep = nullptr) const;
+	TArray<const ABaseHex*> GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep = nullptr) const;
 
 	enum MoveStates
 	{

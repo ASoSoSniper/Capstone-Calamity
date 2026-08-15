@@ -145,7 +145,7 @@ void AMovementAI::SnapToHex(ABaseHex* hex)
 	hex->AddTroopToHex(this);
 }
 
-ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex)
+ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex) const
 {	
 	if (!hex) return nullptr;
 
@@ -212,7 +212,7 @@ ABaseHex* AMovementAI::HexSearch(const ABaseHex* hex)
 	return closestHexToTarget;
 }
 
-TArray<const ABaseHex*> AMovementAI::GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep)
+TArray<const ABaseHex*> AMovementAI::GeneratePath_Legacy(const ABaseHex* destination, const ABaseHex* prevStep) const
 {
 	TArray<const ABaseHex*> path;
 
@@ -239,7 +239,7 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_Legacy(const ABaseHex* destina
 	return path;
 }
 
-TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep)
+TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destination, const ABaseHex* prevStep) const
 {
 	TArray<const ABaseHex*> path;
 
@@ -355,18 +355,18 @@ void AMovementAI::SphereCheck(float rangeMulti)
 	}
 }
 
-bool AMovementAI::HexIsTraversable(AActor* hex)
+bool AMovementAI::HexIsTraversable(AActor* hex) const
 {
 	ABaseHex* foundHex = Cast<ABaseHex>(hex);
 	return foundHex->IsTraversableTerrain();
 }
 
-bool AMovementAI::HexIsTraversable(const ABaseHex* hex)
+bool AMovementAI::HexIsTraversable(const ABaseHex* hex) const
 {
 	return hex->IsTraversableTerrain();
 }
 
-float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
+float AMovementAI::AngleBetweenVectors(FVector a, FVector b) const
 {
 	//Find Dot product of a and b
 	float dot = FVector::DotProduct(a.GetSafeNormal(), b.GetSafeNormal());
@@ -378,7 +378,7 @@ float AMovementAI::AngleBetweenVectors(FVector a, FVector b)
 	return angle;
 }
 
-FVector AMovementAI::GetVectorToTarget(FVector origin)
+FVector AMovementAI::GetVectorToTarget(FVector origin) const
 {
 	FVector targetDirection = hexNav->GetTargetHex()->GetActorLocation() - origin;
 	return targetDirection;
@@ -485,7 +485,17 @@ UTexture2D* AMovementAI::GetTroopIcon() const
 	return nullptr;
 }
 
-TArray<const ABaseHex*> AMovementAI::SimulatePathToHex(const ABaseHex* destination)
+int AMovementAI::GetHexPathIndex() const
+{
+	return hexPathIndex;
+}
+
+const TArray<const ABaseHex*>& AMovementAI::GetHexPath() const
+{
+	return hexPath;
+}
+
+const TArray<const ABaseHex*> AMovementAI::SimulatePathToHex(const ABaseHex* destination) const
 {
 	const ABaseHex* prevStep = nullptr;
 	if (!hexPath.IsEmpty() && moveState == Move
