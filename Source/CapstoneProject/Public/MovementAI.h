@@ -13,6 +13,8 @@
 #include "ExploreAnims.h"
 #include "MovementAI.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDestinationSet, const AMovementAI*, troop, const ABaseHex*, oldDestination);
+
 UCLASS()
 class CAPSTONEPROJECT_API AMovementAI : public AActor
 {
@@ -48,10 +50,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool IsTraveling() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetTravelProgress() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetTroopIcon() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) FText GetTroopName() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetHexPathIndex() const;
 	const TArray<const ABaseHex*>& GetHexPath() const;
 	const TArray<const ABaseHex*> SimulatePathToHex(const ABaseHex* destination) const;
+
+	FOnDestinationSet onDestinationSet;
 
 protected:
 	UPROPERTY(VisibleAnywhere) TArray<const ABaseHex*> hexPath;

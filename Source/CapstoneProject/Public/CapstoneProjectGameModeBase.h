@@ -32,8 +32,10 @@ struct FDateTickUpdate
 	bool monthTick = false;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateTick, const FDateTickUpdate&, update);
 
+class APathingVisualizer;
 class AEventSystemManager;
 class AFactionController;
 
@@ -106,6 +108,7 @@ public:
 
 	static float GetTimeTillNextTick();
 
+	static FOnGameReady onGameReady;
 	static FOnDateTick onDateTick;
 
 private:
@@ -135,6 +138,7 @@ private:
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
 	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AFactionController> factionControllerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AEventSystemManager> eventSystemManagerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class APathingVisualizer> pathingVisualizerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;

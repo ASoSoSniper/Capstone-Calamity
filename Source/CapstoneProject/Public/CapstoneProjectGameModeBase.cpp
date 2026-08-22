@@ -3,10 +3,12 @@
 
 #include "CapstoneProjectGameModeBase.h"
 #include "EventSystemManager.h"
+#include "PathingVisualizer.h"
 #include "FactionController.h"
 
 float ACapstoneProjectGameModeBase::currSeconds = 0.f;
 FDateTickUpdate ACapstoneProjectGameModeBase::dateTickUpdates = FDateTickUpdate();
+FOnGameReady ACapstoneProjectGameModeBase::onGameReady = FOnGameReady();
 FOnDateTick ACapstoneProjectGameModeBase::onDateTick = FOnDateTick();
 
 ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
@@ -65,6 +67,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner);
 	GetWorld()->SpawnActor<AEventSystemManager>(eventSystemManagerPrefab);
+	GetWorld()->SpawnActor<APathingVisualizer>(pathingVisualizerPrefab);
 
 	timeScale = 1.f;
 	dateTickUpdates.totalDateTicks = 0;
@@ -74,6 +77,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	dateTickUpdates.monthTick = false;
 	//FindExistingBuildingsAndTroops();
 	//FindExistingHexes();
+
+	onGameReady.Broadcast();
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)

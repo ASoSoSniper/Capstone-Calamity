@@ -16,6 +16,7 @@ class CAPSTONEPROJECT_API UUTC_TroopsTargetingHex : public UAI_TroopCondition
 	
 public:
 	virtual float ScoreCondition(ATroop* troop, ABaseHex* hex) const override;
+	virtual float ScoreCondition(UFaction* faction, ABaseHex* hex) const override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Troops") int maxTroops = 1;

@@ -83,7 +83,11 @@ void ABuilding::InitBuilding(const EFactions& factionType)
 
 	unitData = new FUnitData(factionType);
 	if (GameMode::activeFactions.Contains(factionType))
-		GameMode::activeFactions[factionType]->AddBuildingToFaction(this);
+	{
+		UFaction* factionObject = GameMode::activeFactions[factionType];
+		factionObject->AddBuildingToFaction(this);
+		faction = factionObject;
+	}
 
 	visibility->SetupComponent(unitData, mesh);
 	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;

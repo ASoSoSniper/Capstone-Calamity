@@ -75,6 +75,11 @@ public:
 class UUAI_PriorityManager_Hex;
 class AFactionController;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTroopAdded, ATroop*, troop);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTroopRemoved, ATroop*, troop);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingAdded, ABuilding*, building);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingRemoved, ABuilding*, building);
+
 UCLASS(BlueprintType)
 class CAPSTONEPROJECT_API UFaction : public UObject
 {
@@ -98,6 +103,11 @@ public:
 	TMap<FString, TArray<int32>> armyNamesHuman;
 	TMap<FString, TArray<int32>> armyNamesAlien;
 	UPROPERTY() int maxNameShare = 3;
+
+	UPROPERTY() FOnTroopAdded onTroopAdded;
+	UPROPERTY() FOnTroopRemoved onTroopRemoved;
+	UPROPERTY() FOnBuildingAdded onBuildingAdded;
+	UPROPERTY() FOnBuildingRemoved onBuildingRemoved;
 private:
 	UPROPERTY() EFactions faction;
 	UPROPERTY() FString factionName;

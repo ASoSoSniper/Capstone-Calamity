@@ -2,19 +2,23 @@
 
 
 #include "UTC_EnemyOnHex.h"
-#include "Faction.h"
 #include "UnitActions.h"
 
 float UUTC_EnemyOnHex::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 {
 	if (hex->troopsInHex.IsEmpty() || !hex->building)
-		return FactorInversion(0.f);
+		return GetMinScore();
 
 	UFaction* troopFaction = troop->GetFaction();
+	return ScoreCondition(troopFaction, hex);
+}
+
+float UUTC_EnemyOnHex::ScoreCondition(UFaction* faction, ABaseHex* hex) const
+{
 	EFactions buildingFaction = hex->building->GetUnitData()->GetFaction();
 
-	bool enemyTroops = UnitActions::FindHostileTarget(troopFaction->GetFaction(), hex) != EFactions::None;
-	bool enemyBuilding = troopFaction->GetFactionRelationship(buildingFaction) == EFactionRelationship::Enemy;
+	bool enemyTroops = UnitActions::FindHostileTarget(faction->GetFaction(), hex) != EFactions::None;
+	bool enemyBuilding = faction->GetFactionRelationship(buildingFaction) == EFactionRelationship::Enemy;
 
 	return FactorInversion(enemyTroops || enemyBuilding);
 }

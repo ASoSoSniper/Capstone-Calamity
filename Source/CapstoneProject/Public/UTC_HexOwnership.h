@@ -14,6 +14,7 @@ class CAPSTONEPROJECT_API UUTC_HexOwnership : public UAI_TroopCondition
 	
 public:
 	virtual float ScoreCondition(ATroop* troop, ABaseHex* hex) const override;
+	virtual float ScoreCondition(UFaction* faction, ABaseHex* hex) const override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Ownership") EFactionRelationship hexRelationship = EFactionRelationship::Neutral;

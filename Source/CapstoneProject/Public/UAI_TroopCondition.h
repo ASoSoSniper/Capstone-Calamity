@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "Troop.h"
 #include "BaseHex.h"
+#include "Faction.h"
 #include "UAI_TroopCondition.generated.h"
 
 /**
@@ -16,7 +17,8 @@ class CAPSTONEPROJECT_API UAI_TroopCondition : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	virtual float ScoreCondition(ATroop* troop, ABaseHex* hex) const PURE_VIRTUAL(UAI_TroopCondition::ScoreCondition, return 0.f;);
+	virtual float ScoreCondition(ATroop* troop, ABaseHex* hex) const PURE_VIRTUAL(UAI_TroopCondition::ScoreCondition, return 1.f;);
+	virtual float ScoreCondition(UFaction* faction, ABaseHex* hex) const PURE_VIRTUAL(UAI_TroopCondition::ScoreCondition, return 1.f;);
 	
 protected:
 	float FactorInversion(const float& score) const;

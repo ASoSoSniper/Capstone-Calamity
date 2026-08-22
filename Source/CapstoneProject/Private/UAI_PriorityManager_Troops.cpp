@@ -143,7 +143,7 @@ float UUAI_PriorityManager_Troops::Score(const TArray<UAI_TroopCondition*>& cond
 
 	for (int i = 0; i < conditions.Num(); i++)
 	{
-		float conditionScore = conditions[i]->ScoreCondition(troop, hex);
+		float conditionScore = troop ? conditions[i]->ScoreCondition(troop, hex) : conditions[i]->ScoreCondition(parentFaction, hex);
 		score *= conditionScore;
 
 		outScores.Add(FString::Printf(TEXT("%s: %.2f"), *conditions[i]->GetName(), conditionScore));

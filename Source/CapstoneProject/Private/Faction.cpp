@@ -562,6 +562,8 @@ void UFaction::AddBuildingToFaction(ABuilding* building)
 	allBuildings[buildingType].buildings.Add(building);
 	if (controller)
 		controller->BindBuildingDelegates(building, true);
+
+	onBuildingAdded.Broadcast(building);
 }
 void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 {
@@ -573,6 +575,8 @@ void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 	allBuildings[buildingType].buildings.Remove(building);
 	if (controller)
 		controller->BindBuildingDelegates(building, false);
+
+	onBuildingRemoved.Broadcast(building);
 }
 const TSet<ATroop*>& UFaction::GetTroops() const
 {
@@ -585,6 +589,8 @@ void UFaction::AddTroopToFaction(ATroop* troop)
 	allUnits.Add(troop);
 	if (controller)
 		controller->HandleOnTroopChanged();
+
+	onTroopAdded.Broadcast(troop);
 }
 void UFaction::RemoveTroopFromFaction(ATroop* troop)
 {
@@ -595,6 +601,8 @@ void UFaction::RemoveTroopFromFaction(ATroop* troop)
 
 	if (controller)
 		controller->HandleOnTroopChanged();
+
+	onTroopRemoved.Broadcast(troop);
 }
 #pragma endregion
 #pragma region Workers

@@ -182,7 +182,11 @@ void ATroop::InitTroop(FUnitData* data)
 	EFactions factionType = unitData->GetFaction();
 
 	if (GameMode::activeFactions.Contains(factionType))
-		GameMode::activeFactions[factionType]->AddTroopToFaction(this);
+	{
+		UFaction* factionObject = GameMode::activeFactions[factionType];
+		factionObject->AddTroopToFaction(this);
+		faction = factionObject;
+	}
 
 	visibility->SetupComponent(unitData, mesh);
 	SphereCheck(20.f);

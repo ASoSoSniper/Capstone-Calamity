@@ -119,6 +119,7 @@ void AMovementAI::SetDestination(AActor* targetHex)
 
 void AMovementAI::SetDestination(const ABaseHex* targetHex)
 {
+	const ABaseHex* prevTarget = hexNav->GetTargetHex();
 	hexNav->SetTargetHex(targetHex);
 
 	//If the new target hex equals the current hex or the destination it's already moving toward, do not create a new path
@@ -127,6 +128,8 @@ void AMovementAI::SetDestination(const ABaseHex* targetHex)
 
 	//Otherwise, begin path creation
 	CreatePath();
+
+	onDestinationSet.Broadcast(this, prevTarget);
 }
 
 void AMovementAI::SnapToHex(ABaseHex* hex)
@@ -483,6 +486,11 @@ UTexture2D* AMovementAI::GetTroopIcon() const
 	}
 
 	return nullptr;
+}
+
+FText AMovementAI::GetTroopName() const
+{
+	return unitData->GetArmyName();
 }
 
 int AMovementAI::GetHexPathIndex() const

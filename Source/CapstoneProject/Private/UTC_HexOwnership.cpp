@@ -2,18 +2,21 @@
 
 
 #include "UTC_HexOwnership.h"
-#include "Faction.h"
 
 float UUTC_HexOwnership::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 {
 	if (!troop || !hex) return FactorInversion(0.f);
 
 	UFaction* troopFaction = troop->GetFaction();
+	if (!troopFaction) return GetMinScore();
+	
+	return ScoreCondition(troopFaction, hex);
+}
+
+float UUTC_HexOwnership::ScoreCondition(UFaction* faction, ABaseHex* hex) const
+{
 	EFactions hexFaction = hex->GetHexOwner();
-
-	if (!troopFaction) return FactorInversion(0.f);
-
-	EFactionRelationship relationship = troopFaction->GetFactionRelationship(hexFaction);
+	EFactionRelationship relationship = faction->GetFactionRelationship(hexFaction);
 
 	return FactorInversion(relationship == hexRelationship);
 }

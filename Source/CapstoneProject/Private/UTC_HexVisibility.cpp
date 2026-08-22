@@ -5,10 +5,17 @@
 
 float UUTC_HexVisibility::ScoreCondition(ATroop* troop, ABaseHex* hex) const
 {
-	EFactions faction = troop->GetUnitData()->GetFaction();
+	UFaction* faction = troop->GetFaction();
+	if (!faction) return GetMinScore();
+	
+	return ScoreCondition(faction, hex);
+}
 
-	float visible = hex->visibility->VisibleToFaction(faction) ? 0.5f : 0.f;
-	float discovered = hex->visibility->DiscoveredByFaction(faction) ? 0.5f : 0.f;
+float UUTC_HexVisibility::ScoreCondition(UFaction* faction, ABaseHex* hex) const
+{
+	EFactions factionEnum = faction->GetFaction();
+	float visible = hex->visibility->VisibleToFaction(factionEnum) ? 0.5f : 0.f;
+	float discovered = hex->visibility->DiscoveredByFaction(factionEnum) ? 0.5f : 0.f;
 
 	return EvaluateOnCurve(FactorInversion(visible + discovered));
 }
