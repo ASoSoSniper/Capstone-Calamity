@@ -7,7 +7,6 @@
 #include "UAI_PriorityManager_Troops.generated.h"
 
 class UFaction;
-class UAI_HexCondition;
 class UAI_TroopCondition;
 class ABaseHex;
 class ATroop;
@@ -27,7 +26,7 @@ struct FHexTargetConditions
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(EditAnywhere) TArray<UAI_HexCondition*> conditions;
+	UPROPERTY(EditAnywhere) TArray<UAI_TroopCondition*> conditions;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHexSelected, ABaseHex*, hex, const TArray<FString>&, conditions);

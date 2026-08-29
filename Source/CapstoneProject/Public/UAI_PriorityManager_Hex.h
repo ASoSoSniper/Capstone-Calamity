@@ -8,7 +8,7 @@
 #include "Faction.h"
 #include "UnitActions.h"
 #include "StratResources.h"
-#include "UAI_HexCondition.h"
+#include "UAI_TroopCondition.h"
 #include "UAI_PriorityManager_Hex.generated.h"
 
 USTRUCT(BlueprintType)
@@ -17,7 +17,7 @@ struct FHexSearchConditions
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(EditAnywhere) TArray<UAI_HexCondition*> conditions;
+	UPROPERTY(EditAnywhere) TArray<UAI_TroopCondition*> conditions;
 };
 
 UCLASS(BlueprintType)

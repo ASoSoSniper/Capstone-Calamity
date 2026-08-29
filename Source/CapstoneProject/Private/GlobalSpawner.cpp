@@ -876,7 +876,7 @@ void AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings buildin
 		//Check if terrain is valid
 		if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Not valid terrain, cannot build"));
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Cannot build, requires %d valid tiles"), buildingCosts[building].hexLayers));
 			return;
 		}
 	}

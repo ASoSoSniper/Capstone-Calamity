@@ -3,7 +3,6 @@
 
 #include "UAI_PriorityManager_Troops.h"
 #include "Faction.h"
-#include "UAI_HexCondition.h"
 #include "UAI_TroopCondition.h"
 #include "GlobalSpawner.h"
 

@@ -87,8 +87,6 @@ void UUAI_PriorityManager_Hex::FindPriorityHex_Workers(EStratResources resource)
 
 	for (const TPair<TerrainType, FHexSet>& terrains : *factionHexes)
 	{
-		if (terrains.Key == TerrainType::Mountains || terrains.Key == TerrainType::Border) continue;
-
 		for (ABaseHex* hex : terrains.Value.hexes)
 		{
 			if (hex->workersInHex[WorkerType::Alien] >= hex->GetMaxWorkers()) continue;
@@ -182,12 +180,12 @@ float UUAI_PriorityManager_Hex::ScoreHex(SpawnableBuildings building, ABaseHex* 
 
 	if (!buildingSearchConditions.Contains(building)) return score;
 
-	const TArray<UAI_HexCondition*>& conditions = buildingSearchConditions[building].conditions;
+	const TArray<UAI_TroopCondition*>& conditions = buildingSearchConditions[building].conditions;
 	if (conditions.IsEmpty()) return score;
 
 	for (int i = 0; i < conditions.Num(); i++)
 	{
-		score *= conditions[i]->ScoreCondition(hex);
+		score *= conditions[i]->ScoreCondition(factionParent, hex);
 
 		if (score == 0) return 0;
 	}
