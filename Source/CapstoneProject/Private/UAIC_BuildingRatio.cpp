@@ -8,16 +8,14 @@ float UUAIC_BuildingRatio::ScoreCondition(IUAI_Controller* controller) const
 {
     UFaction* faction = controller->GetFaction();
     
-    auto countOutpostLikes = [&](SpawnableBuildings buildingType, int& outCount) {
-            if (buildingType == SpawnableBuildings::Outpost) {
-                outCount += faction->GetBuildingsOfType(SpawnableBuildings::RockCity).Num();
-                outCount += faction->GetBuildingsOfType(SpawnableBuildings::Capitol).Num();
-                outCount += faction->GetBuildingsOfType(SpawnableBuildings::AlienCity).Num();
-            }
-        };
+    auto buildingCount = [&](const TSet<SpawnableBuildings>& buildingTypes) -> int {
+        int count = 0;
+        for (SpawnableBuildings b : buildingTypes)
+            count += faction->GetBuildingsOfType(b).Num();
+        return count;
+    };
 
-    int refCount = faction->GetBuildingsOfType(referenceBuilding).Num();
-    countOutpostLikes(referenceBuilding, refCount);
+    int refCount = buildingCount(referenceBuildings);
 
     if (refCount == 0)
     {
@@ -25,10 +23,9 @@ float UUAIC_BuildingRatio::ScoreCondition(IUAI_Controller* controller) const
         return GetMinScore();
     }
      
-    int compareCount = faction->GetBuildingsOfType(comparedBuilding).Num();
-    countOutpostLikes(comparedBuilding, compareCount);
+    int targetCount = buildingCount(targetBuildings);
 
-    float alpha = static_cast<float>(compareCount) / refCount;
+    float alpha = static_cast<float>(targetCount) / refCount;
 
     return FactorInversion(EvaluateOnCurve(1 - FMath::Min(alpha, targetRatio) / targetRatio));
 }

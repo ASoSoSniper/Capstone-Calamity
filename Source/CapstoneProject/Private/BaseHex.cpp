@@ -484,6 +484,7 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 bool ABaseHex::CanBuildOnHex(int requiredLayers) const
 {
 	if (building || !IsBuildableTerrain()) return false;
+	if (requiredLayers <= 0) return true;
 
 	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(requiredLayers, false);
 	for (ABaseHex* aHex : hexesToBuild)

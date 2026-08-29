@@ -64,7 +64,7 @@ void UUAI_PriorityManager_Hex::FindPriorityHex_Building(SpawnableBuildings build
 			if (hex->building) continue;
 
 			float score = ScoreHex(building, hex);
-			if (!bestHex || score > bestScore)
+			if (score > bestScore)
 			{
 				bestScore = score;
 				bestHex = hex;
@@ -153,13 +153,7 @@ void UUAI_PriorityManager_Hex::BindBuildingDelegates(ABuilding* building, bool e
 
 void UUAI_PriorityManager_Hex::HandleOnBuildingSet(ABaseHex* hex)
 {
-	if (!hex->building)
-	{
-		FindPriorityHex_Buildings_All();
-		return;
-	}
-
-	FindPriorityHex_Building(hex->building->GetBuildingType());
+	FindPriorityHex_Buildings_All();
 }
 
 void UUAI_PriorityManager_Hex::HandleOnWorkersSet(ABaseHex* hex)

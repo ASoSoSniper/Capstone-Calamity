@@ -19,7 +19,7 @@ public:
 	virtual float ScoreCondition(IUAI_Controller* controller) const override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Buildings") SpawnableBuildings referenceBuilding = SpawnableBuildings::Outpost;
-	UPROPERTY(EditAnywhere, Category = "Buildings") SpawnableBuildings comparedBuilding = SpawnableBuildings::None;
-	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (ClampMin = 0.f, ClampMax = 1.f)) float targetRatio = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Buildings") TSet<SpawnableBuildings> targetBuildings;
+	UPROPERTY(EditAnywhere, Category = "Buildings") TSet<SpawnableBuildings> referenceBuildings;
+	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (ClampMin = 0.f)) float targetRatio = 1.f;
 };

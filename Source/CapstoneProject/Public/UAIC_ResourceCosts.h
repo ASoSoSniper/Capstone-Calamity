@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UAI_Condition.h"
+#include "StratResources.h"
 #include "UAIC_ResourceCosts.generated.h"
 
 /**
