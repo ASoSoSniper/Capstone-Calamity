@@ -104,10 +104,6 @@ public:
 	TMap<FString, TArray<int32>> armyNamesAlien;
 	UPROPERTY() int maxNameShare = 3;
 
-	UPROPERTY() FOnTroopAdded onTroopAdded;
-	UPROPERTY() FOnTroopRemoved onTroopRemoved;
-	UPROPERTY() FOnBuildingAdded onBuildingAdded;
-	UPROPERTY() FOnBuildingRemoved onBuildingRemoved;
 private:
 	UPROPERTY() EFactions faction;
 	UPROPERTY() FString factionName;
@@ -191,9 +187,14 @@ public:
 
 	void AddTroopToFaction(ATroop* troop);
 	void RemoveTroopFromFaction(ATroop* troop);
+
+	UPROPERTY() FOnTroopAdded onTroopAdded;
+	UPROPERTY() FOnTroopRemoved onTroopRemoved;
+	UPROPERTY() FOnBuildingAdded onBuildingAdded;
+	UPROPERTY() FOnBuildingRemoved onBuildingRemoved;
 private:
 	UPROPERTY() TMap<SpawnableBuildings, FBuildingSet> allBuildings;
-	UPROPERTY() TSet<ATroop*> allUnits = TSet<ATroop*>();
+	UPROPERTY() TSet<ATroop*> allTroops = TSet<ATroop*>();
 #pragma endregion
 #pragma region Workers
 public:
@@ -209,6 +210,7 @@ private:
 #pragma endregion
 #pragma region Enemy Targeting
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TMap<ABaseHex*, EFactions>& GetTargetPool() const;
 	UPROPERTY() TMap<ABaseHex*, EFactions> targetList = TMap<ABaseHex*, EFactions>();
 private:
 	UFUNCTION() void CleanTargetPool();

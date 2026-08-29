@@ -326,7 +326,7 @@ int UFaction::CalculateEnergyCost()
 
 	if (!powerOutage)
 	{
-		for (ATroop* troop : allUnits)
+		for (ATroop* troop : allTroops)
 		{
 			energyCost += troop->GetUnitData()->GetEnergyUpkeep();
 		}
@@ -580,13 +580,13 @@ void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 }
 const TSet<ATroop*>& UFaction::GetTroops() const
 {
-	return allUnits;
+	return allTroops;
 }
 void UFaction::AddTroopToFaction(ATroop* troop)
 {
 	if (!troop) return;
 
-	allUnits.Add(troop);
+	allTroops.Add(troop);
 	if (controller)
 		controller->HandleOnTroopChanged();
 
@@ -596,8 +596,8 @@ void UFaction::RemoveTroopFromFaction(ATroop* troop)
 {
 	if (!troop) return;
 
-	if (allUnits.Contains(troop))
-		allUnits.Remove(troop);
+	if (allTroops.Contains(troop))
+		allTroops.Remove(troop);
 
 	if (controller)
 		controller->HandleOnTroopChanged();
@@ -710,6 +710,11 @@ void UFaction::KillPopulation(int amount)
 }
 #pragma endregion
 #pragma region Enemy Targeting
+const TMap<ABaseHex*, EFactions>& UFaction::GetTargetPool() const
+{
+	return targetList;
+}
+
 void UFaction::CleanTargetPool()
 {
 	if (!IsAIControlled()) return;

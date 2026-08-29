@@ -45,6 +45,9 @@ struct FVisibilityFade
 	UPROPERTY(EditAnywhere) UCurveFloat* fadeCurve = nullptr;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexRevealed, ABaseHex*, hex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetSpotted, ABaseHex*, hex, EFactions, targetFaction);
+
 class UHexNav;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UMeshVisibility : public UActorComponent
@@ -75,6 +78,9 @@ public:
 	void SetupComponent(FUnitData* data, UMeshComponent* meshComponent);
 	void SetupFactionComponent(UMeshComponent* meshComponent);
 	void ResetComponent();
+
+	FOnHexRevealed onHexRevealed;
+	FOnTargetSpotted onTargetSpotted;
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Colors") TMap<EVisibilityColor, FVisibilityFade> visibilityColors;
