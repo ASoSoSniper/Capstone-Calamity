@@ -5,20 +5,28 @@
 
 float UUAIC_Composite::ScoreCondition(IUAI_Controller* controller) const
 {
-	float finalScore = EvaluateOnCurve(FactorInversion(scoreOnSuccess));
+	float totalScore = 0.f;
 
 	for (int i = 0; i < conditions.Num(); i++)
 	{
 		float score = conditions[i]->ScoreCondition(controller);
+		totalScore += score;
+
 		if (allMustBeTrue)
 		{
 			if (score < minScoreForSuccess) return GetMinScore();
 		}
 		else
 		{
-			if (score >= minScoreForSuccess) return finalScore;
+			if (score >= minScoreForSuccess && !useAverageScore)
+			{
+				return EvaluateOnCurve(FactorInversion(scoreOnSuccess));
+			}
 		}
 	}
 
-	return allMustBeTrue ? finalScore : GetMinScore();
+	if (!useAverageScore && !allMustBeTrue) return GetMinScore();
+	if (!useAverageScore) return EvaluateOnCurve(FactorInversion(scoreOnSuccess));
+
+	return EvaluateOnCurve(FactorInversion(totalScore / conditions.Num()));
 }

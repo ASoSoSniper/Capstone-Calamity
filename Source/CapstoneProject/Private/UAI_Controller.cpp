@@ -57,10 +57,12 @@ EActionType IUAI_Controller::DecideBestActionType(const TMap<EActionType, FActio
 {
     EActionType selectedAction = EActionType::None;
     float bestScore = GetDefaultScore();
+    FString scoreText = "Scores:\n";
 
     for (const TPair<EActionType, FActionSelection>& action : actionTypes)
     {
         float score = ScoreAction(action.Value.conditions);
+        scoreText += action.Value.displayName + ": " + FString::SanitizeFloat(score, 4) + "\n";
         if (score == 0) continue;
         if (score > bestScore)
         {
@@ -68,6 +70,7 @@ EActionType IUAI_Controller::DecideBestActionType(const TMap<EActionType, FActio
             selectedAction = action.Key;
         }
     }
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, scoreText);
 
     return selectedAction;
 }

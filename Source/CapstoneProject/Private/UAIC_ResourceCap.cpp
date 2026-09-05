@@ -16,7 +16,7 @@ float UUAIC_ResourceCap::ScoreCondition(IUAI_Controller* controller) const
 	case EStratResources::None:
 		return GetMinScore();
 	case EStratResources::Population:
-		alpha = (float)faction->availableWorkers[WorkerType::Alien].available / (float)(faction->availableWorkers[WorkerType::Alien].available + faction->availableWorkers[WorkerType::Alien].working);
+		alpha = (float)faction->availableWorkers[WorkerType::Organic].available / (float)(faction->availableWorkers[WorkerType::Organic].available + faction->availableWorkers[WorkerType::Organic].working);
 		break;
 	default:
 		alpha = faction->resourceInventory[resource].currentResources / faction->resourceInventory[resource].maxResources;

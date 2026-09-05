@@ -17,9 +17,8 @@ UFaction::UFaction()
 	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Wealth, FInventoryStat{ 000, 300, 0, 0 });
 
-	availableWorkers.Add(WorkerType::Human, FWorkerStats{ 0,0, 500, 0,1,0 });
+	availableWorkers.Add(WorkerType::Organic, FWorkerStats{ 0,0, 500, 0,1,0 });
 	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,0, 0, 1,0,0 });
-	availableWorkers.Add(WorkerType::Alien, FWorkerStats{ 0,0, 0, 0,1,0 });
 
 	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
 	armyNamesHuman.Add(TEXT("Asswipes"), TArray<int32>());
@@ -45,13 +44,13 @@ void UFaction::SetFaction(EFactions newFaction)
 
 	if (faction == EFactions::Human)
 	{
-		availableWorkers[WorkerType::Human].available = 100;
+		availableWorkers[WorkerType::Organic].available = 100;
 		availableWorkers[WorkerType::Robot].available = 10;
 	}
 	else
 	{
-		availableWorkers[WorkerType::Alien].available = 1000;
-		availableWorkers[WorkerType::Alien].maxAcquired = 1000;
+		availableWorkers[WorkerType::Organic].available = 1000;
+		availableWorkers[WorkerType::Organic].maxAcquired = 1000;
 	}
 }
 EFactions UFaction::GetFaction()
@@ -117,9 +116,9 @@ void UFaction::CollectResource(EStratResources resource, int amount)
 	case EStratResources::None:
 		return;
 	case EStratResources::Population:
-		availableWorkers[WorkerType::Human].available += amount;
-		availableWorkers[WorkerType::Human].maxAcquired = FMath::Max(availableWorkers[WorkerType::Human].available + availableWorkers[WorkerType::Human].working,
-			availableWorkers[WorkerType::Human].maxAcquired);
+		availableWorkers[WorkerType::Organic].available += amount;
+		availableWorkers[WorkerType::Organic].maxAcquired = FMath::Max(availableWorkers[WorkerType::Organic].available + availableWorkers[WorkerType::Organic].working,
+			availableWorkers[WorkerType::Organic].maxAcquired);
 		break;
 	default:
 		resourceInventory[resource].currentResources += amount;
@@ -168,8 +167,6 @@ void UFaction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkers
 }
 void UFaction::UpdateResourceCosts()
 {
-	if (IsAIControlled()) return;
-
 	//Food
 	int workerAvailableCost = 0;
 	int workerFoodCost = 0;
@@ -203,8 +200,6 @@ FResourceGainLoss UFaction::GetResourceRates()
 
 void UFaction::FeedPop()
 {
-	if (IsAIControlled()) return;
-
 	int workerAvailableCost = 0;
 	int workerFoodCost = 0;
 
@@ -233,8 +228,6 @@ void UFaction::FeedPop()
 }
 void UFaction::ConsumeEnergy()
 {
-	if (IsAIControlled()) return;
-
 	int energyCost = resourceInventory[EStratResources::Energy].lossesPerDay;
 
 	if (energyCost > resourceInventory[EStratResources::Energy].currentResources)
@@ -307,8 +300,8 @@ int UFaction::GetResourceLossesPerDay(EStratResources resource) const
 
 void UFaction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
 {
-	int remainder = availableWorkers[WorkerType::Human].available % foodPerNonWorkers;
-	availableWorkerCost = availableWorkers[WorkerType::Human].available / foodPerNonWorkers;
+	int remainder = availableWorkers[WorkerType::Organic].available % foodPerNonWorkers;
+	availableWorkerCost = availableWorkers[WorkerType::Organic].available / foodPerNonWorkers;
 	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
 
 	int workerRemainder = 0;
@@ -517,7 +510,8 @@ int UFaction::GetOccupiedHexCount() const
 
 	for (const TPair<SpawnableBuildings, FBuildingSet>& buildings : allBuildings)
 	{
-		if (buildings.Value.buildings.IsEmpty()) continue;
+		if (buildings.Value.buildings.IsEmpty() || 
+			!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildings.Key)) continue;
 
 		int radius = AGlobalSpawner::spawnerObject->buildingCosts[buildings.Key].hexLayers;
 
@@ -578,6 +572,16 @@ void UFaction::RemoveBuildingFromFaction(ABuilding* building)
 
 	onBuildingRemoved.Broadcast(building);
 }
+int UFaction::GetBuildingCount() const
+{
+	int count = 0;
+	for (const TPair<SpawnableBuildings, FBuildingSet>& building : allBuildings)
+	{
+		count += building.Value.buildings.Num();
+	}
+
+	return count;
+}
 const TSet<ATroop*>& UFaction::GetTroops() const
 {
 	return allTroops;
@@ -637,7 +641,7 @@ bool UFaction::ConsumeWorkers(WorkerType workerType, int count)
 
 float UFaction::GetPopAlpha() const
 {
-	const FWorkerStats& stats = availableWorkers[WorkerType::Human];
+	const FWorkerStats& stats = availableWorkers[WorkerType::Organic];
 
 	return (float)(stats.available + stats.working) / (float)stats.maxAcquired;
 }
@@ -657,12 +661,12 @@ void UFaction::KillPopulation(int amount)
 	int remainingCost = 0;
 
 	//Kill non-working population
-	availableWorkers[WorkerType::Human].available -= amount;
+	availableWorkers[WorkerType::Organic].available -= amount;
 
-	if (availableWorkers[WorkerType::Human].available < 0)
+	if (availableWorkers[WorkerType::Organic].available < 0)
 	{
-		remainingCost = -1 * availableWorkers[WorkerType::Human].available;
-		availableWorkers[WorkerType::Human].available = 0;
+		remainingCost = -1 * availableWorkers[WorkerType::Organic].available;
+		availableWorkers[WorkerType::Organic].available = 0;
 	}
 	else return;
 
@@ -673,20 +677,20 @@ void UFaction::KillPopulation(int amount)
 		if (terrain.Key == TerrainType::Mountains) continue;
 
 		for (ABaseHex* hex : terrain.Value.hexes)
-			if (hex->workersInHex[WorkerType::Human] > 0) hexesWithWorkers.Add(hex);
+			if (hex->workersInHex[WorkerType::Organic] > 0) hexesWithWorkers.Add(hex);
 	}
 
 	int scanIndex = 0;
-	int workersToRemove = FMath::Min(remainingCost, availableWorkers[WorkerType::Human].working);
+	int workersToRemove = FMath::Min(remainingCost, availableWorkers[WorkerType::Organic].working);
 
 	if (hexesWithWorkers.IsEmpty()) return;
 
 	int overloadStopper = 0;
 	while (workersToRemove != 0)
 	{
-		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human] > 0)
+		if (hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Organic] > 0)
 		{
-			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Human]--;
+			hexesWithWorkers[scanIndex]->workersInHex[WorkerType::Organic]--;
 			workersToRemove--;
 		}
 
@@ -703,10 +707,10 @@ void UFaction::KillPopulation(int amount)
 			return;
 		}
 	}
-	availableWorkers[WorkerType::Human].working -= remainingCost;
+	availableWorkers[WorkerType::Organic].working -= remainingCost;
 
-	if (availableWorkers[WorkerType::Human].working < 0)
-		availableWorkers[WorkerType::Human].working = 0;
+	if (availableWorkers[WorkerType::Organic].working < 0)
+		availableWorkers[WorkerType::Organic].working = 0;
 }
 #pragma endregion
 #pragma region Enemy Targeting

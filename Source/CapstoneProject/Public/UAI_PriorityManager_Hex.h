@@ -29,8 +29,8 @@ public:
 	UUAI_PriorityManager_Hex();
 	void Initialize(UFaction* faction);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Building(SpawnableBuildings building) const;
-	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Workers(EStratResources resource) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Building(SpawnableBuildings building);
+	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetPriorityHex_Workers(EStratResources resource);
 
 	UFUNCTION() void BindHexDelegates(ABaseHex* hex, bool enable);
 	UFUNCTION() void BindBuildingDelegates(ABuilding* building, bool enable);

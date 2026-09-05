@@ -90,9 +90,8 @@ ABaseHex::ABaseHex()
 	audioComponent->SetupAttachment(RootComponent);
 
 	//Initialize worker types
-	workersInHex.Add(WorkerType::Human, 0);
+	workersInHex.Add(WorkerType::Organic, 0);
 	workersInHex.Add(WorkerType::Robot, 0);
-	workersInHex.Add(WorkerType::Alien, 0);
 
 	//Initialize resource yields
 	resourceBonuses.Add(EStratResources::Wealth, 1 );

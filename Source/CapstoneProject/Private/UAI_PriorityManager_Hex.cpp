@@ -20,16 +20,18 @@ void UUAI_PriorityManager_Hex::Initialize(UFaction* faction)
 	FindPriorityHex_Buildings_All();
 }
 
-ABaseHex* UUAI_PriorityManager_Hex::GetPriorityHex_Building(SpawnableBuildings building) const
+ABaseHex* UUAI_PriorityManager_Hex::GetPriorityHex_Building(SpawnableBuildings building)
 {
 	if (!priorityHexes_Building.Contains(building)) return nullptr;
+	if (priorityHexes_Building[building] == nullptr) FindPriorityHex_Building(building);
 
 	return priorityHexes_Building[building];
 }
 
-ABaseHex* UUAI_PriorityManager_Hex::GetPriorityHex_Workers(EStratResources resource) const
+ABaseHex* UUAI_PriorityManager_Hex::GetPriorityHex_Workers(EStratResources resource)
 {
 	if (!priorityHexes_Workers.Contains(resource)) return nullptr;
+	if (priorityHexes_Workers[resource] == nullptr) FindPriorityHex_Workers(resource);
 
 	return priorityHexes_Workers[resource];
 }
@@ -89,7 +91,7 @@ void UUAI_PriorityManager_Hex::FindPriorityHex_Workers(EStratResources resource)
 	{
 		for (ABaseHex* hex : terrains.Value.hexes)
 		{
-			if (hex->workersInHex[WorkerType::Alien] >= hex->GetMaxWorkers()) continue;
+			if (hex->workersInHex[WorkerType::Organic] >= hex->GetMaxWorkers()) continue;
 			int resourceInHex = hex->GetHexResources()[resource];
 
 			if (!bestHex || resourceInHex > bestResource)
@@ -158,8 +160,7 @@ void UUAI_PriorityManager_Hex::HandleOnBuildingSet(ABaseHex* hex)
 
 void UUAI_PriorityManager_Hex::HandleOnWorkersSet(ABaseHex* hex)
 {
-	if (hex->WorkersAtCapacity()) 
-		FindPriorityHex_Workers(hex->GetMainResourceYield());
+	FindPriorityHex_Workers_All();
 }
 
 void UUAI_PriorityManager_Hex::HandleOnHexesClaimed()

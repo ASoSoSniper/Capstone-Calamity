@@ -12,6 +12,6 @@ float UUAIC_HexesFree::ScoreCondition(IUAI_Controller* controller) const
 	float occupied = faction->GetOccupiedHexCount();
 	float total = faction->GetOwnedHexCount();
 
-	float alpha = FMath::Clamp(occupied / total, 0.f, 0.1f);
+	float alpha = 1 - FMath::Clamp(occupied / total, 0.f, 1.f);
 	return EvaluateOnCurve(FactorInversion(alpha));
 }

@@ -323,6 +323,7 @@ TArray<FBuildingDisplay> ABasePlayerController::GetBuildingDisplays()
 	{
 		if (building.Key == SpawnableBuildings::Capitol && firstBuildPerformed) continue;
 		if (building.Key != SpawnableBuildings::Capitol && !firstBuildPerformed) continue;
+		if (!constructableBuildings.Contains(building.Key)) continue;
 
 		buildings.Add(GetBuildingDisplay(building.Key));
 	}
@@ -481,9 +482,8 @@ FWorkersInHex ABasePlayerController::GetWorkersInHex()
 	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
 	if (!hex) return workers;
 
-	workers.humans = hex->workersInHex[WorkerType::Human];
+	workers.humans = hex->workersInHex[WorkerType::Organic];
 	workers.robots = hex->workersInHex[WorkerType::Robot];
-	workers.aliens = hex->workersInHex[WorkerType::Alien];
 	workers.maxWorkers = hex->GetMaxWorkers();
 
 	return workers;
@@ -494,19 +494,16 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 
 	sliders.maxWorkers = selectedHex->GetMaxWorkers();
 
-	selectedHex->SetWorkers(WorkerType::Human, FMath::RoundToInt(sliders.humanWorkers * sliders.maxWorkers));
+	selectedHex->SetWorkers(WorkerType::Organic, FMath::RoundToInt(sliders.humanWorkers * sliders.maxWorkers));
 	selectedHex->SetWorkers(WorkerType::Robot, FMath::RoundToInt(sliders.robotWorkers * sliders.maxWorkers));
-	selectedHex->SetWorkers(WorkerType::Alien, FMath::RoundToInt(sliders.alienWorkers * sliders.maxWorkers));
 
-	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Human];
+	sliders.humanDisplay = selectedHex->workersInHex[WorkerType::Organic];
 	sliders.robotDisplay = selectedHex->workersInHex[WorkerType::Robot];
-	sliders.alienDisplay = selectedHex->workersInHex[WorkerType::Alien];
 
 	sliders.currWorkers = selectedHex->GetNumberOfWorkers();
 
-	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Human);
+	sliders.availableHumans = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Organic);
 	sliders.availableRobots = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Robot);
-	sliders.availableAliens = UnitActions::GetAvailableWorkerType(playerFaction, WorkerType::Alien);
 
 	return sliders;
 }
@@ -621,8 +618,8 @@ FPlayerWorkers ABasePlayerController::GetPlayerWorkers()
 {
 	FPlayerWorkers workers;
 
-	workers.available = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].available;
-	workers.working = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Human].working;
+	workers.available = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Organic].available;
+	workers.working = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Organic].working;
 
 	return workers;
 }

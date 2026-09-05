@@ -81,7 +81,7 @@ void UnitActions::SetFactionResources(EFactions faction, EStratResources resourc
 
 int UnitActions::GetFactionPopulation(EFactions faction)
 {
-    int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Human].working;
+    int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Organic].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Organic].working;
     return humanPop;
 }
 

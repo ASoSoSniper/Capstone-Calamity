@@ -13,7 +13,16 @@ float UUAIC_BuildingCount::ScoreCondition(IUAI_Controller* controller) const
 
 	if (value == 0 && buildings.IsEmpty()) return FactorInversion(1.f);
 
-	int count = buildings.Num();
+	int count = 0;
+	if (factorBuildingsInConstruction) buildings.Num();
+	else
+	{
+		for (ABuilding* building : buildings)
+		{
+			if (building->ConstructionComplete()) count++;
+		}
+	}
+
 	if (greaterEqual)
 		return FactorInversion(count >= value);
 	else

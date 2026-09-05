@@ -21,5 +21,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Conditions") TArray<UAI_Condition*> conditions;
 	UPROPERTY(EditAnywhere, Category = "Conditions") bool allMustBeTrue = true;
 	UPROPERTY(EditAnywhere, Category = "Conditions") float minScoreForSuccess = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Conditions") bool useAverageScore = false;
 	UPROPERTY(EditAnywhere, Category = "Conditions") float scoreOnSuccess = 1.f;
 };

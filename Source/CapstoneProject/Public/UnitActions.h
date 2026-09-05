@@ -74,9 +74,8 @@ enum class UnitTypes : uint8
 UENUM()
 enum class WorkerType
 {
-	Human,
-	Robot,
-	Alien
+	Organic,
+	Robot
 };
 
 UENUM()

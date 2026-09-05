@@ -9,10 +9,12 @@ float UUAIC_ResourceCosts::ScoreCondition(IUAI_Controller* controller) const
 	UFaction* faction = controller->GetFaction();
 	if (!faction) return GetMinScore();
 
-	float gains = faction->GetResourceGainsPerDay(resource, includeIncompleteBuildings);
-	float losses = faction->GetResourceLossesPerDay(resource);
+	int gains = faction->GetResourceGainsPerDay(resource, includeIncompleteBuildings);
+	int losses = faction->GetResourceLossesPerDay(resource);
 
-	float alpha = 1.f - FMath::Clamp(FMath::Max(gains, 1.f) / FMath::Max(losses, 1.f), 0.f, 1.f);
+	if (losses == 0) return GetMinScore();
 
-	return EvaluateOnCurve(FactorInversion(alpha));
+	float alpha = static_cast<float>(gains) / losses;
+
+	return EvaluateOnCurve(FactorInversion(1 - FMath::Min(alpha, targetRatio) / targetRatio));
 }

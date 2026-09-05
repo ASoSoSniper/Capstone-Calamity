@@ -354,7 +354,7 @@ void ACapstoneProjectGameModeBase::UpdateResourceCosts()
 
 void ACapstoneProjectGameModeBase::CheckHumanPop()
 {
-	FWorkerStats workers = activeFactions[EFactions::Human]->availableWorkers[WorkerType::Human];
+	FWorkerStats workers = activeFactions[EFactions::Human]->availableWorkers[WorkerType::Organic];
 
 	if (workers.available + workers.working < 25)
 	{

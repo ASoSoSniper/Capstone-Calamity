@@ -128,6 +128,7 @@ public:
 
 private:
 	UPROPERTY() bool firstBuildPerformed = false;
+	UPROPERTY(EditAnywhere, Category = "Buildings") TSet<SpawnableBuildings> constructableBuildings;
 #pragma endregion
 
 #pragma region Hex Commands

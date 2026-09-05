@@ -21,4 +21,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Buildings") SpawnableBuildings buildingType;
 	UPROPERTY(EditAnywhere, Category = "Buildings") int value = 0;
 	UPROPERTY(EditAnywhere, Category = "Buildings") bool greaterEqual = true;
+	UPROPERTY(EditAnywhere, Category = "Buildings") bool factorBuildingsInConstruction = true;
 };

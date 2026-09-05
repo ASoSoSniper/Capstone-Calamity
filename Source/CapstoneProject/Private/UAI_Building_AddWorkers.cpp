@@ -12,5 +12,5 @@ void UUAI_Building_AddWorkers::ExecuteAction(IUAI_Controller* controller)
 
 	ABaseHex* hex = building->hexNav->GetCurrentHex();
 
-	hex->SetWorkers(WorkerType::Alien, maxWorkers ? hex->GetMaxWorkers() : workers);
+	hex->SetWorkers(WorkerType::Organic, maxWorkers ? hex->GetMaxWorkers() : workers);
 }

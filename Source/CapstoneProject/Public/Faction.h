@@ -182,6 +182,7 @@ public:
 	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
 	void AddBuildingToFaction(ABuilding* building);
 	void RemoveBuildingFromFaction(ABuilding* building);
+	UFUNCTION(BlueprintCallable) int GetBuildingCount() const;
 
 	UFUNCTION() const TSet<ATroop*>& GetTroops() const;
 

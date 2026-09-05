@@ -11,7 +11,11 @@ void UUAIA_SetWorkersOnHex::ExecuteAction(IUAI_Controller* controller)
 	if (!faction) return;
 
 	ABaseHex* bestHex = faction->GetPriorityHex_Workers(resourceTarget);
-	if (!bestHex) return;
+	if (!bestHex)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("No priority hex, could not place workers"));
+		return;
+	}
 
 	int amount = 0;
 	switch (workerCount)
@@ -27,5 +31,5 @@ void UUAIA_SetWorkersOnHex::ExecuteAction(IUAI_Controller* controller)
 		break;
 	}
 	
-	bestHex->SetWorkers(WorkerType::Alien, amount);
+	bestHex->SetWorkers(WorkerType::Organic, amount);
 }
