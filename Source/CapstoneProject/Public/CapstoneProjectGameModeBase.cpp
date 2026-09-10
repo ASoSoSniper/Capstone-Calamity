@@ -67,7 +67,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 
 	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner);
 	GetWorld()->SpawnActor<AEventSystemManager>(eventSystemManagerPrefab);
-	GetWorld()->SpawnActor<APathingVisualizer>(pathingVisualizerPrefab);
+	if (pathingVisualizerPrefab)
+		GetWorld()->SpawnActor<APathingVisualizer>(pathingVisualizerPrefab);
 
 	timeScale = 1.f;
 	dateTickUpdates.totalDateTicks = 0;
