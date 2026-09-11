@@ -113,7 +113,8 @@ public:
 	void SetHexCoordinates(int x, int y);
 
 	ABaseHex* FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf = true, EHexSearchRules occupancyFilter = EHexSearchRules::ContainsAny, bool includeBuildings = false);
-	TSet<ABaseHex*> GetHexesInRadius(const int layers = 1, bool includeSelf = true) const;
+	TSet<ABaseHex*> GetHexesInRadius(const int radius = 1, bool includeSelf = true) const;
+	TSet<ABaseHex*> GetHexesInRadius(const EBuildingSize size, bool includeSelf = true) const;
 
 	TerrainType GetHexTerrain();
 	int GetMovementMulti() const;
@@ -168,10 +169,10 @@ public:
 	void RemoveTroopFromHex(AMovementAI* troop);
 	UPROPERTY(VisibleAnywhere) TArray<AMovementAI*> troopsInHex;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanBuildOnHex(int requiredLayers) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanBuildOnHex(EBuildingSize buildingSize) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABuilding* GetBuilding() const;
-	void AddBuildingToHex(ABuilding* setBuilding, int layers = 0);
-	void RemoveBuildingFromHex(int layers = 0);
+	void AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSize = EBuildingSize::OneTile);
+	void RemoveBuildingFromHex(EBuildingSize buildingSize = EBuildingSize::OneTile);
 	UPROPERTY(VisibleAnywhere) ABuilding* building;
 
 	TArray<AActor*> GetObjectsInHex() const;

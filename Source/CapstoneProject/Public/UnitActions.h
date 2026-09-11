@@ -86,6 +86,29 @@ enum class EngagementSelect
 	JoinGroup2
 };
 
+UENUM()
+enum class EBuildingSize : uint8
+{
+	OneTile,
+	SevenTiles,
+	NineteenTiles,
+	ThreeTiles,
+};
+
+static int BuildingSizeToRadius(EBuildingSize buildingSize)
+{
+	if (buildingSize == EBuildingSize::ThreeTiles) return 1;
+
+	return static_cast<int>(buildingSize);
+}
+static int BuildingSizeToTileCount(EBuildingSize buildingSize)
+{
+	if (buildingSize == EBuildingSize::ThreeTiles) return 3;
+
+	int radius = static_cast<int>(buildingSize);
+	return (1 + 3 * radius * (radius + 1));
+}
+
 class UFaction;
 class AFactionController;
 class ABaseHex;

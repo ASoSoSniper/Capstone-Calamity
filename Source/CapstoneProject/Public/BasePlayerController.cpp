@@ -2,6 +2,7 @@
 
 
 #include "BasePlayerController.h"
+#include "Faction.h"
 #include "HexNav.h"
 #include "UnitActions.h"
 #include "TroopFactory.h"

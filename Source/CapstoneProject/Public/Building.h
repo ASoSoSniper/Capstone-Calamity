@@ -67,7 +67,7 @@ public:
 	int GetOccupationMinCount();
 	void HealOverTime();
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetHex() const;
-	UFUNCTION(BlueprintCallable) int GetHexLayersToOccupy() const;
+	UFUNCTION(BlueprintCallable) EBuildingSize GetHexLayersToOccupy() const;
 	UFUNCTION(BlueprintCallable) EFactions GetOccupier();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();

@@ -52,6 +52,8 @@ void UFaction::SetFaction(EFactions newFaction)
 		availableWorkers[WorkerType::Organic].available = 1000;
 		availableWorkers[WorkerType::Organic].maxAcquired = 1000;
 	}
+
+	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &UFaction::DateUpdate);
 }
 EFactions UFaction::GetFaction()
 {
@@ -298,20 +300,36 @@ int UFaction::GetResourceLossesPerDay(EStratResources resource) const
 	return resourceInventory[resource].lossesPerDay;
 }
 
+void UFaction::DateUpdate(const FDateTickUpdate& update)
+{
+	if (update.minuteTick)
+	{
+
+	}
+	if (update.hourTick)
+	{
+		UpdateResourceCosts();
+	}
+	if (update.dayTick)
+	{
+		FeedPop();
+		ConsumeEnergy();
+	}
+	if (update.monthTick)
+	{
+
+	}
+}
+
 void UFaction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
 {
 	int remainder = availableWorkers[WorkerType::Organic].available % foodPerNonWorkers;
-	availableWorkerCost = availableWorkers[WorkerType::Organic].available / foodPerNonWorkers;
+	availableWorkerCost = FMath::Floor(static_cast<float>(availableWorkers[WorkerType::Organic].available) / foodPerNonWorkers);
 	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
 
-	int workerRemainder = 0;
-
-	for (auto& workers : availableWorkers)
-	{
-		workerRemainder = workers.Value.working % foodPerWorkers;
-		int cost = workers.Value.working / foodPerWorkers;
-		workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * workers.Value.workingFoodCost;
-	}
+	int workerRemainder = availableWorkers[WorkerType::Organic].working % foodPerWorkers;
+	int cost = FMath::Floor(availableWorkers[WorkerType::Organic].working / foodPerWorkers);
+	workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * availableWorkers[WorkerType::Organic].workingFoodCost;
 }
 int UFaction::CalculateEnergyCost()
 {
@@ -513,9 +531,9 @@ int UFaction::GetOccupiedHexCount() const
 		if (buildings.Value.buildings.IsEmpty() || 
 			!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildings.Key)) continue;
 
-		int radius = AGlobalSpawner::spawnerObject->buildingCosts[buildings.Key].hexLayers;
+		int tileCount = BuildingSizeToTileCount(AGlobalSpawner::spawnerObject->buildingCosts[buildings.Key].size);
 
-		count += (1 + 3 * radius * (radius + 1)) * buildings.Value.buildings.Num();
+		count += tileCount * buildings.Value.buildings.Num();
 	}
 
 	return count;

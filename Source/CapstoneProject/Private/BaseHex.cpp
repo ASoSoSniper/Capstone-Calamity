@@ -2,6 +2,7 @@
 
 
 #include "BaseHex.h"
+#include "Faction.h"
 #include "MergedArmy.h"
 #include "MovementAI.h"
 #include "Building.h"
@@ -231,7 +232,7 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& used
 
 	return nullptr;
 }
-TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers, bool includeSelf) const
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) const
 {
 	TSet<ABaseHex*> hexes;
 	TQueue<const ABaseHex*> found;
@@ -263,7 +264,7 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers, bool includeSelf) c
 
 	found.Enqueue(this);
 
-	for (int i = 0; i < layers; i++)
+	for (int i = 0; i < radius; i++)
 	{
 		TQueue<const ABaseHex*> layer;
 		const ABaseHex* currentVal = nullptr;
@@ -290,6 +291,11 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int layers, bool includeSelf) c
 	}
 
 	return hexes;
+}
+
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const EBuildingSize size, bool includeSelf) const
+{
+	return GetHexesInRadius(BuildingSizeToRadius(size));
 }
 
 TerrainType ABaseHex::GetHexTerrain()
@@ -480,29 +486,46 @@ void ABaseHex::RemoveTroopFromHex(AMovementAI* troop)
 	}
 }
 
-bool ABaseHex::CanBuildOnHex(int requiredLayers) const
+bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 {
 	if (building || !IsBuildableTerrain()) return false;
-	if (requiredLayers <= 0) return true;
+	if (buildingSize == EBuildingSize::OneTile) return true;
 
-	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(requiredLayers, false);
+	auto buildable = [&](ABaseHex* hex){
+			return !hex->building && IsBuildableTerrain() && hex->GetHexOwner() == hexOwner;
+		};
+
+	int radius = BuildingSizeToRadius(buildingSize);
+
+	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(radius, false);
+	if (buildingSize != EBuildingSize::ThreeTiles)
+	{
+		for (ABaseHex* aHex : hexesToBuild)
+			if (!buildable(aHex)) return false;
+
+		return true;
+	}
+
 	for (ABaseHex* aHex : hexesToBuild)
 	{
-		if (aHex->building ||
-			!aHex->IsBuildableTerrain() ||
-			aHex->GetHexOwner() != hexOwner)
+		if (buildable(aHex))
 		{
-			return false;
+			TSet<ABaseHex*> inRadius = aHex->GetHexesInRadius(1, false);
+			for (ABaseHex* bHex : inRadius)
+			{
+				if (bHex != this && buildable(bHex) && hexesToBuild.Contains(bHex))
+					return true;
+			}
 		}
 	}
 
-	return true;
+	return false;
 }
 ABuilding* ABaseHex::GetBuilding() const
 {
 	return building;
 }
-void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
+void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSize)
 {
 	//Toggle the hex's natural models, if existing, 
 	//depending on the coming or going of the building
@@ -512,9 +535,9 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 	}
 
 	//Affect hexes in the building's influence with the same come/go command
-	if (layers > 0)
+	if (buildingSize != EBuildingSize::OneTile)
 	{
-		TSet<ABaseHex*> hexes = GetHexesInRadius(layers);
+		TSet<ABaseHex*> hexes = GetHexesInRadius(buildingSize);
 
 		for (ABaseHex* hex : hexes)
 		{
@@ -543,9 +566,9 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, int layers)
 
 	onBuildingSet.Broadcast(this);
 }
-void ABaseHex::RemoveBuildingFromHex(int layers)
+void ABaseHex::RemoveBuildingFromHex(EBuildingSize buildingSize)
 {
-	AddBuildingToHex(nullptr, layers);
+	AddBuildingToHex(nullptr, buildingSize);
 }
 TArray<AActor*> ABaseHex::GetObjectsInHex() const
 {

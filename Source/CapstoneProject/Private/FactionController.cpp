@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "FactionController.h"
-#include "CapstoneProjectGameModeBase.h"
 #include "Faction.h"
 #include "UAI_PriorityManager_Hex.h"
 #include "UAI_PriorityManager_Troops.h"
@@ -39,8 +37,6 @@ void AFactionController::SetFaction(UFaction* setFaction)
 
 	faction = setFaction;
 
-	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &AFactionController::DateUpdate);
-
 	priorityManager_Hex->Initialize(faction);
 	priorityManager_Troops->Initialize(faction);
 	decider_Resources->Initialize(faction);
@@ -62,27 +58,6 @@ bool AFactionController::IsAIControlled()
 void AFactionController::TriggerUpdateDisplay()
 {
 	decider_Resources->onDecisionMade.Broadcast();
-}
-
-void AFactionController::DateUpdate(const FDateTickUpdate& update)
-{
-	if (update.minuteTick)
-	{
-		
-	}
-	if (update.hourTick)
-	{
-		faction->UpdateResourceCosts();
-	}
-	if (update.dayTick)
-	{
-		faction->FeedPop();
-		faction->ConsumeEnergy();
-	}
-	if (update.monthTick)
-	{
-
-	}
 }
 
 bool AFactionController::UpdateDisplay()

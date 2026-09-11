@@ -5,6 +5,7 @@
 #include "BasePlayerController.h"
 #include "BaseHex.h"
 #include "HexNav.h"
+#include "Faction.h"
 #include "Building.h"
 #include "Troop.h"
 #include "Settler.h"
@@ -35,23 +36,23 @@ AGlobalSpawner::AGlobalSpawner()
 	using Res = EStratResources;
 
 #pragma region Building Costs
-	buildingCosts.Add(SB::MiningStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Mining Station"),
+	buildingCosts.Add(SB::MiningStation, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Mining Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Production_Station.Production_Station'")) });
-	buildingCosts.Add(SB::Farmland, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Farmland"),
+	buildingCosts.Add(SB::Farmland, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Farmland"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Food_Farming_Station.Food_Farming_Station'"))});
-	buildingCosts.Add(SB::PowerPlant, FBuildingCost{ 150, 10, 60, 1, FText::FromString("Power Plant"),
+	buildingCosts.Add(SB::PowerPlant, FBuildingCost{ 150, 10, 60, EBuildingSize::ThreeTiles, FText::FromString("Power Plant"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Energy_Station.Energy_Station'")) });
-	buildingCosts.Add(SB::Storage, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Material Storage"),
+	buildingCosts.Add(SB::Storage, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Material Storage"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Material_Storage.Building_Icon_Material_Storage'")) });
-	buildingCosts.Add(SB::RobotFactory, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Robot Factory"),
+	buildingCosts.Add(SB::RobotFactory, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Robot Factory"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Factory.Building_Icon_Robot_Factory'")) });
-	buildingCosts.Add(SB::RobotBarracks, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Robot Barracks"),
+	buildingCosts.Add(SB::RobotBarracks, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Robot Barracks"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Robot_Storage.Building_Icon_Robot_Storage'")) });
-	buildingCosts.Add(SB::DefenseStation, FBuildingCost{ 150, 10, 60, 0, FText::FromString("Defense Station"),
+	buildingCosts.Add(SB::DefenseStation, FBuildingCost{ 150, 10, 60, EBuildingSize::OneTile, FText::FromString("Defense Station"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Defense_Station.Building_Icon_Defense_Station'")) });
-	buildingCosts.Add(SB::Outpost, FBuildingCost{ 0, 10, 60, 0, FText::FromString("Outpost"),
+	buildingCosts.Add(SB::Outpost, FBuildingCost{ 0, 10, 60, EBuildingSize::OneTile, FText::FromString("Outpost"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Outpost.Building_Icon_Outpost'")) });
-	buildingCosts.Add(SB::Capitol, FBuildingCost{0, 10, 0, 0, FText::FromString("Capitol Hub"),
+	buildingCosts.Add(SB::Capitol, FBuildingCost{0, 10, 0, EBuildingSize::OneTile, FText::FromString("Capitol Hub"),
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Icons/StationIcons/Building_Icon_Trade_Outpost_Station.Building_Icon_Trade_Outpost_Station'")) });
 #pragma endregion
 #pragma region Building Stats
@@ -874,9 +875,9 @@ void AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings buildin
 	if (building != SpawnableBuildings::Capitol && building != SpawnableBuildings::AlienCity && building != SpawnableBuildings::RockCity)
 	{
 		//Check if terrain is valid
-		if (!hex->CanBuildOnHex(buildingCosts[building].hexLayers))
+		if (!hex->CanBuildOnHex(buildingCosts[building].size))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Cannot build, requires %d valid tiles"), buildingCosts[building].hexLayers));
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot construct building, not enough space."));
 			return;
 		}
 	}

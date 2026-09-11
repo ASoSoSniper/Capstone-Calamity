@@ -4,6 +4,7 @@
 #include "Building.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
+#include "Faction.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -225,7 +226,7 @@ void ABuilding::ScaleModelToLayer()
 {
 	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return;
 
-	int scale = 1 + AGlobalSpawner::spawnerObject->buildingCosts[buildingType].hexLayers * 1.5f;
+	int scale = 1 + static_cast<int>(AGlobalSpawner::spawnerObject->buildingCosts[buildingType].size) * 1.5f;
 	mesh->SetWorldScale3D(FVector::One() * scale);
 }
 
@@ -593,10 +594,10 @@ ABaseHex* ABuilding::GetHex() const
 	return hexNav->GetCurrentHex();
 }
 
-int ABuilding::GetHexLayersToOccupy() const
+EBuildingSize ABuilding::GetHexLayersToOccupy() const
 {
-	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return 0;
+	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return EBuildingSize::OneTile;
 
-	return AGlobalSpawner::spawnerObject->buildingCosts[buildingType].hexLayers;
+	return AGlobalSpawner::spawnerObject->buildingCosts[buildingType].size;
 }
 

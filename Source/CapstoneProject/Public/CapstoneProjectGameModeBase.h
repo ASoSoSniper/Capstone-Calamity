@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Faction.h"
 #include "FactionEnum.h"
 #include "BasePlayerController.h"
 #include "UnitActions.h"
@@ -35,6 +34,7 @@ struct FDateTickUpdate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateTick, const FDateTickUpdate&, update);
 
+class UFaction;
 class APathingVisualizer;
 class AEventSystemManager;
 class AFactionController;

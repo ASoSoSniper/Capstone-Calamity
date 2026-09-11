@@ -12,7 +12,6 @@
 #include "Outpost.h"
 #include "Building.h"
 #include "CapitalHub.h"
-#include "Faction.h"
 #include "ManageMode.h"
 #include "ManageHex.h"
 #include "ManageTroop.h"
@@ -23,6 +22,7 @@
 #include "stdlib.h"
 #include "BasePlayerController.generated.h"
 
+class UFaction;
 
 UCLASS()
 class CAPSTONEPROJECT_API ABasePlayerController : public APlayerController

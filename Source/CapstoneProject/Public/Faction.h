@@ -142,6 +142,7 @@ public:
 	UPROPERTY() int currPowerDays = 0;
 	UPROPERTY() bool powerOutage = false;
 private:
+	UFUNCTION() void DateUpdate(const FDateTickUpdate& update);
 	UFUNCTION() void CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost);
 	UFUNCTION() int CalculateEnergyCost();
 

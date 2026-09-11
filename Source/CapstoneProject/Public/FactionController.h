@@ -44,8 +44,6 @@ private:
 	UFaction* faction;
 	bool updateDecisionDisplay = false;
 
-	UFUNCTION() void DateUpdate(const FDateTickUpdate& update);
-
 #pragma region Priority Targeting
 public:
 	UFUNCTION() void BindHexDelegates(ABaseHex* hex, bool enable);

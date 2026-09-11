@@ -382,7 +382,7 @@ struct FBuildingCost
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int productionCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int workerCost = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int timeToBuild = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int hexLayers = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) EBuildingSize size = EBuildingSize::OneTile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* buildingIcon;
 };

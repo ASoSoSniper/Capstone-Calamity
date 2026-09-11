@@ -2,6 +2,7 @@
 
 
 #include "MeshVisibility.h"
+#include "Faction.h"
 #include "HexNav.h"
 #include "CapstoneProjectGameModeBase.h"
 
@@ -295,7 +296,7 @@ void UMeshVisibility::SetSelected(bool active, bool instigator)
 		if (!hexParent->building) return;
 
 		ABaseHex* centerHex = hexParent->building->hexNav->GetCurrentHex();
-		int hexRadius = hexParent->building->GetHexLayersToOccupy();
+		EBuildingSize hexRadius = hexParent->building->GetHexLayersToOccupy();
 
 		TSet<ABaseHex*> occupiedHexes = centerHex->GetHexesInRadius(hexRadius);
 		for (ABaseHex* hex : occupiedHexes)
