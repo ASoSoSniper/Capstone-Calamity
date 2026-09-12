@@ -223,7 +223,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool VisibleToPlayer() const;
 
-	FHexDisplay GetDisplayInfo();
+	UFUNCTION(BlueprintCallable, BlueprintPure) FHexDisplay GetDisplayInfo();
 	UFUNCTION(BlueprintImplementableEvent) void PrintCoordinates(int x, int y);
 	UFUNCTION(BlueprintImplementableEvent) void ToggleUI(bool active);
 

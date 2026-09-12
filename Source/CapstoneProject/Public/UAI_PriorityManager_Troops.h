@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere) TArray<UAI_TroopCondition*> conditions;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHexSelected, ABaseHex*, hex, const TArray<FString>&, conditions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHexPrioritized, ABaseHex*, hex, const TArray<FString>&, conditions);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTroopSelected, ATroop*, troop, const TArray<FString>&, conditions);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -46,7 +46,7 @@ public:
 	UFUNCTION() void HandleOnTroopChanged();
 	UFUNCTION() void HandleOnHexTargeted();
 
-	UPROPERTY(BlueprintAssignable) FOnHexSelected onHexSelected;
+	UPROPERTY(BlueprintAssignable) FOnHexPrioritized onHexSelected;
 	UPROPERTY(BlueprintAssignable) FOnTroopSelected onTroopSelected;
 
 private:

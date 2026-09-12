@@ -24,6 +24,8 @@
 
 class UFaction;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexSelected, ABaseHex*, selectedHex);
+
 UCLASS()
 class CAPSTONEPROJECT_API ABasePlayerController : public APlayerController
 {
@@ -31,7 +33,7 @@ class CAPSTONEPROJECT_API ABasePlayerController : public APlayerController
 
 #pragma region General Logic
 public:
-	ABasePlayerController();
+	ABasePlayerController();	
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,6 +72,8 @@ public:
 
 	UFUNCTION(BlueprintCallable) void EnterSelectionMode(bool active);
 	UFUNCTION(BlueprintCallable) bool IsInBuildMode();
+
+	UPROPERTY(EditAnywhere, BlueprintAssignable) FOnHexSelected onHexSelected;
 
 private:
 	UPROPERTY() UManageMode* noneMode;
