@@ -490,6 +490,7 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 {
 	if (building || !IsBuildableTerrain()) return false;
 	if (buildingSize == EBuildingSize::OneTile) return true;
+	if (buildingSize == EBuildingSize::ThreeTiles) return CanBuildOnHex_ThreeTile();
 
 	auto buildable = [&](ABaseHex* hex){
 			return !hex->building && IsBuildableTerrain() && hex->GetHexOwner() == hexOwner;
@@ -498,13 +499,6 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 	int radius = BuildingSizeToRadius(buildingSize);
 
 	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(radius, false);
-	if (buildingSize != EBuildingSize::ThreeTiles)
-	{
-		for (ABaseHex* aHex : hexesToBuild)
-			if (!buildable(aHex)) return false;
-
-		return true;
-	}
 
 	for (ABaseHex* aHex : hexesToBuild)
 	{
@@ -517,6 +511,52 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 					return true;
 			}
 		}
+	}
+
+	return false;
+}
+bool ABaseHex::CanBuildOnHex_ThreeTile() const
+{
+	int dirOdd[6][2] = { {0,-1}, {1,-1}, {1,0}, {1,1}, {0, 1}, {-1,0} };
+	int dirEven[6][2] = { {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
+	FVector2D coords = GetHexCoordinates();
+	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	TArray<ABaseHex*> possibleHexes;
+	for (int i = 0; i < 6; i++)
+	{
+		int x = coords.X + dir[i][0];
+		int y = coords.Y + dir[i][1];
+
+		if (x > max || x < 0 || y > max || y < 0) continue;
+
+		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+	}
+
+	ABaseHex* b = nullptr;
+	ABaseHex* c = nullptr;
+
+	auto LoopCycle = [&](int index) -> int
+		{
+			if (index >= possibleHexes.Num()) return 0;
+			else if (index < 0) return possibleHexes.Num() - 1;
+
+			return index;
+		};
+
+	for (int i = 0; i < possibleHexes.Num(); i++)
+	{
+		int bIndex = LoopCycle(i);
+		int cIndex = LoopCycle(bIndex + 1);
+
+		b = possibleHexes[bIndex];
+		c = possibleHexes[cIndex];
+
+		if (b->building || !b->IsBuildableTerrain()) continue;
+		if (c->building || !c->IsBuildableTerrain()) continue;
+
+		if (b->GetHexesInRadius(1, false).Contains(c)) return true;
 	}
 
 	return false;
@@ -563,8 +603,6 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSi
 
 		SetMaxWorkers(maxWorkersDefault);
 	}
-
-	onBuildingSet.Broadcast(this);
 }
 void ABaseHex::RemoveBuildingFromHex(EBuildingSize buildingSize)
 {

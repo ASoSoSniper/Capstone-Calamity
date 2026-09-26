@@ -20,9 +20,8 @@
 #include "GlobalSpawner.h"
 #include "PlayerMovement.h"
 #include "stdlib.h"
+#include "Faction.h"
 #include "BasePlayerController.generated.h"
-
-class UFaction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexSelected, ABaseHex*, selectedHex);
 
@@ -62,7 +61,7 @@ public:
 	void SetHoveredWorldObject(AActor* object);
 	void SetSelectedWorldObject(AActor* object);
 	
-	UFUNCTION(BlueprintCallable) AActor* GetActionStateSelection();
+	UFUNCTION(BlueprintCallable) AActor* GetActionStateSelection() const;
 
 	UFUNCTION(BlueprintCallable) void Deselect();
 	UFUNCTION(BlueprintCallable) void CommandAction();
@@ -261,5 +260,19 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_HalveArmy;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Store;
 	UPROPERTY(EditAnywhere, Category = "Utility AI") UAI_Action* troop_Investigate;
+#pragma endregion
+
+#pragma region Outpost Commands
+public:
+	UFUNCTION(BlueprintCallable) void Outpost_EnterBuildMode(bool active);
+	UFUNCTION(BlueprintCallable) void Outpost_CycleBuildTiles(int direction = 1);
+	UFUNCTION(BlueprintCallable) void Outpost_Construct();
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool Outpost_CanBuildOnHex() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool Outpost_InBuildMode() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) const TArray<ABaseHex*>& Outpost_GetBuildTiles() const;
+private:
+	bool _outpostBuildMode = false;
+	int _outpostBuildDirection = 0;
+	TArray<ABaseHex*> _outpostBuildTiles;
 #pragma endregion
 };

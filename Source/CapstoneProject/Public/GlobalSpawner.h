@@ -566,7 +566,7 @@ public:
 	FUnitData() : faction(EFactions::None), unitType(UnitTypes::None) {};
 	FUnitData(EFactions setFaction) : faction(setFaction), unitType(UnitTypes::None)
 	{
-		FUnitData(setFaction, UnitTypes::None);
+		FUnitData(faction, UnitTypes::None);
 	};
 	FUnitData(EFactions setFaction, UnitTypes setUnitType) : faction(setFaction), unitType(setUnitType)
 	{
@@ -699,9 +699,11 @@ private:
 
 #pragma region Building Construction
 public:	
-	void SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex);
+	bool SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex);
+	bool SpawnOutpost(EFactions faction, const TArray<ABaseHex*>& hexes);
 	void SpawnBuildingFree(EFactions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart = false);
 	UClass* DetermineBuildingType(SpawnableBuildings building);
+	bool CanAffordBuilding(UFaction* faction, SpawnableBuildings building) const;
 
 	static EStratResources GetMainBuildingYield(SpawnableBuildings building);
 

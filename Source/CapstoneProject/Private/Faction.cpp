@@ -159,6 +159,20 @@ void UFaction::SetResources(const TMap<EStratResources, int>& resources)
 }
 #pragma endregion
 #pragma region Resource Costs
+bool UFaction::CanAfford(const TMap<EStratResources, int>& costs) const
+{
+	for (const TPair<EStratResources, int>& resource : costs)
+	{
+		if (!CanAffordResource(resource.Key, resource.Value)) return false;
+	}
+
+	return true;
+}
+bool UFaction::CanAffordResource(EStratResources resource, int cost) const
+{
+	cost = FMath::Abs(cost);
+	return resourceInventory[resource].currentResources >= cost;
+}
 void UFaction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
 {
 	foodPerNonWorkers = foodPerNonWorkersVar;
@@ -339,7 +353,8 @@ int UFaction::CalculateEnergyCost()
 	{
 		for (ATroop* troop : allTroops)
 		{
-			energyCost += troop->GetUnitData()->GetEnergyUpkeep();
+			if (FUnitData* data = troop->GetUnitData())
+				energyCost += data->GetEnergyUpkeep();
 		}
 	}
 	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)

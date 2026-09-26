@@ -870,93 +870,80 @@ void AGlobalSpawner::SpawnPointsOfInterest()
 #pragma endregion
 
 #pragma region Building Construction
-void AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex)
+bool AGlobalSpawner::SpawnBuilding(EFactions faction, SpawnableBuildings building, ABaseHex* hex)
 {
+	if (building == SpawnableBuildings::Outpost) return SpawnOutpost(faction, TArray<ABaseHex*>({hex}));
+
 	if (building != SpawnableBuildings::Capitol && building != SpawnableBuildings::AlienCity && building != SpawnableBuildings::RockCity)
 	{
 		//Check if terrain is valid
 		if (!hex->CanBuildOnHex(buildingCosts[building].size))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Cannot construct building, not enough space."));
-			return;
+			return false;
 		}
 	}
 
 	//Determine building prefab to spawn
-	FActorSpawnParameters params;
 	UClass* prefab = DetermineBuildingType(building);
 
 	//If no prefab found, return
-	if (!prefab) return;
+	if (!prefab) return false;
 
 	UFaction* factionObject = UnitActions::GetFaction(faction);
 
-	//Declare bool for whether this building is affordable
-	bool canAfford = false;
+	if (CanAffordBuilding(factionObject, building))
+	{
+		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab);
+		factionObject->SetResources({ { EStratResources::Production, -buildingCosts[building].productionCost } });
+		newBuilding->InitBuilding(faction);
+		newBuilding->AttachToHex(hex);
 
-	//Declare TMaps for resources and workers to spend on this building
-	TMap<EStratResources, int> resourceCosts = TMap<EStratResources, int>();
+		return true;
+	}
+
+	return false;
+}
+bool AGlobalSpawner::SpawnOutpost(EFactions faction, const TArray<ABaseHex*>& hexes)
+{
+	UFaction* factionObject = UnitActions::GetFaction(faction);
+	UClass* prefab = DetermineBuildingType(SpawnableBuildings::Outpost);
+	if (!prefab) return false;
+
+	if (!CanAffordBuilding(factionObject, SpawnableBuildings::Outpost)) return false;
+
 	AMovementAI* settlerOnHex = nullptr;
 	int settlerIndex = -1;
 
-	//If the desired building exists in the 
-	if (buildingCosts.Contains(building))
+	for (ABaseHex* hex : hexes)
 	{
-		TMap<EStratResources, int> resources = UnitActions::GetMoreSpecificFactionResources(faction);
+		if (!hex->IsBuildableTerrain() || hex->building) return false;
 
-		if (resources[EStratResources::Production] >= buildingCosts[building].productionCost)
+		if (!settlerOnHex)
 		{
-			if (building == SpawnableBuildings::Outpost)
+			for (int i = 0; i < hex->troopsInHex.Num(); i++)
 			{
-				for (int i = 0; i < hex->troopsInHex.Num(); i++)
-				{
-					if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler, settlerIndex))
-					{
-						if (hex->troopsInHex[i]->GetUnitData()->GetFaction() == faction)
-						{
-							canAfford = true;
-							settlerOnHex = hex->troopsInHex[i];
-						}
-					}
-				}
-			}
-			else
-			{
-				canAfford = true;
-			}
-		}
+				if (hex->troopsInHex[i]->GetUnitData()->GetFaction() != faction) continue;
 
-		resourceCosts.Add(EStratResources::Production, -buildingCosts[building].productionCost);
-	}
-
-	if (canAfford)
-	{
-		if (building == SpawnableBuildings::Outpost)
-		{
-			resourceCosts.Add(EStratResources::Population, troopCosts[UnitTypes::Settler].populationCost);
-			if (settlerOnHex)
-			{
-				if (settlerOnHex->GetUnitData()->GetUnitType() == UnitTypes::Settler)
+				if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler, settlerIndex))
 				{
-					settlerOnHex->Destroy();
-				}
-				else
-				{
-					settlerOnHex->GetUnitData()->ExtractUnitData(settlerIndex, true);
+					settlerOnHex = hex->troopsInHex[i];
+					break;
 				}
 			}
 		}
-
-		ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab, hex->buildingAnchor->GetComponentLocation(), FRotator(0, 0, 0), params);
-		factionObject->SetResources(resourceCosts);
-		newBuilding->InitBuilding(faction);
-
-		controller->PlayUIBuildingSound(building);
 	}
-	else
-	{
-		controller->PlayUISound(controller->selectFailSound);
-	}
+
+	if (!settlerOnHex) return false;
+	if (settlerOnHex->GetUnitData()->GetUnitType() == UnitTypes::Settler) settlerOnHex->Destroy();
+	else settlerOnHex->GetUnitData()->ExtractUnitData(settlerIndex, true);
+
+	ABuilding* newBuilding = GetWorld()->SpawnActor<ABuilding>(prefab);
+	factionObject->SetResources({ { EStratResources::Production, -buildingCosts[SpawnableBuildings::Outpost].productionCost } });
+	newBuilding->InitBuilding(faction);
+	newBuilding->AttachToHex(hexes);
+
+	return true;
 }
 void AGlobalSpawner::SpawnBuildingFree(EFactions faction, SpawnableBuildings building, ABaseHex* hex, bool buildAtStart)
 {
@@ -973,6 +960,12 @@ UClass* AGlobalSpawner::DetermineBuildingType(SpawnableBuildings building)
 	}
 
 	return buildingPrefabs[building];
+}
+bool AGlobalSpawner::CanAffordBuilding(UFaction* faction, SpawnableBuildings building) const
+{
+	if (!buildingCosts.Contains(building)) return false;
+
+	return faction->CanAffordResource(EStratResources::Production, buildingCosts[building].productionCost);
 }
 EStratResources AGlobalSpawner::GetMainBuildingYield(SpawnableBuildings building)
 {

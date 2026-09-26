@@ -123,6 +123,9 @@ private:
 #pragma endregion
 #pragma region Resource Costs
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAfford(const TMap<EStratResources, int>& costs) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAffordResource(EStratResources resource, int cost) const;
+
 	void SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
 	UFUNCTION() void UpdateResourceCosts();
 	UFUNCTION() FResourceGainLoss GetResourceRates();

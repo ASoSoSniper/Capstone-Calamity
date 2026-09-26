@@ -55,6 +55,8 @@ public:
 	void InitBuilding(const EFactions& factionType);
 	virtual void BeginDestroying();
 	virtual bool IsDisabled();
+	void AttachToHex(ABaseHex* hex);
+	void AttachToHex(TArray<ABaseHex*> hexes);
 	bool ActiveAndHarvesting() const;
 	const TMap<EStratResources, int>& GetResourceYields() const;
 

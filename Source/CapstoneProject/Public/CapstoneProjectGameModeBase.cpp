@@ -2,6 +2,7 @@
 
 
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 #include "Faction.h"
 #include "EventSystemManager.h"
 #include "PathingVisualizer.h"

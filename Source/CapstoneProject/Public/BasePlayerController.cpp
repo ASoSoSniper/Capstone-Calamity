@@ -2,7 +2,6 @@
 
 
 #include "BasePlayerController.h"
-#include "Faction.h"
 #include "HexNav.h"
 #include "UnitActions.h"
 #include "TroopFactory.h"
@@ -119,7 +118,7 @@ void ABasePlayerController::ForceActionState(int state)
 	currentActionState = ActionStates(state);
 }
 
-AActor* ABasePlayerController::GetActionStateSelection()
+AActor* ABasePlayerController::GetActionStateSelection() const
 {
 	if (currentActionState == ActionStates::None) return nullptr;
 
@@ -267,7 +266,10 @@ void ABasePlayerController::SelectBuilding(SpawnableBuildings buildingName)
 	}
 
 	//Spawn the selected building
-	AGlobalSpawner::spawnerObject->SpawnBuilding(playerFaction, buildingName, selectedHex);
+	if (AGlobalSpawner::spawnerObject->SpawnBuilding(playerFaction, buildingName, selectedHex))
+		PlayUIBuildingSound(buildingName);
+	else
+		PlayUISound(selectFailSound);
 }
 void ABasePlayerController::DestroyBuilding()
 {
@@ -1131,5 +1133,136 @@ bool ABasePlayerController::BattleGroupIsHuman(int group)
 		}
 	}
 	return false;
+}
+#pragma endregion
+
+#pragma region Outpost Commands
+void ABasePlayerController::Outpost_EnterBuildMode(bool active)
+{
+	if (_outpostBuildMode == active) return;
+
+	_outpostBuildMode = active;
+	if (active)
+		Outpost_CycleBuildTiles(0);
+	else
+	{
+		for (ABaseHex* hex : _outpostBuildTiles)
+			hex->visibility->SetSelected(false, false);
+	}
+}
+void ABasePlayerController::Outpost_CycleBuildTiles(int direction)
+{
+	UnitActions::SelectionIdentity selection = UnitActions::DetermineObjectType(selectedWorldObject);
+	if (!selection.actor) return;
+	ABaseHex* a = selection.type == ObjectTypes::MoveAI ? selection.moveAI->hexNav->GetCurrentHex() : selection.hex;
+	if (!a) return;
+	
+	int dirOdd[6][2] = { {0,-1}, {1,-1}, {1,0}, {1,1}, {0, 1}, {-1,0} };
+	int dirEven[6][2] = { {-1,-1}, {0,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
+	FVector2D coords = a->GetHexCoordinates();
+	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	TArray<ABaseHex*> possibleHexes;
+	for (int i = 0; i < 6; i++)
+	{
+		int x = coords.X + dir[i][0];
+		int y = coords.Y + dir[i][1];
+
+		if (x > max || x < 0 || y > max || y < 0) continue;
+
+		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+	}
+
+	ABaseHex* b = nullptr;
+	ABaseHex* c = nullptr;
+	int startDirection = _outpostBuildDirection;
+	int cycleDirection = direction != 0 ? FMath::Sign(direction) : 1;
+	_outpostBuildDirection += FMath::Sign(direction);
+
+	auto LoopCycle = [&](int index) -> int
+		{
+			if (index >= possibleHexes.Num()) return 0;
+			else if (index < 0) return possibleHexes.Num() - 1;
+
+			return index;
+		};
+
+	do
+	{
+		_outpostBuildDirection = LoopCycle(_outpostBuildDirection);
+
+		int bIndex = _outpostBuildDirection;
+		int cIndex = LoopCycle(bIndex + 1);
+
+		b = possibleHexes[bIndex];
+		c = possibleHexes[cIndex];
+
+		if (b->GetHexesInRadius(1, false).Contains(c)) break;
+
+		_outpostBuildDirection += cycleDirection;
+		b = nullptr;
+		c = nullptr;
+	} while (_outpostBuildDirection != startDirection);
+
+	if (!b || !c) return;
+	if (!_outpostBuildTiles.IsEmpty())
+	{
+		for (ABaseHex* hex : _outpostBuildTiles)
+			hex->visibility->SetSelected(false, false);
+
+		_outpostBuildTiles.Empty();
+	}
+
+	_outpostBuildTiles.Add(a);
+	_outpostBuildTiles.Add(b);
+	_outpostBuildTiles.Add(c);
+
+	for (ABaseHex* hex : _outpostBuildTiles)
+		hex->visibility->SetSelected(true, false);
+}
+void ABasePlayerController::Outpost_Construct()
+{
+	if (!_outpostBuildMode || _outpostBuildTiles.IsEmpty()) return;
+
+	if (AGlobalSpawner::spawnerObject->SpawnOutpost(playerFaction, _outpostBuildTiles))
+	{
+		_outpostBuildMode = false;
+		_outpostBuildTiles.Empty();
+		PlayUIBuildingSound(SpawnableBuildings::Outpost);
+	}
+	else
+		PlayUISound(selectFailSound);
+}
+bool ABasePlayerController::Outpost_CanBuildOnHex() const
+{
+	UnitActions::SelectionIdentity selection = UnitActions::DetermineObjectType(selectedWorldObject);
+	if (!selection.actor) return false;
+	ABaseHex* hex = selection.type == ObjectTypes::MoveAI ? selection.moveAI->hexNav->GetCurrentHex() : selection.hex;
+	if (!hex) return false;
+
+	AMovementAI* settlerOnHex = nullptr;
+	int index = 0;
+
+	for (int i = 0; i < hex->troopsInHex.Num(); i++)
+	{
+		if (hex->troopsInHex[i]->GetUnitData()->GetFaction() != playerFaction) continue;
+
+		if (UnitActions::ArmyContainsUnit(hex->troopsInHex[i], UnitTypes::Settler, index))
+		{
+			settlerOnHex = hex->troopsInHex[i];
+			break;
+		}
+	}
+
+	return settlerOnHex && hex->CanBuildOnHex(EBuildingSize::ThreeTiles);
+}
+bool ABasePlayerController::Outpost_InBuildMode() const
+{
+	return _outpostBuildMode;
+}
+const TArray<ABaseHex*>& ABasePlayerController::Outpost_GetBuildTiles() const
+{
+	return _outpostBuildTiles;
 }
 #pragma endregion

@@ -178,6 +178,7 @@ public:
 	TArray<AActor*> GetObjectsInHex() const;
 
 private:
+	bool CanBuildOnHex_ThreeTile() const;
 #pragma endregion
 
 #pragma region Battles

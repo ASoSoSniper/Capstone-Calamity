@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "FactionEnum.h"
-#include "BasePlayerController.h"
 #include "UnitActions.h"
+#include "GlobalSpawner.h"
 #include "CapstoneProjectGameModeBase.generated.h"
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -38,6 +38,7 @@ class UFaction;
 class APathingVisualizer;
 class AEventSystemManager;
 class AFactionController;
+class ABasePlayerController;
 
 UCLASS()
 class CAPSTONEPROJECT_API ACapstoneProjectGameModeBase : public AGameModeBase

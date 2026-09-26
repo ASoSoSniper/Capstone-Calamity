@@ -3,6 +3,7 @@
 
 #include "Building.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 #include "GlobalSpawner.h"
 #include "Faction.h"
 #include "Kismet/GameplayStatics.h"
@@ -308,8 +309,7 @@ bool ABuilding::SphereCheck()
 			{
 				if (FMath::Abs(GetActorLocation().X - hexActor->GetActorLocation().X) < hexSnapDistance && FMath::Abs(GetActorLocation().Y - hexActor->GetActorLocation().Y) < hexSnapDistance)
 				{
-					SetActorLocation(hexActor->buildingAnchor->GetComponentLocation());
-					hexActor->AddBuildingToHex(this, GetHexLayersToOccupy());
+					AttachToHex(hexActor);
 
 					return true;
 				}
@@ -403,6 +403,7 @@ void ABuilding::Destroyed()
 		}
 
 		hex->RemoveBuildingFromHex(GetHexLayersToOccupy());
+		hex->onBuildingSet.Broadcast(hex);
 	}
 
 	if (smokeEffect)
@@ -420,6 +421,40 @@ bool ABuilding::IsDisabled()
 	if (unitData->IsAlive()) return false;
 
 	return true;
+}
+
+void ABuilding::AttachToHex(ABaseHex* hex)
+{
+	EBuildingSize size = GetHexLayersToOccupy();
+
+	if (size != EBuildingSize::ThreeTiles)
+	{
+		SetActorLocation(hex->buildingAnchor->GetComponentLocation());
+		hex->AddBuildingToHex(this, size);
+		hex->onBuildingSet.Broadcast(hex);
+	}
+	else
+	{
+		AttachToHex(TArray<ABaseHex*>({ hex }));
+	}
+}
+
+void ABuilding::AttachToHex(TArray<ABaseHex*> hexes)
+{
+	if (hexes.IsEmpty()) return;
+
+	FVector center = FVector::Zero();
+
+	for (ABaseHex* hex : hexes)
+	{
+		center += hex->buildingAnchor->GetComponentLocation();
+		hex->AddBuildingToHex(this);
+	}
+
+	center /= hexes.Num();
+
+	SetActorLocation(center);
+	hexes[0]->onBuildingSet.Broadcast(hexes[0]);
 }
 
 bool ABuilding::ActiveAndHarvesting() const
