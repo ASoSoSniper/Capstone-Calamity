@@ -227,7 +227,7 @@ void ABuilding::ScaleModelToLayer()
 {
 	if (!AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType)) return;
 
-	int scale = 1 + static_cast<int>(AGlobalSpawner::spawnerObject->buildingCosts[buildingType].size) * 1.5f;
+	int scale = 1 + BuildingSizeToRadius(AGlobalSpawner::spawnerObject->buildingCosts[buildingType].size) * 1.5f;
 	mesh->SetWorldScale3D(FVector::One() * scale);
 }
 
@@ -443,6 +443,7 @@ void ABuilding::AttachToHex(TArray<ABaseHex*> hexes)
 {
 	if (hexes.IsEmpty()) return;
 
+	SetOccupiedHexes(TSet(hexes));
 	FVector center = FVector::Zero();
 
 	for (ABaseHex* hex : hexes)
@@ -455,6 +456,18 @@ void ABuilding::AttachToHex(TArray<ABaseHex*> hexes)
 
 	SetActorLocation(center);
 	hexes[0]->onBuildingSet.Broadcast(hexes[0]);
+}
+
+TSet<ABaseHex*> ABuilding::GetOccupiedHexes() const
+{
+	return occupiedHexes;
+}
+
+void ABuilding::SetOccupiedHexes(TSet<ABaseHex*> hexes)
+{
+	if (!occupiedHexes.IsEmpty()) return;
+
+	occupiedHexes = hexes;
 }
 
 bool ABuilding::ActiveAndHarvesting() const
@@ -611,6 +624,11 @@ float ABuilding::GetHPAlpha() const
 	if (!unitData) return 0.f;
 
 	return unitData->GetHPAlpha();
+}
+
+bool ABuilding::SetToDestroy() const
+{
+	return buildState == BuildStates::Destroying && currDestructionTime <= 0;
 }
 
 void ABuilding::HealOverTime()

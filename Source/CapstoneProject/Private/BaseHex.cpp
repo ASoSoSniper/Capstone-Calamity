@@ -145,15 +145,19 @@ EFactions ABaseHex::GetHexOwner()
 }
 void ABaseHex::SetHexOwner(EFactions faction)
 {
+	if (faction == hexOwner) return;
+
 	if (hexOwner != EFactions::None)
 	{
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->DropHex(this);
+		if (ACapstoneProjectGameModeBase::activeFactions[hexOwner]->OwnsHex(this)) return;
 	}
 
 	hexOwner = faction;
 	visibility->faction = faction;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
+	if (hexOwner != EFactions::None)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
 }
 
 FVector2D ABaseHex::GetHexCoordinates() const
@@ -295,7 +299,61 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) c
 
 TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const EBuildingSize size, bool includeSelf) const
 {
+	if (size == EBuildingSize::ThreeTiles) return GetHexesInRadius_ThreeTile(EFactions::None, includeSelf);
+
 	return GetHexesInRadius(BuildingSizeToRadius(size));
+}
+
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius_ThreeTile(EFactions targetFaction, bool includeSelf) const
+{
+	int dirOdd[6][2] = { {0,-1}, {1,-1}, {1,0}, {1,1}, {0, 1}, {-1,0} };
+	int dirEven[6][2] = { {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
+	FVector2D coords = GetHexCoordinates();
+	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	TArray<ABaseHex*> possibleHexes;
+	for (int i = 0; i < 6; i++)
+	{
+		int x = coords.X + dir[i][0];
+		int y = coords.Y + dir[i][1];
+
+		if (x > max || x < 0 || y > max || y < 0) continue;
+
+		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+	}
+
+	ABaseHex* b = nullptr;
+	ABaseHex* c = nullptr;
+
+	auto LoopCycle = [&](int index) -> int
+		{
+			if (index >= possibleHexes.Num()) return 0;
+			else if (index < 0) return possibleHexes.Num() - 1;
+
+			return index;
+		};
+
+	for (int i = 0; i < possibleHexes.Num(); i++)
+	{
+		int bIndex = LoopCycle(i);
+		int cIndex = LoopCycle(bIndex + 1);
+
+		b = possibleHexes[bIndex];
+		c = possibleHexes[cIndex];
+
+		if (b->building || !b->IsBuildableTerrain() || b->GetHexOwner() != targetFaction) continue;
+		if (c->building || !c->IsBuildableTerrain() || c->GetHexOwner() != targetFaction) continue;
+
+		if (b->GetHexesInRadius(1, false).Contains(c))
+		{
+			TSet<ABaseHex*> validSet = { b, c };
+			if (includeSelf) validSet.Add(const_cast<ABaseHex*>(this));
+			return validSet;
+		}
+	}
+
+	return TSet<ABaseHex*>();
 }
 
 TerrainType ABaseHex::GetHexTerrain()
@@ -397,6 +455,7 @@ void ABaseHex::SetMaxWorkers(int newMax)
 {
 	maxWorkers = FMath::Max(newMax, 0);
 
+	if (hexOwner == EFactions::None) return;
 	int currCount = GetNumberOfWorkers();
 	while (currCount > newMax)
 	{
@@ -515,51 +574,9 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 
 	return false;
 }
-bool ABaseHex::CanBuildOnHex_ThreeTile() const
+bool ABaseHex::CanBuildOnHex_ThreeTile(EFactions targetFaction) const
 {
-	int dirOdd[6][2] = { {0,-1}, {1,-1}, {1,0}, {1,1}, {0, 1}, {-1,0} };
-	int dirEven[6][2] = { {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
-	FVector2D coords = GetHexCoordinates();
-	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
-	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
-
-	TArray<ABaseHex*> possibleHexes;
-	for (int i = 0; i < 6; i++)
-	{
-		int x = coords.X + dir[i][0];
-		int y = coords.Y + dir[i][1];
-
-		if (x > max || x < 0 || y > max || y < 0) continue;
-
-		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
-	}
-
-	ABaseHex* b = nullptr;
-	ABaseHex* c = nullptr;
-
-	auto LoopCycle = [&](int index) -> int
-		{
-			if (index >= possibleHexes.Num()) return 0;
-			else if (index < 0) return possibleHexes.Num() - 1;
-
-			return index;
-		};
-
-	for (int i = 0; i < possibleHexes.Num(); i++)
-	{
-		int bIndex = LoopCycle(i);
-		int cIndex = LoopCycle(bIndex + 1);
-
-		b = possibleHexes[bIndex];
-		c = possibleHexes[cIndex];
-
-		if (b->building || !b->IsBuildableTerrain()) continue;
-		if (c->building || !c->IsBuildableTerrain()) continue;
-
-		if (b->GetHexesInRadius(1, false).Contains(c)) return true;
-	}
-
-	return false;
+	return !GetHexesInRadius_ThreeTile(targetFaction).IsEmpty();
 }
 ABuilding* ABaseHex::GetBuilding() const
 {
@@ -577,8 +594,10 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSi
 	//Affect hexes in the building's influence with the same come/go command
 	if (buildingSize != EBuildingSize::OneTile)
 	{
-		TSet<ABaseHex*> hexes = GetHexesInRadius(buildingSize);
+		TSet<ABaseHex*> hexes = building ? building->GetOccupiedHexes() : GetHexesInRadius(buildingSize);
 
+		if (setBuilding)
+			setBuilding->SetOccupiedHexes(hexes);
 		for (ABaseHex* hex : hexes)
 		{
 			hex->AddBuildingToHex(setBuilding);

@@ -87,3 +87,8 @@ void AOutpost::Destroyed()
 
 	Super::Destroyed();
 }
+
+const TSet<ABaseHex*>& AOutpost::GetClaimedHexes() const
+{
+	return claimedHexes;
+}

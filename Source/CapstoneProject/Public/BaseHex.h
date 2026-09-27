@@ -130,6 +130,8 @@ public:
 	bool CanPutWorkersOnHex();
 
 private:
+	TSet<ABaseHex*> GetHexesInRadius_ThreeTile(EFactions targetFaction = EFactions::None, bool includeSelf = true) const;
+
 	UPROPERTY(EditAnywhere, Category = "Identity") EFactions hexOwner = EFactions::None;
 	TerrainType hexTerrain = TerrainType::Plains;
 	FVector2D hexCoordinates;
@@ -178,7 +180,7 @@ public:
 	TArray<AActor*> GetObjectsInHex() const;
 
 private:
-	bool CanBuildOnHex_ThreeTile() const;
+	bool CanBuildOnHex_ThreeTile(EFactions targetFaction = EFactions::None) const;
 #pragma endregion
 
 #pragma region Battles

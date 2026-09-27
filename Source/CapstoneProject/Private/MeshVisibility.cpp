@@ -4,6 +4,7 @@
 #include "MeshVisibility.h"
 #include "Faction.h"
 #include "HexNav.h"
+#include "BattleObject.h"
 #include "CapstoneProjectGameModeBase.h"
 
 // Sets default values for this component's properties
@@ -295,10 +296,7 @@ void UMeshVisibility::SetSelected(bool active, bool instigator)
 	{
 		if (!hexParent->building) return;
 
-		ABaseHex* centerHex = hexParent->building->hexNav->GetCurrentHex();
-		EBuildingSize hexRadius = hexParent->building->GetHexLayersToOccupy();
-
-		TSet<ABaseHex*> occupiedHexes = centerHex->GetHexesInRadius(hexRadius);
+		TSet<ABaseHex*> occupiedHexes = hexParent->building->GetOccupiedHexes();
 		for (ABaseHex* hex : occupiedHexes)
 		{
 			hex->visibility->SetSelected(selected, false);
