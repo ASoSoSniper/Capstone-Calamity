@@ -18,20 +18,20 @@ ABaseHex::ABaseHex()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), 
-		FText::FromString(TEXT("Flat terrain with no unique benefits.")), 2, 2, 1, 0, 0, 1.f, 1.f, 0,
+	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")),
+		FText::FromString(TEXT("Flat terrain with no unique benefits.")), FMath::RandRange(1, 5), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(0, 2), 0, 1.f, 1.f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Plain.Landscape_Icon_Plain'")) });
 
 	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")), 
-		FText::FromString(TEXT("Full of tall mushrooms and food.")), 3, 1, 2, 0, 1, 1.15f, 1.1f, 0, 
+		FText::FromString(TEXT("Full of tall mushrooms and food.")), FMath::RandRange(2, 6), FMath::RandRange(0, 3), FMath::RandRange(1, 5), FMath::RandRange(0, 2), 1, 1.15f, 1.1f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Forest.Landscape_Icon_Forest'")) });
 
 	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")), 
-		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), 2, 1, 2, 0, 1, 1.3f, 1.2f, -1, 
+		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(1, 5), FMath::RandRange(0, 3), 1, 1.3f, 1.2f, -1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Dense_Forest.Landscape_Icon_Dense_Forest'")) });
 
 	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")), 
-		FText::FromString(TEXT("Compressed mushroom caps create hills.")), 1, 3, 1, 0, 1, 1.2f, 1.1f, 1, 
+		FText::FromString(TEXT("Compressed mushroom caps create hills.")), FMath::RandRange(1, 3), FMath::RandRange(2, 6), FMath::RandRange(1, 3), FMath::RandRange(0, 3), 1, 1.2f, 1.1f, 1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Hills_TEMP.Landscape_Icon_Hills_TEMP'")) });
 
 	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")), 
@@ -39,7 +39,7 @@ ABaseHex::ABaseHex()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Mountain.Landscape_Icon_Mountain'")) });
 
 	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")), 
-		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 1, 3, 0, 0, 1.2f, 1.0f, 0, 
+		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), FMath::RandRange(0, 2), FMath::RandRange(0, 2), FMath::RandRange(2, 6), FMath::RandRange(0, 2), 0, 1.2f, 1.0f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Toxic.Landscape_Icon_Toxic'")) });
 
 	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 
@@ -47,11 +47,11 @@ ABaseHex::ABaseHex()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Capital_Hub/Hills_Capital_Hub.Hills_Capital_Hub'")) });
 
 	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")), 
-		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1, 0, 2, 1.f, 1.f, 0,
+		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), FMath::RandRange(2, 6), FMath::RandRange(1, 5), FMath::RandRange(1, 4), FMath::RandRange(1, 3), 2, 1.f, 1.f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Siatus_City.Siatus_City'")) });
 
 	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")), 
-		FText::FromString(TEXT("The Rock, contains DST fuel.")), 3, 3, 3, 0, 3, 1.f, 1.f, 1, 
+		FText::FromString(TEXT("The Rock, contains DST fuel.")), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), 3, 1.f, 1.f, 1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Rock_City_Octagon.Rock_City_Octagon'")) });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
