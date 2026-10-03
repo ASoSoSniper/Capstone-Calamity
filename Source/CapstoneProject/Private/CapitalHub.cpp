@@ -3,6 +3,7 @@
 
 #include "CapitalHub.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 
 ACapitalHub::ACapitalHub()
 {

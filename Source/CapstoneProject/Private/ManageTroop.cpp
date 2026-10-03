@@ -145,7 +145,6 @@ void UManageTroop::CommandAction()
 
 	UnitActions::SelectionIdentity objectType = UnitActions::DetermineObjectType(controller->hoveredWorldObject);
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Command Action Triggered"));
 	switch (objectType.type)
 	{
 	case ObjectTypes::Hex:

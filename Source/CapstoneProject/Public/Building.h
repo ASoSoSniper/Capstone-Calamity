@@ -55,6 +55,10 @@ public:
 	void InitBuilding(const EFactions& factionType);
 	virtual void BeginDestroying();
 	virtual bool IsDisabled();
+	void AttachToHex(ABaseHex* hex);
+	void AttachToHex(TArray<ABaseHex*> hexes);
+	TSet<ABaseHex*> GetOccupiedHexes() const;
+	void SetOccupiedHexes(TSet<ABaseHex*> hexes);
 	bool ActiveAndHarvesting() const;
 	const TMap<EStratResources, int>& GetResourceYields() const;
 
@@ -76,6 +80,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) UTexture2D* GetBuildingIcon() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetHPAlpha() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool SetToDestroy() const;
 protected:
 	enum BuildStates
 	{
@@ -111,6 +117,7 @@ private:
 	void SetBuildState();
 	void ScaleModelToLayer();
 	bool setupComplete;
+	TSet<ABaseHex*> occupiedHexes;
 
 	UPROPERTY(EditAnywhere, Category = "Occupation") int troopOccupationMin = 3;
 	UPROPERTY(EditAnywhere, Category = "Occupation") float occupyResourcePercent = 0.25f;

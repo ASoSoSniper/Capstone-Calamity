@@ -7,6 +7,7 @@
 #include "Investigator.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
+#include "BasePlayerController.h"
 
 #pragma region General Logic
 ABattleObject::ABattleObject()

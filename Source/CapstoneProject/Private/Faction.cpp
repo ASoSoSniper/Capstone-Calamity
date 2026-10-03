@@ -6,6 +6,7 @@
 #include "GlobalSpawner.h"
 #include "TroopFactory.h"
 #include "FactionController.h"
+#include "Outpost.h"
 #include "UAI_PriorityManager_Hex.h"
 
 #pragma region General Logic
@@ -159,6 +160,20 @@ void UFaction::SetResources(const TMap<EStratResources, int>& resources)
 }
 #pragma endregion
 #pragma region Resource Costs
+bool UFaction::CanAfford(const TMap<EStratResources, int>& costs) const
+{
+	for (const TPair<EStratResources, int>& resource : costs)
+	{
+		if (!CanAffordResource(resource.Key, resource.Value)) return false;
+	}
+
+	return true;
+}
+bool UFaction::CanAffordResource(EStratResources resource, int cost) const
+{
+	cost = FMath::Abs(cost);
+	return resourceInventory[resource].currentResources >= cost;
+}
 void UFaction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
 {
 	foodPerNonWorkers = foodPerNonWorkersVar;
@@ -339,7 +354,8 @@ int UFaction::CalculateEnergyCost()
 	{
 		for (ATroop* troop : allTroops)
 		{
-			energyCost += troop->GetUnitData()->GetEnergyUpkeep();
+			if (FUnitData* data = troop->GetUnitData())
+				energyCost += data->GetEnergyUpkeep();
 		}
 	}
 	for (const TPair<SpawnableBuildings, FBuildingSet>& buildingType : allBuildings)
@@ -506,15 +522,27 @@ void UFaction::DropHex(ABaseHex* hex)
 {
 	if (!hex) return;
 
-	TerrainType terrain = hex->GetHexTerrain();
-	if (!ownedHexes.Contains(terrain)) return;
+	if (!OwnsHex(hex) || !CanDropHex(hex)) return;
 
-	if (ownedHexes[terrain].hexes.Contains(hex))
+	TerrainType terrain = hex->GetHexTerrain();
+	ownedHexes[terrain].hexes.Remove(hex);
+	hex->EmptyWorkers();
+	if (controller)
+		controller->BindHexDelegates(hex, false);
+}
+
+bool UFaction::CanDropHex(ABaseHex* hex) const
+{
+	if (hex->building && !hex->building->SetToDestroy()) return false;
+
+	TSet<AOutpost*> outpostLikes = GetAllOutpostLikes();
+	for (AOutpost* outpost : outpostLikes)
 	{
-		ownedHexes[terrain].hexes.Remove(hex);
-		if (controller)
-			controller->BindHexDelegates(hex, false);
+		if (outpost->SetToDestroy()) continue;
+		if (outpost->GetClaimedHexes().Contains(hex)) return false;
 	}
+
+	return true;
 }
 
 const TMap<TerrainType, FHexSet>& UFaction::GetOwnedHexes() const
@@ -559,6 +587,29 @@ const TSet<ABuilding*>& UFaction::GetBuildingsOfType(SpawnableBuildings building
 	if (!allBuildings.Contains(buildingType)) return allBuildings[SpawnableBuildings::None].buildings;
 
 	return allBuildings[buildingType].buildings;
+}
+const TSet<AOutpost*> UFaction::GetAllOutpostLikes() const
+{
+	TSet<AOutpost*> outpostLikes;
+	TArray<SpawnableBuildings> outpostLikeTypes = { 
+		SpawnableBuildings::Outpost, 
+		SpawnableBuildings::AlienCity, 
+		SpawnableBuildings::Capitol, 
+		SpawnableBuildings::RockCity };
+
+	for (SpawnableBuildings buildingType : outpostLikeTypes)
+	{
+		if (!allBuildings.Contains(buildingType)) continue;
+
+		for (ABuilding* building : allBuildings[buildingType].buildings)
+		{
+			AOutpost* outpost = Cast<AOutpost>(building);
+			if (outpost)
+				outpostLikes.Add(outpost);
+		}
+	}
+
+	return outpostLikes;
 }
 void UFaction::AddBuildingToFaction(ABuilding* building)
 {

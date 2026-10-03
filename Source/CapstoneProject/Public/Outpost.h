@@ -26,6 +26,7 @@ public:
 
 	virtual void Destroyed() override;
 
+	const TSet<ABaseHex*>& GetClaimedHexes() const;
 	
 protected:
 

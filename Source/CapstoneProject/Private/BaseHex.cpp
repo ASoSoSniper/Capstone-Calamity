@@ -18,20 +18,20 @@ ABaseHex::ABaseHex()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")), 
-		FText::FromString(TEXT("Flat terrain with no unique benefits.")), 2, 2, 1, 0, 0, 1.f, 1.f, 0,
+	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")),
+		FText::FromString(TEXT("Flat terrain with no unique benefits.")), FMath::RandRange(1, 5), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(0, 2), 0, 1.f, 1.f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Plain.Landscape_Icon_Plain'")) });
 
 	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")), 
-		FText::FromString(TEXT("Full of tall mushrooms and food.")), 3, 1, 2, 0, 1, 1.15f, 1.1f, 0, 
+		FText::FromString(TEXT("Full of tall mushrooms and food.")), FMath::RandRange(2, 6), FMath::RandRange(0, 3), FMath::RandRange(1, 5), FMath::RandRange(0, 2), 1, 1.15f, 1.1f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Forest.Landscape_Icon_Forest'")) });
 
 	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")), 
-		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), 2, 1, 2, 0, 1, 1.3f, 1.2f, -1, 
+		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(1, 5), FMath::RandRange(0, 3), 1, 1.3f, 1.2f, -1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Dense_Forest.Landscape_Icon_Dense_Forest'")) });
 
 	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")), 
-		FText::FromString(TEXT("Compressed mushroom caps create hills.")), 1, 3, 1, 0, 1, 1.2f, 1.1f, 1, 
+		FText::FromString(TEXT("Compressed mushroom caps create hills.")), FMath::RandRange(1, 3), FMath::RandRange(2, 6), FMath::RandRange(1, 3), FMath::RandRange(0, 3), 1, 1.2f, 1.1f, 1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Hills_TEMP.Landscape_Icon_Hills_TEMP'")) });
 
 	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")), 
@@ -39,7 +39,7 @@ ABaseHex::ABaseHex()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Mountain.Landscape_Icon_Mountain'")) });
 
 	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")), 
-		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), 1, 1, 3, 0, 0, 1.2f, 1.0f, 0, 
+		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), FMath::RandRange(0, 2), FMath::RandRange(0, 2), FMath::RandRange(2, 6), FMath::RandRange(0, 2), 0, 1.2f, 1.0f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Toxic.Landscape_Icon_Toxic'")) });
 
 	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 
@@ -47,11 +47,11 @@ ABaseHex::ABaseHex()
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Capital_Hub/Hills_Capital_Hub.Hills_Capital_Hub'")) });
 
 	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")), 
-		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), 3, 2, 1, 0, 2, 1.f, 1.f, 0,
+		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), FMath::RandRange(2, 6), FMath::RandRange(1, 5), FMath::RandRange(1, 4), FMath::RandRange(1, 3), 2, 1.f, 1.f, 0,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Siatus_City.Siatus_City'")) });
 
 	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")), 
-		FText::FromString(TEXT("The Rock, contains DST fuel.")), 3, 3, 3, 0, 3, 1.f, 1.f, 1, 
+		FText::FromString(TEXT("The Rock, contains DST fuel.")), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), 3, 1.f, 1.f, 1,
 		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Rock_City_Octagon.Rock_City_Octagon'")) });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
@@ -145,15 +145,19 @@ EFactions ABaseHex::GetHexOwner()
 }
 void ABaseHex::SetHexOwner(EFactions faction)
 {
+	if (faction == hexOwner) return;
+
 	if (hexOwner != EFactions::None)
 	{
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->DropHex(this);
+		if (ACapstoneProjectGameModeBase::activeFactions[hexOwner]->OwnsHex(this)) return;
 	}
 
 	hexOwner = faction;
 	visibility->faction = faction;
 
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
+	if (hexOwner != EFactions::None)
+		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
 }
 
 FVector2D ABaseHex::GetHexCoordinates() const
@@ -295,7 +299,61 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) c
 
 TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const EBuildingSize size, bool includeSelf) const
 {
+	if (size == EBuildingSize::ThreeTiles) return GetHexesInRadius_ThreeTile(EFactions::None, includeSelf);
+
 	return GetHexesInRadius(BuildingSizeToRadius(size));
+}
+
+TSet<ABaseHex*> ABaseHex::GetHexesInRadius_ThreeTile(EFactions targetFaction, bool includeSelf) const
+{
+	int dirOdd[6][2] = { {0,-1}, {1,-1}, {1,0}, {1,1}, {0, 1}, {-1,0} };
+	int dirEven[6][2] = { {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
+	FVector2D coords = GetHexCoordinates();
+	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+
+	TArray<ABaseHex*> possibleHexes;
+	for (int i = 0; i < 6; i++)
+	{
+		int x = coords.X + dir[i][0];
+		int y = coords.Y + dir[i][1];
+
+		if (x > max || x < 0 || y > max || y < 0) continue;
+
+		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+	}
+
+	ABaseHex* b = nullptr;
+	ABaseHex* c = nullptr;
+
+	auto LoopCycle = [&](int index) -> int
+		{
+			if (index >= possibleHexes.Num()) return 0;
+			else if (index < 0) return possibleHexes.Num() - 1;
+
+			return index;
+		};
+
+	for (int i = 0; i < possibleHexes.Num(); i++)
+	{
+		int bIndex = LoopCycle(i);
+		int cIndex = LoopCycle(bIndex + 1);
+
+		b = possibleHexes[bIndex];
+		c = possibleHexes[cIndex];
+
+		if (b->building || !b->IsBuildableTerrain() || b->GetHexOwner() != targetFaction) continue;
+		if (c->building || !c->IsBuildableTerrain() || c->GetHexOwner() != targetFaction) continue;
+
+		if (b->GetHexesInRadius(1, false).Contains(c))
+		{
+			TSet<ABaseHex*> validSet = { b, c };
+			if (includeSelf) validSet.Add(const_cast<ABaseHex*>(this));
+			return validSet;
+		}
+	}
+
+	return TSet<ABaseHex*>();
 }
 
 TerrainType ABaseHex::GetHexTerrain()
@@ -397,6 +455,7 @@ void ABaseHex::SetMaxWorkers(int newMax)
 {
 	maxWorkers = FMath::Max(newMax, 0);
 
+	if (hexOwner == EFactions::None) return;
 	int currCount = GetNumberOfWorkers();
 	while (currCount > newMax)
 	{
@@ -490,6 +549,7 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 {
 	if (building || !IsBuildableTerrain()) return false;
 	if (buildingSize == EBuildingSize::OneTile) return true;
+	if (buildingSize == EBuildingSize::ThreeTiles) return CanBuildOnHex_ThreeTile();
 
 	auto buildable = [&](ABaseHex* hex){
 			return !hex->building && IsBuildableTerrain() && hex->GetHexOwner() == hexOwner;
@@ -498,13 +558,6 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 	int radius = BuildingSizeToRadius(buildingSize);
 
 	TSet<ABaseHex*> hexesToBuild = GetHexesInRadius(radius, false);
-	if (buildingSize != EBuildingSize::ThreeTiles)
-	{
-		for (ABaseHex* aHex : hexesToBuild)
-			if (!buildable(aHex)) return false;
-
-		return true;
-	}
 
 	for (ABaseHex* aHex : hexesToBuild)
 	{
@@ -520,6 +573,10 @@ bool ABaseHex::CanBuildOnHex(EBuildingSize buildingSize) const
 	}
 
 	return false;
+}
+bool ABaseHex::CanBuildOnHex_ThreeTile(EFactions targetFaction) const
+{
+	return !GetHexesInRadius_ThreeTile(targetFaction).IsEmpty();
 }
 ABuilding* ABaseHex::GetBuilding() const
 {
@@ -537,8 +594,10 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSi
 	//Affect hexes in the building's influence with the same come/go command
 	if (buildingSize != EBuildingSize::OneTile)
 	{
-		TSet<ABaseHex*> hexes = GetHexesInRadius(buildingSize);
+		TSet<ABaseHex*> hexes = building ? building->GetOccupiedHexes() : GetHexesInRadius(buildingSize);
 
+		if (setBuilding)
+			setBuilding->SetOccupiedHexes(hexes);
 		for (ABaseHex* hex : hexes)
 		{
 			hex->AddBuildingToHex(setBuilding);
@@ -563,8 +622,6 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSi
 
 		SetMaxWorkers(maxWorkersDefault);
 	}
-
-	onBuildingSet.Broadcast(this);
 }
 void ABaseHex::RemoveBuildingFromHex(EBuildingSize buildingSize)
 {

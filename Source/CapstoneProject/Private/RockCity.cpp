@@ -3,6 +3,7 @@
 
 #include "RockCity.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 
 ARockCity::ARockCity()
 {

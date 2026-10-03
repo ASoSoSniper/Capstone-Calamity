@@ -123,6 +123,9 @@ private:
 #pragma endregion
 #pragma region Resource Costs
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAfford(const TMap<EStratResources, int>& costs) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAffordResource(EStratResources resource, int cost) const;
+
 	void SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
 	UFUNCTION() void UpdateResourceCosts();
 	UFUNCTION() FResourceGainLoss GetResourceRates();
@@ -171,6 +174,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool OwnsHex(ABaseHex* hex) const;
 	UFUNCTION(BlueprintCallable) void ClaimHex(ABaseHex* hex);
 	UFUNCTION(BlueprintCallable) void DropHex(ABaseHex* hex);
+	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanDropHex(ABaseHex* hex) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) const TMap<TerrainType, FHexSet>& GetOwnedHexes() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetOccupiedHexCount() const;
@@ -181,6 +185,7 @@ private:
 #pragma region Buildings and Troops
 public:
 	UFUNCTION() const TSet<ABuilding*>& GetBuildingsOfType(SpawnableBuildings buildingType) const;
+	UFUNCTION() const TSet<AOutpost*> GetAllOutpostLikes() const;
 	void AddBuildingToFaction(ABuilding* building);
 	void RemoveBuildingFromFaction(ABuilding* building);
 	UFUNCTION(BlueprintCallable) int GetBuildingCount() const;
