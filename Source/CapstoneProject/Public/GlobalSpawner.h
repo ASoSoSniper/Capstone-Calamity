@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "UnitActions.h"
 #include "TerrainEnum.h"
-#include "GlobalSpawner.generated.h"
+#include "GlobalSpawner.generated.h" // Alex Code - includes here and below
 
 class ABasePlayerController;
 class AMergedArmy;
@@ -21,6 +21,7 @@ class ACapitalHub;
 class AAlienCity;
 class ARockCity;
 class UBuildingAttachment;
+class UHexBiomeMaskComponent; // Alex Code - class
 
 #pragma region UI
 USTRUCT(BlueprintType, Blueprintable)
@@ -684,6 +685,10 @@ public:
 	ABaseHex* GetHexFromCoordinates(int x, int y);
 
 	TArray<TArray<ABaseHex*>> hexArray;
+
+	// Alex Code - biome mask
+	UPROPERTY(VisibleAnywhere, Category = "World Generation") UHexBiomeMaskComponent* biomeMask;
+
 private:
 	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
 	void SpawnBuildingsAroundCity(ABaseHex* centerHex);

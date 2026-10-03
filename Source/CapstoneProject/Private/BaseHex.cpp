@@ -9,6 +9,7 @@
 #include "BattleObject.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "GlobalSpawner.h"
+#include "HexBiomeMaskComponent.h" // Alex Code - Territory
 #include "Investigator.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -158,6 +159,14 @@ void ABaseHex::SetHexOwner(EFactions faction)
 
 	if (hexOwner != EFactions::None)
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
+	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
+
+
+	// Alex Code - Territory: tell the biome mask texture who owns this tile
+	if (AGlobalSpawner::spawnerObject && AGlobalSpawner::spawnerObject->biomeMask)
+	{
+		AGlobalSpawner::spawnerObject->biomeMask->SetTileOwner(GetActorLocation(), (uint8)faction);
+	}
 }
 
 FVector2D ABaseHex::GetHexCoordinates() const

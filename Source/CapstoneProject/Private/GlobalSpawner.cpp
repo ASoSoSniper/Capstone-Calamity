@@ -24,6 +24,9 @@
 #include "BattleObject.h"
 #include "SiegeObject.h"
 #include "CapstoneProjectGameModeBase.h"
+// Alex Code - includes
+#include "HexBiomeMaskComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 #pragma region General Logic
 AGlobalSpawner* AGlobalSpawner::spawnerObject = nullptr;
@@ -31,6 +34,9 @@ AGlobalSpawner::AGlobalSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Alex Code - Constructor
+	biomeMask = CreateDefaultSubobject<UHexBiomeMaskComponent>(TEXT("Biome Mask"));
 
 	using SB = SpawnableBuildings;
 	using Res = EStratResources;
@@ -683,6 +689,14 @@ void AGlobalSpawner::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	hex->visibility->SetupComponent(owner, hex->hexMesh);
 	hex->visibility->SetupComponent(owner, hex->hexMeshAttachment);
 	hex->visibility->SetupFactionComponent(hex->hexBase);
+
+
+	// Alex Code - Write the biome and hand the material its parameters
+	if (biomeMask)
+	{
+		biomeMask->SetTileBiome(hex->GetActorLocation(), UHexBiomeMaskComponent::TerrainToBiomeId(hex->GetHexTerrain()));
+		biomeMask->ApplyToMaterial(Cast<UMaterialInstanceDynamic>(hex->hexMesh->GetMaterial(0)));
+	}
 }
 ABaseHex* AGlobalSpawner::GetHexFromCoordinates(int x, int y)
 {
@@ -746,6 +760,9 @@ void AGlobalSpawner::ProceduralHexGen(int numHexs, ShapesOfMap shape)
 		}
 
 		hexArray = arrayOfHexColumns;
+
+		// Alex Code - Build Grid once every tile exists
+		biomeMask->BuildGrid(hexArray);
 
 		for (int x = 0; x < hexArray.Num(); x++)
 		{
