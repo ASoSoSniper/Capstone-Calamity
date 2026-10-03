@@ -4,6 +4,7 @@
 #include "BaseHex.h"
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "GlobalSpawner.h" // Territory (Option B)
 
 UHexBiomeMaskComponent::UHexBiomeMaskComponent()
 {
@@ -144,6 +145,18 @@ void UHexBiomeMaskComponent::SetTileBiome(const FVector& worldLocation, uint8 bi
 	pixelsDirty = true;
 }
 
+// Territory
+void UHexBiomeMaskComponent::SetTileOwner(const FVector& worldLocation, uint8 factionId)
+{
+	if (!cellTexture) return;
+
+	const FIntPoint p = WorldToCell(worldLocation) + cellOffset;
+	if (p.X < 0 || p.Y < 0 || p.X >= texSize.X || p.Y >= texSize.Y) return;
+
+	pixels[p.Y * texSize.X + p.X].B = factionId;
+	pixelsDirty = true;
+}
+
 void UHexBiomeMaskComponent::ApplyToMaterial(UMaterialInstanceDynamic* material) const
 {
 	if (!material || !cellTexture) return;
@@ -154,6 +167,19 @@ void UHexBiomeMaskComponent::ApplyToMaterial(UMaterialInstanceDynamic* material)
 	material->SetVectorParameterValue(TEXT("CellStep"), FLinearColor(cellStep.X, cellStep.Y, 0.f, 0.f));
 	material->SetVectorParameterValue(TEXT("CellOffset"), FLinearColor(cellOffset.X, cellOffset.Y, 0.f, 0.f));
 	material->SetScalarParameterValue(TEXT("OuterRadius"), outerRadius);
+
+
+	// Territory (Option B): send each faction's tileColor to the material as FactionColor1 ... FactionColor7
+	if (AGlobalSpawner* spawner = Cast<AGlobalSpawner>(GetOwner()))
+	{
+		for (uint8 i = 1; i < 8; i++)
+		{
+			if (FFactionDisplay* display = spawner->GetFactionDisplayPreset((EFactions)i))
+			{
+				material->SetVectorParameterValue(FName(*FString::Printf(TEXT("FactionColor%d"), i)), display->tileColor);
+			}
+		}
+	}
 }
 
 void UHexBiomeMaskComponent::UploadPixels()

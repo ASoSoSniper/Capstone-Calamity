@@ -26,6 +26,9 @@ public:
 	//Write one tile's biome into the texture. Uploaded to the GPU on the next tick
 	void SetTileBiome(const FVector& worldLocation, uint8 biomeId);
 
+	// Territory: write a tile's owner (EFactions number, 0 = unowned) into the Blue channel
+	void SetTileOwner(const FVector& worldLocation, uint8 factionId);
+
 	//Give one tile's material instance the biome texture and grid parameters
 	void ApplyToMaterial(UMaterialInstanceDynamic* material) const;
 
