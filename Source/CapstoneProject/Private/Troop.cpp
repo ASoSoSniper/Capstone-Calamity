@@ -6,6 +6,8 @@
 #include "TroopStorage.h"
 #include "UnitActions.h"
 #include "Kismet/GameplayStatics.h"
+#include "Faction.h"
+#include "BasePlayerController.h"
 #include "CapstoneProjectGameModeBase.h"
 
 void ATroop::BeginPlay()
@@ -245,7 +247,7 @@ void ATroop::Destroyed()
 
 		if (selectedByPlayer)
 		{
-			AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
+			AActor* controllerTemp = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 			ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
 
 			if (controller) controller->Deselect();

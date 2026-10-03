@@ -159,8 +159,6 @@ void ABaseHex::SetHexOwner(EFactions faction)
 
 	if (hexOwner != EFactions::None)
 		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
-	ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
-
 
 	// Alex Code - Territory: tell the biome mask texture who owns this tile
 	if (AGlobalSpawner::spawnerObject && AGlobalSpawner::spawnerObject->biomeMask)
@@ -629,6 +627,7 @@ void ABaseHex::AddBuildingToHex(ABuilding* setBuilding, EBuildingSize buildingSi
 		RemoveAllEffectsFromUnit(building->GetUnitData());
 		building = nullptr;
 
+		SetHexOwner(EFactions::None);
 		SetMaxWorkers(maxWorkersDefault);
 	}
 }

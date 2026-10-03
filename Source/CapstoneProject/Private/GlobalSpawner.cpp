@@ -934,7 +934,7 @@ bool AGlobalSpawner::SpawnOutpost(EFactions faction, const TArray<ABaseHex*>& he
 
 	for (ABaseHex* hex : hexes)
 	{
-		if (!hex->IsBuildableTerrain() || hex->building) return false;
+		if (!hex->IsBuildableTerrain() || hex->building || hex->GetHexOwner() != EFactions::None) return false;
 
 		if (!settlerOnHex)
 		{

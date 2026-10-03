@@ -402,6 +402,21 @@ void ABuilding::Destroyed()
 			UnitActions::AddResources(factionType, addResources);
 		}
 
+		if (hex->visibility->PlayerSelected())
+		{
+			AActor* controllerTemp = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			ABasePlayerController* controller = Cast<ABasePlayerController>(controllerTemp);
+
+			if (controller)
+			{
+				for (ABaseHex* aHex : occupiedHexes)
+				{
+					if (controller->selectedHex != aHex) 
+						aHex->visibility->SetSelected(false, false);
+				}
+			}
+		}
+
 		hex->RemoveBuildingFromHex(GetHexLayersToOccupy());
 		hex->onBuildingSet.Broadcast(hex);
 	}

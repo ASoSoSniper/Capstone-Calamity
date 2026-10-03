@@ -71,6 +71,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Functionality") bool enableScan = true;
 
 	void SetSelected(bool active, bool instigator = true);
+	bool PlayerSelected() const;
 	bool VisibleToFaction(EFactions factionToCheck) const;
 	bool DiscoveredByFaction(EFactions factionToCheck) const;
 

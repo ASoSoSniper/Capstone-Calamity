@@ -47,6 +47,8 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	gameState = GameStates::None;
+	activeFactions.Empty();
+	onDateTick.Clear();
 
 	//Create initial player faction and assign it to the player controller
 	CreateNewFaction();
