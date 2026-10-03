@@ -162,7 +162,6 @@ public:
 	static TMap<EStratResources, int> GetResourceGains(EFactions faction);
 	static TMap<EStratResources, int> GetResourceLosses(EFactions faction);
 	static TMap<WorkerType, int> GetFactionWorkers(EFactions faction);
-	static TMap<WorkerType, int> GetWorkerEnergyCost(EFactions faction);
 	static void UpdateResourceCapacity(EFactions faction, int addedCap);
 
 	static int GetResourceCap(EFactions faction);

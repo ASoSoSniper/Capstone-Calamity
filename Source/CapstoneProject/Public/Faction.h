@@ -5,24 +5,11 @@
 #include "CoreMinimal.h"
 #include "Troop.h"
 #include "Building.h"
+#include "StratResources.h"
+#include "WorkerStats.h"
 #include "Faction.generated.h"
 
 #pragma region Structs
-USTRUCT(BlueprintType)
-struct FWorkerStats
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	int working;
-	int available;
-	int maxAcquired;
-
-	int workingEnergyCost;
-	int workingFoodCost;
-	int workingProductionCost;
-};
-
 USTRUCT(BlueprintType)
 struct FInventoryStat
 {
@@ -126,7 +113,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAfford(const TMap<EStratResources, int>& costs) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAffordResource(EStratResources resource, int cost) const;
 
-	void SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
+	void SetFoodAndDeathCosts(const TMap<WorkerType, FWorkerStats>& workerCosts, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
 	UFUNCTION() void UpdateResourceCosts();
 	UFUNCTION() FResourceGainLoss GetResourceRates();
 
@@ -152,8 +139,6 @@ private:
 	UFUNCTION() void StarvePop(int foodCost);
 	UFUNCTION() void PowerOutage(int energyCost);
 	
-	int foodPerNonWorkers;
-	int foodPerWorkers;
 	int popDeathsPerFoodMissing;
 	int popDeathsPerPowerMissing;
 #pragma endregion

@@ -40,6 +40,12 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	factionColors.Add(EFactions::Alien4, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned04.AlienOwned04")));
 	factionColors.Add(EFactions::Alien5, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned05.AlienOwned05")));
 	factionColors.Add(EFactions::Alien6, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned06.AlienOwned06")));
+
+	humanWorkers.Add(WorkerType::Organic, FWorkerStats{ 0, 100, 100, { {EStratResources::Food, 1} }, { {EStratResources::Food, 1} } });
+	humanWorkers.Add(WorkerType::Robot, FWorkerStats{ 0, 5, 100, { {EStratResources::Energy, 1} }, { {EStratResources::Energy, 1} } });
+
+	alienWorkers.Add(WorkerType::Organic, FWorkerStats{ 0, 1000, 1000, { {EStratResources::Food, 1} }, { {EStratResources::Food, 1} } });
+	alienWorkers.Add(WorkerType::Robot, FWorkerStats{ 0, 0, 100, { {EStratResources::Energy, 1} }, { {EStratResources::Energy, 1} } });
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()
@@ -238,7 +244,10 @@ EFactions ACapstoneProjectGameModeBase::CreateNewFaction()
 
 	//Make the new Faction instance aware of the faction it's assigned to
 	newFaction->SetFaction(selectedFaction);
-	newFaction->SetFoodAndDeathCosts(foodPerNonWorkers, foodPerWorkers, popDeathsPerFoodMissing, popDeathsPerPowerMissing);
+	newFaction->SetFoodAndDeathCosts(
+		selectedFaction == EFactions::Human ? humanWorkers : alienWorkers, 
+		popDeathsPerFoodMissing, popDeathsPerPowerMissing);
+
 	if (factionController)
 	{
 		newFaction->SetFactionController(factionController);

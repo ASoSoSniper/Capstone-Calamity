@@ -141,17 +141,6 @@ TMap<WorkerType, int> UnitActions::GetFactionWorkers(EFactions faction)
     return workers;
 }
 
-TMap<WorkerType, int> UnitActions::GetWorkerEnergyCost(EFactions faction)
-{
-    TMap<WorkerType, int> workers;
-    for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
-    {
-        workers.Add(workerType.Key, workerType.Value.workingEnergyCost);
-    }
-
-    return workers;
-}
-
 void UnitActions::UpdateResourceCapacity(EFactions faction, int addedCap)
 {
     for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)

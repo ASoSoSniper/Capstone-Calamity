@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "FactionEnum.h"
+#include "WorkerStats.h"
 #include "UnitActions.h"
 #include "GlobalSpawner.h"
 #include "CapstoneProjectGameModeBase.generated.h"
@@ -140,8 +141,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AFactionController> factionControllerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AEventSystemManager> eventSystemManagerPrefab;
 	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class APathingVisualizer> pathingVisualizerPrefab;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerNonWorkers = 10;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") int foodPerWorkers = 5;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") TMap<WorkerType, FWorkerStats> humanWorkers;
+	UPROPERTY(EditAnywhere, Category = "Worker Costs") TMap<WorkerType, FWorkerStats> alienWorkers;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;
 	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerPowerMissing = 5;
 };

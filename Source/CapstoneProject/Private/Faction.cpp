@@ -18,8 +18,8 @@ UFaction::UFaction()
 	resourceInventory.Add(EStratResources::Food, FInventoryStat{ 300,300,0, 0 });
 	resourceInventory.Add(EStratResources::Wealth, FInventoryStat{ 000, 300, 0, 0 });
 
-	availableWorkers.Add(WorkerType::Organic, FWorkerStats{ 0,0, 500, 0,1,0 });
-	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,0, 0, 1,0,0 });
+	availableWorkers.Add(WorkerType::Organic, FWorkerStats{ 0,0, 0, { {EStratResources::Food, 1} }, { {EStratResources::Food, 1} } });
+	availableWorkers.Add(WorkerType::Robot, FWorkerStats{ 0,0, 0, {}, { {EStratResources::Energy, 1} } });
 
 	armyNamesHuman.Add(TEXT("Fuckers"), TArray<int32>());
 	armyNamesHuman.Add(TEXT("Asswipes"), TArray<int32>());
@@ -174,10 +174,17 @@ bool UFaction::CanAffordResource(EStratResources resource, int cost) const
 	cost = FMath::Abs(cost);
 	return resourceInventory[resource].currentResources >= cost;
 }
-void UFaction::SetFoodAndDeathCosts(int foodPerNonWorkersVar, int foodPerWorkersVar, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
+void UFaction::SetFoodAndDeathCosts(const TMap<WorkerType, FWorkerStats>& workerCosts, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
 {
-	foodPerNonWorkers = foodPerNonWorkersVar;
-	foodPerWorkers = foodPerWorkersVar;
+	for (const TPair<WorkerType, FWorkerStats>& workerType : workerCosts)
+	{
+		availableWorkers[workerType.Key].available = workerType.Value.available;
+		availableWorkers[workerType.Key].resourcePerAvailable = workerType.Value.resourcePerAvailable;
+		availableWorkers[workerType.Key].resourcePerWorking = workerType.Value.resourcePerWorking;
+
+		if (availableWorkers[workerType.Key].available > availableWorkers[workerType.Key].maxAcquired)
+			availableWorkers[workerType.Key].maxAcquired = availableWorkers[workerType.Key].available;
+	}
 
 	popDeathsPerFoodMissing = popDeathsPerFoodMissingVar;
 	popDeathsPerPowerMissing = popDeathsPerPowerMissingVar;
@@ -338,13 +345,13 @@ void UFaction::DateUpdate(const FDateTickUpdate& update)
 
 void UFaction::CalculateFoodCost(int& availableWorkerCost, int& workingWorkerCost)
 {
-	int remainder = availableWorkers[WorkerType::Organic].available % foodPerNonWorkers;
-	availableWorkerCost = FMath::Floor(static_cast<float>(availableWorkers[WorkerType::Organic].available) / foodPerNonWorkers);
-	availableWorkerCost = (availableWorkerCost + (remainder == 0 ? 0 : 1));
-
-	int workerRemainder = availableWorkers[WorkerType::Organic].working % foodPerWorkers;
-	int cost = FMath::Floor(availableWorkers[WorkerType::Organic].working / foodPerWorkers);
-	workingWorkerCost += (cost + (workerRemainder == 0 ? 0 : 1)) * availableWorkers[WorkerType::Organic].workingFoodCost;
+	for (const TPair<WorkerType, FWorkerStats>& workerType : availableWorkers)
+	{
+		if (workerType.Value.resourcePerAvailable.Contains(EStratResources::Food))
+			availableWorkerCost += workerType.Value.available * workerType.Value.resourcePerAvailable[EStratResources::Food];
+		if (workerType.Value.resourcePerWorking.Contains(EStratResources::Food))
+			workingWorkerCost += workerType.Value.working * workerType.Value.resourcePerWorking[EStratResources::Food];
+	}
 }
 int UFaction::CalculateEnergyCost()
 {
@@ -365,7 +372,13 @@ int UFaction::CalculateEnergyCost()
 		energyCost += buildingType.Value.buildingStats.energyUpkeepCost * buildingType.Value.buildings.Num();
 	}
 
-	energyCost += availableWorkers[WorkerType::Robot].working * availableWorkers[WorkerType::Robot].workingEnergyCost;
+	for (const TPair<WorkerType, FWorkerStats>& workerType : availableWorkers)
+	{
+		if (workerType.Value.resourcePerAvailable.Contains(EStratResources::Energy))
+			energyCost += workerType.Value.available * workerType.Value.resourcePerAvailable[EStratResources::Energy];
+		if (workerType.Value.resourcePerWorking.Contains(EStratResources::Energy))
+			energyCost += workerType.Value.working * workerType.Value.resourcePerWorking[EStratResources::Energy];
+	}
 
 	return energyCost;
 }
