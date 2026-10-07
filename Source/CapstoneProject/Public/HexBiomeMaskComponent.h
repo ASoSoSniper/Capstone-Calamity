@@ -29,6 +29,22 @@ public:
 	// Territory: write a tile's owner (EFactions number, 0 = unowned) into the Blue channel
 	void SetTileOwner(const FVector& worldLocation, uint8 factionId);
 
+
+	// Fog: mark a tile as discovered by the player (starts its reveal animation)
+	void RevealTile(const FVector& worldLocation);
+
+	// Fog
+	UPROPERTY(EditAnywhere, Category = "Fog") float revealDuration = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Fog") int32 frontierCap = 6;
+	// Fog: ring of off-map "ocean" cells around the map, so fog can fade naturally past the map edge
+	UPROPERTY(EditAnywhere, Category = "Fog") int32 mapPadding = 6;
+
+	// Fog: how fast the fog edge moves outward after a reveal, in tiles per second
+	UPROPERTY(EditAnywhere, Category = "Fog") float fogRecedeSpeed = 1.5f;
+
+	// Fog clouds: any level actor with this tag gets its plane materials hooked up to the fog data
+	UPROPERTY(EditAnywhere, Category = "Fog") FName fogCloudTag = TEXT("FogClouds");
+
 	//Give one tile's material instance the biome texture and grid parameters
 	void ApplyToMaterial(UMaterialInstanceDynamic* material) const;
 
@@ -40,11 +56,34 @@ public:
 
 private:
 	FIntPoint WorldToCell(const FVector& worldLocation) const;
-	void UploadPixels();
+
+	void UploadPixels(UTexture2D* texture, const TArray<FColor>& source); // Fog: now uploads either texture
 
 	UPROPERTY() UTexture2D* cellTexture = nullptr;
 	TArray<FColor> pixels;
 	FIntPoint texSize = FIntPoint::ZeroValue;
 	FIntPoint cellOffset = FIntPoint::ZeroValue;
 	bool pixelsDirty = false;
+
+
+	// Fog
+	FIntPoint TexelNeighbour(const FIntPoint& texel, int32 direction) const;
+	void UpdateFrontier();
+
+	void SetupFogClouds(); // Fog clouds
+
+	UPROPERTY() UTexture2D* fogTexture = nullptr;
+	TArray<FColor> fogPixels;
+	TArray<float> revealAmount;   // 0..1 per pixel, animated
+	TArray<bool> revealed;        // true once the player has discovered the tile
+	TArray<int32> revealing;      // pixels currently animating their reveal
+	bool fogDirty = false;
+	bool frontierDirty = false;
+
+
+	// Fog: smooth frontier animation
+	TArray<float> frontierSmooth;   // current (animated) distance per pixel
+	TArray<float> frontierTarget;   // where each distance is heading
+	bool frontierAnimating = false;
+	bool frontierInitialized = false;
 };

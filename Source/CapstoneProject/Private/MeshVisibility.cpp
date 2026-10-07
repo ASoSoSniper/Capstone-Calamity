@@ -6,6 +6,7 @@
 #include "HexNav.h"
 #include "BattleObject.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "HexBiomeMaskComponent.h" // Alex Code - Fog
 
 // Sets default values for this component's properties
 UMeshVisibility::UMeshVisibility()
@@ -204,6 +205,13 @@ void UMeshVisibility::RevealModelsAndMeshes()
 		{
 			hexParent->SetHexModel();
 			discoveredByPlayer = true;
+
+			// Alex Code - Fog: start this tile's reveal in the fog texture
+			if (AGlobalSpawner::spawnerObject && AGlobalSpawner::spawnerObject->biomeMask)
+			{
+				AGlobalSpawner::spawnerObject->biomeMask->RevealTile(hexParent->GetActorLocation());
+			}
+
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 		}
 		hexParent->ToggleUI(true);
