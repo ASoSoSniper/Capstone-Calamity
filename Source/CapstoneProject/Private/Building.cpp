@@ -147,7 +147,8 @@ bool ABuilding::SetupBuilding(SpawnableBuildings type)
 
 		if (hex->GetMaxWorkers() != costs.workerCost)
 		{
-			hex->SetMaxWorkers(costs.workerCost);
+			for (ABaseHex* aHex : occupiedHexes)
+				aHex->SetMaxWorkers(costs.workerCost);
 		}
 	}
 
@@ -447,6 +448,7 @@ void ABuilding::AttachToHex(ABaseHex* hex)
 		SetActorLocation(hex->buildingAnchor->GetComponentLocation());
 		hex->AddBuildingToHex(this, size);
 		hex->onBuildingSet.Broadcast(hex);
+		onBuildingAttached.Broadcast(occupiedHexes);
 	}
 	else
 	{
@@ -471,6 +473,7 @@ void ABuilding::AttachToHex(TArray<ABaseHex*> hexes)
 
 	SetActorLocation(center);
 	hexes[0]->onBuildingSet.Broadcast(hexes[0]);
+	onBuildingAttached.Broadcast(occupiedHexes);
 }
 
 TSet<ABaseHex*> ABuilding::GetOccupiedHexes() const

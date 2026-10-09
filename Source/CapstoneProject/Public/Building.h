@@ -15,6 +15,7 @@
 #include "Building.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHexesClaimed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingAttached, const TSet<ABaseHex*>&, claimedHexes);
 
 UCLASS()
 class CAPSTONEPROJECT_API ABuilding : public AActor, public IUAI_Controller
@@ -38,7 +39,8 @@ public:
 	UPROPERTY(VisibleAnywhere)UHexNav* hexNav;
 	UPROPERTY(VisibleAnywhere)UMeshVisibility* visibility;
 
-	FOnHexesClaimed onHexesClaimed;
+	UPROPERTY(BlueprintAssignable, Category = "Events") FOnBuildingAttached onBuildingAttached;
+	UPROPERTY(BlueprintAssignable, Category = "Events") FOnHexesClaimed onHexesClaimed;
 
 	virtual void Action1();
 	virtual void Action2();
@@ -71,7 +73,7 @@ public:
 	int GetOccupationMinCount();
 	void HealOverTime();
 	UFUNCTION(BlueprintCallable, BlueprintPure) ABaseHex* GetHex() const;
-	UFUNCTION(BlueprintCallable) EBuildingSize GetHexLayersToOccupy() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure) EBuildingSize GetHexLayersToOccupy() const;
 	UFUNCTION(BlueprintCallable) EFactions GetOccupier();
 	UFUNCTION(BlueprintCallable, BlueprintPure) float GetBuildPercent();
 	UFUNCTION(BlueprintCallable) float GetUnrestPercent();
