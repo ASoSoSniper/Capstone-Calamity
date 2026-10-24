@@ -214,6 +214,8 @@ void UHexBiomeMaskComponent::BuildGrid(const TArray<TArray<ABaseHex*>>& hexGrid)
 
 	// Fog clouds: the fog texture exists now, so hook up the cloud layers
 	SetupFogClouds();
+
+	SetupFogReceivers();
 }
 
 void UHexBiomeMaskComponent::SetTileBiome(const FVector& worldLocation, uint8 biomeId)
@@ -404,4 +406,28 @@ void UHexBiomeMaskComponent::SetupFogClouds()
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("HexBiomeMask: %d fog cloud layers found"), layers.Num());
+}
+
+// Fog receivers: give every mesh on a tagged actor its own material instance with the hex/fog data
+void UHexBiomeMaskComponent::SetupFogReceivers()
+{
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), fogReceiverTag, actors);
+
+	int32 count = 0;
+	for (AActor* actor : actors)
+	{
+		TArray<UStaticMeshComponent*> meshes;
+		actor->GetComponents<UStaticMeshComponent>(meshes);
+		for (UStaticMeshComponent* mesh : meshes)
+		{
+			for (int32 slot = 0; slot < mesh->GetNumMaterials(); slot++)
+			{
+				ApplyToMaterial(mesh->CreateDynamicMaterialInstance(slot));
+				count++;
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("HexBiomeMask: %d fog receiver materials set up"), count);
 }

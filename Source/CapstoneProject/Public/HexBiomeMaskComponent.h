@@ -45,6 +45,9 @@ public:
 	// Fog clouds: any level actor with this tag gets its plane materials hooked up to the fog data
 	UPROPERTY(EditAnywhere, Category = "Fog") FName fogCloudTag = TEXT("FogClouds");
 
+	// Fog receivers: any level actor with this tag (soup, mold shells, ...) gets the hex/fog data on all its meshes
+	UPROPERTY(EditAnywhere, Category = "Fog") FName fogReceiverTag = TEXT("FogReceiver");
+
 	//Give one tile's material instance the biome texture and grid parameters
 	void ApplyToMaterial(UMaterialInstanceDynamic* material) const;
 
@@ -71,6 +74,8 @@ private:
 	void UpdateFrontier();
 
 	void SetupFogClouds(); // Fog clouds
+
+	void SetupFogReceivers(); // Fog receivers
 
 	UPROPERTY() UTexture2D* fogTexture = nullptr;
 	TArray<FColor> fogPixels;
