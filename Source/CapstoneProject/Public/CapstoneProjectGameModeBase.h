@@ -53,22 +53,16 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	static inline TMap<EFactions, UFaction*> activeFactions;
-	static inline TMap<EFactions, UMaterialInterface*> factionColors;
-
 	static inline TMap<AActor*, FCinematicObject> cinematicObjects;
 
 	static inline float timeScale = 1.f;
 	static inline bool playerTroopsNeededForAISpawn = false;
 	static inline float prevTime = 1.f;
 
-	static inline float currentHarvestTime = 0;
-	UPROPERTY(EditAnywhere) float harvestTickLength = 8.f;
 	static inline float currentScanTime = 0;
 	UPROPERTY(EditAnywhere) float visibilityScanRate = 0.1f;
 
 	UPROPERTY(EditAnywhere) int alienFactionQuantity = 2;
-	UPROPERTY(EditAnywhere) TSubclassOf<class AGlobalSpawner> spawner;
 	static inline GameStates gameState;
 
 	UFUNCTION(BlueprintCallable) float GetDeltaTime();
@@ -119,30 +113,10 @@ private:
 	static FDateTickUpdate dateTickUpdates;
 	static float currSeconds;
 
-	EFactions CreateNewFaction();
-	int factionCount = 0;
-
-	void Harvest(float& DeltaTime);
 	void Scan(float& DeltaTime);
-
-	void UpdateBuildings();
-
-	void UpdateResourceCosts();
-	void FeedPop();
-	void ConsumeEnergy();
-
-	void FindExistingBuildingsAndTroops();
-	void FindExistingHexes();
 
 	void CheckHumanPop();
 	void CheckDate();
 
 	UPROPERTY(EditAnywhere) bool blockEnemySpawning = false;
-	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AFactionController> factionControllerPrefab;
-	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class AEventSystemManager> eventSystemManagerPrefab;
-	UPROPERTY(EditAnywhere, Category = "Systems") TSubclassOf<class APathingVisualizer> pathingVisualizerPrefab;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") TMap<WorkerType, FWorkerStats> humanWorkers;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") TMap<WorkerType, FWorkerStats> alienWorkers;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerFoodMissing = 5;
-	UPROPERTY(EditAnywhere, Category = "Worker Costs") int popDeathsPerPowerMissing = 5;
 };

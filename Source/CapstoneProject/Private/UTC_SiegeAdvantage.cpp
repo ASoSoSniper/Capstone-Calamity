@@ -4,7 +4,6 @@
 #include "UTC_SiegeAdvantage.h"
 #include "UnitActions.h"
 #include "BattleObject.h"
-#include "GlobalSpawner.h"
 #include "Building.h"
 
 float UUTC_SiegeAdvantage::ScoreCondition(ATroop* troop, ABaseHex* hex) const

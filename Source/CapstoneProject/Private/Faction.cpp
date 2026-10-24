@@ -3,11 +3,12 @@
 
 #include "Faction.h"
 #include "CapstoneProjectGameModeBase.h"
-#include "GlobalSpawner.h"
 #include "TroopFactory.h"
 #include "FactionController.h"
 #include "Outpost.h"
 #include "UAI_PriorityManager_Hex.h"
+#include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 #pragma region General Logic
 UFaction::UFaction()
@@ -37,21 +38,26 @@ UFaction::UFaction()
 
 	allBuildings.Add(SpawnableBuildings::None, FBuildingSet());
 }
-void UFaction::SetFaction(EFactions newFaction)
+void UFaction::SetFaction(EFactions newFaction, const TMap<EStratResources, int>& startingResources, const TMap<WorkerType, FWorkerStats>& workerCosts)
 {
 	if (newFaction == EFactions::None) return;
 
 	faction = newFaction;
 
-	if (faction == EFactions::Human)
+	for (const TPair<EStratResources, int>& resource : startingResources)
 	{
-		availableWorkers[WorkerType::Organic].available = 100;
-		availableWorkers[WorkerType::Robot].available = 10;
+		resourceInventory[resource.Key].currentResources = resource.Value;
+		resourceInventory[resource.Key].maxResources = AFactionManager::GetStartingResourceCap();
 	}
-	else
+
+	for (const TPair<WorkerType, FWorkerStats>& workerType : workerCosts)
 	{
-		availableWorkers[WorkerType::Organic].available = 1000;
-		availableWorkers[WorkerType::Organic].maxAcquired = 1000;
+		availableWorkers[workerType.Key].available = workerType.Value.available;
+		availableWorkers[workerType.Key].resourcePerAvailable = workerType.Value.resourcePerAvailable;
+		availableWorkers[workerType.Key].resourcePerWorking = workerType.Value.resourcePerWorking;
+
+		if (availableWorkers[workerType.Key].available > availableWorkers[workerType.Key].maxAcquired)
+			availableWorkers[workerType.Key].maxAcquired = availableWorkers[workerType.Key].available;
 	}
 
 	ACapstoneProjectGameModeBase::onDateTick.AddDynamic(this, &UFaction::DateUpdate);
@@ -66,7 +72,7 @@ FString UFaction::GetFactionName() const
 }
 bool UFaction::IsAIControlled()
 {
-	return faction != EFactions::Human;
+	return faction != EFactions::Human && AFactionManager::FactionAIEnabled();
 }
 
 AFactionController* UFaction::GetFactionController() const
@@ -82,7 +88,8 @@ void UFaction::SetFactionController(AFactionController* setController)
 
 void UFaction::FindActiveFactions()
 {
-	for (auto& currentFaction : ACapstoneProjectGameModeBase::activeFactions)
+	const TMap<EFactions, UFaction*>& factions = AFactionManager::GetAllFactions();
+	for (auto& currentFaction : factions)
 	{
 		if (currentFaction.Key != faction)
 		{
@@ -174,21 +181,7 @@ bool UFaction::CanAffordResource(EStratResources resource, int cost) const
 	cost = FMath::Abs(cost);
 	return resourceInventory[resource].currentResources >= cost;
 }
-void UFaction::SetFoodAndDeathCosts(const TMap<WorkerType, FWorkerStats>& workerCosts, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar)
-{
-	for (const TPair<WorkerType, FWorkerStats>& workerType : workerCosts)
-	{
-		availableWorkers[workerType.Key].available = workerType.Value.available;
-		availableWorkers[workerType.Key].resourcePerAvailable = workerType.Value.resourcePerAvailable;
-		availableWorkers[workerType.Key].resourcePerWorking = workerType.Value.resourcePerWorking;
 
-		if (availableWorkers[workerType.Key].available > availableWorkers[workerType.Key].maxAcquired)
-			availableWorkers[workerType.Key].maxAcquired = availableWorkers[workerType.Key].available;
-	}
-
-	popDeathsPerFoodMissing = popDeathsPerFoodMissingVar;
-	popDeathsPerPowerMissing = popDeathsPerPowerMissingVar;
-}
 void UFaction::UpdateResourceCosts()
 {
 	//Food
@@ -220,6 +213,14 @@ FResourceGainLoss UFaction::GetResourceRates()
 	result.productionLoss = resourceLosses[EStratResources::Production];
 
 	return result;
+}
+
+void UFaction::Harvest()
+{
+	for (auto& resource : resourceInventory)
+	{
+		CollectResource(resource.Key, resource.Value.resourcePerTick);
+	}
 }
 
 void UFaction::FeedPop()
@@ -394,13 +395,13 @@ void UFaction::StarvePop(int foodCost)
 		starving = true;
 	}
 
-	if (currStarveDays < daysTillStarve)
+	if (currStarveDays < AFactionManager::GetDaysTillStarvation())
 	{
 		++currStarveDays;
 		return;
 	}
 
-	KillPopulation(missingFood * popDeathsPerFoodMissing);
+	KillPopulation(missingFood * AFactionManager::GetPopDeathsPerFoodMissing());
 }
 void UFaction::PowerOutage(int energyCost)
 {
@@ -413,14 +414,14 @@ void UFaction::PowerOutage(int energyCost)
 		if (faction == EFactions::Human) UnitActions::EnableRobots(EFactions::Human, false);
 	}
 
-	if (currPowerDays < daysTillPowerOutage)
+	if (currPowerDays < AFactionManager::GetDaysTillPowerOutage())
 	{
 		++currPowerDays;
 		return;
 	}
 
 	if (faction == EFactions::Human) UnitActions::EnableRobots(EFactions::Human, true);
-	KillPopulation(missingEnergy * popDeathsPerPowerMissing);
+	KillPopulation(missingEnergy * AFactionManager::GetPopDeathsPerPowerMissing());
 }
 #pragma endregion
 #pragma region Faction Relationships
@@ -523,8 +524,7 @@ void UFaction::ClaimHex(ABaseHex* hex)
 	TerrainType terrain = hex->GetHexTerrain();
 	if (!ownedHexes.Contains(terrain))
 	{
-		ownedHexes.Add(terrain, FHexSet());
-		ownedHexes[terrain].hexInfo = hex->GetTerrainInfo(terrain);
+		ownedHexes.Add(terrain, FHexSet{ hex->GetTerrainInfo(terrain), TSet<ABaseHex*>() });
 	}
 
 	ownedHexes[terrain].hexes.Add(hex);

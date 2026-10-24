@@ -8,6 +8,7 @@
 #include "CapstoneProjectGameModeBase.h"
 #include "GameFramework/GameModeBase.h"
 #include "BasePlayerController.h"
+#include "Types/UnitData.h"
 
 #pragma region General Logic
 ABattleObject::ABattleObject()

@@ -54,7 +54,7 @@ struct FHexSet
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FHexInfo hexInfo;
+	FHexInstance hexInfo;
 	TSet<ABaseHex*> hexes;
 };
 #pragma endregion
@@ -76,7 +76,7 @@ class CAPSTONEPROJECT_API UFaction : public UObject
 public:
 	UFaction();
 
-	UFUNCTION() void SetFaction(EFactions newFaction);
+	UFUNCTION() void SetFaction(EFactions newFaction, const TMap<EStratResources, int>& startingResources, const TMap<WorkerType, FWorkerStats>& workerCosts);
 	UFUNCTION() EFactions GetFaction();
 	UFUNCTION() FString GetFactionName() const;
 	UFUNCTION() bool IsAIControlled();
@@ -113,10 +113,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAfford(const TMap<EStratResources, int>& costs) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) bool CanAffordResource(EStratResources resource, int cost) const;
 
-	void SetFoodAndDeathCosts(const TMap<WorkerType, FWorkerStats>& workerCosts, int popDeathsPerFoodMissingVar, int popDeathsPerPowerMissingVar);
 	UFUNCTION() void UpdateResourceCosts();
 	UFUNCTION() FResourceGainLoss GetResourceRates();
 
+	UFUNCTION() void Harvest();
 	UFUNCTION() void FeedPop();
 	UFUNCTION() void ConsumeEnergy();
 
@@ -124,11 +124,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceGainsPerDay(EStratResources resource, bool includeIncompleteBuildings) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure) int GetResourceLossesPerDay(EStratResources resource) const;
 
-	UPROPERTY() int daysTillStarve = 3;
 	UPROPERTY() int currStarveDays = 0;
 	UPROPERTY() bool starving = false;
 
-	UPROPERTY() int daysTillPowerOutage = 3;
 	UPROPERTY() int currPowerDays = 0;
 	UPROPERTY() bool powerOutage = false;
 private:
@@ -139,8 +137,6 @@ private:
 	UFUNCTION() void StarvePop(int foodCost);
 	UFUNCTION() void PowerOutage(int energyCost);
 	
-	int popDeathsPerFoodMissing;
-	int popDeathsPerPowerMissing;
 #pragma endregion
 #pragma region Faction Relationships
 public:

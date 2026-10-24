@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnitActions.h"
-#include "GlobalSpawner.h"
 #include "MeshVisibility.generated.h"
 
 UENUM()
@@ -49,6 +48,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexRevealed, ABaseHex*, hex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetSpotted, ABaseHex*, hex, EFactions, targetFaction);
 
 class UHexNav;
+struct FUnitData;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CAPSTONEPROJECT_API UMeshVisibility : public UActorComponent
 {

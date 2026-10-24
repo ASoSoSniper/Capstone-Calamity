@@ -10,6 +10,9 @@
 #include "TroopStorage.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/HexManager.h"
+#include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 #pragma region General Logic
 ABasePlayerController::ABasePlayerController()
@@ -621,8 +624,8 @@ FPlayerWorkers ABasePlayerController::GetPlayerWorkers()
 {
 	FPlayerWorkers workers;
 
-	workers.available = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Organic].available;
-	workers.working = ACapstoneProjectGameModeBase::activeFactions[playerFaction]->availableWorkers[WorkerType::Organic].working;
+	workers.available = AFactionManager::GetFactionObject(playerFaction)->availableWorkers[WorkerType::Organic].available;
+	workers.working = AFactionManager::GetFactionObject(playerFaction)->availableWorkers[WorkerType::Organic].working;
 
 	return workers;
 }
@@ -1161,7 +1164,7 @@ void ABasePlayerController::Outpost_CycleBuildTiles(int direction)
 	int dirEven[6][2] = { {-1,-1}, {0,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
 	FVector2D coords = a->GetHexCoordinates();
 	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
-	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+	int maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
 
 	TArray<ABaseHex*> possibleHexes;
 	for (int i = 0; i < 6; i++)
@@ -1169,9 +1172,9 @@ void ABasePlayerController::Outpost_CycleBuildTiles(int direction)
 		int x = coords.X + dir[i][0];
 		int y = coords.Y + dir[i][1];
 
-		if (x > max || x < 0 || y > max || y < 0) continue;
+		if (x > maxX || x < 0 || y > maxY || y < 0) continue;
 
-		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+		possibleHexes.Add(AHexManager::GetHexFromCoordinates(x, y));
 	}
 
 	ABaseHex* b = nullptr;

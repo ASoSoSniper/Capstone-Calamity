@@ -12,6 +12,7 @@
 #include "GlobalSpawner.h"
 #include "CinematicPosition.h"
 #include "UAI_Controller.h"
+#include "Types/UnitData.h"
 #include "Building.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHexesClaimed);

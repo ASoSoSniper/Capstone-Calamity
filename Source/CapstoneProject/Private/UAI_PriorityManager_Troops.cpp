@@ -4,7 +4,7 @@
 #include "UAI_PriorityManager_Troops.h"
 #include "Faction.h"
 #include "UAI_TroopCondition.h"
-#include "GlobalSpawner.h"
+#include "Managers/HexManager.h"
 
 // Sets default values for this component's properties
 UUAI_PriorityManager_Troops::UUAI_PriorityManager_Troops()
@@ -39,18 +39,16 @@ void UUAI_PriorityManager_Troops::FindPriorityHex()
 {
 	if (parentFaction->GetTroops().IsEmpty()) return;
 
-	const TArray<TArray<ABaseHex*>>& hexArray = AGlobalSpawner::spawnerObject->hexArray;
-
 	ABaseHex* bestHex = nullptr;
 	float bestScore = 0.f;
 	TArray<FString> bestConditionScores;
 
-	for (int x = 0; x < hexArray.Num(); x++)
+	for (int x = 0; x < AHexManager::GetGridColumnMax(); x++)
 	{
-		for (int y = 0; y < hexArray[x].Num(); y++)
+		for (int y = 0; y < AHexManager::GetGridRowMax(); y++)
 		{
-			ABaseHex* hex = hexArray[x][y];
-			if (!hex->IsTraversableTerrain()) continue;
+			ABaseHex* hex = AHexManager::GetHexFromCoordinates(x, y);
+			if (!hex || !hex->IsTraversableTerrain()) continue;
 
 			TArray<FString> conditionScores;
 

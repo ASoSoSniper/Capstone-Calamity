@@ -10,33 +10,16 @@
 #include "StratResources.h"
 #include "UnitActions.h"
 #include "MeshVisibility.h"
+#include "Types/HexInfo.h"
+#include "Types/StatusEffect.h"
+#include "Types/PointOfInterest.h"
 #include "BaseHex.generated.h"
 
 class AMergedArmy;
 class AMovementAI;
 class ABuilding;
-class AGlobalSpawner;
 class AInvestigator;
-
-USTRUCT(BlueprintType)
-struct FHexInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FText description;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int food;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int production;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int energy;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int wealth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int defenderBonus;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float moveMultiplier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) float attritionMultiplier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) int visionModifier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTexture2D* icon;
-};
+struct FUnitData;
 
 USTRUCT(BlueprintType)
 struct FHexDisplay
@@ -104,7 +87,7 @@ private:
 
 #pragma region Identity
 public:
-	FHexInfo GetTerrainInfo(TerrainType terrain) const;
+	const FHexInstance& GetTerrainInfo(TerrainType terrain) const;
 
 	EFactions GetHexOwner();
 	void SetHexOwner(EFactions faction);
@@ -135,11 +118,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Identity") EFactions hexOwner = EFactions::None;
 	TerrainType hexTerrain = TerrainType::Plains;
 	FVector2D hexCoordinates;
-	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
-	UPROPERTY(VisibleAnywhere, Category = "Identity") float moveMultiplier = 1.f;
-	UPROPERTY(VisibleAnywhere, Category = "Identity") float attritionMultiplier = 1.f;
-	UPROPERTY(VisibleAnywhere, Category = "Identity") int defenderBonus = 0;
-	UPROPERTY(VisibleAnywhere, Category = "Identity") int vision = 0;
+	FHexInstance hexStats;
 #pragma endregion
 
 #pragma region Workers
@@ -219,7 +198,6 @@ private:
 
 #pragma region Visuals
 public:
-	void SetHexTerrain(int maxSeedSize = 5, int randToMaintain = 5);
 	void SetHexTerrain(TerrainType terrain);
 	void SetHexModel();
 	void SetAttachmentCanBeVisible(bool canBeVisible);
@@ -235,8 +213,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components") UStaticMeshComponent* hexBase;
 	UPROPERTY(VisibleAnywhere, Category = "Components") UMeshVisibility* visibility;
 private:
-	int seedIndex = 0;
-
 	UPROPERTY(VisibleAnywhere, Category = "Debug") bool attachmentCanBeVisible;
 	UPROPERTY(EditAnywhere, Category = "Debug") bool debug = false;
 #pragma endregion

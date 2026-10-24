@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Managers/HexManager.h"
 #include "stdlib.h"
 
 // Sets default values
@@ -263,7 +264,7 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 	FNodeData* end = nullptr;
 	hexesToSearch.Add(start);
 
-	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+	int maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
 
 	auto GetCheapestNode = [&hexesToSearch]()
 		{
@@ -299,10 +300,10 @@ TArray<const ABaseHex*> AMovementAI::GeneratePath_AStar(const ABaseHex* destinat
 			int x = cell[0] + dir[i][0];
 			int y = cell[1] + dir[i][1];
 
-			if (x < 0 || x > max || y < 0 || y > max) continue;
+			if (x < 0 || x > maxX || y < 0 || y > maxY) continue;
 
-			const ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
-			if (searchedHexes.Contains(hex)) continue;
+			const ABaseHex* hex = AHexManager::GetHexFromCoordinates(x, y);
+			if (!hex || searchedHexes.Contains(hex)) continue;
 			if (!hex->IsTraversableTerrain()) continue;
 
 			FNodeData* nodeData = new FNodeData(hex, currNode, x, y, endCoords);

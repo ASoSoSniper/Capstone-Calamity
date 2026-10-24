@@ -2,7 +2,8 @@
 
 
 #include "Investigator.h"
-#include "GlobalSpawner.h"
+#include "Types/UnitData.h"
+#include "Types/PointOfInterest.h"
 #include "Faction.h"
 
 // Sets default values

@@ -7,53 +7,18 @@
 #include "MovementAI.h"
 #include "Building.h"
 #include "BattleObject.h"
-#include "CapstoneProjectGameModeBase.h"
-#include "GlobalSpawner.h"
-#include "HexBiomeMaskComponent.h" // Alex Code - Territory
 #include "Investigator.h"
+#include "Managers/HexManager.h"
+#include "GlobalSpawner.h"
 #include "Kismet/GameplayStatics.h"
+#include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 #pragma region General Logic
 ABaseHex::ABaseHex()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	hexInfo.Add(TerrainType::Plains, FHexInfo{ FText::FromString(TEXT("Moldy Plains")),
-		FText::FromString(TEXT("Flat terrain with no unique benefits.")), FMath::RandRange(1, 5), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(0, 2), 0, 1.f, 1.f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Plain.Landscape_Icon_Plain'")) });
-
-	hexInfo.Add(TerrainType::Forest, FHexInfo{ FText::FromString(TEXT("Fungal Forest")), 
-		FText::FromString(TEXT("Full of tall mushrooms and food.")), FMath::RandRange(2, 6), FMath::RandRange(0, 3), FMath::RandRange(1, 5), FMath::RandRange(0, 2), 1, 1.15f, 1.1f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Forest.Landscape_Icon_Forest'")) });
-
-	hexInfo.Add(TerrainType::Jungle, FHexInfo{ FText::FromString(TEXT("Oozing Jungle")), 
-		FText::FromString(TEXT("Dense, humid, and sticky fungal growths.")), FMath::RandRange(1, 5), FMath::RandRange(0, 4), FMath::RandRange(1, 5), FMath::RandRange(0, 3), 1, 1.3f, 1.2f, -1,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Dense_Forest.Landscape_Icon_Dense_Forest'")) });
-
-	hexInfo.Add(TerrainType::Hills, FHexInfo{ FText::FromString(TEXT("Capped Hills")), 
-		FText::FromString(TEXT("Compressed mushroom caps create hills.")), FMath::RandRange(1, 3), FMath::RandRange(2, 6), FMath::RandRange(1, 3), FMath::RandRange(0, 3), 1, 1.2f, 1.1f, 1,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Hills_TEMP.Landscape_Icon_Hills_TEMP'")) });
-
-	hexInfo.Add(TerrainType::Mountains, FHexInfo{ FText::FromString(TEXT("Stemstack Mountains")), 
-		FText::FromString(TEXT("High intensity of mushroom stems in mountain formations make traversal and construction impossible.")), 0, 0, 0, 0, 0, 0, 0, -3,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Mountain.Landscape_Icon_Mountain'")) });
-
-	hexInfo.Add(TerrainType::SporeField, FHexInfo{ FText::FromString(TEXT("Toxic Spore Field")), 
-		FText::FromString(TEXT("Dangerous, toxic spores provide energy.")), FMath::RandRange(0, 2), FMath::RandRange(0, 2), FMath::RandRange(2, 6), FMath::RandRange(0, 2), 0, 1.2f, 1.0f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Landscape_Icon_Toxic.Landscape_Icon_Toxic'")) });
-
-	hexInfo.Add(TerrainType::Ship, FHexInfo{ FText::FromString(TEXT("Capitol Hub")), 
-		FText::FromString(TEXT("The crash site of the ship, now the base of operations.")), 2, 3, 4, 0, 2, 1.0f, 1.0f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Capital_Hub/Hills_Capital_Hub.Hills_Capital_Hub'")) });
-
-	hexInfo.Add(TerrainType::AlienCity, FHexInfo{ FText::FromString(TEXT("Normal Klequeen City")), 
-		FText::FromString(TEXT("Alien city, some stupid piece of shit you shouldn't use.")), FMath::RandRange(2, 6), FMath::RandRange(1, 5), FMath::RandRange(1, 4), FMath::RandRange(1, 3), 2, 1.f, 1.f, 0,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Siatus_City.Siatus_City'")) });
-
-	hexInfo.Add(TerrainType::TheRock, FHexInfo{ FText::FromString(TEXT("The Rock City")), 
-		FText::FromString(TEXT("The Rock, contains DST fuel.")), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), FMath::RandRange(3, 7), 3, 1.f, 1.f, 1,
-		LoadObject<UTexture2D>(nullptr, TEXT("Texture2D '/Game/Art_Assets/Landscape_Biomes/Alien_city/Rock_City_Octagon.Rock_City_Octagon'")) });
 
 	hexMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Mesh"));
 	RootComponent = hexMesh;
@@ -134,11 +99,9 @@ void ABaseHex::BeginPlay()
 #pragma endregion
 
 #pragma region Identity
-FHexInfo ABaseHex::GetTerrainInfo(TerrainType terrain) const
+const FHexInstance& ABaseHex::GetTerrainInfo(TerrainType terrain) const
 {
-	if (!hexInfo.Contains(terrain)) return FHexInfo();
-
-	return hexInfo[terrain];
+	return hexStats;
 }
 EFactions ABaseHex::GetHexOwner()
 {
@@ -150,21 +113,18 @@ void ABaseHex::SetHexOwner(EFactions faction)
 
 	if (hexOwner != EFactions::None)
 	{
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->DropHex(this);
-		if (ACapstoneProjectGameModeBase::activeFactions[hexOwner]->OwnsHex(this)) return;
+		AFactionManager::GetFactionObject(hexOwner)->DropHex(this);
+		if (AFactionManager::GetFactionObject(hexOwner)->OwnsHex(this)) return;
 	}
 
 	hexOwner = faction;
 	visibility->faction = faction;
 
 	if (hexOwner != EFactions::None)
-		ACapstoneProjectGameModeBase::activeFactions[hexOwner]->ClaimHex(this);
+		AFactionManager::GetFactionObject(hexOwner)->ClaimHex(this);
 
 	// Alex Code - Territory: tell the biome mask texture who owns this tile
-	if (AGlobalSpawner::spawnerObject && AGlobalSpawner::spawnerObject->biomeMask)
-	{
-		AGlobalSpawner::spawnerObject->biomeMask->SetTileOwner(GetActorLocation(), (uint8)faction);
-	}
+	AHexManager::UpdateHexOwnerVisual(this);
 }
 
 FVector2D ABaseHex::GetHexCoordinates() const
@@ -247,7 +207,7 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) c
 {
 	TSet<ABaseHex*> hexes;
 	TQueue<const ABaseHex*> found;
-	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+	int maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
 
 	int dirOdd[6][2] = { {1,0}, {-1,0}, {0,-1}, {1,1}, {0, 1}, {1,-1} };
 	int dirEven[6][2] = { {1,0}, {-1,0}, {-1,-1}, {0,1}, {-1,1}, {0,-1} };
@@ -262,10 +222,10 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) c
 				int x = coords.X + dir[i][0];
 				int y = coords.Y + dir[i][1];
 
-				if (x > max || x < 0 || y > max || y < 0) continue;
+				if (x > maxX || x < 0 || y > maxY || y < 0) continue;
 
-				ABaseHex* hex = AGlobalSpawner::spawnerObject->hexArray[x][y];
-				if (!hexes.Contains(hex))
+				ABaseHex* hex = AHexManager::GetHexFromCoordinates(x, y);
+				if (hex && !hexes.Contains(hex))
 				{
 					found.Enqueue(hex);
 					hexes.Add(hex);
@@ -317,7 +277,7 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius_ThreeTile(EFactions targetFaction, bo
 	int dirEven[6][2] = { {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0} };
 	FVector2D coords = GetHexCoordinates();
 	int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
-	int max = AGlobalSpawner::spawnerObject->hexArray.Num() - 1;
+	int maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
 
 	TArray<ABaseHex*> possibleHexes;
 	for (int i = 0; i < 6; i++)
@@ -325,9 +285,11 @@ TSet<ABaseHex*> ABaseHex::GetHexesInRadius_ThreeTile(EFactions targetFaction, bo
 		int x = coords.X + dir[i][0];
 		int y = coords.Y + dir[i][1];
 
-		if (x > max || x < 0 || y > max || y < 0) continue;
+		if (x > maxX || x < 0 || y > maxY || y < 0) continue;
 
-		possibleHexes.Add(AGlobalSpawner::spawnerObject->hexArray[x][y]);
+		ABaseHex* foundHex = AHexManager::GetHexFromCoordinates(x, y);
+		if (foundHex)
+			possibleHexes.Add(foundHex);
 	}
 
 	ABaseHex* b = nullptr;
@@ -369,19 +331,19 @@ TerrainType ABaseHex::GetHexTerrain()
 }
 int ABaseHex::GetMovementMulti() const
 {
-	return moveMultiplier;
+	return hexStats.moveMultiplier;
 }
 int ABaseHex::GetAttritionMulti() const
 {
-	return attritionMultiplier;
+	return hexStats.attritionMultiplier;
 }
 int ABaseHex::GetDefenderBonus() const
 {
-	return defenderBonus;
+	return hexStats.defenderBonus;
 }
 int ABaseHex::GetVision() const
 {
-	return vision;
+	return hexStats.visionModifier;
 }
 
 bool ABaseHex::IsStaticBuildingTerrain()
@@ -784,14 +746,14 @@ void ABaseHex::UpdateResourceYield(EStratResources resource, int value, EFaction
 
 	resourceBonuses[resource] += value;
 
-	if (!ACapstoneProjectGameModeBase::activeFactions.Contains(selectedFaction))
+	if (!AFactionManager::GetFactionObject(selectedFaction))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("No faction found")));
 		return;
 	}
 
 	if (harvesting)
-		ACapstoneProjectGameModeBase::activeFactions[selectedFaction]->resourceInventory[resource].resourcePerTick += value;
+		AFactionManager::GetFactionObject(selectedFaction)->resourceInventory[resource].resourcePerTick += value;
 }
 void ABaseHex::ToggleResourceYield()
 {
@@ -799,7 +761,7 @@ void ABaseHex::ToggleResourceYield()
 
 	float newOutputPercent = GetOutputPercent();
 
-	for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[hexOwner]->resourceInventory)
+	for (auto& resource : AFactionManager::GetFactionObject(hexOwner)->resourceInventory)
 	{
 		float originalOutput = outputPercent * (float)resourceBonuses[resource.Key];
 		float newOutput = newOutputPercent * (float)resourceBonuses[resource.Key];
@@ -849,76 +811,16 @@ EStratResources ABaseHex::GetMainResourceYield() const
 #pragma endregion
 
 #pragma region Visuals
-void ABaseHex::SetHexTerrain(int maxSeedSize, int randToMaintain)
-{
-	//Declare variable to use as return value
-	TerrainType terrainToSet = TerrainType::None;
-
-	//Get surrounding hexes
-	TSet<ABaseHex*> surroundingHexes = GetHexesInRadius(1, false);
-
-	bool randTerrain = false;
-	int highestSeed = 0;
-
-	//Compare seed values for highest value, set return variable to hex with that value
-	for (ABaseHex* hex : surroundingHexes)
-	{
-		if (hex->seedIndex > highestSeed)
-		{
-			highestSeed = hex->seedIndex;
-			terrainToSet = hex->GetHexTerrain();
-		}
-	}
-
-	//If the highest seed found is 0, either no seed was previously set, or the end of an existing seed was reached
-	//Regardless, this is a prompt to set this hex to a new random terrain
-	if (highestSeed <= 0)
-	{
-		randTerrain = true;
-	}
-	else
-	{
-		//If a seed was found, get a random number from 1-10 and add the found seed
-		//This makes growth of the current seed stronger in its beginnings
-		int rand = FMath::RandRange(1, 10) + seedIndex;
-
-		//If the random number is greater than the minimum number to maintain, use the highest seed index terrain
-		//Set this hex's seed index to the highest found minus 1 to reduce chances of continued growth in the next hex
-		if (rand > randToMaintain)
-		{
-			seedIndex = highestSeed - 1;
-		}
-		else
-		{
-			//Otherwise, prompt the beginning of a new random terrain seed
-			randTerrain = true;
-		}
-	}
-
-	//If randomization was prompted, pick a random terrain type and set the seed index to the maximum
-	if (randTerrain)
-	{
-		terrainToSet = TerrainType(FMath::RandRange(1, 6));
-		seedIndex = maxSeedSize;
-	}
-
-	//Set the hex to the resulting terrain value
-	SetHexTerrain(terrainToSet);
-}
 void ABaseHex::SetHexTerrain(TerrainType terrain)
 {
 	hexTerrain = terrain;
 
-	FHexInfo info = hexInfo[hexTerrain];
-	resourceBonuses[EStratResources::Food] = info.food;
-	resourceBonuses[EStratResources::Production] = info.production;
-	resourceBonuses[EStratResources::Energy] = info.energy;
-	resourceBonuses[EStratResources::Wealth] = info.wealth;
+	hexStats = AHexManager::CreateHexInstance(terrain);
 
-	moveMultiplier = info.moveMultiplier;
-	attritionMultiplier = info.attritionMultiplier;
-	defenderBonus = info.defenderBonus;
-	vision = info.visionModifier;
+	resourceBonuses[EStratResources::Food] = hexStats.food;
+	resourceBonuses[EStratResources::Production] = hexStats.production;
+	resourceBonuses[EStratResources::Energy] = hexStats.energy;
+	resourceBonuses[EStratResources::Wealth] = hexStats.wealth;
 
 	if (hexTerrain == TerrainType::Ship)
 	{
@@ -932,11 +834,11 @@ void ABaseHex::SetHexModel()
 {
 	if (!visibility->DiscoveredByFaction(EFactions::Human))
 	{
-		AGlobalSpawner::spawnerObject->CreateHexModel(TerrainType::None, this);
+		AHexManager::CreateHexModel(TerrainType::None, this);
 	}
 	else
 	{
-		AGlobalSpawner::spawnerObject->CreateHexModel(hexTerrain, this);
+		AHexManager::CreateHexModel(hexTerrain, this);
 	}
 }
 void ABaseHex::SetAttachmentCanBeVisible(bool canBeVisible)
@@ -953,20 +855,20 @@ FHexDisplay ABaseHex::GetDisplayInfo()
 {
 	FHexDisplay display;
 
-	display.name = hexInfo[hexTerrain].name;
-	display.description = hexInfo[hexTerrain].description;
+	display.name = hexStats.name;
+	display.description = hexStats.description;
 
 	display.food = FText::AsNumber(resourceBonuses[EStratResources::Food]);
 	display.production = FText::AsNumber(resourceBonuses[EStratResources::Production]);
 	display.energy = FText::AsNumber(resourceBonuses[EStratResources::Energy]);
 	display.wealth = FText::AsNumber(resourceBonuses[EStratResources::Wealth]);
 
-	display.defenderBonus = FText::AsNumber(hexInfo[hexTerrain].defenderBonus);
-	display.moveMultiplier = FText::AsNumber(hexInfo[hexTerrain].moveMultiplier);
-	display.attritionBonus = FText::AsNumber(hexInfo[hexTerrain].attritionMultiplier);
-	display.visionModifier = FText::AsNumber(hexInfo[hexTerrain].visionModifier);
+	display.defenderBonus = FText::AsNumber(hexStats.defenderBonus);
+	display.moveMultiplier = FText::AsNumber(hexStats.moveMultiplier);
+	display.attritionBonus = FText::AsNumber(hexStats.attritionMultiplier);
+	display.visionModifier = FText::AsNumber(hexStats.visionModifier);
 
-	display.icon = hexInfo[hexTerrain].icon;
+	display.icon = hexStats.icon;
 
 	int workers = 0;
 	for (auto& worker : workersInHex)

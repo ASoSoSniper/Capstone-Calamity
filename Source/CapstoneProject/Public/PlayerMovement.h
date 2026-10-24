@@ -8,6 +8,7 @@
 #include "Components/AudioComponent.h"
 #include "SoundBox.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GlobalSpawner.h"
 #include "PlayerMovement.generated.h"
 
 class ABasePlayerController;

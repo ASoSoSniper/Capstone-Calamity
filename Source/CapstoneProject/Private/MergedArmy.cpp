@@ -2,6 +2,7 @@
 
 
 #include "MergedArmy.h"
+#include "GlobalSpawner.h"
 
 AMergedArmy::AMergedArmy()
 {

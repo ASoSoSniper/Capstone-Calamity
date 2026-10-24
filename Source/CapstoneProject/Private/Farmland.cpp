@@ -2,7 +2,6 @@
 
 
 #include "Farmland.h"
-#include "GlobalSpawner.h"
 
 AFarmland::AFarmland()
 {

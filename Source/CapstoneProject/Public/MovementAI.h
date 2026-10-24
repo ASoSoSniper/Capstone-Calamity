@@ -11,6 +11,7 @@
 #include "MeshVisibility.h"
 #include "Components/SphereComponent.h"
 #include "ExploreAnims.h"
+#include "Types/UnitData.h"
 #include "MovementAI.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDestinationSet, const AMovementAI*, troop, const ABaseHex*, oldDestination);

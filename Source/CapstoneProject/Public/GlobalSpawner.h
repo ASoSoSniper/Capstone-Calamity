@@ -22,6 +22,7 @@ class AAlienCity;
 class ARockCity;
 class UBuildingAttachment;
 class UHexBiomeMaskComponent; // Alex Code - class
+struct FUnitData;
 
 #pragma region UI
 USTRUCT(BlueprintType, Blueprintable)
@@ -331,39 +332,6 @@ struct FWorkersInHex
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int aliens = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int maxWorkers = 0;
 };
-USTRUCT(BlueprintType)
-struct FPointOfInterest
-{
-	GENERATED_USTRUCT_BODY()
-
-private:
-	UPROPERTY(EditAnywhere) FString pointTitle = TEXT("Hidden Cache");
-	UPROPERTY(EditAnywhere) TMap<EStratResources, int32> rewards;
-	UPROPERTY(EditAnywhere) int32 daysToComplete = 1;
-	int32 daysRemaining = 0;
-	int32 hoursRemaining = 0;
-	int32 minutes = 0;
-public:
-	FPointOfInterest() {};
-	FPointOfInterest(FPointOfInterest& setPOI)
-	{
-		pointTitle = setPOI.pointTitle;
-		rewards = setPOI.rewards;
-		daysToComplete = setPOI.daysToComplete;
-		daysRemaining = setPOI.daysToComplete;
-	}
-	FPointOfInterest(TMap<EStratResources, int32> setRewards, FString setTitle = TEXT("Hidden Cache"), int32 setDays = 1) :
-		pointTitle(setTitle), rewards(setRewards), daysToComplete(setDays), daysRemaining(setDays) {
-	}
-
-	FString GetPointTitle() const;
-	const TMap<EStratResources, int32>& GetRewards() const;
-	FString GetWorldDisplay() const;
-	int32 GetDaysToComplete() const;
-	bool Work();
-	bool WorkCompleted() const;
-	float GetWorkProgress() const;
-};
 #pragma endregion
 #pragma region Buildings
 USTRUCT(BlueprintType, Blueprintable)
@@ -519,147 +487,9 @@ struct FCuedTroop
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) FTroopCost troopInfo;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float currentTime;
 };
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FStatusEffect
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	FStatusEffect() {};
-	FStatusEffect(FString name, EFactions faction, EFactionRelationship affected, float hp, float morale, int vision, float speed, float damage, float siegePower) :
-		effectName(name), originFaction(faction), factionsToAffect(affected),
-		hpMod(hp), moraleMod(morale), visionMod(vision), speedMod(speed), damageMod(damage), siegePowerMod(siegePower) {		
-	};
-
-	FString GetEffectName() const;
-	EFactions GetOriginFaction() const;
-	EFactionRelationship GetFactionsToAffect() const;
-
-	float GetHPMod() const;
-	float GetMoraleMod() const;
-	int GetVisionMod() const;
-	float GetSpeedMod() const;
-	float GetDamageMod() const;
-	float GetSiegePowerMod() const;
-
-private:
-	FString effectName = TEXT("");
-	EFactions originFaction = EFactions::None;
-	EFactionRelationship factionsToAffect = EFactionRelationship::Neutral;
-
-	float hpMod = 1.f;
-	float moraleMod = 1.f;
-
-	int visionMod = 0;
-	float speedMod = 1.f;
-
-	float damageMod = 1.f;
-	float siegePowerMod = 1.f;
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FUnitData
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	FUnitData() : faction(EFactions::None), unitType(UnitTypes::None) {};
-	FUnitData(EFactions setFaction) : faction(setFaction), unitType(UnitTypes::None)
-	{
-		FUnitData(faction, UnitTypes::None);
-	};
-	FUnitData(EFactions setFaction, UnitTypes setUnitType) : faction(setFaction), unitType(setUnitType)
-	{
-		if (unitType == UnitTypes::Army)
-			GenerateArmyName();
-	}
-
-	TMap<UnitTypes, FUnitComposition> GetUnitComposition() const;
-	UnitTypes GetLargestUnitQuantity() const;
-
-	EFactions GetFaction() const;
-	UnitTypes GetUnitType() const;
-
-	void SetUnitValues(int setHealth, int setMorale, int setVision, int setSpeed, int setDamage, int setSiegePower, int setReinforceRate, int setEnergyUpKeep);
-	void AddUnitData(FUnitData* data);
-	FUnitData* ExtractUnitData(int32 index, bool killOnExtraction = false);
-	void SetBuildingValues(int setHealth, int setVision, int setSiegePower, int setEnergyUpkeep);
-
-	void GenerateArmyName(FString newName = TEXT(""));
-	FText GetArmyName() const;
-	FString GetNameRaw() const;
-	int GetNameInstance() const;
-
-	int GetCurrentHP() const;
-	int GetMaxHP() const;
-	void SetHPByAlpha(float alpha, bool allowDeath = true);
-	int GetCurrentMorale() const;
-	int GetMaxMorale() const;
-	void SetMoraleByAlpha(float alpha);
-	void SetMoraleByValue(int value);
-	float GetHPAlpha() const;
-	float GetMoraleAlpha() const;
-	bool IsAlive() const;
-	bool HasMorale() const;
-
-	int DamageHP(int amount);
-	int DamageMorale(int amount);
-	int HealHP(int amount);
-
-	int GetVision() const;
-	int GetSpeed() const;
-
-	int GetDamage() const;
-	int GetSiegePower() const;
-
-	int GetReinforceRate() const;
-	int GetEnergyUpkeep() const;
-
-	bool IsBuilding() const;
-
-	const TArray<FUnitData*>& GetSavedUnits() const;
-	int GetSavedUnitCount() const;
-
-	bool SetupComplete() const;
-	void DestroyWorldData();
-
-	const TSet<FStatusEffect*>& GetStatusEffects() const;
-	void AddStatusEffect(FStatusEffect* effect);
-	void RemoveStatusEffect(FStatusEffect* effect);
-	void ClearStatusEffects();
-
-private:
-	EFactions faction;
-	UnitTypes unitType;
-
-	FString armyName = TEXT("");
-	int nameInstance = 0;
-
-	int currentHP = 0;
-	int maxHP = 0;
-	int currentMorale = 0;
-	int maxMorale = 0;
-
-	int vision = 0;
-	int speed = 0;
-
-	int damage = 0;
-	int siegePower = 0;
-
-	int reinforceRate = 0;
-	int energyUpkeep = 0;
-
-	bool isBuilding = false;
-
-	TArray<FUnitData*> savedUnits;
-	TSet<FStatusEffect*> statusEffects;
-
-	void RemoveArmyName();
-};
 #pragma endregion
 
-UCLASS()
+UCLASS(HideCategories = (Rendering, Replication, Input, Actor, LOD, HLOD, Collision, Physics, Cooking, Events, WorldPartition, Events, DataLayers))
 class CAPSTONEPROJECT_API AGlobalSpawner : public AActor
 {
 	GENERATED_BODY()
@@ -677,29 +507,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = "Factions") TMap<EFactions, FFactionDisplay> factionDisplayPresets;
-#pragma endregion
-
-#pragma region Hex Generation
-public:
-	void CreateHexModel(TerrainType terrainType, ABaseHex* hex);
-	ABaseHex* GetHexFromCoordinates(int x, int y);
-
-	TArray<TArray<ABaseHex*>> hexArray;
-
-	// Alex Code - biome mask
-	UPROPERTY(VisibleAnywhere, Category = "World Generation") UHexBiomeMaskComponent* biomeMask;
-
-private:
-	void ProceduralHexGen(int numHexs, ShapesOfMap shape);
-	void SpawnBuildingsAroundCity(ABaseHex* centerHex);
-	void SpawnPointsOfInterest();
-
-	UPROPERTY(EditAnywhere, Category = "World Generation") TSubclassOf<class ABaseHex> hexActor;
-	UPROPERTY(EditAnywhere, Category = "World Generation") int pointOfInterestCount = 15;
-	UPROPERTY(EditAnywhere, Category = "World Generation") TArray<FPointOfInterest> pointsOfInterest;
-	UPROPERTY(EditAnywhere, Category = "World Generation") int hexSeedSize = 5;
-	UPROPERTY(EditAnywhere, Category = "World Generation") int hexRandToMaintain = 5;
-	UPROPERTY(EditAnywhere, Category = "World Generation") int buildingDistanceFromCity = 2;
 #pragma endregion
 
 #pragma region Building Construction

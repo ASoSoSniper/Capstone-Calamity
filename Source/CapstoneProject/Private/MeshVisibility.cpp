@@ -5,8 +5,10 @@
 #include "Faction.h"
 #include "HexNav.h"
 #include "BattleObject.h"
+#include "Types/UnitData.h"
 #include "CapstoneProjectGameModeBase.h"
-#include "HexBiomeMaskComponent.h" // Alex Code - Fog
+#include "Managers/HexManager.h"
+#include "Managers/FactionManager.h"
 
 // Sets default values for this component's properties
 UMeshVisibility::UMeshVisibility()
@@ -32,7 +34,7 @@ void UMeshVisibility::BeginPlay()
 	else
 		hexNav = GetOwner()->GetComponentByClass<UHexNav>();
 	
-	for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
+	for (auto& curFaction : AFactionManager::GetAllFactions())
 	{
 		factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
 	}
@@ -83,9 +85,10 @@ void UMeshVisibility::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (factionVisibility.Num() < ACapstoneProjectGameModeBase::activeFactions.Num())
+	const auto& allFactions = AFactionManager::GetAllFactions();
+	if (factionVisibility.Num() < allFactions.Num())
 	{
-		for (auto& curFaction : ACapstoneProjectGameModeBase::activeFactions)
+		for (auto& curFaction : allFactions)
 		{
 			if (!factionVisibility.Contains(curFaction.Key))
 				factionVisibility.Add(curFaction.Key, FVisibility{ VisibilityStatus::Undiscovered, false, false });
@@ -148,11 +151,11 @@ void UMeshVisibility::InSight(EFactions thisFaction)
 	if (!factionObject) return;
 
 	//Set object as "In Sight" for the faction and all its allies
-	for (auto& ally : ACapstoneProjectGameModeBase::activeFactions)
+	for (auto& potentialAlly : AFactionManager::GetAllFactions())
 	{
-		if (factionObject->GetFactionRelationship(ally.Key) == EFactionRelationship::Ally)
+		if (factionObject->GetFactionRelationship(potentialAlly.Key) == EFactionRelationship::Ally)
 		{
-			factionVisibility[ally.Key].inSight = true;
+			factionVisibility[potentialAlly.Key].inSight = true;
 		}
 	}
 }
@@ -207,10 +210,7 @@ void UMeshVisibility::RevealModelsAndMeshes()
 			discoveredByPlayer = true;
 
 			// Alex Code - Fog: start this tile's reveal in the fog texture
-			if (AGlobalSpawner::spawnerObject && AGlobalSpawner::spawnerObject->biomeMask)
-			{
-				AGlobalSpawner::spawnerObject->biomeMask->RevealTile(hexParent->GetActorLocation());
-			}
+			AHexManager::RevealHex(hexParent);
 
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 		}

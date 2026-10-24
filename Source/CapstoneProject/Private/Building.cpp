@@ -7,6 +7,7 @@
 #include "GlobalSpawner.h"
 #include "Faction.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/FactionManager.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -80,19 +81,13 @@ FUnitData* ABuilding::GetUnitData() const
 
 void ABuilding::InitBuilding(const EFactions& factionType)
 {
-	using GameMode = ACapstoneProjectGameModeBase;
-	if (!GameMode::activeFactions.Contains(factionType)) return;
+	faction = AFactionManager::GetFactionObject(factionType);
+	if (!faction) return;
 
 	unitData = new FUnitData(factionType);
-	if (GameMode::activeFactions.Contains(factionType))
-	{
-		UFaction* factionObject = GameMode::activeFactions[factionType];
-		factionObject->AddBuildingToFaction(this);
-		faction = factionObject;
-	}
+	faction->AddBuildingToFaction(this);
 
 	visibility->SetupComponent(unitData, mesh);
-	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
 }
 
 bool ABuilding::SetupBuilding(SpawnableBuildings type)
@@ -394,7 +389,7 @@ void ABuilding::Destroyed()
 
 		UnitActions::UpdateResourceCapacity(factionType, -resourceCapIncrease);
 
-		ACapstoneProjectGameModeBase::activeFactions[factionType]->RemoveBuildingFromFaction(this);
+		faction->RemoveBuildingFromFaction(this);
 
 		if (AGlobalSpawner::spawnerObject->buildingCosts.Contains(buildingType))
 		{
@@ -449,6 +444,7 @@ void ABuilding::AttachToHex(ABaseHex* hex)
 		hex->AddBuildingToHex(this, size);
 		hex->onBuildingSet.Broadcast(hex);
 		onBuildingAttached.Broadcast(occupiedHexes);
+		cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
 	}
 	else
 	{
@@ -474,6 +470,7 @@ void ABuilding::AttachToHex(TArray<ABaseHex*> hexes)
 	SetActorLocation(center);
 	hexes[0]->onBuildingSet.Broadcast(hexes[0]);
 	onBuildingAttached.Broadcast(occupiedHexes);
+	cinematicComponent->cinematicVars.position = GetActorLocation() + cinematicComponent->positionOffset;
 }
 
 TSet<ABaseHex*> ABuilding::GetOccupiedHexes() const

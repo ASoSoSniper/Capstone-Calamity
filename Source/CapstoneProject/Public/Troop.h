@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MovementAI.h"
-#include "GlobalSpawner.h"
-#include "AITroopComponent.h"
 #include "UAI_Controller.h"
 #include "HexNav.h"
 #include "Troop.generated.h"
@@ -14,6 +12,7 @@
  * 
  */
 class AMergedArmy;
+struct FUnitData;
 
 UCLASS()
 class CAPSTONEPROJECT_API ATroop : public AMovementAI, public IUAI_Controller

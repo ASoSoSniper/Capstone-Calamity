@@ -11,10 +11,11 @@
 #include "Building.h"
 #include "Outpost.h"
 #include "UnitStats.h"
-#include "GlobalSpawner.h"
 #include "Faction.h"
 #include "FactionController.h"
 #include "stdlib.h"
+#include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 
 bool UnitActions::IsHostileTarget(AMovementAI* unit, AMovementAI* target)
@@ -61,13 +62,13 @@ bool UnitActions::IsAllyToFaction(EFactionRelationship relationship)
 
 int UnitActions::GetAvailableWorkerType(EFactions faction, WorkerType worker)
 {
-    return ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[worker].available;
+    return AFactionManager::GetFactionObject(faction)->availableWorkers[worker].available;
 }
 
 TArray<int> UnitActions::GetFactionResources(EFactions faction)
 {
     TArray<int> resources;
-    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : AFactionManager::GetFactionObject(faction)->resourceInventory)
     {
         resources.Add(resource.Value.currentResources);
     }
@@ -76,19 +77,20 @@ TArray<int> UnitActions::GetFactionResources(EFactions faction)
 
 void UnitActions::SetFactionResources(EFactions faction, EStratResources resourceToChange, int desiredResourceVal)
 {
-    ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[resourceToChange].currentResources = desiredResourceVal;
+    AFactionManager::GetFactionObject(faction)->resourceInventory[resourceToChange].currentResources = desiredResourceVal;
 }
 
 int UnitActions::GetFactionPopulation(EFactions faction)
 {
-    int humanPop = ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Organic].available + ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers[WorkerType::Organic].working;
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
+    int humanPop = factionObject->availableWorkers[WorkerType::Organic].available + factionObject->availableWorkers[WorkerType::Organic].working;
     return humanPop;
 }
 
 TMap<EStratResources, int> UnitActions::GetMoreSpecificFactionResources(EFactions faction)
 {
     TMap<EStratResources, int> resources;
-    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : AFactionManager::GetFactionObject(faction)->resourceInventory)
     {
         resources.Add(resource.Key, resource.Value.currentResources);
     }
@@ -99,7 +101,7 @@ TMap<EStratResources, int> UnitActions::GetResourcesPerTick(EFactions faction)
 {
     TMap<EStratResources, int> resources;
 
-    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : AFactionManager::GetFactionObject(faction)->resourceInventory)
     {
         resources.Add(resource.Key, resource.Value.resourcePerTick);
     }
@@ -109,11 +111,12 @@ TMap<EStratResources, int> UnitActions::GetResourcesPerTick(EFactions faction)
 TMap<EStratResources, int> UnitActions::GetResourceGains(EFactions faction)
 {
     TMap<EStratResources, int> resources;
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
 
-    resources.Add(EStratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Wealth].resourcePerTick);
-    resources.Add(EStratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Energy].resourcePerTick);
-    resources.Add(EStratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].resourcePerTick);
-    resources.Add(EStratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Production].resourcePerTick);
+    resources.Add(EStratResources::Wealth, factionObject->resourceInventory[EStratResources::Wealth].resourcePerTick);
+    resources.Add(EStratResources::Energy, factionObject->resourceInventory[EStratResources::Energy].resourcePerTick);
+    resources.Add(EStratResources::Food, factionObject->resourceInventory[EStratResources::Food].resourcePerTick);
+    resources.Add(EStratResources::Production, factionObject->resourceInventory[EStratResources::Production].resourcePerTick);
 
     return resources;
 }
@@ -121,11 +124,12 @@ TMap<EStratResources, int> UnitActions::GetResourceGains(EFactions faction)
 TMap<EStratResources, int> UnitActions::GetResourceLosses(EFactions faction)
 {
     TMap<EStratResources, int> resources;
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
 
-    resources.Add(EStratResources::Wealth, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Wealth].lossesPerDay);
-    resources.Add(EStratResources::Energy, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Energy].lossesPerDay);
-    resources.Add(EStratResources::Food, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].lossesPerDay);
-    resources.Add(EStratResources::Production, ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Production].lossesPerDay);
+    resources.Add(EStratResources::Wealth, factionObject->resourceInventory[EStratResources::Wealth].lossesPerDay);
+    resources.Add(EStratResources::Energy, factionObject->resourceInventory[EStratResources::Energy].lossesPerDay);
+    resources.Add(EStratResources::Food, factionObject->resourceInventory[EStratResources::Food].lossesPerDay);
+    resources.Add(EStratResources::Production, factionObject->resourceInventory[EStratResources::Production].lossesPerDay);
 
     return resources;
 }
@@ -133,7 +137,7 @@ TMap<EStratResources, int> UnitActions::GetResourceLosses(EFactions faction)
 TMap<WorkerType, int> UnitActions::GetFactionWorkers(EFactions faction)
 {
     TMap<WorkerType, int> workers;
-    for (auto& workerType : ACapstoneProjectGameModeBase::activeFactions[faction]->availableWorkers)
+    for (auto& workerType : AFactionManager::GetFactionObject(faction)->availableWorkers)
     {
         workers.Add(workerType.Key, workerType.Value.available);
     }
@@ -143,7 +147,7 @@ TMap<WorkerType, int> UnitActions::GetFactionWorkers(EFactions faction)
 
 void UnitActions::UpdateResourceCapacity(EFactions faction, int addedCap)
 {
-    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : AFactionManager::GetFactionObject(faction)->resourceInventory)
     {
         resource.Value.maxResources += addedCap;
     }
@@ -151,12 +155,12 @@ void UnitActions::UpdateResourceCapacity(EFactions faction, int addedCap)
 
 int UnitActions::GetResourceCap(EFactions faction)
 {
-    return ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory[EStratResources::Food].maxResources;
+    return AFactionManager::GetFactionObject(faction)->resourceInventory[EStratResources::Food].maxResources;
 }
 
 ABaseHex* UnitActions::GetClosestOutpostHex(EFactions faction, AActor* referencePoint)
 {
-    const TSet<ABuilding*>& outposts = ACapstoneProjectGameModeBase::activeFactions[faction]->GetBuildingsOfType(SpawnableBuildings::Outpost);
+    const TSet<ABuilding*>& outposts = AFactionManager::GetFactionObject(faction)->GetBuildingsOfType(SpawnableBuildings::Outpost);
 
     float shortestDistance = std::numeric_limits<float>::infinity();
     ABuilding* closestOutpost = nullptr;
@@ -220,10 +224,11 @@ bool UnitActions::HexHasEnemyTroop(EFactions faction, AActor* hex)
 int UnitActions::GetFactionStarveLevel(EFactions faction)
 {
     int level = 0;
-    if (ACapstoneProjectGameModeBase::activeFactions[faction]->starving)
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
+    if (factionObject->starving)
     {
         ++level;
-        if (ACapstoneProjectGameModeBase::activeFactions[faction]->currStarveDays >= ACapstoneProjectGameModeBase::activeFactions[faction]->daysTillStarve)
+        if (factionObject->currStarveDays >= AFactionManager::GetDaysTillStarvation())
         {
             ++level;
         }
@@ -235,10 +240,11 @@ int UnitActions::GetFactionStarveLevel(EFactions faction)
 int UnitActions::GetFactionPowerOutageLevel(EFactions faction)
 {
     int level = 0;
-    if (ACapstoneProjectGameModeBase::activeFactions[faction]->powerOutage)
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
+    if (factionObject->powerOutage)
     {
         ++level;
-        if (ACapstoneProjectGameModeBase::activeFactions[faction]->currPowerDays >= ACapstoneProjectGameModeBase::activeFactions[faction]->daysTillPowerOutage)
+        if (factionObject->currPowerDays >= AFactionManager::GetDaysTillPowerOutage())
         {
             ++level;
         }
@@ -249,7 +255,7 @@ int UnitActions::GetFactionPowerOutageLevel(EFactions faction)
 
 void UnitActions::EnableRobots(EFactions faction, bool enable)
 {
-    const TSet<ATroop*>& factionTroops = ACapstoneProjectGameModeBase::activeFactions[faction]->GetTroops();
+    const TSet<ATroop*>& factionTroops = AFactionManager::GetFactionObject(faction)->GetTroops();
 
     for (ATroop* troop : factionTroops)
     {
@@ -270,7 +276,7 @@ void UnitActions::RobotIsActive(EFactions faction, ATroop* robot)
 
 void UnitActions::AddResources(EFactions faction, TMap<EStratResources, int> resources)
 {
-    for (auto& resource : ACapstoneProjectGameModeBase::activeFactions[faction]->resourceInventory)
+    for (auto& resource : AFactionManager::GetFactionObject(faction)->resourceInventory)
     {
         if (!resources.Contains(resource.Key)) continue;
         resource.Value.currentResources += resources[resource.Key];
@@ -336,7 +342,7 @@ void UnitActions::SetTargetListElement(EFactions faction, AActor* target)
 
 void UnitActions::RemoveFromAllTargetLists(ABaseHex* target)
 {
-    for (auto& faction : ACapstoneProjectGameModeBase::activeFactions)
+    for (auto& faction : AFactionManager::GetAllFactions())
     {
         if (faction.Value->targetList.Contains(target))
         {
@@ -348,10 +354,11 @@ void UnitActions::RemoveFromAllTargetLists(ABaseHex* target)
 TMap<ABaseHex*, EFactions> UnitActions::GetTargetList(EFactions faction)
 {
     TMap<ABaseHex*, EFactions> targetList = TMap<ABaseHex*, EFactions>();
+    UFaction* factionObject = AFactionManager::GetFactionObject(faction);
 
-    if (ACapstoneProjectGameModeBase::activeFactions.Contains(faction))
+    if (factionObject)
     {
-        targetList = ACapstoneProjectGameModeBase::activeFactions[faction]->targetList;
+        targetList = factionObject->targetList;
     }
 
     return targetList;
@@ -418,14 +425,12 @@ EFactions UnitActions::FindHostileTarget(EFactions referenceFaction, ABattleObje
 
 UFaction* UnitActions::GetFaction(const EFactions& faction)
 {
-    if (!ACapstoneProjectGameModeBase::activeFactions.Contains(faction)) return nullptr;
-
-    return ACapstoneProjectGameModeBase::activeFactions[faction];
+    return AFactionManager::GetFactionObject(faction);
 }
 
 TMap<EFactions, UFaction*> UnitActions::GetFactions()
 {
-    return ACapstoneProjectGameModeBase::activeFactions;
+    return AFactionManager::GetAllFactions();
 }
 
 AFactionController* UnitActions::GetFactionController(const EFactions& faction)

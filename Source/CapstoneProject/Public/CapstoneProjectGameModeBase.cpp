@@ -7,6 +7,8 @@
 #include "EventSystemManager.h"
 #include "PathingVisualizer.h"
 #include "FactionController.h"
+#include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 float ACapstoneProjectGameModeBase::currSeconds = 0.f;
 FDateTickUpdate ACapstoneProjectGameModeBase::dateTickUpdates = FDateTickUpdate();
@@ -31,21 +33,6 @@ ACapstoneProjectGameModeBase::ACapstoneProjectGameModeBase()
 	dayStruct.currentMonth = 8;
 	dayStruct.day = 26;
 	currSeconds = 1;
-
-	factionColors.Add(EFactions::None, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/Unclaimed.Unclaimed")));
-	factionColors.Add(EFactions::Human, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/HumanOwned.HumanOwned")));
-	factionColors.Add(EFactions::Alien1, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned01.AlienOwned01")));
-	factionColors.Add(EFactions::Alien2, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned02.AlienOwned02")));
-	factionColors.Add(EFactions::Alien3, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned03.AlienOwned03")));
-	factionColors.Add(EFactions::Alien4, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned04.AlienOwned04")));
-	factionColors.Add(EFactions::Alien5, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned05.AlienOwned05")));
-	factionColors.Add(EFactions::Alien6, LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/TileUndertones/AlienOwned06.AlienOwned06")));
-
-	humanWorkers.Add(WorkerType::Organic, FWorkerStats{ 0, 100, 100, { {EStratResources::Food, 1} }, { {EStratResources::Food, 1} } });
-	humanWorkers.Add(WorkerType::Robot, FWorkerStats{ 0, 5, 100, { {EStratResources::Energy, 1} }, { {EStratResources::Energy, 1} } });
-
-	alienWorkers.Add(WorkerType::Organic, FWorkerStats{ 0, 1000, 1000, { {EStratResources::Food, 1} }, { {EStratResources::Food, 1} } });
-	alienWorkers.Add(WorkerType::Robot, FWorkerStats{ 0, 0, 100, { {EStratResources::Energy, 1} }, { {EStratResources::Energy, 1} } });
 }
 
 void ACapstoneProjectGameModeBase::BeginPlay()
@@ -53,32 +40,7 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	gameState = GameStates::None;
-	activeFactions.Empty();
 	onDateTick.Clear();
-
-	//Create initial player faction and assign it to the player controller
-	CreateNewFaction();
-
-	//Create alien factions, quantity determined by variable
-	for (int i = 0; i < alienFactionQuantity; ++i)
-	{
-		CreateNewFaction();
-	}
-
-	for (auto& currentFaction : activeFactions)
-	{
-		currentFaction.Value->FindActiveFactions();
-		currentFaction.Value->factionColor = factionColors[currentFaction.Key];
-	}
-
-	//For debug purposes, Human and Alien1 hate each other, Human and Alien2 are chill, and Alien3+ literally couldn't give less of a fuck
-	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien1, FactionRelationship::Enemy);
-	//activeFactions[Factions::Human]->SetFactionRelationship(Factions::Alien2, FactionRelationship::Ally);
-
-	AGlobalSpawner::spawnerObject = GetWorld()->SpawnActor<AGlobalSpawner>(spawner);
-	GetWorld()->SpawnActor<AEventSystemManager>(eventSystemManagerPrefab);
-	if (pathingVisualizerPrefab)
-		GetWorld()->SpawnActor<APathingVisualizer>(pathingVisualizerPrefab);
 
 	timeScale = 1.f;
 	dateTickUpdates.totalDateTicks = 0;
@@ -86,18 +48,17 @@ void ACapstoneProjectGameModeBase::BeginPlay()
 	dateTickUpdates.hourTick = false;
 	dateTickUpdates.dayTick = false;
 	dateTickUpdates.monthTick = false;
-	//FindExistingBuildingsAndTroops();
-	//FindExistingHexes();
 
 	onGameReady.Broadcast();
 }
 
 void ACapstoneProjectGameModeBase::Tick(float DeltaTime)
 {
-	Harvest(DeltaTime);
+	if (!AFactionManager::Initialized()) return;
+
 	Scan(DeltaTime);
 	DateTick(DeltaTime);
-	CheckHumanPop();
+	//CheckHumanPop();
 	CheckDate();
 
 	//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, FString::Printf(TEXT("Enemy has %d targets"), activeFactions[Factions::Alien1]->targetList.Num()));
@@ -227,57 +188,6 @@ float ACapstoneProjectGameModeBase::GetTimeTillNextTick()
 	return FMath::Clamp(1.f - currSeconds, 0.f, 1.f);
 }
 
-EFactions ACapstoneProjectGameModeBase::CreateNewFaction()
-{
-	//Advance in the Factions enum, element 0 is None
-	++factionCount;
-	
-	//Get the selected faction in the Factions enum
-	EFactions selectedFaction = static_cast<EFactions>(factionCount);
-
-	//Create a new Faction instance
-	UFaction* newFaction = NewObject<UFaction>();
-	newFaction->AddToRoot();
-
-	AFactionController* factionController = selectedFaction == EFactions::Human ? nullptr :
-		GetWorld()->SpawnActor<AFactionController>(factionControllerPrefab ? factionControllerPrefab : AFactionController::StaticClass());
-
-	//Make the new Faction instance aware of the faction it's assigned to
-	newFaction->SetFaction(selectedFaction);
-	newFaction->SetFoodAndDeathCosts(
-		selectedFaction == EFactions::Human ? humanWorkers : alienWorkers, 
-		popDeathsPerFoodMissing, popDeathsPerPowerMissing);
-
-	if (factionController)
-	{
-		newFaction->SetFactionController(factionController);
-		factionController->SetFaction(newFaction);
-	}
-
-	//In the global faction dictionary, add the selected faction as a new key and the Faction instance as its value
-	activeFactions.Add(selectedFaction, newFaction);
-
-	//Return the selected faction
-	return selectedFaction;
-}
-
-void ACapstoneProjectGameModeBase::Harvest(float& DeltaTime)
-{
-	if (currentHarvestTime > 0)
-	{
-		currentHarvestTime -= DeltaTime * timeScale;
-		return;
-	}
-	for (auto& faction : activeFactions)
-	{
-		for (auto& resource : faction.Value->resourceInventory)
-		{
-			faction.Value->CollectResource(resource.Key, faction.Value->resourceInventory[resource.Key].resourcePerTick);
-		}
-	}
-	currentHarvestTime = harvestTickLength;
-}
-
 void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 {
 	if (currentScanTime > 0)
@@ -288,87 +198,9 @@ void ACapstoneProjectGameModeBase::Scan(float& DeltaTime)
 	currentScanTime = visibilityScanRate;
 }
 
-void ACapstoneProjectGameModeBase::UpdateBuildings()
-{
-	for (auto& faction : activeFactions)
-	{
-		/*for (ABuilding* building : faction.Value->allBuildings)
-		{
-			building->HealOverTime();
-		}*/
-	}
-}
-
-void ACapstoneProjectGameModeBase::FeedPop()
-{
-	for (auto &faction : activeFactions)
-	{
-		faction.Value->FeedPop();
-	}
-}
-
-void ACapstoneProjectGameModeBase::ConsumeEnergy()
-{
-	for (auto& faction : activeFactions)
-	{
-		faction.Value->ConsumeEnergy();
-	}
-}
-
-void ACapstoneProjectGameModeBase::FindExistingBuildingsAndTroops()
-{
-	TArray<AActor*> buildings; 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABuilding::StaticClass(), buildings);
-
-	for (int i = 0; i < buildings.Num(); i++)
-	{
-		ABuilding* building = Cast<ABuilding>(buildings[i]);
-		if (FUnitData* data = building->GetUnitData())
-		{
-			EFactions buildingFaction = data->GetFaction();
-			if (activeFactions.Contains(buildingFaction))
-			{
-				activeFactions[buildingFaction]->AddBuildingToFaction(building);
-			}
-		}
-	}
-
-	TArray<AActor*> troops;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATroop::StaticClass(), troops);
-
-	for (int i = 0; i < troops.Num(); i++)
-	{
-		ATroop* troop = Cast<ATroop>(troops[i]);
-		EFactions troopFaction = troop->GetUnitData()->GetFaction();
-		if (activeFactions.Contains(troopFaction))
-		{
-			activeFactions[troopFaction]->AddTroopToFaction(troop);
-		}
-	}
-}
-
-void ACapstoneProjectGameModeBase::FindExistingHexes()
-{
-	TArray<AActor*> hexes;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseHex::StaticClass(), hexes);
-
-	for (int i = 0; i < hexes.Num(); i++)
-	{
-		ABaseHex* hex = Cast<ABaseHex>(hexes[i]);
-	}
-}
-
-void ACapstoneProjectGameModeBase::UpdateResourceCosts()
-{
-	for (auto& faction : activeFactions)
-	{
-		faction.Value->UpdateResourceCosts();
-	}
-}
-
 void ACapstoneProjectGameModeBase::CheckHumanPop()
 {
-	FWorkerStats workers = activeFactions[EFactions::Human]->availableWorkers[WorkerType::Organic];
+	FWorkerStats workers = AFactionManager::GetFactionObject(EFactions::Human)->availableWorkers[WorkerType::Organic];
 
 	if (workers.available + workers.working < 25)
 	{

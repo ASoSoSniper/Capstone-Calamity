@@ -9,6 +9,7 @@
 #include "Faction.h"
 #include "BasePlayerController.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Managers/FactionManager.h"
 
 void ATroop::BeginPlay()
 {
@@ -169,8 +170,7 @@ float ATroop::GetRemainingHexTraversalTime() const
 
 void ATroop::InitTroop(const EFactions& factionType, const UnitTypes& unitType)
 {
-	using GameMode = ACapstoneProjectGameModeBase;
-	if (!GameMode::activeFactions.Contains(factionType)) return;
+	if (!AFactionManager::GetFactionObject(factionType)) return;
 
 	unitData = new FUnitData(factionType, unitType);
 	InitTroop(unitData);
@@ -180,15 +180,10 @@ void ATroop::InitTroop(FUnitData* data)
 {
 	unitData = data;
 
-	using GameMode = ACapstoneProjectGameModeBase;
 	EFactions factionType = unitData->GetFaction();
 
-	if (GameMode::activeFactions.Contains(factionType))
-	{
-		UFaction* factionObject = GameMode::activeFactions[factionType];
-		factionObject->AddTroopToFaction(this);
-		faction = factionObject;
-	}
+	faction = AFactionManager::GetFactionObject(factionType);
+	faction->AddTroopToFaction(this);
 
 	visibility->SetupComponent(unitData, mesh);
 	SphereCheck(20.f);
@@ -242,7 +237,7 @@ void ATroop::Destroyed()
 	{
 		EFactions factionType = unitData->GetFaction();
 
-		ACapstoneProjectGameModeBase::activeFactions[factionType]->RemoveTroopFromFaction(this);
+		faction->RemoveTroopFromFaction(this);
 		hexNav->GetCurrentHex()->troopsInHex.Remove(this);
 
 		if (selectedByPlayer)

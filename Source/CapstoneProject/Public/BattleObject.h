@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.h"
 #include "HexNav.h"
-#include "GlobalSpawner.h"
 #include "UnitActions.h"
 #include "Components/AudioComponent.h"
 #include "CombatAnims.h"

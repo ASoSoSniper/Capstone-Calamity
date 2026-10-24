@@ -2,7 +2,9 @@
 
 
 #include "TroopFactory.h"
+#include "GlobalSpawner.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "BasePlayerController.h"
 
 ATroopFactory::ATroopFactory()
 {

@@ -2,12 +2,12 @@
 
 
 #include "PathingVisualizer.h"
-#include "CapstoneProjectGameModeBase.h"
 #include "Faction.h"
 #include "FactionController.h"
 #include "PathingConditionDisplay.h"
 #include "Components/ArrowComponent.h"
 #include "UAI_PriorityManager_Troops.h"
+#include "Managers/FactionManager.h"
 
 // Sets default values
 APathingVisualizer::APathingVisualizer()
@@ -35,7 +35,7 @@ void APathingVisualizer::BeginPlay()
 
 void APathingVisualizer::BindFactions()
 {
-	const TMap<EFactions, UFaction*>& factions = ACapstoneProjectGameModeBase::activeFactions;
+	const TMap<EFactions, UFaction*>& factions = AFactionManager::GetAllFactions();
 
 	for (EFactions f : trackedFactions)
 	{
