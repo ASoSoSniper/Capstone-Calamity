@@ -9,14 +9,6 @@ UHexNav::UHexNav()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
-}
-
-void UHexNav::BeginPlay()
-{
-	AMovementAI* movement = Cast<AMovementAI>(GetOwner());
-	movableEntity = movement != nullptr;
 }
 
 void UHexNav::SetCurrentHex(AActor* hex)
@@ -37,8 +29,6 @@ void UHexNav::SetTargetHex(AActor* hex)
 
 void UHexNav::SetTargetHex(const ABaseHex* hex)
 {
-	if (!movableEntity) return;
-
 	targetHex = hex;
 }
 

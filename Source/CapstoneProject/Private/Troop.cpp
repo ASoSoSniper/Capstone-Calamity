@@ -170,6 +170,7 @@ float ATroop::GetRemainingHexTraversalTime() const
 
 void ATroop::InitTroop(const EFactions& factionType, const UnitTypes& unitType)
 {
+	if (unitData) return;
 	if (!AFactionManager::GetFactionObject(factionType)) return;
 
 	unitData = new FUnitData(factionType, unitType);

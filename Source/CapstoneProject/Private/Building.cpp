@@ -81,6 +81,8 @@ FUnitData* ABuilding::GetUnitData() const
 
 void ABuilding::InitBuilding(const EFactions& factionType)
 {
+	if (faction && unitData) return;
+
 	faction = AFactionManager::GetFactionObject(factionType);
 	if (!faction) return;
 

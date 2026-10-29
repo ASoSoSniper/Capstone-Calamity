@@ -465,32 +465,29 @@ TArray<FTroopUIData> ABasePlayerController::GetAllStoredTroops(ATroopStorage* se
 FHexDisplay ABasePlayerController::GetHexDisplayInfo()
 {
 	FHexDisplay display;
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
-	if (!hex) return display;
+	if (!selectedHex) return display;
 
-	display = hex->GetDisplayInfo();
+	display = selectedHex->GetDisplayInfo();
 
 	return display;
 }
 FCurrentResourceYields ABasePlayerController::GetHexResourceYields()
 {
 	FCurrentResourceYields yields = FCurrentResourceYields{};
+	if (!selectedHex) return yields;
 
-	if (selectedHex) yields = selectedHex->GetCurrentResourceYields();
-
-	return yields;
+	return selectedHex->GetCurrentResourceYields();
 }
 
 FWorkersInHex ABasePlayerController::GetWorkersInHex()
 {
 	FWorkersInHex workers = FWorkersInHex{ 0,0,0 };
 
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
-	if (!hex) return workers;
+	if (!selectedHex) return workers;
 
-	workers.humans = hex->workersInHex[WorkerType::Organic];
-	workers.robots = hex->workersInHex[WorkerType::Robot];
-	workers.maxWorkers = hex->GetMaxWorkers();
+	workers.humans = selectedHex->workersInHex[WorkerType::Organic];
+	workers.robots = selectedHex->workersInHex[WorkerType::Robot];
+	workers.maxWorkers = selectedHex->GetMaxWorkers();
 
 	return workers;
 }
@@ -517,11 +514,9 @@ FWorkerSliders ABasePlayerController::SetWorkerCount(FWorkerSliders sliders)
 //FOR BLUEPRINT: Checks if selected hex has a building
 bool ABasePlayerController::HexHasBuilding()
 {
-	ABaseHex* hex = Cast<ABaseHex>(selectedWorldObject);
+	if (!selectedHex) return false;
 
-	if (!hex) return false;
-
-	return hex->building != nullptr;
+	return selectedHex->building != nullptr;
 }
 bool ABasePlayerController::UnitTypeOnHex(UnitTypes type)
 {

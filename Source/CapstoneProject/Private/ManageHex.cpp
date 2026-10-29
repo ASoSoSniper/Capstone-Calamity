@@ -15,6 +15,9 @@ void UManageHex::Select(AActor* selectedObject)
 	ABaseHex* hex = Cast<ABaseHex>(selectedObject);
 	if (hex)
 	{
+		if (hex->building)
+			hex = hex->building->hexNav->GetCurrentHex();
+
 		controller->selectedHex = hex;
 		controller->PlayUIHexSound(hex->GetHexTerrain(), hex);
 		controller->onHexSelected.Broadcast(hex);

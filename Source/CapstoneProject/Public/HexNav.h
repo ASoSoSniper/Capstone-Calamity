@@ -17,10 +17,6 @@ public:
 	// Sets default values for this component's properties
 	UHexNav();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 public:	
 
 	void SetCurrentHex(AActor* hex);
@@ -35,6 +31,4 @@ private:
 	UPROPERTY(VisibleAnywhere) const ABaseHex* targetHex;
 
 	UPROPERTY(VisibleAnywhere) ABaseHex* currentHex;
-
-	bool movableEntity = false;
 };

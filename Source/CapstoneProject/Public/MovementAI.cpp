@@ -30,7 +30,6 @@ AMovementAI::AMovementAI()
 	mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 
 	mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	
 }
 
 // Called when the game starts or when spawned

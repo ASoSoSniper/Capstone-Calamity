@@ -380,13 +380,6 @@ bool ABaseHex::CanPutWorkersOnHex()
 #pragma region Workers
 int ABaseHex::SetWorkers(WorkerType worker, int desiredWorkers)
 {
-	if (building)
-	{
-		ABaseHex* centerHex = building->hexNav->GetCurrentHex();
-		if (centerHex != this)
-			return centerHex->SetWorkers(worker, desiredWorkers);
-	}
-
 	int changedWorkerCount = 0;
 
 	if (desiredWorkers > workersInHex[worker])
@@ -396,15 +389,6 @@ int ABaseHex::SetWorkers(WorkerType worker, int desiredWorkers)
 	else if (desiredWorkers < workersInHex[worker])
 	{
 		changedWorkerCount = RemoveWorkers(worker, workersInHex[worker] - desiredWorkers);
-	}
-
-	if (building)
-	{
-		TSet<ABaseHex*> buildingHexes = building->GetOccupiedHexes();
-		for (ABaseHex* hex : buildingHexes)
-		{
-			if (hex != this) hex->workersInHex[worker] = workersInHex[worker];
-		}
 	}
 
 	onWorkersSet.Broadcast(this);
