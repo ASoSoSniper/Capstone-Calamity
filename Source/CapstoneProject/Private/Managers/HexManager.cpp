@@ -363,9 +363,9 @@ void AHexManager::CreateHexGrid()
 	rockHex.terrain = TerrainType::TheRock;
 	SetTilesInRadius(rockHex, seedGrid, AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::RockCity].size, terrainSurroundingImportantTiles);
 
-	for (int x = 0; x < gridRows; x++)
+	for (int x = 0; x < gridColumns; x++)
 	{
-		for (int y = 0; y < gridColumns; y++)
+		for (int y = 0; y < gridRows; y++)
 		{
 			HexSeed& currentSeed = seedGrid[x][y];
 
@@ -384,16 +384,24 @@ void AHexManager::CreateHexGrid()
 			newHex->PrintCoordinates(x, y);
 
 			newHex->SetHexTerrain(currentSeed.terrain);
-			if (currentSeed.terrain == TerrainType::TheRock)
-			{
-				AGlobalSpawner::spawnerObject->SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::RockCity, newHex, true);
-			}
 
 			hexArray[x][y] = newHex;
 		}
 	}
 
 	biomeMask->BuildGrid(hexArray);
+
+	for (int x = 0; x < gridColumns; x++)
+	{
+		for (int y = 0; y < gridRows; y++)
+		{
+			ABaseHex* hex = hexArray[x][y];
+			if (!hex) continue;
+			biomeMask->SetTileOwner(hex->GetActorLocation(), (uint8)hex->GetHexOwner());
+		}
+	}
+
+	AGlobalSpawner::spawnerObject->SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::RockCity, hexArray[rockHex.coords.X][rockHex.coords.Y], true);
 }
 
 void AHexManager::CalculateHexSeed(HexSeed& seed, const TArray<TArray<HexSeed>>& seedGrid)
