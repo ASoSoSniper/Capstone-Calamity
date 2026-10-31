@@ -76,15 +76,11 @@ public:
 
 	void DragCamera();
 	void RotateCamera(const float& deltaTime);
-	void PanRight(float axis);
-	void PanUp(float axis);
 	void ZoomIn(float axis);
+
 	UPROPERTY(EditAnywhere) float cameraVel = 750.0f;
 	UPROPERTY(EditAnywhere) float rotationSpeed = 500.0f;
-	float camMinX = -1000;
-	float camMaxX = 1000;
-	float camMinY = -1000;
-	float camMaxY = 1000;
+
 	float camMinZ = 100;
 	float camMaxZ = 600;
 	float currZoom = 0;
@@ -102,6 +98,8 @@ private:
 	UPROPERTY(VisibleAnywhere) bool rightClickHeld = false;
 	float mouseX = 0.f;
 	float mouseY = 0.f;
+
+	ABaseHex* foundHex = nullptr;
 
 	FVector2D previousMouseLocation;
 	FVector2D currentMouseLocation;
