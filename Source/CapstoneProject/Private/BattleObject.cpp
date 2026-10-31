@@ -9,6 +9,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "BasePlayerController.h"
 #include "Types/UnitData.h"
+#include "Managers/FactionManager.h"
 
 #pragma region General Logic
 ABattleObject::ABattleObject()
@@ -365,8 +366,8 @@ TArray<FFactionDisplay> ABattleObject::GetGroupDisplayData() const
 
 	if (currentBattle.Group1.IsEmpty() || currentBattle.Group2.IsEmpty()) return data;
 
-	data.Add(*AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(currentBattle.group1Leader));
-	data.Add(*AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(currentBattle.group2Leader));
+	data.Add(*AFactionManager::GetFactionDisplayPreset(currentBattle.group1Leader));
+	data.Add(*AFactionManager::GetFactionDisplayPreset(currentBattle.group2Leader));
 
 	return data;
 }

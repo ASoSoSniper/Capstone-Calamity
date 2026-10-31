@@ -580,7 +580,6 @@ void AHexManager::CreateHexModel(TerrainType terrainType, ABaseHex* hex)
 	hex->visibility->ResetComponent();
 	hex->visibility->SetupComponent(owner, hex->hexMesh);
 	hex->visibility->SetupComponent(owner, hex->hexMeshAttachment);
-	hex->visibility->SetupFactionComponent(hex->hexBase);
 
 
 	// Alex Code - Write the biome and hand the material its parameters

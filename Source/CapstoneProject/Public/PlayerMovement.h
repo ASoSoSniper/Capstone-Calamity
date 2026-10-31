@@ -7,8 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "SoundBox.h"
+#include "Types/CinematicObject.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GlobalSpawner.h"
 #include "PlayerMovement.generated.h"
 
 class ABasePlayerController;

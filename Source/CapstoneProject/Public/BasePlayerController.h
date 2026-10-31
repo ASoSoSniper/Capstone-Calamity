@@ -21,6 +21,8 @@
 #include "PlayerMovement.h"
 #include "stdlib.h"
 #include "Faction.h"
+#include "Types/DisplayInfo.h"
+#include "Types/TooltipInfo.h"
 #include "BasePlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHexSelected, ABaseHex*, selectedHex);

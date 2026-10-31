@@ -78,7 +78,6 @@ public:
 
 	void SetupComponent(EFactions setFaction, UMeshComponent* meshComponent);
 	void SetupComponent(FUnitData* data, UMeshComponent* meshComponent);
-	void SetupFactionComponent(UMeshComponent* meshComponent);
 	void ResetComponent();
 
 	FOnHexRevealed onHexRevealed;
@@ -97,7 +96,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Debug") bool infiniteRange;
 
 	UPROPERTY() TArray<UMaterialInstanceDynamic*> meshMaterials;
-	UPROPERTY() UMaterialInstanceDynamic* factionMat;
 	TMap<EFactions, FVisibility> factionVisibility;
 	FUnitData* unitData;
 	UPROPERTY() UHexNav* hexNav;

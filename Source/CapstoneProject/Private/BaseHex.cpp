@@ -37,16 +37,6 @@ ABaseHex::ABaseHex()
 	hexMeshAttachment = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Attachment"));
 	hexMeshAttachment->SetupAttachment(RootComponent);
 
-	hexBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hex Base Mesh"));
-	hexBase->SetupAttachment(RootComponent);
-	UStaticMesh* baseAsset = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh '/Game/3DModels/Hex_Base.Hex_Base'"));
-	if (baseAsset)
-	{
-		hexBase->SetStaticMesh(baseAsset);
-	}
-	hexBase->SetRelativeScale3D(FVector(1.2f, 1.2f, 0.5f));
-	hexBase->SetRelativeLocation(FVector(0.f, 0.f, -4.f));
-
 	interactable = CreateDefaultSubobject<UInteractable>(TEXT("Interaction Component"));
 	interactable->CreateExtraCollision(hexMeshAttachment);
 

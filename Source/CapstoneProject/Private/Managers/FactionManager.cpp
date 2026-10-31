@@ -3,6 +3,7 @@
 
 #include "Managers/FactionManager.h"
 #include "CapstoneProjectGameModeBase.h"
+#include "Types/DisplayInfo.h"
 
 AFactionManager* AFactionManager::_instance = nullptr;
 
@@ -82,6 +83,13 @@ UFaction* AFactionManager::GetFactionObject(EFactions faction)
 const TMap<EFactions, UFaction*>& AFactionManager::GetAllFactions()
 {
 	return _instance->_activeFactions;
+}
+
+const FFactionDisplay* AFactionManager::GetFactionDisplayPreset(EFactions faction)
+{
+	if (!_instance->_factionDisplayPresets.Contains(faction)) return nullptr;
+
+	return &_instance->_factionDisplayPresets[faction];
 }
 
 UMaterialInterface* AFactionManager::GetFactionColor(EFactions faction)

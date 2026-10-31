@@ -34,7 +34,7 @@ AGlobalSpawner* AGlobalSpawner::spawnerObject = nullptr;
 AGlobalSpawner::AGlobalSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	using SB = SpawnableBuildings;
 	using Res = EStratResources;
@@ -550,22 +550,6 @@ void AGlobalSpawner::BeginPlay()
 	spawnerObject = this;
 	AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
 	controller = Cast<ABasePlayerController>(controllerTemp);
-}
-void AGlobalSpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (!controller)
-	{
-		AActor* controllerTemp = UGameplayStatics::GetActorOfClass(GetWorld(), ABasePlayerController::StaticClass());
-		controller = Cast<ABasePlayerController>(controllerTemp);
-	}
-}
-FFactionDisplay* AGlobalSpawner::GetFactionDisplayPreset(EFactions faction)
-{
-	if (!factionDisplayPresets.Contains(faction)) return nullptr;
-
-	return &factionDisplayPresets[faction];
 }
 #pragma endregion
 

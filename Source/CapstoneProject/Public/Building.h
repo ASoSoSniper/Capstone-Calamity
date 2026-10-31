@@ -13,6 +13,7 @@
 #include "CinematicPosition.h"
 #include "UAI_Controller.h"
 #include "Types/UnitData.h"
+#include "Types/CinematicObject.h"
 #include "Building.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHexesClaimed);

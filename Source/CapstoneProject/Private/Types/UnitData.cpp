@@ -4,7 +4,6 @@
 #include "Types/UnitData.h"
 #include "Faction.h"
 #include "Managers/FactionManager.h"
-#include "GlobalSpawner.h"
 
 EFactions FUnitData::GetFaction() const
 {

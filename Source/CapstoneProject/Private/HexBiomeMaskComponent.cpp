@@ -4,9 +4,9 @@
 #include "BaseHex.h"
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "GlobalSpawner.h" // Territory (Option B)
 #include "Kismet/GameplayStatics.h"       // Fog clouds
 #include "Components/StaticMeshComponent.h" // Fog clouds
+#include "Managers/FactionManager.h" // Territory (Option B)
 
 UHexBiomeMaskComponent::UHexBiomeMaskComponent()
 {
@@ -257,14 +257,11 @@ void UHexBiomeMaskComponent::ApplyToMaterial(UMaterialInstanceDynamic* material)
 
 
 	// Territory (Option B): send each faction's tileColor to the material as FactionColor1 ... FactionColor7
-	if (AGlobalSpawner* spawner = Cast<AGlobalSpawner>(GetOwner()))
+	for (uint8 i = 1; i < 8; i++)
 	{
-		for (uint8 i = 1; i < 8; i++)
+		if (const FFactionDisplay* display = AFactionManager::GetFactionDisplayPreset((EFactions)i))
 		{
-			if (FFactionDisplay* display = spawner->GetFactionDisplayPreset((EFactions)i))
-			{
-				material->SetVectorParameterValue(FName(*FString::Printf(TEXT("FactionColor%d"), i)), display->tileColor);
-			}
+			material->SetVectorParameterValue(FName(*FString::Printf(TEXT("FactionColor%d"), i)), display->tileColor);
 		}
 	}
 }

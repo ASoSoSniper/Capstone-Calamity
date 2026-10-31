@@ -7,7 +7,7 @@
 #include "FactionEnum.h"
 #include "WorkerStats.h"
 #include "UnitActions.h"
-#include "GlobalSpawner.h"
+#include "Types/CinematicObject.h"
 #include "CapstoneProjectGameModeBase.generated.h"
 
 USTRUCT(BlueprintType, Blueprintable)

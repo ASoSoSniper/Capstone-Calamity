@@ -60,24 +60,10 @@ void UMeshVisibility::SetupComponent(FUnitData* data, UMeshComponent* meshCompon
 	SetupComponent(data->GetFaction(), meshComponent);
 }
 
-void UMeshVisibility::SetupFactionComponent(UMeshComponent* meshComponent)
-{
-	if (!meshComponent || factionMat) return;
-
-	meshComponent->EmptyOverrideMaterials();
-
-	UMaterialInterface* material = meshComponent->GetMaterial(0);
-	UMaterialInstanceDynamic* dynamic = UMaterialInstanceDynamic::Create(material, meshComponent);
-
-	factionMat = dynamic;
-	meshComponent->SetMaterial(0, dynamic);
-}
-
 void UMeshVisibility::ResetComponent()
 {
 	faction = EFactions::None;
 	meshMaterials.Empty();
-	factionMat = nullptr;
 }
 
 // Called every frame
@@ -215,11 +201,6 @@ void UMeshVisibility::RevealModelsAndMeshes()
 			if (debug) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Discovered by player"));
 		}
 		hexParent->ToggleUI(true);
-		if (VisibleToFaction(EFactions::Human))
-		{
-			if (FFactionDisplay* display = AGlobalSpawner::spawnerObject->GetFactionDisplayPreset(faction))
-				factionMat->SetVectorParameterValue(FName("Visibility"), display->tileColor);
-		}
 		break;
 
 	case ObjectTypes::Building:

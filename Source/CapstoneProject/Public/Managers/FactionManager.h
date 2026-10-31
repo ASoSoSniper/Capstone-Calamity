@@ -11,6 +11,8 @@
 #include "StratResources.h"
 #include "FactionManager.generated.h"
 
+struct FFactionDisplay;
+
 UCLASS(HideCategories = (Rendering, Replication, Input, Actor, LOD, HLOD, Collision, Physics, Cooking, Events, WorldPartition, Events, DataLayers))
 class CAPSTONEPROJECT_API AFactionManager : public AActor
 {
@@ -32,6 +34,7 @@ public:
 
 	static UFaction* GetFactionObject(EFactions faction);
 	static const TMap<EFactions, UFaction*>& GetAllFactions();
+	static const FFactionDisplay* GetFactionDisplayPreset(EFactions faction);
 	static UMaterialInterface* GetFactionColor(EFactions faction);
 	static bool FactionAIEnabled();
 
@@ -55,6 +58,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Faction Properties") bool enableFactionAI = true;
 	UPROPERTY(EditAnywhere, Category = "Faction Properties") int _alienFactionQuantity = 2;
 	UPROPERTY(EditAnywhere, Category = "Faction Properties") TSubclassOf<class AFactionController> factionControllerPrefab;
+	UPROPERTY(EditAnywhere, Category = "Faction Properties") TMap<EFactions, FFactionDisplay> _factionDisplayPresets;
 
 	UPROPERTY(EditAnywhere, Category = "Global", meta = (ClampMin = 0)) int32 startingResourceCap = 300;
 	UPROPERTY(EditAnywhere, Category = "Global", meta = (ClampMin = 0)) int32 ticksTillHarvest = 8;

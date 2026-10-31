@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "GlobalSpawner.h"
+#include "Types/CinematicObject.h"
 #include "CinematicPosition.generated.h"
 
 

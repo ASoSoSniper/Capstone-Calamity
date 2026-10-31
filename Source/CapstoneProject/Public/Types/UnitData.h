@@ -9,6 +9,15 @@
 #include "UnitData.generated.h"
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FUnitComposition
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int quantity = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float compPercent = 0.f;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FUnitData
 {
 	GENERATED_USTRUCT_BODY()
