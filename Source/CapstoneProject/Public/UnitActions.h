@@ -5,6 +5,9 @@
 #include "StratResources.h"
 #include "TerrainEnum.h"
 #include "CoreMinimal.h"
+#include "Types/SpawnableBuildings.h"
+#include "Types/UnitTypes.h"
+#include "Types/WorkerType.h"
 #include "UnitActions.generated.h"
 
 /**
@@ -37,45 +40,6 @@ enum class ActionStates : uint8
 	BaseManage,
 	TroopManage,
 	BattleManage
-};
-UENUM(BlueprintType)
-enum class SpawnableBuildings : uint8
-{
-	None,
-	MiningStation,
-	Farmland,
-	PowerPlant,
-	Storage,
-	DefenseStation,
-	RobotFactory,
-	RobotBarracks,
-	TradeOutpost,
-	Embassy,
-	PoliceStation,
-	Outpost,
-	Capitol,
-	AlienCity,
-	RockCity
-};
-
-UENUM(BlueprintType)
-enum class UnitTypes : uint8
-{
-	None,
-	Cavalry,
-	Infantry,
-	Ranged,
-	Shielder,
-	Scout,
-	Settler,
-	Army
-};
-
-UENUM()
-enum class WorkerType
-{
-	Organic,
-	Robot
 };
 
 UENUM()
