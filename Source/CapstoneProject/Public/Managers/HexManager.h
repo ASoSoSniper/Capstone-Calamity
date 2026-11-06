@@ -27,7 +27,7 @@ public:
 	static int GetGridColumnMax();
 	static void UpdateHexOwnerVisual(ABaseHex* hex);
 	static void RevealHex(ABaseHex* hex);
-	static TArray<FVector> GetWorldCornerCoordinates();
+	static FBox GetMapBounds();
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,6 +41,7 @@ private:
 		int currentSeed;
 	};
 
+	void CalculateMapBoundingBox();
 	void CreateHexGrid();
 	void CalculateHexSeed(HexSeed& seed, const TArray<TArray<HexSeed>>& seedGrid);
 	void SetTilesInRadius(const HexSeed& seed, TArray<TArray<HexSeed>>& seedGrid, EBuildingSize size, TerrainType terrain);
@@ -48,7 +49,8 @@ private:
 
 	static AHexManager* instance;
 	TArray<TArray<ABaseHex*>> hexArray;
-	TArray<FVector> worldCornerCoordinates;
+
+	static FBox mapBounds;
 
 	UPROPERTY(VisibleAnywhere, Category = "World Generation") UHexBiomeMaskComponent* biomeMask;
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;

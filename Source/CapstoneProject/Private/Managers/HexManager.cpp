@@ -4,8 +4,10 @@
 #include "Managers/HexManager.h"
 #include "GlobalSpawner.h"
 #include "HexBiomeMaskComponent.h"
+#include "stdlib.h"
 
 AHexManager* AHexManager::instance = nullptr;
+FBox AHexManager::mapBounds = FBox(FVector::One() * std::numeric_limits<float>::min(), FVector::One() * std::numeric_limits<float>::max());
 
 // Sets default values
 AHexManager::AHexManager()
@@ -330,6 +332,7 @@ void AHexManager::BeginPlay()
 	instance = this;
 
 	CreateHexGrid();
+	CalculateMapBoundingBox();
 }
 
 void AHexManager::CreateHexGrid()
@@ -542,6 +545,53 @@ TSet<FVector2D> AHexManager::GetCoordinatesInRadius(FVector2D coordinate, EBuild
 	return tiles;
 }
 
+void AHexManager::CalculateMapBoundingBox()
+{
+	float xMax = std::numeric_limits<float>::min();
+	float xMin = std::numeric_limits<float>::max();
+	float yMax = std::numeric_limits<float>::min();
+	float yMin = std::numeric_limits<float>::max();
+
+	for (const TArray<ABaseHex*>& array : hexArray)
+	{
+		for (ABaseHex* hex : array)
+		{
+			if (!hex)
+			{
+				continue;
+			}
+
+			FBox hexBoundingBox = hex->GetComponentsBoundingBox();
+			if (xMax < hexBoundingBox.Max.X)
+			{
+				xMax = hexBoundingBox.Max.X;
+			}
+
+			if (xMin > hexBoundingBox.Min.X)
+			{
+				xMin = hexBoundingBox.Min.X;
+			}
+
+			if (yMax < hexBoundingBox.Max.Y)
+			{
+				yMax = hexBoundingBox.Max.Y;
+			}
+
+			if (yMin > hexBoundingBox.Min.Y)
+			{
+				yMin = hexBoundingBox.Min.Y;
+			}
+		}
+	}
+
+	FVector maxVector = FVector(xMax, yMax, gridOrigin.Z);
+	FVector minVector = FVector(xMin, yMin, gridOrigin.Z);
+
+	FBox mapBoundsBox = FBox(minVector, maxVector);
+
+	mapBounds = mapBoundsBox;
+}
+
 FHexInstance AHexManager::CreateHexInstance(TerrainType terrain)
 {
 	return FHexInstance(instance->hexInfo[terrain]);
@@ -631,9 +681,7 @@ void AHexManager::RevealHex(ABaseHex* hex)
 	instance->biomeMask->RevealTile(hex->GetActorLocation());
 }
 
-TArray<FVector> AHexManager::GetWorldCornerCoordinates()
+FBox AHexManager::GetMapBounds()
 {
-
-
-	return TArray<FVector>();
+	return mapBounds;
 }

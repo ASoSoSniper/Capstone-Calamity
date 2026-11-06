@@ -4,6 +4,7 @@
 #include "PlayerMovement.h"
 #include "CapstoneProjectGameModeBase.h"
 #include "BasePlayerController.h"
+#include "Managers/HexManager.h"
 
 // Sets default values
 APlayerMovement::APlayerMovement()
@@ -162,7 +163,7 @@ void APlayerMovement::GetMouseY(float axis)
 
 void APlayerMovement::DragCamera()
 {
-	if (controlState != Free || !clickHeld || !foundHex) return;
+	if (controlState != Free || !clickHeld) return;
 
 	float x;
 	float y;
@@ -201,11 +202,13 @@ void APlayerMovement::RotateCamera(const float& deltaTime)
 
 void APlayerMovement::PanRight(float axis)
 {
-	if (controlState != Free || !foundHex) return;
+	if (controlState != Free) return;
 
 	FVector currLocation = GetActorLocation();
 
 	currLocation += GetActorRightVector() * axis * cameraVel * FApp::GetDeltaTime();
+	currLocation.X = FMath::Clamp(currLocation.X, AHexManager::GetMapBounds().Min.X, AHexManager::GetMapBounds().Max.X);
+	currLocation.Y = FMath::Clamp(currLocation.Y, AHexManager::GetMapBounds().Min.Y, AHexManager::GetMapBounds().Max.Y);
 	SetActorLocation(currLocation);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
@@ -213,12 +216,14 @@ void APlayerMovement::PanRight(float axis)
 
 void APlayerMovement::PanUp(float axis)
 {
-	if (controlState != Free || !foundHex) return;
+	if (controlState != Free) return;
 
 	FVector currLocation = GetActorLocation();
 
 	FVector forwardVector = FVector::CrossProduct(GetActorRightVector(), FVector::UpVector);
 	currLocation += forwardVector * axis * cameraVel * FApp::GetDeltaTime();
+	currLocation.X = FMath::Clamp(currLocation.X, AHexManager::GetMapBounds().Min.X, AHexManager::GetMapBounds().Max.X);
+	currLocation.Y = FMath::Clamp(currLocation.Y, AHexManager::GetMapBounds().Min.Y, AHexManager::GetMapBounds().Max.Y);
 	SetActorLocation(currLocation);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
