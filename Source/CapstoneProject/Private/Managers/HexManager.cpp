@@ -630,3 +630,10 @@ void AHexManager::RevealHex(ABaseHex* hex)
 
 	instance->biomeMask->RevealTile(hex->GetActorLocation());
 }
+
+TArray<FVector> AHexManager::GetWorldCornerCoordinates()
+{
+
+
+	return TArray<FVector>();
+}

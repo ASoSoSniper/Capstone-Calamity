@@ -57,6 +57,8 @@ void APlayerMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerMovement::PanRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerMovement::PanUp);
 	PlayerInputComponent->BindAxis("ZoomIn", this, &APlayerMovement::ZoomIn);
 	PlayerInputComponent->BindAxis("MouseX", this, &APlayerMovement::GetMouseX);
 	PlayerInputComponent->BindAxis("MouseY", this, &APlayerMovement::GetMouseY);
@@ -195,6 +197,31 @@ void APlayerMovement::RotateCamera(const float& deltaTime)
 
 	FVector returnPoint = gimbalPoint + GetActorForwardVector() * -distance;
 	SetActorLocation(returnPoint);
+}
+
+void APlayerMovement::PanRight(float axis)
+{
+	if (controlState != Free || !foundHex) return;
+
+	FVector currLocation = GetActorLocation();
+
+	currLocation += GetActorRightVector() * axis * cameraVel * FApp::GetDeltaTime();
+	SetActorLocation(currLocation);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("Y pos = %f"), GetActorLocation().Y));
+}
+
+void APlayerMovement::PanUp(float axis)
+{
+	if (controlState != Free || !foundHex) return;
+
+	FVector currLocation = GetActorLocation();
+
+	FVector forwardVector = FVector::CrossProduct(GetActorRightVector(), FVector::UpVector);
+	currLocation += forwardVector * axis * cameraVel * FApp::GetDeltaTime();
+	SetActorLocation(currLocation);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, FString::Printf(TEXT("X Pos = %f"), GetActorLocation().X));
 }
 
 void APlayerMovement::ZoomIn(float axis)

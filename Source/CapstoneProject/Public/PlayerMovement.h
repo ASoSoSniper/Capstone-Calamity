@@ -77,6 +77,8 @@ public:
 	void DragCamera();
 	void RotateCamera(const float& deltaTime);
 	void ZoomIn(float axis);
+	void PanRight(float axis);
+	void PanUp(float axis);
 
 	UPROPERTY(EditAnywhere) float cameraVel = 750.0f;
 	UPROPERTY(EditAnywhere) float rotationSpeed = 500.0f;

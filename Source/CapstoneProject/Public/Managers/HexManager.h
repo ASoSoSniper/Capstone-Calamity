@@ -27,6 +27,8 @@ public:
 	static int GetGridColumnMax();
 	static void UpdateHexOwnerVisual(ABaseHex* hex);
 	static void RevealHex(ABaseHex* hex);
+	static TArray<FVector> GetWorldCornerCoordinates();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,6 +48,7 @@ private:
 
 	static AHexManager* instance;
 	TArray<TArray<ABaseHex*>> hexArray;
+	TArray<FVector> worldCornerCoordinates;
 
 	UPROPERTY(VisibleAnywhere, Category = "World Generation") UHexBiomeMaskComponent* biomeMask;
 	UPROPERTY(EditAnywhere, Category = "Identity") TMap<TerrainType, FHexInfo> hexInfo;
