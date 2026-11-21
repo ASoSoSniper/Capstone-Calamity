@@ -43,6 +43,7 @@ private:
 
 	void CalculateMapBoundingBox();
 	void CreateHexGrid();
+	void CreateStartingPointsOfInterest(ABaseHex* capitolHex, ABaseHex* rockHex);
 	void CalculateHexSeed(HexSeed& seed, const TArray<TArray<HexSeed>>& seedGrid);
 	void SetTilesInRadius(const HexSeed& seed, TArray<TArray<HexSeed>>& seedGrid, EBuildingSize size, TerrainType terrain);
 	TSet<FVector2D> GetCoordinatesInRadius(FVector2D coordinate, int radius) const;

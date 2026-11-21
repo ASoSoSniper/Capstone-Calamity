@@ -423,6 +423,41 @@ void AHexManager::CreateHexGrid()
 	}
 
 	AGlobalSpawner::spawnerObject->SpawnBuildingFree(EFactions::Alien1, SpawnableBuildings::RockCity, hexArray[rockHex.coords.X][rockHex.coords.Y], true);
+	CreateStartingPointsOfInterest(hexArray[capitolHex.coords.X][capitolHex.coords.Y], hexArray[rockHex.coords.X][rockHex.coords.Y]);
+}
+
+void AHexManager::CreateStartingPointsOfInterest(ABaseHex* capitolHex, ABaseHex* rockHex)
+{
+	if (pointsOfInterest.IsEmpty() || pointOfInterestCount <= 0) return;
+
+	const int capitolControlRadius = AGlobalSpawner::spawnerObject->buildingStats[SpawnableBuildings::Capitol].vision;
+	const int rockControlRadius = AGlobalSpawner::spawnerObject->buildingStats[SpawnableBuildings::RockCity].vision;
+
+	TSet<ABaseHex*> hexes = capitolHex->GetHexesInRadius(capitolControlRadius);
+	hexes.Append(rockHex->GetHexesInRadius(rockControlRadius));
+
+	TArray<ABaseHex*> filteredList;
+
+	for (int x = 0; x < GetGridColumnMax(); x++)
+	{
+		for (int y = 0; y < GetGridRowMax(); y++)
+		{
+			ABaseHex* hex = GetHexFromCoordinates(x, y);
+			if (hex && hex->IsTraversableTerrain() && !hexes.Contains(hex))
+			{
+				filteredList.Add(hex);
+			}
+		}
+	}
+
+	for (int i = 0; i < pointOfInterestCount; i++)
+	{
+		const int randHex = FMath::RandRange(0, filteredList.Num() - 1);
+		const int randPOI = FMath::RandRange(0, pointsOfInterest.Num() - 1);
+
+		filteredList[randHex]->CreatePointOfInterest(pointsOfInterest[randPOI]);
+		filteredList.RemoveAt(randHex);
+	}
 }
 
 void AHexManager::CalculateHexSeed(HexSeed& seed, const TArray<TArray<HexSeed>>& seedGrid)
