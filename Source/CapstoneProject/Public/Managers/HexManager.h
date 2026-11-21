@@ -28,7 +28,7 @@ public:
 	static void UpdateHexOwnerVisual(ABaseHex* hex);
 	static void RevealHex(ABaseHex* hex);
 	static FBox GetMapBounds();
-
+	static float GetHexRadiusAsVisionObstacle();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,6 +45,7 @@ private:
 	void CreateHexGrid();
 	void CalculateHexSeed(HexSeed& seed, const TArray<TArray<HexSeed>>& seedGrid);
 	void SetTilesInRadius(const HexSeed& seed, TArray<TArray<HexSeed>>& seedGrid, EBuildingSize size, TerrainType terrain);
+	TSet<FVector2D> GetCoordinatesInRadius(FVector2D coordinate, int radius) const;
 	TSet<FVector2D> GetCoordinatesInRadius(FVector2D coordinate, EBuildingSize size) const;
 
 	static AHexManager* instance;
@@ -61,9 +62,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "World Generation") bool createNoneTiles = true;
 	UPROPERTY(EditAnywhere, Category = "World Generation") FVector2D capitolCoordsMin = { 4, 3 };
 	UPROPERTY(EditAnywhere, Category = "World Generation") FVector2D capitolCoordsMax = { 4, 3 };
+	UPROPERTY(EditAnywhere, Category = "World Generation") TerrainType terrainSurroundingCapitol = TerrainType::Plains;
 	UPROPERTY(EditAnywhere, Category = "World Generation") FVector2D rockCityCoordsMin = { 12, 12 };
 	UPROPERTY(EditAnywhere, Category = "World Generation") FVector2D rockCityCoordsMax = { 17, 17 };
-	UPROPERTY(EditAnywhere, Category = "World Generation") TerrainType terrainSurroundingImportantTiles = TerrainType::Plains;
+	UPROPERTY(EditAnywhere, Category = "World Generation") TerrainType terrainSurroundingRock = TerrainType::TheRock;
 
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") int gridRows = 35;
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") int gridColumns = 35;
@@ -72,4 +74,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") float stepDistanceY = -63.f;
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") int hexRandToMaintain = 5;
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") int marginForGuaranteedNoneTerrain = 2;
+	UPROPERTY(EditAnywhere, Category = "Hex Grid") float radiusAsVisionObstacle = 40.f;
 };

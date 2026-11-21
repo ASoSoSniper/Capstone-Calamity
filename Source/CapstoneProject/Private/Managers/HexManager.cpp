@@ -19,7 +19,7 @@ AHexManager::AHexManager()
 
 	hexInfo.Add(TerrainType::None,
 		FHexInfo{
-			"", "", nullptr, FRandomInt{0, 0}, FRandomInt{0, 0}, FRandomInt{0, 0}, FRandomInt{0, 0}, 0, 0, 0, 0, false,
+			"", "", nullptr, FRandomInt{0, 0}, FRandomInt{0, 0}, FRandomInt{0, 0}, FRandomInt{0, 0}, 0, 0, 0, 0, false, false,
 			// Starting Seed Size
 			5,
 			// Model
@@ -51,6 +51,8 @@ AHexManager::AHexManager()
 			// Vision
 			0,
 			// Can See Into
+			true,
+			// Can See Through
 			true,
 			// Starting Seed Size
 			5,
@@ -85,6 +87,8 @@ AHexManager::AHexManager()
 			0,
 			// Can See Into
 			true,
+			// Can See Through
+			true,
 			// Starting Seed Size
 			5,
 			// Model
@@ -118,6 +122,8 @@ AHexManager::AHexManager()
 			-1,
 			// Can See Into
 			false,
+			// Can See Through
+			true,
 			// Starting Seed Size
 			5,
 			// Model
@@ -150,6 +156,8 @@ AHexManager::AHexManager()
 			// Vision
 			1,
 			// Can See Into
+			true,
+			// Can See Through
 			true,
 			// Starting Seed Size
 			5,
@@ -184,6 +192,8 @@ AHexManager::AHexManager()
 			0,
 			// Can See Into
 			false,
+			// Can See Through
+			false,
 			// Starting Seed Size
 			5,
 			// Model
@@ -216,6 +226,8 @@ AHexManager::AHexManager()
 			// Vision
 			0,
 			// Can See Into
+			true,
+			// Can See Through
 			true,
 			// Starting Seed Size
 			5,
@@ -250,6 +262,8 @@ AHexManager::AHexManager()
 			0,
 			// Can See Into
 			true,
+			// Can See Through
+			true,
 			// Starting Seed Size
 			5,
 			// Model
@@ -282,6 +296,8 @@ AHexManager::AHexManager()
 			// Vision
 			0,
 			// Can See Into
+			true,
+			// Can See Through
 			true,
 			// Starting Seed Size
 			5,
@@ -316,6 +332,8 @@ AHexManager::AHexManager()
 			1,
 			// Can See Into
 			true,
+			// Can See Through
+			false,
 			// Starting Seed Size
 			5,
 			// Model
@@ -358,13 +376,13 @@ void AHexManager::CreateHexGrid()
 		[FMath::RandRange((int)capitolCoordsMin.X, (int)capitolCoordsMax.X)]
 		[FMath::RandRange((int)capitolCoordsMin.Y, (int)capitolCoordsMax.Y)];
 	capitolHex.terrain = TerrainType::Ship;
-	SetTilesInRadius(capitolHex, seedGrid, AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Capitol].size, terrainSurroundingImportantTiles);
+	SetTilesInRadius(capitolHex, seedGrid, AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::Capitol].size, terrainSurroundingCapitol);
 
 	HexSeed& rockHex = seedGrid
 		[FMath::RandRange((int)rockCityCoordsMin.X, (int)rockCityCoordsMax.X)]
 		[FMath::RandRange((int)rockCityCoordsMin.Y, (int)rockCityCoordsMax.Y)];
 	rockHex.terrain = TerrainType::TheRock;
-	SetTilesInRadius(rockHex, seedGrid, AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::RockCity].size, terrainSurroundingImportantTiles);
+	SetTilesInRadius(rockHex, seedGrid, AGlobalSpawner::spawnerObject->buildingCosts[SpawnableBuildings::RockCity].size, terrainSurroundingRock);
 
 	for (int x = 0; x < gridColumns; x++)
 	{
@@ -487,10 +505,9 @@ void AHexManager::SetTilesInRadius(const HexSeed& seed, TArray<TArray<HexSeed>>&
 	}
 }
 
-TSet<FVector2D> AHexManager::GetCoordinatesInRadius(FVector2D coordinate, EBuildingSize size) const
+TSet<FVector2D> AHexManager::GetCoordinatesInRadius(FVector2D coordinate, int radius) const
 {
 	int32 maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
-	int32 radius = BuildingSizeToRadius(size);
 
 	TSet<FVector2D> tiles;
 	TQueue<FVector2D> found;
@@ -592,6 +609,12 @@ void AHexManager::CalculateMapBoundingBox()
 	mapBounds = mapBoundsBox;
 }
 
+TSet<FVector2D> AHexManager::GetCoordinatesInRadius(FVector2D coordinate, EBuildingSize size) const
+{
+	int32 radius = BuildingSizeToRadius(size);
+	return GetCoordinatesInRadius(coordinate, radius);
+}
+
 FHexInstance AHexManager::CreateHexInstance(TerrainType terrain)
 {
 	return FHexInstance(instance->hexInfo[terrain]);
@@ -684,4 +707,11 @@ void AHexManager::RevealHex(ABaseHex* hex)
 FBox AHexManager::GetMapBounds()
 {
 	return mapBounds;
+}
+
+float AHexManager::GetHexRadiusAsVisionObstacle()
+{
+	if (!instance) return 0.f;
+
+	return instance->radiusAsVisionObstacle;
 }

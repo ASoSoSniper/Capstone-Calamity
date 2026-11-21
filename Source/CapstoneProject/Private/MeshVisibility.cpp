@@ -105,7 +105,7 @@ void UMeshVisibility::Scan()
 	int searchRadius = !infiniteRange ? FMath::Max(baseVision + hexVisionMod, 0) : 100;
 
 	ABaseHex* centerHex = hexNav ? hexNav->GetCurrentHex() : hexParent;
-	TSet<ABaseHex*> foundHexes = centerHex->GetHexesInRadius(searchRadius);
+	TSet<ABaseHex*> foundHexes = centerHex->GetHexesInLineOfSight(searchRadius);
 
 	for (ABaseHex* hex : foundHexes)
 	{

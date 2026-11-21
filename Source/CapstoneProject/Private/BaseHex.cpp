@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Types/UnitData.h"
 #include "Managers/FactionManager.h"
+#include "Math/Box.h"
 
 #pragma region General Logic
 ABaseHex::ABaseHex()
@@ -26,7 +27,7 @@ ABaseHex::ABaseHex()
 	if (meshAsset)
 	{
 		hexMesh->SetStaticMesh(meshAsset);
-	}	
+	}
 
 	troopAnchor = CreateDefaultSubobject<USceneComponent>("Troop Anchor");
 	troopAnchor->SetupAttachment(RootComponent);
@@ -193,6 +194,98 @@ ABaseHex* ABaseHex::FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& used
 
 	return nullptr;
 }
+TSet<ABaseHex*> ABaseHex::GetHexesInLineOfSight(const int radius) const
+{
+	TSet<ABaseHex*> hexes;
+	TArray<ABaseHex*> obstacles;
+	TQueue<const ABaseHex*> found;
+	int maxX = AHexManager::GetGridColumnMax() - 1, maxY = AHexManager::GetGridRowMax() - 1;
+
+	int dirOdd[6][2] = { {1,0}, {-1,0}, {0,-1}, {1,1}, {0, 1}, {1,-1} };
+	int dirEven[6][2] = { {1,0}, {-1,0}, {-1,-1}, {0,1}, {-1,1}, {0,-1} };
+
+	auto GetAdjacentHexes = [&](const ABaseHex* centerHex)
+		{
+			FVector2D coords = centerHex->GetHexCoordinates();
+			int (*dir)[2] = (int)coords.Y % 2 == 0 ? dirEven : dirOdd;
+
+			for (int i = 0; i < 6; i++)
+			{
+				int x = coords.X + dir[i][0];
+				int y = coords.Y + dir[i][1];
+
+				if (x > maxX || x < 0 || y > maxY || y < 0) continue;
+
+				ABaseHex* hex = AHexManager::GetHexFromCoordinates(x, y);
+				if (hex && !hexes.Contains(hex))
+				{
+					found.Enqueue(hex);
+					hexes.Add(hex);
+					if (hex->GetHexOwner() != hexOwner && !hex->hexStats.canSeeThrough)
+						obstacles.Add(hex);
+				}
+			}
+		};
+
+	found.Enqueue(this);
+
+	for (int i = 0; i < radius; i++)
+	{
+		TQueue<const ABaseHex*> layer;
+		const ABaseHex* currentVal = nullptr;
+
+		while (found.Dequeue(currentVal))
+		{
+			layer.Enqueue(currentVal);
+		}
+
+		while (layer.Dequeue(currentVal))
+		{
+			GetAdjacentHexes(currentVal);
+		}
+	}
+
+	hexes.Add(const_cast<ABaseHex*>(this));
+
+	TSet<ABaseHex*> visibleHexes;
+	FVector centerPos = GetActorLocation();
+	const float obstacleRadiusSqr = FMath::Square(AHexManager::GetHexRadiusAsVisionObstacle());
+	for (ABaseHex* hex : hexes)
+	{
+		FVector hexPos = hex->GetActorLocation();
+		FVector direction = hexPos - centerPos;
+
+		bool obstructed = false;
+		for (ABaseHex* obstacle : obstacles)
+		{
+			if (hex == obstacle) continue;
+
+			// Copy-paste line->sphere intersection since Unreal's doesn't make any sense
+			FVector obstaclePos = obstacle->GetActorLocation();
+			float dirLengthSq = direction.SizeSquared();
+			if (dirLengthSq <= KINDA_SMALL_NUMBER)
+			{
+				obstructed = (obstaclePos - centerPos).SizeSquared() <= obstacleRadiusSqr;
+			}
+			else
+			{
+				float t = FVector::DotProduct((obstaclePos - centerPos), direction) / dirLengthSq;
+				t = FMath::Clamp(t, 0.0f, 1.0f);
+
+				FVector closestPoint = centerPos + t * direction;
+				float distSq = (closestPoint - obstaclePos).SizeSquared();
+
+				obstructed = distSq <= obstacleRadiusSqr;
+			}
+			
+			if (obstructed) break;
+		}
+		if (!obstructed) visibleHexes.Add(hex);
+	}
+
+	return visibleHexes;
+}
+	
 TSet<ABaseHex*> ABaseHex::GetHexesInRadius(const int radius, bool includeSelf) const
 {
 	TSet<ABaseHex*> hexes;

@@ -26,6 +26,7 @@ struct FHexInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float attritionMultiplier;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int visionModifier;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool canSeeInto;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) bool canSeeThrough;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int startingSeedSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UStaticMesh* model;
@@ -49,7 +50,8 @@ struct FHexInstance
 		moveMultiplier(0),
 		attritionMultiplier(0),
 		visionModifier(0),
-		canSeeInto(false) {}
+		canSeeInto(false),
+		canSeeThrough(false){}
 
 	FHexInstance(const FHexInfo& sourceInfo) : 
 		name(FText::FromString(sourceInfo.name)), 
@@ -63,7 +65,8 @@ struct FHexInstance
 		moveMultiplier(sourceInfo.moveMultiplier),
 		attritionMultiplier(sourceInfo.attritionMultiplier),
 		visionModifier(sourceInfo.visionModifier),
-		canSeeInto(sourceInfo.canSeeInto){}
+		canSeeInto(sourceInfo.canSeeInto),
+		canSeeThrough(sourceInfo.canSeeThrough) {}
 
 	UPROPERTY(BlueprintReadOnly) FText name = FText();
 	UPROPERTY(BlueprintReadOnly) FText description = FText();
@@ -80,4 +83,5 @@ struct FHexInstance
 	UPROPERTY(BlueprintReadOnly) float attritionMultiplier = 0.f;
 	UPROPERTY(BlueprintReadOnly) int visionModifier = 0;
 	UPROPERTY(BlueprintReadOnly) bool canSeeInto = true;
+	UPROPERTY(BlueprintReadOnly) bool canSeeThrough = true;
 };

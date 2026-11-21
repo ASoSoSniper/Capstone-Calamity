@@ -96,6 +96,7 @@ public:
 	void SetHexCoordinates(int x, int y);
 
 	ABaseHex* FindFreeAdjacentHex(EFactions faction, TSet<ABaseHex*>& usedHexes, bool includeSelf = true, EHexSearchRules occupancyFilter = EHexSearchRules::ContainsAny, bool includeBuildings = false);
+	TSet<ABaseHex*> GetHexesInLineOfSight(const int radius = 1) const;
 	TSet<ABaseHex*> GetHexesInRadius(const int radius = 1, bool includeSelf = true) const;
 	TSet<ABaseHex*> GetHexesInRadius(const EBuildingSize size, bool includeSelf = true) const;
 
